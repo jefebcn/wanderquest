@@ -795,8 +795,318 @@ footer {
 .visited { fill: var(--amber) !important; opacity: 0.8; }
 .not-visited { fill: var(--navy-light); }
 
+/* ── CAROUSEL GEMME (TikTok style) ────────────────────────────── */
+#carousel-section {
+  padding: 60px 0 0;
+  background: var(--ink);
+  position: relative;
+  overflow: hidden;
+}
+.carousel-header { padding: 0 48px 32px; }
+.carousel-track-wrapper {
+  position: relative;
+  height: 580px;
+  overflow: hidden;
+}
+.carousel-track {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  transition: transform 0.6s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.carousel-slide {
+  height: 580px;
+  flex-shrink: 0;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  overflow: hidden;
+}
+.slide-bg {
+  position: absolute; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 220px; opacity: 0.18;
+  transition: transform 8s ease;
+  filter: blur(2px);
+}
+.carousel-slide:hover .slide-bg { transform: scale(1.06); }
+.slide-gradient {
+  position: absolute; inset: 0;
+}
+.slide-content {
+  position: relative; z-index: 2;
+  width: 100%; padding: 40px 48px;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 24px;
+}
+.slide-info { flex: 1; }
+.slide-rank {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(232,162,40,0.15); border: 1px solid rgba(232,162,40,0.3);
+  color: var(--amber); padding: 4px 12px; border-radius: 100px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 10px;
+}
+.slide-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(26px, 3.5vw, 42px);
+  font-weight: 900; color: var(--white);
+  line-height: 1.1; margin-bottom: 8px;
+  text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+}
+.slide-author {
+  font-size: 14px; color: rgba(255,255,255,0.7);
+  display: flex; align-items: center; gap: 8px;
+}
+.slide-votes {
+  display: flex; align-items: center; gap: 6px;
+  font-family: 'DM Mono', monospace; font-size: 13px;
+  color: var(--amber); margin-left: auto;
+}
+.slide-actions { display: flex; flex-direction: column; gap: 10px; align-items: flex-end; }
+.btn-wantgo {
+  background: var(--amber); color: var(--ink);
+  border: none; padding: 14px 22px; border-radius: 12px;
+  font-weight: 700; font-size: 14px; cursor: none;
+  transition: all 0.25s; white-space: nowrap;
+  box-shadow: 0 8px 24px rgba(232,162,40,0.4);
+}
+.btn-wantgo:hover { transform: scale(1.05) translateY(-2px); box-shadow: 0 14px 32px rgba(232,162,40,0.5); }
+.btn-vote {
+  background: rgba(255,255,255,0.1); backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.2); color: var(--white);
+  padding: 12px 20px; border-radius: 12px;
+  font-weight: 600; font-size: 13px; cursor: none;
+  transition: all 0.2s;
+}
+.btn-vote:hover { background: rgba(255,255,255,0.18); }
+.carousel-nav {
+  position: absolute; right: 48px; top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 10px; z-index: 10;
+}
+.carousel-dot {
+  width: 6px; border-radius: 3px; background: rgba(255,255,255,0.3);
+  cursor: none; transition: all 0.3s; border: none; padding: 0; height: 6px;
+}
+.carousel-dot.active { background: var(--amber); height: 24px; width: 6px; }
+.carousel-arrows {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  display: flex; gap: 12px; z-index: 10;
+}
+.carousel-arrow {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+  color: white; font-size: 16px; cursor: none;
+  transition: all 0.2s; display: flex; align-items: center; justify-content: center;
+}
+.carousel-arrow:hover { background: var(--amber); border-color: var(--amber); color: var(--ink); }
+
+/* Packing Quick Modal */
+.quick-packing-modal {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.85);
+  backdrop-filter: blur(10px); z-index: 300;
+  display: none; align-items: center; justify-content: center;
+}
+.quick-packing-modal.show { display: flex; animation: fadeIn 0.2s ease; }
+.quick-packing-box {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 24px; padding: 36px; width: 520px; max-width: 95vw;
+  animation: fadeSlideUp 0.35s ease;
+  max-height: 90vh; overflow-y: auto;
+}
+.qp-title {
+  font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900;
+  color: var(--amber); margin-bottom: 4px;
+}
+.qp-dest { font-size: 13px; color: var(--cream-dim); margin-bottom: 24px; }
+.qp-packing-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 20px; }
+.qp-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; background: rgba(24,197,168,0.06);
+  border-radius: 8px; font-size: 13px; color: var(--cream-dim);
+  border: 1px solid rgba(24,197,168,0.1);
+}
+.qp-item-buy {
+  margin-left: auto; flex-shrink: 0;
+  background: rgba(232,162,40,0.12); color: var(--amber);
+  border: 1px solid rgba(232,162,40,0.2); border-radius: 6px;
+  padding: 3px 8px; font-size: 10px; font-weight: 700;
+  cursor: none; text-decoration: none; transition: all 0.2s;
+  white-space: nowrap;
+}
+.qp-item-buy:hover { background: rgba(232,162,40,0.22); }
+.affiliate-disclaimer {
+  font-size: 10px; color: var(--cream-dim); opacity: 0.6;
+  text-align: center; margin-top: 8px;
+  padding: 8px; background: rgba(0,0,0,0.2); border-radius: 6px;
+}
+
+/* ── EXPLORER PLUS ─────────────────────────────────────────────── */
+#premium { background: var(--ink); }
+.premium-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; }
+.premium-card {
+  background: linear-gradient(145deg, #1A2545, #0F1A38);
+  border: 1px solid rgba(232,162,40,0.25);
+  border-radius: 28px; padding: 44px;
+  position: relative; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(232,162,40,0.08), inset 0 1px 0 rgba(255,255,255,0.06);
+}
+.premium-card::before {
+  content:''; position: absolute; top: -80px; right: -80px;
+  width: 280px; height: 280px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(232,162,40,0.12) 0%, transparent 70%);
+  pointer-events: none;
+}
+.premium-badge-top {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--gold-grad); color: var(--ink);
+  padding: 6px 16px; border-radius: 100px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 20px;
+}
+.premium-price {
+  display: flex; align-items: baseline; gap: 6px; margin-bottom: 8px;
+}
+.premium-price-main {
+  font-family: 'Playfair Display', serif; font-size: 64px; font-weight: 900;
+  color: var(--amber); line-height: 1;
+}
+.premium-price-period { font-size: 16px; color: var(--cream-dim); font-weight: 400; }
+.premium-card-title {
+  font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 900;
+  margin-bottom: 6px;
+}
+.premium-card-sub { font-size: 14px; color: var(--cream-dim); margin-bottom: 32px; line-height: 1.6; }
+.premium-features { display: flex; flex-direction: column; gap: 14px; margin-bottom: 32px; }
+.premium-feature {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 16px; background: rgba(232,162,40,0.06);
+  border: 1px solid rgba(232,162,40,0.12); border-radius: 12px;
+  transition: all 0.2s;
+}
+.premium-feature:hover { background: rgba(232,162,40,0.1); border-color: rgba(232,162,40,0.2); }
+.pf-icon { font-size: 28px; flex-shrink: 0; }
+.pf-content {}
+.pf-name { font-size: 14px; font-weight: 700; color: var(--cream); margin-bottom: 3px; }
+.pf-desc { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+.pf-tag {
+  display: inline-block; margin-top: 5px;
+  background: rgba(232,162,40,0.15); color: var(--amber);
+  padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
+}
+.premium-cta {
+  width: 100%; background: var(--gold-grad); color: var(--ink);
+  border: none; padding: 16px; border-radius: 12px;
+  font-weight: 800; font-size: 16px; cursor: none;
+  transition: all 0.25s; letter-spacing: 0.02em;
+  box-shadow: 0 8px 28px rgba(232,162,40,0.35);
+}
+.premium-cta:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(232,162,40,0.5); }
+.premium-compare { display: flex; flex-direction: column; gap: 16px; }
+.compare-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 700; margin-bottom: 8px; }
+.compare-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 20px; background: var(--navy-mid);
+  border: 1px solid var(--glass-border); border-radius: 12px;
+}
+.compare-feature-name { font-size: 14px; color: var(--cream); flex: 1; }
+.compare-free { text-align: center; width: 72px; font-size: 14px; }
+.compare-plus { text-align: center; width: 72px; font-size: 14px; color: var(--amber); font-weight: 700; }
+.compare-header {
+  display: flex; align-items: center; padding: 0 20px;
+  margin-bottom: -8px;
+}
+.compare-header-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+
+/* ── FLASH CONTEST ─────────────────────────────────────────────── */
+#flash-contest { background: var(--navy); }
+.flash-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+.flash-card {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 20px; overflow: hidden; cursor: none;
+  transition: all 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+}
+.flash-card:hover { transform: translateY(-6px); box-shadow: 0 20px 50px rgba(0,0,0,0.35); }
+.flash-card-hero {
+  height: 160px; position: relative; overflow: hidden;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 80px;
+}
+.flash-card-hero-bg { position: absolute; inset: 0; opacity: 0.25; }
+.flash-sponsor-badge {
+  position: absolute; top: 12px; left: 12px;
+  background: rgba(0,0,0,0.7); backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+  padding: 4px 10px; font-size: 10px; font-weight: 700;
+  color: var(--cream); letter-spacing: 0.06em; text-transform: uppercase;
+  z-index: 2;
+}
+.flash-live-badge {
+  position: absolute; top: 12px; right: 12px;
+  background: rgba(232,64,64,0.9); border-radius: 8px;
+  padding: 4px 10px; font-size: 10px; font-weight: 700; color: white;
+  z-index: 2; display: flex; align-items: center; gap: 5px;
+}
+.flash-live-dot { width: 5px; height: 5px; background: white; border-radius: 50%; animation: blink 1s infinite; }
+.flash-card-body { padding: 20px; }
+.flash-card-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 900; margin-bottom: 6px; }
+.flash-card-sub { font-size: 12px; color: var(--cream-dim); margin-bottom: 14px; line-height: 1.5; }
+.flash-prize-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.flash-prize { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--amber); }
+.flash-prize-type { font-size: 11px; color: var(--cream-dim); margin-top: 2px; }
+.flash-timer {
+  display: flex; gap: 4px; align-items: center;
+  font-family: 'DM Mono', monospace; font-size: 11px; color: var(--cream-dim);
+}
+.flash-timer-unit {
+  background: var(--navy-light); border-radius: 4px; padding: 3px 6px;
+  color: var(--cream); font-weight: 700;
+}
+.flash-progress { height: 4px; background: var(--navy-light); border-radius: 2px; margin-bottom: 14px; overflow: hidden; }
+.flash-progress-fill { height: 100%; border-radius: 2px; transition: width 1s linear; }
+.flash-sponsor-logo {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px; background: var(--glass);
+  border: 1px solid var(--glass-border); border-radius: 8px;
+  font-size: 12px; color: var(--cream-dim); margin-bottom: 12px;
+}
+.flash-sponsor-logo span { font-weight: 700; color: var(--cream); }
+.flash-enter-btn {
+  width: 100%; border: none; padding: 12px;
+  border-radius: 10px; font-weight: 700; font-size: 13px;
+  cursor: none; transition: all 0.2s;
+}
+.flash-enter-btn.active { background: var(--teal); color: var(--ink); }
+.flash-enter-btn.soon { background: rgba(255,255,255,0.06); color: var(--cream-dim); border: 1px solid var(--glass-border); }
+.flash-enter-btn.active:hover { background: var(--teal-dark); transform: scale(1.02); }
+
+/* ── SMART FLIGHT NOTIFY ─────────────────────────────────────── */
+.notify-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(24,197,168,0.1); border: 1px solid rgba(24,197,168,0.25);
+  color: var(--teal); padding: 8px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 700; cursor: none; transition: all 0.2s;
+  white-space: nowrap;
+}
+.notify-btn:hover { background: rgba(24,197,168,0.18); }
+.notify-btn.active { background: rgba(46,197,122,0.15); border-color: rgba(46,197,122,0.3); color: var(--green); }
+.notify-premium-lock {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(232,162,40,0.08); border: 1px solid rgba(232,162,40,0.2);
+  color: var(--amber); padding: 8px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 700; cursor: none; transition: all 0.2s;
+}
+.notify-premium-lock:hover { background: rgba(232,162,40,0.14); }
+.notify-uses-left {
+  font-size: 11px; color: var(--cream-dim); margin-top: 6px;
+  padding: 4px 10px; background: rgba(0,0,0,0.2); border-radius: 6px;
+  display: inline-block;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
+  .flash-grid { grid-template-columns: 1fr 1fr; }
+  .premium-grid { grid-template-columns: 1fr; }
   .countries-grid { grid-template-columns: 1fr 1fr; }
   .contest-layout { grid-template-columns: 1fr; }
   .planner-container { grid-template-columns: 1fr; }
@@ -818,6 +1128,11 @@ footer {
   .dash-card-wide { grid-column: span 1; }
   .nav-links { display: none; }
   .badges-grid { grid-template-columns: repeat(3, 1fr); }
+  .flash-grid { grid-template-columns: 1fr; }
+  .premium-grid { grid-template-columns: 1fr; }
+  .slide-content { padding: 24px; flex-direction: column; align-items: flex-start; }
+  .carousel-nav { right: 16px; }
+  .qp-packing-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -833,7 +1148,9 @@ footer {
     <a href="#home" class="active" onclick="scrollTo('home')">Home</a>
     <a href="#explore" onclick="scrollTo('explore')">Esplora</a>
     <a href="#contest" onclick="scrollTo('contest')">Contest</a>
+    <a href="#flash-contest" onclick="scrollTo('flash-contest')">Flash 🔥</a>
     <a href="#planner" onclick="scrollTo('planner')">Pianifica</a>
+    <a href="#premium" onclick="scrollTo('premium')" style="color:var(--amber)">⭐ Explorer Plus</a>
     <a href="#dashboard" onclick="scrollTo('dashboard')">Dashboard</a>
     <a href="#architecture" onclick="scrollTo('architecture')">Architettura</a>
   </div>
@@ -859,7 +1176,7 @@ footer {
     </p>
     <div class="hero-actions">
       <button class="btn-primary" onclick="openModal()">🚀 Inizia Gratuitamente</button>
-      <button class="btn-secondary" onclick="scrollTo('explore')">Scopri i Paesi →</button>
+      <button class="btn-secondary" onclick="scrollTo('premium')" style="border-color:rgba(232,162,40,0.3);color:var(--amber)">⭐ Explorer Plus €4,99/mese</button>
     </div>
   </div>
 
@@ -879,13 +1196,33 @@ footer {
   </div>
 </section>
 
+<!-- CAROUSEL GEMME (TikTok style) -->
+<section id="carousel-section">
+  <div class="carousel-header">
+    <div class="section-label">🔥 Contest Live</div>
+    <h2 class="section-title" style="margin-bottom:8px">Le 5 Foto più Votate</h2>
+    <p style="font-size:15px;color:var(--cream-dim);font-weight:300">Scorri per ispirarti — clicca "Voglio andarci" e ottieni subito la lista valigia</p>
+  </div>
+  <div class="carousel-track-wrapper">
+    <div class="carousel-track" id="carouselTrack"></div>
+    <div class="carousel-nav" id="carouselDots"></div>
+    <div class="carousel-arrows">
+      <button class="carousel-arrow" onclick="carouselMove(-1)">↑</button>
+      <button class="carousel-arrow" onclick="carouselMove(1)">↓</button>
+    </div>
+  </div>
+</section>
+
 <!-- FLIGHT BANNER -->
 <div class="flight-section">
   <div class="flight-banner">
     <div class="flight-banner-header">
       <span class="flight-icon">✈️</span>
-      <h3>Flight Tracker</h3>
-      <span style="font-size:13px;color:var(--cream-dim);margin-left:auto">Inserisci il codice del tuo volo</span>
+      <h3>Smart Flight Tracker</h3>
+      <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+        <span style="font-size:11px;color:var(--teal);font-weight:700;background:rgba(24,197,168,0.1);border:1px solid rgba(24,197,168,0.2);padding:4px 10px;border-radius:100px">● LIVE</span>
+        <span style="font-size:13px;color:var(--cream-dim)">Inserisci il codice del volo</span>
+      </div>
     </div>
     <div class="flight-input-row">
       <input type="text" class="flight-input" id="flightInput" placeholder="es. FR834, AZ203..." maxlength="8" oninput="this.value=this.value.toUpperCase()">
@@ -975,6 +1312,14 @@ footer {
   </div>
 </section>
 
+<!-- FLASH CONTEST SPONSORIZZATI -->
+<section id="flash-contest">
+  <div class="section-label">⚡ Contest Flash — B2B Sponsor</div>
+  <h2 class="section-title">Contest Sponsorizzati</h2>
+  <p class="section-subtitle">Enti del turismo e brand sponsorizzano contest a tempo limitato. Tu guadagni dalla sponsorizzazione, gli utenti hanno nuovi premi da vincere.</p>
+  <div class="flash-grid" id="flashContestGrid"></div>
+</section>
+
 <!-- PLANNER -->
 <section id="planner">
   <div class="section-label">🧳 Pianificatore Intelligente</div>
@@ -1035,6 +1380,91 @@ footer {
         <div class="placeholder-text">Seleziona destinazione e preferenze<br>per generare il tuo itinerario personalizzato</div>
       </div>
       <div class="itinerary-content" id="itineraryContent"></div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPLORER PLUS -->
+<section id="premium">
+  <div class="section-label">⭐ Abbonamento</div>
+  <h2 class="section-title">Explorer Plus</h2>
+  <p class="section-subtitle">Un unico abbonamento che ti dà un vantaggio reale in classifica — e ti prepara meglio per ogni viaggio.</p>
+  <div class="premium-grid">
+    <!-- Pricing Card -->
+    <div class="premium-card">
+      <div class="premium-badge-top">⭐ Explorer Plus</div>
+      <div class="premium-price">
+        <span class="premium-price-main">€4,99</span>
+        <span class="premium-price-period">/mese</span>
+      </div>
+      <div style="font-size:13px;color:var(--cream-dim);margin-bottom:28px">oppure <span style="color:var(--amber);font-weight:700">€44,99/anno</span> — risparmi 2 mesi</div>
+      <div class="premium-features">
+        <div class="premium-feature">
+          <span class="pf-icon">🚀</span>
+          <div class="pf-content">
+            <div class="pf-name">Moltiplicatore Punti +20%</div>
+            <div class="pf-desc">Ogni foto che carichi nel contest ottiene automaticamente il 20% di punti in più rispetto agli utenti free. Su 1.000 voti diventa 1.200 — può fare la differenza tra il 2° e il 1° posto.</div>
+            <span class="pf-tag">🏆 VANTAGGIO DIRETTO IN CLASSIFICA</span>
+          </div>
+        </div>
+        <div class="premium-feature">
+          <span class="pf-icon">📴</span>
+          <div class="pf-content">
+            <div class="pf-name">Mappe & Pillole Offline</div>
+            <div class="pf-desc">Scarica le Pillole Culturali, gli itinerari e la lista valigia prima di partire. All'estero consulti tutto senza internet — zero costi di roaming.</div>
+            <span class="pf-tag">🌍 IDEALE PER ZONE REMOTE</span>
+          </div>
+        </div>
+        <div class="premium-feature">
+          <span class="pf-icon">✅</span>
+          <div class="pf-content">
+            <div class="pf-name">Badge "Verified Traveler" 🥇</div>
+            <div class="pf-desc">Icona dorata sul tuo profilo visibile in tutta la community. Dà autorità nelle votazioni e aumenta la visibilità delle tue foto nel feed della classifica.</div>
+            <span class="pf-tag">👁️ +40% VISIBILITÀ NEL FEED</span>
+          </div>
+        </div>
+        <div class="premium-feature">
+          <span class="pf-icon">🔔</span>
+          <div class="pf-content">
+            <div class="pf-name">Notifiche Ritardi Voli Illimitate</div>
+            <div class="pf-desc">Con il piano gratuito hai 2 notifiche volo al mese. Con Explorer Plus monitora tutti i voli che vuoi — gate change, ritardi, cancellazioni in tempo reale.</div>
+            <span class="pf-tag">✈️ INCLUSO DOPO 2 USI GRATUITI</span>
+          </div>
+        </div>
+      </div>
+      <button class="premium-cta" onclick="openModal();showToast('⭐ Explorer Plus — attivazione disponibile nella versione full!')">
+        Attiva Explorer Plus — €4,99/mese
+      </button>
+      <div style="text-align:center;margin-top:14px;font-size:12px;color:var(--cream-dim)">
+        Cancella in qualsiasi momento · Nessun vincolo
+      </div>
+    </div>
+    <!-- Comparison Table -->
+    <div class="premium-compare">
+      <div class="compare-title">Free vs Explorer Plus</div>
+      <p style="font-size:14px;color:var(--cream-dim);margin-bottom:20px">Tutto ciò che ottieni con l'upgrade</p>
+      <div class="compare-header">
+        <div class="compare-feature-name"></div>
+        <div class="compare-header-label compare-free" style="color:var(--cream-dim)">Free</div>
+        <div class="compare-header-label compare-plus">Plus ⭐</div>
+      </div>
+      <div class="compare-row"><span class="compare-feature-name">Foto contest/mese</span><span class="compare-free" style="color:var(--cream-dim)">5</span><span class="compare-plus">∞</span></div>
+      <div class="compare-row"><span class="compare-feature-name">Moltiplicatore punti</span><span class="compare-free">❌</span><span class="compare-plus">+20% 🚀</span></div>
+      <div class="compare-row"><span class="compare-feature-name">Badge Verified Traveler</span><span class="compare-free">❌</span><span class="compare-plus">✅ 🥇</span></div>
+      <div class="compare-row"><span class="compare-feature-name">Pillole offline</span><span class="compare-free">❌</span><span class="compare-plus">✅</span></div>
+      <div class="compare-row"><span class="compare-feature-name">Itinerari offline</span><span class="compare-free">❌</span><span class="compare-plus">✅</span></div>
+      <div class="compare-row"><span class="compare-feature-name">Notifiche ritardi volo</span><span class="compare-free" style="color:var(--cream-dim)">2/mese</span><span class="compare-plus">∞</span></div>
+      <div class="compare-row"><span class="compare-feature-name">Boost visibilità foto</span><span class="compare-free">❌</span><span class="compare-plus">×2 👁️</span></div>
+      <div class="compare-row"><span class="compare-feature-name">Flash Contest accesso early</span><span class="compare-free">❌</span><span class="compare-plus">24h prima</span></div>
+      <div class="compare-row" style="border:1px solid rgba(232,162,40,0.25);background:rgba(232,162,40,0.05)">
+        <span class="compare-feature-name" style="font-weight:700;color:var(--amber)">Prezzo</span>
+        <span class="compare-free" style="color:var(--cream-dim)">€0</span>
+        <span class="compare-plus" style="font-size:18px">€4,99</span>
+      </div>
+      <div style="padding:16px;background:rgba(24,197,168,0.06);border:1px solid rgba(24,197,168,0.15);border-radius:12px;margin-top:4px">
+        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:6px">💡 PERCHÉ CONVIENE</div>
+        <div style="font-size:13px;color:var(--cream-dim);line-height:1.7">Con il moltiplicatore +20% e il badge Verified Traveler, le probabilità di finire in Top 3 aumentano significativamente. Il 1° posto vale <span style="color:var(--amber);font-weight:700">€500</span> — l'abbonamento si ripaga con una singola vittoria.</div>
+      </div>
     </div>
   </div>
 </section>
@@ -1266,6 +1696,22 @@ footer {
   <span style="color:var(--amber)">Architettura MVP v0.1</span> — Tutti i dati sono dimostrativi.</p>
 </footer>
 
+<!-- QUICK PACKING MODAL (Voglio andarci) -->
+<div class="quick-packing-modal" id="quickPackingModal" onclick="this.id==='quickPackingModal'&&closePackingModal()">
+  <div class="quick-packing-box">
+    <button class="modal-close" onclick="closePackingModal()">✕</button>
+    <div class="qp-title" id="qpTitle">🧳 Lista Valigia</div>
+    <div class="qp-dest" id="qpDest">Per il tuo viaggio</div>
+    <div class="qp-packing-grid" id="qpPackingGrid"></div>
+    <div class="affiliate-disclaimer">
+      🔗 I link "Acquista" sono link Amazon Affiliate. Non paghi nulla in più — una piccola commissione aiuta a finanziare i premi WanderQuest.
+    </div>
+    <button class="btn-primary" style="width:100%;margin-top:16px" onclick="scrollTo('planner');closePackingModal();showToast('🗺️ Vai al Pianificatore per l\'itinerario completo!')">
+      Genera Itinerario Completo →
+    </button>
+  </div>
+</div>
+
 <!-- LOGIN MODAL -->
 <div class="modal-overlay" id="loginModal" onclick="this.id==='loginModal'&&closeModal()">
   <div class="modal">
@@ -1419,35 +1865,76 @@ const API_TABLE = [
   {fn:'Notifiche push',api:'Firebase FCM',free:'Illimitato',cost:'Gratuito'}
 ];
 
-const ITINERARIES = {
-  JP:{
-    dest:'🇯🇵 Giappone',
-    days:[
-      {title:'Arrivo a Tokyo — Shinjuku & Akihabara',activities:['09:00 Arrivo Narita, acquisto IC Card Suica','12:00 Ramen tonkotsu a Shinjuku Golden Gai','15:00 Visita Meiji Shrine + bosco di bambù','19:00 Passeggiata notturna Akihabara','21:00 Izakaya locale con yakitori e birra asahi']},
-      {title:'Harajuku, Shibuya & quartieri cult',activities:['08:00 Pancake al Omotesando Eggs','10:00 Takeshita Street → Harajuku','13:00 Soba fredda tipica (zarusoba)','15:00 Shibuya Crossing (il più trafficato al mondo)','18:00 Karaoke in privata (almeno 2 ore)']},
-      {title:'Kyoto — Fushimi Inari & Gion',activities:['06:00 Treno Shinkansen Tokyo→Kyoto (2h15m)','08:30 Fushimi Inari: migliaia di torii arancioni','12:00 Obanzai lunch nel mercato Nishiki','14:00 Gion: geishe district, tea house','17:00 Kinkaku-ji (Padiglione d\'Oro) al tramonto']}
-    ],
-    packing:['Ombrellino tascabile','IC Card Suica','Scarpe comode','Adattatore presa J','Maschera per sonno (aerei)','Borsa riutilizzabile','Maglione leggero','Medicinali (farmaci difficili da trovare)']
-  },
-  IS:{
-    dest:'🇮🇸 Islanda',
-    days:[
-      {title:'Reykjavík & Peninsula di Snæfellsnes',activities:['09:00 Volo internazionale → Keflavík, noleggio SUV 4x4','12:00 Grandi Mathöll food hall: lobster soup','14:00 Hallgrímskirkja church, vista panoramica','16:00 Drive verso Snæfellsnes peninsula','20:00 Hot pot naturale al tramonto']},
-      {title:'Ring Road: Cascate e Glaciar Lagoon',activities:['07:00 Partenza verso Seljalandsfoss (si passa dietro!)','09:00 Skógafoss e spiaggia nera di Reynisfjara','13:00 Skyr + langoustine soup in un porto','15:00 Jökulsárlón Glacier Lagoon: iceberg blu','18:00 Diamond Beach: ghiaccio sull\'oceano']},
-      {title:'Golden Circle & Aurora',activities:['08:00 Þingvellir National Park — placche tettoniche','10:30 Geysir Strokkur — eruzione ogni 5-10 minuti','12:30 Cascata Gullfoss — due livelli, potentissima','15:00 Rientro Reykjavík, cena tradizionale','21:00 Aurora boreale hunting fuori città']}
-    ],
-    packing:['Parka artico impermeabile','Strati merino (no cotone)','Stivali waterproof','Guanti impermeabili','Crema da sole (UV su neve)','Power bank','Torcia frontale','eSIM islandese']
-  },
-  PE:{
-    dest:'🇵🇪 Perù',
-    days:[
-      {title:'Lima — Gastronomia & Miraflores',activities:['10:00 Arrivo Jorge Chávez, taxi Taxi Beat app','12:00 Ceviche al Mercado de Surquillo','14:00 Miraflores: scogliere sull\'oceano Pacifico','16:00 Larco Museum — gioielli Inca e ceramiche','20:00 Pisco Sour al Bar Inglés del Country Club']},
-      {title:'Cusco — Acclimatazione e Plaza de Armas',activities:['06:00 Volo Lima→Cusco (1h15m)','08:00 Mate de coca immediato all\'arrivo (alt. 3.400m)','10:00 Passeggiata lenta Plaza de Armas e Catedral','12:00 Aji de gallina in un locale tipico','15:00 Mercado San Pedro — frutta, cuy, erbe medicinali','17:00 Riposo obbligatorio (acclimatazione)']},
-      {title:'Machu Picchu — Il Momento',activities:['04:30 Bus da Aguas Calientes (prenota prima)','06:00 Ingresso Machu Picchu all\'alba senza turisti','08:00 Trekking Sun Gate (Inti Punku) vista zenitale','12:00 Pranzo buffet Aguas Calientes','15:00 Treno panoramico rientro Cusco','19:00 Cena: lomo saltado + chicha morada']}
-    ],
-    packing:['Acetazolamide (mal di quota)','Repellente DEET 30%','Crema solare SPF50+','Scarpe da trekking','Poncho impermeabile leggero','Bottiglia filtro acqua','Soles (contante)','Adattatore presa C/A']
-  }
+// ── CAROUSEL DATA ─────────────────────────────────────────────────────
+const CAROUSEL_SLIDES = [
+  {rank:1,emoji:'⛩️',title:'Fushimi Inari all\'alba',author:'@sakura_lens',location:'Kyoto, Giappone',votes:'4.872',bg:'linear-gradient(180deg, rgba(180,30,30,0.15) 0%, rgba(8,12,26,0.92) 100%)',color:'#C8102E',packKey:'JP'},
+  {rank:2,emoji:'🌌',title:'Aurora sul Ghiacciaio',author:'@aurora_bjorn',location:'Vatnajökull, Islanda',votes:'3.941',bg:'linear-gradient(180deg, rgba(0,50,140,0.2) 0%, rgba(8,12,26,0.92) 100%)',color:'#003897',packKey:'IS'},
+  {rank:3,emoji:'🏔️',title:'Machu Picchu al tramonto',author:'@andean_foto',location:'Cusco, Perù',votes:'3.187',bg:'linear-gradient(180deg, rgba(200,50,20,0.18) 0%, rgba(8,12,26,0.92) 100%)',color:'#D91023',packKey:'PE'},
+  {rank:4,emoji:'🏜️',title:'Sahara — Erg Chebbi',author:'@dunes_forever',location:'Merzouga, Marocco',votes:'2.654',bg:'linear-gradient(180deg, rgba(200,140,20,0.2) 0%, rgba(8,12,26,0.92) 100%)',color:'#CC8000',packKey:'JP'},
+  {rank:5,emoji:'🌊',title:'Le Bioluminescenze di Vaadhoo',author:'@ocean_light',location:'Raa Atoll, Maldive',votes:'2.211',bg:'linear-gradient(180deg, rgba(0,120,160,0.2) 0%, rgba(8,12,26,0.92) 100%)',color:'#0088AA',packKey:'IS'}
+];
+
+// ── PACKING AFFILIATE DATA ────────────────────────────────────────────
+const PACKING_AFFILIATE = {
+  JP: [
+    {item:'Ombrellino tascabile',aff:'amzn.to/umbrella-jp'},
+    {item:'IC Card Suica (caricabile)',aff:'amzn.to/suica-card'},
+    {item:'Scarpe comode da camminata',aff:'amzn.to/shoes-travel'},
+    {item:'Adattatore presa tipo A/B',aff:'amzn.to/adapter-jp'},
+    {item:'Crema solare SPF50+',aff:'amzn.to/sunscreen'},
+    {item:'eSIM Giappone (dati)',aff:'amzn.to/esim-japan'},
+    {item:'Borsa day-pack leggera',aff:'amzn.to/daypack'},
+    {item:'Maglione leggero (serate)',aff:'amzn.to/light-sweater'}
+  ],
+  IS: [
+    {item:'Parka impermeabile artico',aff:'amzn.to/arctic-jacket'},
+    {item:'Stivali waterproof',aff:'amzn.to/waterproof-boots'},
+    {item:'Guanti impermeabili',aff:'amzn.to/waterproof-gloves'},
+    {item:'Base layer merino wool',aff:'amzn.to/merino-base'},
+    {item:'Crema solare SPF50+ (neve)',aff:'amzn.to/sunscreen'},
+    {item:'Power bank 20.000 mAh',aff:'amzn.to/powerbank'},
+    {item:'Torcia frontale LED',aff:'amzn.to/headlamp'},
+    {item:'eSIM Islanda dati illimitati',aff:'amzn.to/esim-is'}
+  ],
+  PE: [
+    {item:'Acetazolamide (mal di quota)',aff:'amzn.to/altitude-pills'},
+    {item:'Repellente DEET 30%',aff:'amzn.to/deet-repellent'},
+    {item:'Crema solare SPF50+',aff:'amzn.to/sunscreen'},
+    {item:'Scarpe da trekking',aff:'amzn.to/trekking-shoes'},
+    {item:'Poncho impermeabile leggero',aff:'amzn.to/rain-poncho'},
+    {item:'Bottiglia filtrante LifeStraw',aff:'amzn.to/lifestraw'},
+    {item:'Zaino da trekking 35L',aff:'amzn.to/backpack-35l'},
+    {item:'Kit pronto soccorso base',aff:'amzn.to/first-aid-kit'}
+  ]
 };
+
+// ── FLASH CONTEST DATA ────────────────────────────────────────────────
+const FLASH_CONTESTS = [
+  {
+    id:'tuscany', emoji:'🌻', title:'Weekend in Toscana',
+    desc:'Fotografa i borghi, le colline di cipressi e le strade bianche. Sponsorizzato da Toscana Promozione Turistica.',
+    prize:'€300 + Soggiorno 2 notti', prizeType:'Cash + Hotel incluso',
+    sponsor:'Toscana Promozione', sponsorEmoji:'🇮🇹',
+    deadline:'5g 12h 30m', progress:65, status:'live',
+    participants:847, bg:'linear-gradient(135deg, #8B7355, #C4A35A)'
+  },
+  {
+    id:'norway', emoji:'🏔️', title:'Fiordi di Norvegia',
+    desc:'Sfida: cattura un fiordo in condizioni meteo estreme. Visitnorway.com mette in palio un pack avventura completo.',
+    prize:'€500 + Pack Avventura', prizeType:'Volo + Hotel + Attività',
+    sponsor:'Visit Norway', sponsorEmoji:'🇳🇴',
+    deadline:'12g 6h 15m', progress:30, status:'live',
+    participants:1203, bg:'linear-gradient(135deg, #1B4A6B, #2980B9)'
+  },
+  {
+    id:'japan', emoji:'🌸', title:'Sakura Season Japan',
+    desc:'Solo 3 settimane all\'anno. La Japan Tourism Agency sponsor del contest più competitivo della primavera.',
+    prize:'Volo A/R Tokyo', prizeType:'Biglietto aereo incluso',
+    sponsor:'Japan Tourism Agency', sponsorEmoji:'🇯🇵',
+    deadline:'Aprile 2026', progress:0, status:'soon',
+    participants:0, bg:'linear-gradient(135deg, #C8102E, #FF6B6B)'
+  }
+];
 
 // ── CURSOR ────────────────────────────────────────────────────────────
 const cursor = document.getElementById('cursor');
@@ -1460,30 +1947,134 @@ document.addEventListener('mousemove', e => {
     cursorRing.style.top = e.clientY + 'px';
   }, 80);
 });
-document.addEventListener('mousedown', () => {
-  cursor.style.transform = 'translate(-50%,-50%) scale(0.6)';
-});
-document.addEventListener('mouseup', () => {
-  cursor.style.transform = 'translate(-50%,-50%) scale(1)';
-});
+document.addEventListener('mousedown', () => { cursor.style.transform = 'translate(-50%,-50%) scale(0.6)'; });
+document.addEventListener('mouseup', () => { cursor.style.transform = 'translate(-50%,-50%) scale(1)'; });
 
 // ── NAV SCROLL ────────────────────────────────────────────────────────
 window.addEventListener('scroll', () => {
   document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
-  // Active nav link
-  const sections = ['home','explore','contest','planner','dashboard','architecture'];
+  const sections = ['home','carousel-section','explore','contest','flash-contest','planner','premium','dashboard','architecture'];
   let current = 'home';
   sections.forEach(id => {
     const el = document.getElementById(id);
     if (el && window.scrollY >= el.offsetTop - 120) current = id;
   });
   document.querySelectorAll('.nav-links a').forEach(a => {
-    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+    const href = a.getAttribute('href');
+    a.classList.toggle('active', href === '#' + current);
   });
 });
 
-function scrollTo(id) {
-  document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+function scrollTo(id) { document.getElementById(id)?.scrollIntoView({behavior:'smooth'}); }
+
+// ── CAROUSEL ─────────────────────────────────────────────────────────
+let carouselIndex = 0;
+let carouselTimer;
+
+function renderCarousel() {
+  const track = document.getElementById('carouselTrack');
+  const dots = document.getElementById('carouselDots');
+  track.innerHTML = CAROUSEL_SLIDES.map((s,i) => `
+    <div class="carousel-slide" style="background:${s.bg}">
+      <div class="slide-bg">${s.emoji}</div>
+      <div class="slide-content">
+        <div class="slide-info">
+          <div class="slide-rank">🏆 #${s.rank} in classifica · ${s.location}</div>
+          <div class="slide-title">${s.title}</div>
+          <div class="slide-author">
+            <span>📸 ${s.author}</span>
+            <span class="slide-votes">🗳️ ${s.votes} voti</span>
+          </div>
+        </div>
+        <div class="slide-actions">
+          <button class="btn-wantgo" onclick="openQuickPacking('${s.title}','${s.location}','${s.packKey}')">
+            🧳 Voglio andarci!
+          </button>
+          <button class="btn-vote" onclick="showToast('🗳️ Voto registrato per &quot;${s.title}&quot;!')">
+            ❤️ Vota
+          </button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+  dots.innerHTML = CAROUSEL_SLIDES.map((_,i) => `
+    <button class="carousel-dot ${i===0?'active':''}" onclick="goToSlide(${i})"></button>
+  `).join('');
+  startCarouselAuto();
+}
+
+function goToSlide(index) {
+  carouselIndex = index;
+  document.getElementById('carouselTrack').style.transform = `translateY(-${index * 580}px)`;
+  document.querySelectorAll('.carousel-dot').forEach((d,i) => d.classList.toggle('active', i === index));
+  clearInterval(carouselTimer);
+  startCarouselAuto();
+}
+
+function carouselMove(dir) {
+  goToSlide((carouselIndex + dir + CAROUSEL_SLIDES.length) % CAROUSEL_SLIDES.length);
+}
+
+function startCarouselAuto() {
+  carouselTimer = setInterval(() => carouselMove(1), 5000);
+}
+
+// ── QUICK PACKING MODAL ───────────────────────────────────────────────
+function openQuickPacking(title, location, packKey) {
+  const items = PACKING_AFFILIATE[packKey] || PACKING_AFFILIATE['JP'];
+  document.getElementById('qpTitle').textContent = `🧳 Lista Valigia — ${title}`;
+  document.getElementById('qpDest').textContent = `📍 ${location} · Generata automaticamente per questo luogo`;
+  document.getElementById('qpPackingGrid').innerHTML = items.map(p => `
+    <div class="qp-item">
+      <span style="color:var(--teal);font-size:12px">✓</span>
+      <span style="flex:1">${p.item}</span>
+      <a href="https://${p.aff}" target="_blank" rel="noopener sponsored" class="qp-item-buy" onclick="event.stopPropagation()">
+        🛒 Acquista
+      </a>
+    </div>
+  `).join('');
+  document.getElementById('quickPackingModal').classList.add('show');
+}
+function closePackingModal() { document.getElementById('quickPackingModal').classList.remove('show'); }
+
+// ── FLASH CONTEST ─────────────────────────────────────────────────────
+function renderFlashContest() {
+  document.getElementById('flashContestGrid').innerHTML = FLASH_CONTESTS.map(c => `
+    <div class="flash-card">
+      <div class="flash-card-hero">
+        <div class="flash-card-hero-bg" style="background:${c.bg};position:absolute;inset:0"></div>
+        <div style="position:relative;z-index:1;font-size:72px">${c.emoji}</div>
+        <div class="flash-sponsor-badge">🤝 SPONSORIZZATO</div>
+        ${c.status === 'live' ? `<div class="flash-live-badge"><div class="flash-live-dot"></div>LIVE</div>` : `<div class="flash-live-badge" style="background:rgba(120,120,120,0.8)">PROSSIMO</div>`}
+      </div>
+      <div class="flash-card-body">
+        <div class="flash-card-title">${c.title}</div>
+        <div class="flash-card-sub">${c.desc}</div>
+        <div class="flash-prize-row">
+          <div>
+            <div class="flash-prize">${c.prize}</div>
+            <div class="flash-prize-type">${c.prizeType}</div>
+          </div>
+          ${c.status === 'live' ? `
+          <div class="flash-timer">
+            ⏱️ ${c.deadline.split(' ').map((t,i) => `<span class="flash-timer-unit">${t}</span>`).join('')}
+          </div>` : `<div style="font-size:12px;color:var(--cream-dim)">Inizia: ${c.deadline}</div>`}
+        </div>
+        ${c.status === 'live' ? `
+        <div class="flash-progress">
+          <div class="flash-progress-fill" style="width:${c.progress}%;background:${c.progress > 50 ? 'var(--amber)' : 'var(--teal)'}"></div>
+        </div>` : ''}
+        <div class="flash-sponsor-logo">
+          ${c.sponsorEmoji} Sponsor: <span>${c.sponsor}</span>
+          <span style="margin-left:auto;font-size:10px;color:var(--cream-dim)">${c.participants > 0 ? c.participants + ' partecipanti' : 'Iscrizioni aperte presto'}</span>
+        </div>
+        <button class="flash-enter-btn ${c.status === 'live' ? 'active' : 'soon'}"
+          onclick="${c.status === 'live' ? `showToast('📸 Iscritto al contest "${c.title}"! Carica la tua foto.')` : `showToast('🔔 Ti notificheremo all\\'apertura di "${c.title}"!')`}">
+          ${c.status === 'live' ? '📸 Partecipa ora' : '🔔 Avvisami all\'apertura'}
+        </button>
+      </div>
+    </div>
+  `).join('');
 }
 
 // ── RENDER COUNTRIES ─────────────────────────────────────────────────
@@ -1498,7 +2089,6 @@ function renderCountries() {
         <span class="country-name-hero">${c.name}</span>
       </div>
       <div class="country-body">
-        <!-- Pill Trigger -->
         <div class="country-pill-trigger clickable" onclick="togglePill('${c.id}')">
           <span class="pill-trigger-label">💊 Pillola Culturale</span>
           <span class="pill-trigger-arrow" id="arrow-${c.id}">▼</span>
@@ -1522,15 +2112,11 @@ function renderCountries() {
             </div>
           </div>
         </div>
-
-        <!-- Tabs -->
         <div class="country-tabs">
           <button class="country-tab active" onclick="switchTab('${c.id}','food',this)">🍽️ Cibo</button>
           <button class="country-tab" onclick="switchTab('${c.id}','gems',this)">💎 Gemme</button>
           <button class="country-tab" onclick="switchTab('${c.id}','climate',this)">🌤️ Clima</button>
         </div>
-
-        <!-- Food Tab -->
         <div class="tab-content active" id="tab-${c.id}-food">
           ${c.food.map(f=>`
             <div class="food-item">
@@ -1543,8 +2129,6 @@ function renderCountries() {
             </div>
           `).join('')}
         </div>
-
-        <!-- Gems Tab -->
         <div class="tab-content" id="tab-${c.id}-gems">
           ${c.gems.map(g=>`
             <div class="gem-item">
@@ -1560,8 +2144,6 @@ function renderCountries() {
             </div>
           `).join('')}
         </div>
-
-        <!-- Climate Tab -->
         <div class="tab-content" id="tab-${c.id}-climate">
           <div class="season-grid">
             ${c.seasons.map(s=>`
@@ -1587,7 +2169,6 @@ function togglePill(id) {
   pill.classList.toggle('open');
   arrow.classList.toggle('open');
 }
-
 function switchTab(countryId, tabName, btn) {
   ['food','gems','climate'].forEach(t => {
     const el = document.getElementById(`tab-${countryId}-${t}`);
@@ -1621,31 +2202,36 @@ const flightDB = {
   'AZ203': {airline:'ITA Airways',logo:'🇮🇹',bg:'#003F8C',from:'FCO',fromName:'Roma Fiumicino',to:'JFK',toName:'New York JFK',dep:'11:05',arr:'14:30',duration:'10h25m',status:'on_time',gate:'E3',aircraft:'Airbus A330-200'},
   'LX103': {airline:'Swiss',logo:'🇨🇭',bg:'#C8102E',from:'ZRH',fromName:'Zurigo',to:'NRT',toName:'Tokyo Narita',dep:'13:30',arr:'09:15',duration:'12h45m',status:'delayed',gate:'A22',aircraft:'Boeing 777-300ER'},
   'EK211': {airline:'Emirates',logo:'🇦🇪',bg:'#C8102E',from:'DXB',fromName:'Dubai',to:'MXP',toName:'Milano Malpensa',dep:'08:10',arr:'13:05',duration:'7h55m',status:'on_time',gate:'C8',aircraft:'Airbus A380'},
-  'TK1882': {airline:'Turkish Airlines',logo:'🇹🇷',bg:'#E30A17',from:'IST',fromName:'Istanbul',to:'FCO',toName:'Roma Fiumicino',dep:'16:55',arr:'19:40',duration:'3h45m',status:'on_time',gate:'D15',aircraft:'Boeing 787-9'},
-  'FR743': {airline:'Ryanair',logo:'✈️',bg:'#073590',from:'DUB',fromName:'Dublino',to:'BCN',toName:'Barcellona',dep:'07:45',arr:'11:20',duration:'2h35m',status:'on_time',gate:'C7',aircraft:'Boeing 737 MAX 8-200'},
+  'TK1882': {airline:'Turkish Airlines',logo:'🇹🇷',bg:'#E30A17',from:'IST',fromName:'Istanbul',to:'FCO',toName:'Roma Fiumicino',dep:'16:55',arr:'19:40',duration:'3h45m',status:'on_time',gate:'D15',aircraft:'Boeing 787-9'}
 };
+
+// Smart Flight notify state
+let notifyUsesLeft = 2;
 
 function searchFlight() {
   const code = document.getElementById('flightInput').value.trim().toUpperCase();
   const result = document.getElementById('flightResult');
   const loading = document.getElementById('flightLoading');
   if (!code) return showToast('⚠️ Inserisci un codice volo!');
-
   result.classList.remove('show');
   loading.style.display = 'inline-block';
-  
+
   setTimeout(() => {
     loading.style.display = 'none';
     const flight = flightDB[code];
     if (!flight) {
       result.innerHTML = `<div style="color:var(--cream-dim);font-size:14px">❌ Volo <b style="color:var(--cream)">${code}</b> non trovato. Prova: FR834, AZ203, LX103, EK211, TK1882</div>`;
-      result.classList.add('show');
-      return;
+      result.classList.add('show'); return;
     }
-    const statusBadge = flight.status === 'on_time' 
+    const statusBadge = flight.status === 'on_time'
       ? '<span class="flight-badge badge-on-time">✅ In orario</span>'
       : '<span class="flight-badge badge-delayed">⚠️ Ritardo 35 min</span>';
-    
+
+    const notifyHtml = notifyUsesLeft > 0
+      ? `<button class="notify-btn" id="notifyBtn-${code}" onclick="activateNotify('${code}')">🔔 Notificami ritardi</button>
+         <div class="notify-uses-left" id="notifyUses">${notifyUsesLeft} notifiche gratuite rimaste</div>`
+      : `<button class="notify-premium-lock" onclick="scrollTo('premium');showToast('⭐ Notifiche illimitate con Explorer Plus!')">🔒 Notifiche — Explorer Plus</button>`;
+
     result.innerHTML = `
       <div class="airline-logo-box" style="color:${flight.bg};font-size:13px;font-weight:800;line-height:1.1;text-align:center">${flight.logo}<div style="font-size:9px;font-weight:900;color:${flight.bg};letter-spacing:-.5px">${flight.airline.split(' ')[0].toUpperCase()}</div></div>
       <div class="flight-route">
@@ -1665,20 +2251,39 @@ function searchFlight() {
           <span style="font-size:14px;font-weight:700;color:var(--amber);display:block;margin-top:4px">${flight.arr}</span>
         </div>
       </div>
-      <div class="flight-info-badges">
-        ${statusBadge}
-        <span class="flight-badge badge-info">🚪 Gate ${flight.gate}</span>
-        <span class="flight-badge badge-info">✈️ ${flight.aircraft}</span>
-        <span class="flight-badge badge-info">🏷️ ${code}</span>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="flight-info-badges">
+          ${statusBadge}
+          <span class="flight-badge badge-info">🚪 Gate ${flight.gate}</span>
+          <span class="flight-badge badge-info">✈️ ${flight.aircraft}</span>
+          <span class="flight-badge badge-info">🏷️ ${code}</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+          ${notifyHtml}
+        </div>
       </div>
     `;
     result.classList.add('show');
   }, 1200);
 }
 
-document.getElementById('flightInput').addEventListener('keydown', e => {
-  if (e.key === 'Enter') searchFlight();
-});
+function activateNotify(code) {
+  if (notifyUsesLeft <= 0) { scrollTo('premium'); return; }
+  notifyUsesLeft--;
+  const btn = document.getElementById(`notifyBtn-${code}`);
+  if (btn) { btn.classList.add('active'); btn.textContent = '✅ Notifica attiva'; btn.onclick = null; }
+  const usesEl = document.getElementById('notifyUses');
+  if (usesEl) {
+    if (notifyUsesLeft > 0) {
+      usesEl.textContent = `${notifyUsesLeft} notifiche gratuite rimaste`;
+    } else {
+      usesEl.innerHTML = `<span style="color:var(--amber)">⭐ Hai esaurito le notifiche gratis — <b onclick="scrollTo('premium')" style="cursor:none;text-decoration:underline">upgrade a Explorer Plus</b></span>`;
+    }
+  }
+  showToast(`🔔 Notifica attivata per ${code} — ti avviseremo se ci sono ritardi!`);
+}
+
+document.getElementById('flightInput').addEventListener('keydown', e => { if (e.key === 'Enter') searchFlight(); });
 
 // ── TRIP TYPE ─────────────────────────────────────────────────────────
 let selectedTripType = 'adventure';
@@ -1688,20 +2293,45 @@ function selectTripType(btn, type) {
   selectedTripType = type;
 }
 
+// ── ITINERARY DATA ────────────────────────────────────────────────────
+const ITINERARIES = {
+  JP:{
+    dest:'🇯🇵 Giappone',
+    days:[
+      {title:'Arrivo a Tokyo — Shinjuku & Akihabara',activities:['09:00 Arrivo Narita, acquisto IC Card Suica','12:00 Ramen tonkotsu a Shinjuku Golden Gai','15:00 Visita Meiji Shrine + bosco di bambù','19:00 Passeggiata notturna Akihabara','21:00 Izakaya locale con yakitori e birra asahi']},
+      {title:'Harajuku, Shibuya & quartieri cult',activities:['08:00 Pancake al Omotesando Eggs','10:00 Takeshita Street → Harajuku','13:00 Soba fredda tipica (zarusoba)','15:00 Shibuya Crossing (il più trafficato al mondo)','18:00 Karaoke in privata (almeno 2 ore)']},
+      {title:'Kyoto — Fushimi Inari & Gion',activities:['06:00 Treno Shinkansen Tokyo→Kyoto (2h15m)','08:30 Fushimi Inari: migliaia di torii arancioni','12:00 Obanzai lunch nel mercato Nishiki','14:00 Gion: geishe district, tea house','17:00 Kinkaku-ji (Padiglione d\'Oro) al tramonto']}
+    ]
+  },
+  IS:{
+    dest:'🇮🇸 Islanda',
+    days:[
+      {title:'Reykjavík & Snæfellsnes Peninsula',activities:['09:00 Volo → Keflavík, noleggio SUV 4x4','12:00 Grandi Mathöll food hall: lobster soup','14:00 Hallgrímskirkja church, vista panoramica','16:00 Drive verso Snæfellsnes peninsula','20:00 Hot pot naturale al tramonto']},
+      {title:'Ring Road: Cascate e Glacier Lagoon',activities:['07:00 Partenza verso Seljalandsfoss','09:00 Skógafoss e spiaggia nera Reynisfjara','13:00 Skyr + langoustine soup in un porto','15:00 Jökulsárlón Glacier Lagoon: iceberg blu','18:00 Diamond Beach: ghiaccio sull\'oceano']},
+      {title:'Golden Circle & Aurora',activities:['08:00 Þingvellir National Park','10:30 Geysir Strokkur — eruzione ogni 5-10 min','12:30 Cascata Gullfoss','15:00 Rientro Reykjavík, cena tradizionale','21:00 Aurora boreale hunting fuori città']}
+    ]
+  },
+  PE:{
+    dest:'🇵🇪 Perù',
+    days:[
+      {title:'Lima — Gastronomia & Miraflores',activities:['10:00 Arrivo Jorge Chávez, taxi app','12:00 Ceviche al Mercado de Surquillo','14:00 Miraflores: scogliere sull\'oceano Pacifico','16:00 Larco Museum — gioielli Inca','20:00 Pisco Sour al Bar Inglés del Country Club']},
+      {title:'Cusco — Acclimatazione',activities:['06:00 Volo Lima→Cusco (1h15m)','08:00 Mate de coca immediato all\'arrivo','10:00 Passeggiata lenta Plaza de Armas','12:00 Aji de gallina in un locale tipico','15:00 Mercado San Pedro','17:00 Riposo obbligatorio (acclimatazione)']},
+      {title:'Machu Picchu',activities:['04:30 Bus da Aguas Calientes','06:00 Ingresso Machu Picchu all\'alba','08:00 Trekking Sun Gate (Inti Punku)','12:00 Pranzo buffet Aguas Calientes','15:00 Treno panoramico rientro Cusco','19:00 Cena: lomo saltado + chicha morada']}
+    ]
+  }
+};
+
 // ── ITINERARY GENERATOR ───────────────────────────────────────────────
 function generateItinerary() {
   const dest = document.getElementById('plannerDest').value;
   const duration = document.getElementById('durationRange').value;
   if (!dest) { showToast('⚠️ Seleziona una destinazione!'); return; }
-
   const placeholder = document.querySelector('.itinerary-placeholder');
   const content = document.getElementById('itineraryContent');
   const result = document.getElementById('itineraryResult');
-
   placeholder.style.display = 'flex';
   placeholder.innerHTML = `<div class="spinner" style="width:32px;height:32px;margin-bottom:12px"></div><div style="color:var(--cream-dim);font-size:14px">Generando il tuo itinerario con AI...</div>`;
   content.classList.remove('show');
-
   setTimeout(() => {
     const itinerary = ITINERARIES[dest];
     if (!itinerary) {
@@ -1709,6 +2339,7 @@ function generateItinerary() {
       placeholder.innerHTML = `<span class="placeholder-icon">🗺️</span><div class="placeholder-text">Seleziona destinazione e preferenze</div>`;
       return;
     }
+    const packItems = PACKING_AFFILIATE[dest] || [];
     placeholder.style.display = 'none';
     content.innerHTML = `
       <div class="itinerary-header">
@@ -1723,19 +2354,28 @@ function generateItinerary() {
           </div>
           <ul class="day-activities">
             ${d.activities.map(a => {
-              const timeMatch = a.match(/^(\d{2}:\d{2})\s+(.+)/);
-              if (timeMatch) return `<li><span class="activity-time">${timeMatch[1]}</span>${timeMatch[2]}</li>`;
-              return `<li><span class="activity-time">——</span>${a}</li>`;
+              const t = a.match(/^(\d{2}:\d{2})\s+(.+)/);
+              return t ? `<li><span class="activity-time">${t[1]}</span>${t[2]}</li>` : `<li><span class="activity-time">——</span>${a}</li>`;
             }).join('')}
           </ul>
         </div>
       `).join('')}
       <div class="packing-list">
-        <div class="packing-title">🧳 Lista Valigia</div>
+        <div class="packing-title">🧳 Lista Valigia + Link Acquisto</div>
         <div class="packing-grid">
-          ${itinerary.packing.map(item => `
-            <div class="packing-item"><span class="packing-check">✓</span>${item}</div>
+          ${packItems.map(p => `
+            <div class="packing-item" style="justify-content:space-between">
+              <span style="display:flex;align-items:center;gap:6px"><span class="packing-check">✓</span>${p.item}</span>
+              <a href="https://${p.aff}" target="_blank" rel="noopener sponsored"
+                style="flex-shrink:0;background:rgba(232,162,40,0.12);color:var(--amber);border:1px solid rgba(232,162,40,0.2);border-radius:5px;padding:2px 8px;font-size:10px;font-weight:700;text-decoration:none;cursor:none"
+                onclick="showToast('🛒 Link affiliato Amazon — commissione a WanderQuest, prezzo uguale per te!')">
+                🛒
+              </a>
+            </div>
           `).join('')}
+        </div>
+        <div style="margin-top:8px;font-size:10px;color:var(--cream-dim);opacity:0.6;padding:6px 8px;background:rgba(0,0,0,0.15);border-radius:6px">
+          🔗 Link affiliati Amazon — acquistando tramite questi link supporti WanderQuest senza costi aggiuntivi per te.
         </div>
       </div>
     `;
@@ -1775,25 +2415,22 @@ function showToast(msg) {
   clearTimeout(toastTimeout);
   const toast = document.createElement('div');
   toast.className = 'toast';
-  const parts = msg.match(/^([\u{1F000}-\u{1FFFF}]|\S+\s)/u) || [''];
   toast.innerHTML = `<span class="toast-text">${msg}</span>`;
   document.body.appendChild(toast);
   toastTimeout = setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity .3s'; setTimeout(()=>toast.remove(),300); }, 3500);
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────
+renderCarousel();
 renderCountries();
 renderLeaderboard();
+renderFlashContest();
 renderApiTable();
 
-// Intersection observer for animations
 const observer = new IntersectionObserver((entries) => {
-  entries.forEach(entry => {
-    if (entry.isIntersecting) entry.target.style.opacity = '1';
-  });
+  entries.forEach(entry => { if (entry.isIntersecting) entry.target.style.opacity = '1'; });
 }, { threshold: 0.1 });
-
-document.querySelectorAll('.country-card, .arch-card, .dash-card').forEach(el => {
+document.querySelectorAll('.country-card, .arch-card, .dash-card, .flash-card, .premium-card, .premium-compare').forEach(el => {
   el.style.opacity = '0';
   el.style.transition = 'opacity 0.6s ease, transform 0.35s cubic-bezier(0.23, 1, 0.32, 1)';
   observer.observe(el);
