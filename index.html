@@ -1,0 +1,1803 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="robots" content="index,follow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>WanderQuest — Esplora. Fotografia. Guadagna.</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #080C1A;
+  --navy: #0D1530;
+  --navy-mid: #162040;
+  --navy-light: #1E2D55;
+  --amber: #E8A228;
+  --amber-bright: #F5B840;
+  --amber-dim: #A8721A;
+  --teal: #18C5A8;
+  --teal-dark: #0E8F7C;
+  --cream: #F2EDE4;
+  --cream-dim: #C8C0B0;
+  --white: #FFFFFF;
+  --red: #E84040;
+  --green: #2EC57A;
+  --glass: rgba(255,255,255,0.04);
+  --glass-border: rgba(255,255,255,0.08);
+  --gold-grad: linear-gradient(135deg, #E8A228, #F5D080, #E8A228);
+  --teal-grad: linear-gradient(135deg, #18C5A8, #0E8F7C);
+  --hero-grad: linear-gradient(160deg, #080C1A 0%, #0D1530 40%, #162040 100%);
+}
+
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--ink);
+  color: var(--cream);
+  overflow-x: hidden;
+  cursor: none;
+}
+
+/* CUSTOM CURSOR */
+.cursor {
+  width: 12px; height: 12px;
+  background: var(--amber);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9999;
+  transform: translate(-50%,-50%);
+  transition: transform 0.1s, width 0.2s, height 0.2s, background 0.2s;
+  mix-blend-mode: exclusion;
+}
+.cursor-ring {
+  width: 36px; height: 36px;
+  border: 1.5px solid var(--amber);
+  border-radius: 50%;
+  position: fixed; top: 0; left: 0;
+  pointer-events: none; z-index: 9998;
+  transform: translate(-50%,-50%);
+  transition: transform 0.15s ease-out, width 0.2s, height 0.2s, opacity 0.2s;
+  opacity: 0.5;
+}
+a, button, [role="button"], .clickable { cursor: none; }
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: var(--ink); }
+::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
+
+/* NAV */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 18px 48px;
+  background: linear-gradient(180deg, rgba(8,12,26,0.95) 0%, transparent 100%);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--glass-border);
+  transition: background 0.3s;
+}
+nav.scrolled { background: rgba(8,12,26,0.98); }
+.nav-logo {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px; font-weight: 900;
+  color: var(--amber);
+  letter-spacing: -0.5px;
+  text-shadow: 0 0 40px rgba(232,162,40,0.4);
+}
+.nav-logo span { color: var(--cream); }
+.nav-links { display: flex; gap: 4px; }
+.nav-links a {
+  color: var(--cream-dim); text-decoration: none;
+  padding: 8px 16px; border-radius: 6px;
+  font-size: 14px; font-weight: 500;
+  transition: all 0.2s; letter-spacing: 0.02em;
+}
+.nav-links a:hover, .nav-links a.active {
+  color: var(--amber); background: rgba(232,162,40,0.08);
+}
+.nav-cta {
+  background: var(--amber); color: var(--ink);
+  border: none; padding: 10px 22px; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px;
+  cursor: none; transition: all 0.2s;
+  box-shadow: 0 0 20px rgba(232,162,40,0.3);
+}
+.nav-cta:hover { background: var(--amber-bright); transform: translateY(-1px); }
+
+/* HERO */
+#home {
+  min-height: 100vh;
+  background: var(--hero-grad);
+  position: relative; overflow: hidden;
+  display: flex; align-items: center;
+  padding: 120px 48px 80px;
+}
+.hero-bg-grid {
+  position: absolute; inset: 0;
+  background-image: 
+    linear-gradient(rgba(232,162,40,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232,162,40,0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
+  animation: gridshift 20s linear infinite;
+}
+@keyframes gridshift { 0%{background-position:0 0} 100%{background-position:60px 60px} }
+.hero-orb {
+  position: absolute; border-radius: 50%;
+  filter: blur(80px); pointer-events: none;
+}
+.hero-orb-1 { width:600px;height:600px;top:-200px;right:-100px;background:rgba(24,197,168,0.07); }
+.hero-orb-2 { width:500px;height:500px;bottom:-150px;left:-100px;background:rgba(232,162,40,0.06); }
+.hero-orb-3 { width:300px;height:300px;top:40%;left:40%;background:rgba(24,197,168,0.04); animation: pulse 8s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:0.4;transform:scale(1)} 50%{opacity:1;transform:scale(1.3)} }
+
+.hero-content { position:relative; z-index:2; max-width: 700px; }
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.2);
+  color: var(--amber); padding: 6px 14px; border-radius: 100px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+  text-transform: uppercase; margin-bottom: 28px;
+  animation: fadeSlideUp 0.8s ease both;
+}
+.hero-badge::before { content:''; width:6px;height:6px;background:var(--amber);border-radius:50%; animation: blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(48px, 7vw, 88px);
+  font-weight: 900; line-height: 1;
+  letter-spacing: -2px; margin-bottom: 24px;
+  animation: fadeSlideUp 0.8s 0.1s ease both;
+}
+.hero-title em {
+  font-style: italic; color: var(--amber);
+  display: block;
+  text-shadow: 0 0 60px rgba(232,162,40,0.3);
+}
+.hero-subtitle {
+  font-size: 18px; font-weight: 300; color: var(--cream-dim);
+  line-height: 1.7; max-width: 540px; margin-bottom: 40px;
+  animation: fadeSlideUp 0.8s 0.2s ease both;
+}
+.hero-actions {
+  display: flex; gap: 14px; flex-wrap: wrap;
+  animation: fadeSlideUp 0.8s 0.3s ease both;
+}
+.btn-primary {
+  background: var(--amber); color: var(--ink);
+  border: none; padding: 15px 32px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px;
+  cursor: none; transition: all 0.25s;
+  box-shadow: 0 8px 32px rgba(232,162,40,0.35);
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 14px 40px rgba(232,162,40,0.45); }
+.btn-secondary {
+  background: transparent; color: var(--cream);
+  border: 1px solid var(--glass-border); padding: 14px 30px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-weight: 500; font-size: 15px;
+  cursor: none; transition: all 0.25s;
+}
+.btn-secondary:hover { border-color: var(--amber); color: var(--amber); background: rgba(232,162,40,0.05); }
+
+.hero-stats {
+  position: absolute; right: 80px; top: 50%;
+  transform: translateY(-50%);
+  display: flex; flex-direction: column; gap: 20px;
+  animation: fadeSlideLeft 0.8s 0.4s ease both;
+}
+@keyframes fadeSlideLeft { from{opacity:0;transform:translate(40px,-50%)} to{opacity:1;transform:translate(0,-50%)} }
+.stat-card {
+  background: var(--glass); backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border); border-radius: 16px;
+  padding: 20px 24px; text-align: center; min-width: 140px;
+  transition: all 0.3s;
+}
+.stat-card:hover { border-color: rgba(232,162,40,0.3); transform: scale(1.03); }
+.stat-number {
+  font-family: 'Playfair Display', serif;
+  font-size: 36px; font-weight: 900; color: var(--amber); line-height: 1;
+  display: block;
+}
+.stat-label { font-size: 11px; color: var(--cream-dim); font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+
+@keyframes fadeSlideUp { from{opacity:0;transform:translateY(30px)} to{opacity:1;transform:translateY(0)} }
+
+/* FLIGHT BANNER */
+.flight-section { padding: 0 48px; margin-top: -40px; position: relative; z-index: 10; }
+.flight-banner {
+  background: linear-gradient(135deg, rgba(22,32,64,0.95), rgba(13,21,48,0.98));
+  border: 1px solid rgba(232,162,40,0.2);
+  border-radius: 20px; padding: 28px 36px;
+  backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+.flight-banner-header {
+  display: flex; align-items: center; gap: 12px; margin-bottom: 20px;
+}
+.flight-banner-header h3 {
+  font-family: 'Playfair Display', serif; font-size: 18px; color: var(--cream);
+}
+.flight-icon { font-size: 20px; }
+.flight-input-row {
+  display: flex; gap: 12px; align-items: center;
+}
+.flight-input {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+  color: var(--cream); padding: 12px 18px; border-radius: 10px;
+  font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500;
+  letter-spacing: 0.1em; text-transform: uppercase; width: 160px;
+  transition: all 0.2s; outline: none;
+}
+.flight-input:focus { border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,162,40,0.1); }
+.flight-input::placeholder { color: var(--cream-dim); text-transform: none; font-size: 13px; letter-spacing: 0; }
+.flight-search-btn {
+  background: var(--amber); color: var(--ink); border: none;
+  padding: 12px 24px; border-radius: 10px; font-weight: 700;
+  font-size: 14px; cursor: none; transition: all 0.2s;
+}
+.flight-search-btn:hover { background: var(--amber-bright); }
+
+.flight-result {
+  margin-top: 20px; padding-top: 20px;
+  border-top: 1px solid var(--glass-border);
+  display: none; animation: fadeSlideUp 0.4s ease;
+}
+.flight-result.show { display: flex; gap: 32px; align-items: center; flex-wrap: wrap; }
+.airline-logo-box {
+  width: 60px; height: 60px; border-radius: 12px;
+  background: white; display: flex; align-items: center; justify-content: center;
+  font-size: 28px; font-weight: 900; color: var(--ink); flex-shrink: 0;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+}
+.flight-route {
+  display: flex; align-items: center; gap: 20px; flex: 1;
+}
+.flight-airport { text-align: center; }
+.airport-code {
+  font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 700;
+  color: var(--cream); display: block;
+}
+.airport-name { font-size: 11px; color: var(--cream-dim); margin-top: 2px; }
+.flight-line {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px;
+}
+.flight-dots {
+  width: 100%; height: 1px; background: var(--glass-border);
+  position: relative;
+}
+.flight-dots::before, .flight-dots::after {
+  content:''; position: absolute; top: 50%; width: 6px; height: 6px;
+  border-radius: 50%; background: var(--amber); transform: translateY(-50%);
+}
+.flight-dots::before { left: 0; }
+.flight-dots::after { right: 0; }
+.flight-plane-icon { font-size: 18px; }
+.flight-duration { font-size: 11px; color: var(--cream-dim); }
+.flight-info-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.flight-badge {
+  padding: 6px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+}
+.badge-on-time { background: rgba(46,197,122,0.15); color: var(--green); border: 1px solid rgba(46,197,122,0.2); }
+.badge-delayed { background: rgba(232,64,64,0.15); color: var(--red); border: 1px solid rgba(232,64,64,0.2); }
+.badge-info { background: rgba(255,255,255,0.06); color: var(--cream-dim); border: 1px solid var(--glass-border); }
+
+/* SECTIONS COMMON */
+section { padding: 100px 48px; }
+.section-label {
+  display: inline-block;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--teal); margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(32px, 4vw, 52px); font-weight: 900;
+  line-height: 1.1; letter-spacing: -1px;
+  margin-bottom: 16px;
+}
+.section-subtitle {
+  font-size: 16px; color: var(--cream-dim); font-weight: 300;
+  line-height: 1.7; max-width: 540px; margin-bottom: 56px;
+}
+
+/* COUNTRIES */
+#explore { background: var(--navy); }
+.countries-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+}
+.country-card {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 20px; overflow: hidden; cursor: none;
+  transition: all 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+  position: relative;
+}
+.country-card:hover { transform: translateY(-8px); border-color: rgba(232,162,40,0.25); box-shadow: 0 24px 60px rgba(0,0,0,0.4); }
+.country-hero {
+  height: 220px; position: relative; overflow: hidden;
+  display: flex; align-items: flex-end; padding: 20px;
+}
+.country-hero-bg {
+  position: absolute; inset: 0; font-size: 110px;
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.5s;
+  opacity: 0.15;
+}
+.country-card:hover .country-hero-bg { transform: scale(1.1); }
+.country-hero-gradient {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, transparent 0%, rgba(13,21,48,0.9) 100%);
+}
+.country-flag { font-size: 40px; position: relative; z-index: 1; }
+.country-name-hero {
+  font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900;
+  position: relative; z-index: 1; margin-left: 12px;
+}
+.country-body { padding: 24px; }
+.country-pill-trigger {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(232,162,40,0.08); border: 1px solid rgba(232,162,40,0.15);
+  border-radius: 10px; padding: 12px 16px; margin-bottom: 16px; cursor: none;
+  transition: all 0.2s;
+}
+.country-pill-trigger:hover { background: rgba(232,162,40,0.14); }
+.pill-trigger-label { font-size: 12px; font-weight: 600; color: var(--amber); letter-spacing: 0.05em; }
+.pill-trigger-arrow { font-size: 14px; color: var(--amber); transition: transform 0.3s; }
+.pill-trigger-arrow.open { transform: rotate(180deg); }
+.country-pill-content {
+  max-height: 0; overflow: hidden; transition: max-height 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+}
+.country-pill-content.open { max-height: 600px; }
+.pill-inner {
+  background: var(--navy-light); border-radius: 12px; padding: 18px;
+  border: 1px solid var(--glass-border); margin-bottom: 16px;
+}
+.pill-title {
+  font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+  color: var(--amber); margin-bottom: 8px;
+}
+.pill-headline { font-size: 12px; color: var(--teal); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 12px; }
+.pill-summary { font-size: 13px; line-height: 1.7; color: var(--cream-dim); margin-bottom: 14px; }
+.pill-customs { display: flex; flex-direction: column; gap: 8px; }
+.custom-item {
+  background: rgba(0,0,0,0.2); border-radius: 8px; padding: 10px 12px;
+  border-left: 3px solid var(--teal);
+}
+.custom-name { font-size: 12px; font-weight: 700; color: var(--teal); margin-bottom: 4px; }
+.custom-desc { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+.country-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+.country-tab {
+  padding: 6px 14px; border-radius: 100px; font-size: 12px; font-weight: 600;
+  cursor: none; transition: all 0.2s; border: 1px solid var(--glass-border);
+  background: transparent; color: var(--cream-dim);
+}
+.country-tab.active { background: var(--amber); color: var(--ink); border-color: var(--amber); }
+.tab-content { display: none; }
+.tab-content.active { display: block; animation: fadeSlideUp 0.3s ease; }
+.food-item {
+  display: flex; gap: 12px; padding: 10px 0;
+  border-bottom: 1px solid var(--glass-border);
+}
+.food-item:last-child { border-bottom: none; }
+.food-emoji { font-size: 28px; flex-shrink: 0; }
+.food-info {}
+.food-name { font-size: 14px; font-weight: 600; color: var(--cream); margin-bottom: 3px; }
+.food-desc { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+.food-price { font-size: 11px; color: var(--amber); font-weight: 600; margin-top: 4px; }
+.gem-item {
+  background: var(--navy-light); border-radius: 10px; padding: 14px; margin-bottom: 10px;
+  border: 1px solid var(--glass-border); transition: all 0.2s;
+}
+.gem-item:hover { border-color: rgba(24,197,168,0.3); }
+.gem-name { font-size: 14px; font-weight: 700; color: var(--teal); margin-bottom: 4px; }
+.gem-type { font-size: 11px; color: var(--cream-dim); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.gem-desc { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+.gem-score {
+  display: flex; gap: 4px; margin-top: 8px; flex-wrap: wrap;
+}
+.score-badge {
+  padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 700;
+}
+.score-insta { background: rgba(232,162,40,0.15); color: var(--amber); }
+.score-local { background: rgba(24,197,168,0.15); color: var(--teal); }
+.gem-tip {
+  font-size: 11px; color: var(--amber); margin-top: 6px;
+  padding: 6px 10px; background: rgba(232,162,40,0.08); border-radius: 6px;
+}
+.season-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.season-card {
+  background: var(--navy-light); border-radius: 10px; padding: 12px;
+  border: 1px solid var(--glass-border);
+}
+.season-name { font-size: 13px; font-weight: 700; color: var(--cream); margin-bottom: 4px; }
+.season-temp { font-size: 20px; font-weight: 700; color: var(--amber); font-family: 'Playfair Display', serif; }
+.season-months { font-size: 11px; color: var(--cream-dim); margin-bottom: 4px; }
+.season-precip { font-size: 11px; color: var(--cream-dim); }
+.season-rating { font-size: 12px; margin-top: 6px; }
+.season-highlight { font-size: 11px; color: var(--teal); margin-top: 4px; line-height: 1.4; }
+
+/* CONTEST / GAMIFICATION */
+#contest { background: var(--ink); }
+.contest-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: start; }
+.leaderboard {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 20px; overflow: hidden;
+}
+.leaderboard-header {
+  padding: 24px 28px; border-bottom: 1px solid var(--glass-border);
+  background: linear-gradient(135deg, rgba(232,162,40,0.1), transparent);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.leaderboard-title {
+  font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
+}
+.month-badge {
+  background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.2);
+  color: var(--amber); padding: 4px 12px; border-radius: 100px; font-size: 12px; font-weight: 600;
+}
+.leaderboard-item {
+  display: flex; align-items: center; gap: 16px;
+  padding: 16px 28px; border-bottom: 1px solid var(--glass-border);
+  transition: background 0.2s; cursor: none;
+}
+.leaderboard-item:last-child { border-bottom: none; }
+.leaderboard-item:hover { background: rgba(255,255,255,0.02); }
+.rank {
+  font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900;
+  width: 32px; text-align: center; flex-shrink: 0;
+}
+.rank-1 { color: #FFD700; }
+.rank-2 { color: #C0C0C0; }
+.rank-3 { color: #CD7F32; }
+.rank-other { color: var(--cream-dim); font-size: 16px; }
+.lb-avatar {
+  width: 44px; height: 44px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal-dark), var(--navy-light));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; border: 2px solid var(--glass-border);
+  font-family: 'Playfair Display', serif; font-weight: 700;
+}
+.lb-info { flex: 1; }
+.lb-name { font-size: 15px; font-weight: 600; color: var(--cream); }
+.lb-location { font-size: 12px; color: var(--cream-dim); margin-top: 2px; }
+.lb-votes {
+  text-align: right;
+}
+.lb-votes-num {
+  font-family: 'DM Mono', monospace; font-size: 18px; font-weight: 700;
+  color: var(--amber); display: block;
+}
+.lb-votes-label { font-size: 11px; color: var(--cream-dim); }
+.lb-prize {
+  background: linear-gradient(135deg, rgba(255,215,0,0.1), rgba(232,162,40,0.05));
+  border: 1px solid rgba(255,215,0,0.2);
+  border-radius: 10px; padding: 16px 28px; margin: 0;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.prize-amount {
+  font-family: 'Playfair Display', serif; font-size: 32px; font-weight: 900;
+  color: #FFD700;
+}
+.prize-label { font-size: 12px; color: var(--cream-dim); margin-top: 2px; }
+
+.photo-upload-card {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 32px; height: fit-content;
+}
+.upload-zone {
+  border: 2px dashed var(--glass-border); border-radius: 14px;
+  padding: 48px 24px; text-align: center; margin-bottom: 24px;
+  cursor: none; transition: all 0.3s; position: relative; overflow: hidden;
+}
+.upload-zone:hover { border-color: rgba(232,162,40,0.4); background: rgba(232,162,40,0.03); }
+.upload-icon { font-size: 48px; margin-bottom: 12px; display: block; }
+.upload-title { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+.upload-sub { font-size: 13px; color: var(--cream-dim); }
+.upload-requirements { display: flex; flex-direction: column; gap: 8px; }
+.req-item {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: var(--cream-dim);
+  background: var(--glass); border-radius: 8px; padding: 10px 14px;
+}
+.req-icon { font-size: 16px; }
+
+/* PLANNER */
+#planner { background: var(--navy); }
+.planner-container {
+  display: grid; grid-template-columns: 400px 1fr; gap: 40px; align-items: start;
+}
+.planner-form {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 32px;
+}
+.form-group { margin-bottom: 20px; }
+.form-label {
+  display: block; font-size: 12px; font-weight: 600; color: var(--cream-dim);
+  letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 8px;
+}
+.form-input, .form-select {
+  width: 100%; background: rgba(255,255,255,0.04);
+  border: 1px solid var(--glass-border); color: var(--cream);
+  padding: 12px 16px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px;
+  transition: all 0.2s; outline: none; appearance: none;
+}
+.form-input:focus, .form-select:focus {
+  border-color: var(--amber); box-shadow: 0 0 0 3px rgba(232,162,40,0.1);
+}
+.form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23C8C0B0' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; cursor: none; }
+.form-select option { background: var(--navy-mid); }
+.trip-type-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.trip-type-btn {
+  padding: 10px 8px; border-radius: 10px; border: 1px solid var(--glass-border);
+  background: transparent; color: var(--cream-dim); font-size: 12px;
+  font-weight: 600; cursor: none; transition: all 0.2s; text-align: center;
+}
+.trip-type-btn span { display: block; font-size: 20px; margin-bottom: 4px; }
+.trip-type-btn.selected, .trip-type-btn:hover { border-color: var(--amber); color: var(--amber); background: rgba(232,162,40,0.08); }
+
+.itinerary-result {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 32px; min-height: 400px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; text-align: center;
+  position: relative; overflow: hidden;
+}
+.itinerary-placeholder { opacity: 0.5; }
+.placeholder-icon { font-size: 60px; margin-bottom: 16px; display: block; }
+.placeholder-text { font-size: 15px; color: var(--cream-dim); }
+.itinerary-content { display: none; width: 100%; text-align: left; }
+.itinerary-content.show { display: block; animation: fadeSlideUp 0.5s ease; }
+.itinerary-header { margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--glass-border); }
+.itinerary-dest {
+  font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900;
+  color: var(--amber); display: flex; align-items: center; gap: 12px;
+}
+.itinerary-meta { font-size: 13px; color: var(--cream-dim); margin-top: 6px; }
+.itinerary-day {
+  margin-bottom: 20px; background: var(--navy-light);
+  border-radius: 12px; padding: 18px; border: 1px solid var(--glass-border);
+}
+.day-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 12px;
+}
+.day-number {
+  background: var(--amber); color: var(--ink); width: 28px; height: 28px;
+  border-radius: 8px; display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 13px; flex-shrink: 0;
+}
+.day-title { font-size: 15px; font-weight: 700; color: var(--cream); }
+.day-activities { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+.day-activities li {
+  font-size: 13px; color: var(--cream-dim); padding: 6px 10px;
+  background: rgba(0,0,0,0.15); border-radius: 6px; display: flex; gap: 8px;
+}
+.activity-time { color: var(--amber); font-weight: 600; font-family: 'DM Mono', monospace; font-size: 12px; flex-shrink: 0; }
+
+.packing-list { margin-top: 20px; }
+.packing-title {
+  font-size: 16px; font-weight: 700; color: var(--teal); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.packing-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; }
+.packing-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 12px; background: rgba(24,197,168,0.06);
+  border-radius: 8px; font-size: 12px; color: var(--cream-dim);
+  border: 1px solid rgba(24,197,168,0.1);
+}
+.packing-check { color: var(--teal); font-size: 12px; }
+
+/* DASHBOARD */
+#dashboard { background: var(--ink); }
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: auto auto;
+  gap: 24px;
+}
+.dash-card {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 24px; transition: all 0.3s;
+}
+.dash-card:hover { border-color: rgba(232,162,40,0.2); }
+.dash-card-wide { grid-column: span 2; }
+.dash-card-tall { grid-row: span 2; }
+.dash-card-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 20px;
+}
+.dash-card-title {
+  font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700;
+}
+.dash-card-icon { font-size: 22px; }
+.scratch-map {
+  position: relative; width: 100%; aspect-ratio: 2/1;
+  background: var(--navy-light); border-radius: 12px;
+  overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+.map-countries { font-size: 11px; color: var(--cream-dim); margin-top: 12px; display: flex; flex-wrap: wrap; gap: 6px; }
+.map-country-tag {
+  padding: 4px 10px; border-radius: 100px; font-size: 11px; font-weight: 600;
+  background: rgba(232,162,40,0.12); color: var(--amber);
+  border: 1px solid rgba(232,162,40,0.2);
+}
+.badges-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.badge-item {
+  text-align: center; padding: 14px 8px;
+  background: var(--navy-light); border-radius: 12px;
+  border: 1px solid var(--glass-border); transition: all 0.2s; cursor: none;
+}
+.badge-item:hover { border-color: rgba(232,162,40,0.3); transform: scale(1.05); }
+.badge-icon { font-size: 28px; display: block; margin-bottom: 8px; }
+.badge-name { font-size: 10px; font-weight: 600; color: var(--cream-dim); line-height: 1.3; }
+.badge-item.earned .badge-name { color: var(--amber); }
+.badge-item.locked { opacity: 0.4; }
+.stats-list { display: flex; flex-direction: column; gap: 14px; }
+.stat-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 14px; background: var(--navy-light); border-radius: 10px;
+}
+.stat-row-label { font-size: 13px; color: var(--cream-dim); }
+.stat-row-value {
+  font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--amber);
+}
+.photo-submitted-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.photo-thumb {
+  aspect-ratio: 1; border-radius: 10px; overflow: hidden;
+  background: var(--navy-light); font-size: 36px;
+  display: flex; align-items: center; justify-content: center;
+  border: 1px solid var(--glass-border); position: relative; cursor: none;
+  transition: all 0.2s;
+}
+.photo-thumb:hover { transform: scale(1.05); }
+.photo-votes-overlay {
+  position: absolute; bottom: 6px; left: 50%; transform: translateX(-50%);
+  background: rgba(0,0,0,0.8); color: var(--amber);
+  font-size: 11px; font-weight: 700; padding: 3px 8px; border-radius: 100px;
+  white-space: nowrap; font-family: 'DM Mono', monospace;
+}
+
+/* ARCHITECTURE DOC SECTION */
+#architecture { background: var(--navy); }
+.arch-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-bottom: 40px; }
+.arch-card {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 28px; transition: all 0.3s;
+}
+.arch-card:hover { border-color: rgba(24,197,168,0.3); transform: translateY(-4px); }
+.arch-card-icon { font-size: 36px; margin-bottom: 16px; display: block; }
+.arch-card-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 10px; }
+.arch-card-text { font-size: 13px; color: var(--cream-dim); line-height: 1.7; margin-bottom: 16px; }
+.tech-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tech-tag {
+  padding: 4px 10px; border-radius: 6px; font-size: 11px; font-weight: 700;
+  font-family: 'DM Mono', monospace;
+}
+.tag-blue { background: rgba(24,197,168,0.12); color: var(--teal); border: 1px solid rgba(24,197,168,0.2); }
+.tag-amber { background: rgba(232,162,40,0.12); color: var(--amber); border: 1px solid rgba(232,162,40,0.2); }
+.tag-gray { background: rgba(255,255,255,0.06); color: var(--cream-dim); border: 1px solid var(--glass-border); }
+
+.revenue-card {
+  background: linear-gradient(135deg, var(--navy-mid), var(--navy-light));
+  border: 1px solid var(--glass-border); border-radius: 20px; padding: 36px;
+}
+.revenue-title { font-family: 'Playfair Display', serif; font-size: 26px; font-weight: 900; margin-bottom: 24px; }
+.revenue-streams { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.revenue-stream {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: 14px; padding: 20px; text-align: center; transition: all 0.2s;
+}
+.revenue-stream:hover { border-color: rgba(232,162,40,0.3); background: rgba(232,162,40,0.05); }
+.revenue-stream-icon { font-size: 32px; margin-bottom: 10px; display: block; }
+.revenue-stream-name { font-size: 14px; font-weight: 700; color: var(--cream); margin-bottom: 4px; }
+.revenue-stream-amount { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--amber); }
+.revenue-stream-period { font-size: 10px; color: var(--cream-dim); }
+.revenue-total {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 28px; background: rgba(232,162,40,0.08);
+  border: 1px solid rgba(232,162,40,0.2); border-radius: 14px;
+}
+.revenue-total-label { font-size: 14px; color: var(--cream-dim); font-weight: 600; }
+.revenue-total-amount { font-family: 'Playfair Display', serif; font-size: 36px; font-weight: 900; color: var(--amber); }
+
+.api-table {
+  width: 100%; border-collapse: collapse; margin-top: 24px; border-radius: 12px; overflow: hidden;
+}
+.api-table th {
+  text-align: left; padding: 12px 16px; background: var(--navy-light);
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--cream-dim); border-bottom: 1px solid var(--glass-border);
+}
+.api-table td {
+  padding: 12px 16px; font-size: 13px; color: var(--cream-dim);
+  border-bottom: 1px solid rgba(255,255,255,0.04);
+}
+.api-table tr:last-child td { border-bottom: none; }
+.api-table tr:hover td { background: rgba(255,255,255,0.02); }
+.api-name { color: var(--cream); font-weight: 600; font-family: 'DM Mono', monospace; font-size: 12px; }
+.free-badge { color: var(--green); font-weight: 600; }
+.paid-badge { color: var(--amber); font-weight: 600; }
+
+/* LOGIN MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px);
+  z-index: 200; display: none; align-items: center; justify-content: center;
+}
+.modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from{opacity:0} to{opacity:1} }
+.modal {
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  border-radius: 24px; padding: 40px; width: 420px; max-width: 95vw;
+  animation: fadeSlideUp 0.3s ease;
+}
+.modal-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; margin-bottom: 6px; }
+.modal-sub { font-size: 14px; color: var(--cream-dim); margin-bottom: 28px; }
+.modal-tabs { display: flex; gap: 4px; background: rgba(0,0,0,0.2); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+.modal-tab {
+  flex: 1; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 600;
+  cursor: none; transition: all 0.2s; border: none; background: transparent; color: var(--cream-dim);
+}
+.modal-tab.active { background: var(--amber); color: var(--ink); }
+.modal-close {
+  position: absolute; top: 16px; right: 16px; width: 32px; height: 32px;
+  border-radius: 50%; border: 1px solid var(--glass-border); background: transparent;
+  color: var(--cream-dim); font-size: 16px; cursor: none; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close:hover { background: rgba(255,255,255,0.08); color: var(--cream); }
+.modal { position: relative; }
+
+/* TOAST */
+.toast {
+  position: fixed; bottom: 32px; right: 32px; z-index: 300;
+  background: var(--navy-mid); border: 1px solid rgba(46,197,122,0.3);
+  border-radius: 12px; padding: 16px 20px;
+  display: flex; align-items: center; gap: 12px;
+  animation: fadeSlideUp 0.3s ease;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.toast-icon { font-size: 20px; }
+.toast-text { font-size: 14px; font-weight: 500; }
+
+/* FOOTER */
+footer {
+  background: var(--ink); border-top: 1px solid var(--glass-border);
+  padding: 48px; text-align: center;
+}
+.footer-logo { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; color: var(--amber); margin-bottom: 12px; }
+.footer-text { font-size: 13px; color: var(--cream-dim); }
+
+/* LOADING SPINNER */
+.spinner {
+  width: 20px; height: 20px; border: 2px solid rgba(232,162,40,0.3);
+  border-top-color: var(--amber); border-radius: 50%;
+  animation: spin 0.7s linear infinite; display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* UTILITIES */
+.divider {
+  height: 1px; background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  margin: 60px 0;
+}
+.text-amber { color: var(--amber); }
+.text-teal { color: var(--teal); }
+.gap-8 { gap: 8px; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+
+/* SCRATCH MAP SVG */
+.scratch-map svg { width: 100%; height: 100%; }
+.visited { fill: var(--amber) !important; opacity: 0.8; }
+.not-visited { fill: var(--navy-light); }
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .countries-grid { grid-template-columns: 1fr 1fr; }
+  .contest-layout { grid-template-columns: 1fr; }
+  .planner-container { grid-template-columns: 1fr; }
+  .dashboard-grid { grid-template-columns: 1fr 1fr; }
+  .dash-card-wide { grid-column: span 2; }
+  .arch-grid { grid-template-columns: 1fr 1fr; }
+  .revenue-streams { grid-template-columns: repeat(2, 1fr); }
+  .hero-stats { display: none; }
+}
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  section { padding: 70px 24px; }
+  #home { padding: 100px 24px 60px; }
+  .flight-section { padding: 0 24px; }
+  .countries-grid { grid-template-columns: 1fr; }
+  .arch-grid { grid-template-columns: 1fr; }
+  .revenue-streams { grid-template-columns: 1fr 1fr; }
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .dash-card-wide { grid-column: span 1; }
+  .nav-links { display: none; }
+  .badges-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor" id="cursor"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-logo">Wander<span>Quest</span></div>
+  <div class="nav-links">
+    <a href="#home" class="active" onclick="scrollTo('home')">Home</a>
+    <a href="#explore" onclick="scrollTo('explore')">Esplora</a>
+    <a href="#contest" onclick="scrollTo('contest')">Contest</a>
+    <a href="#planner" onclick="scrollTo('planner')">Pianifica</a>
+    <a href="#dashboard" onclick="scrollTo('dashboard')">Dashboard</a>
+    <a href="#architecture" onclick="scrollTo('architecture')">Architettura</a>
+  </div>
+  <button class="nav-cta" onclick="openModal()">Accedi / Registrati</button>
+</nav>
+
+<!-- HERO -->
+<section id="home">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-orb hero-orb-3"></div>
+
+  <div class="hero-content">
+    <div class="hero-badge">🌍 Piattaforma di viaggio con gamification</div>
+    <h1 class="hero-title">
+      Esplora.<br>
+      Fotografia.<br>
+      <em>Guadagna.</em>
+    </h1>
+    <p class="hero-subtitle">
+      WanderQuest unisce la passione per i viaggi con un sistema di guadagno reale. Scatta foto geolocalizzate, scala la classifica globale e vinci premi in denaro ogni mese.
+    </p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="openModal()">🚀 Inizia Gratuitamente</button>
+      <button class="btn-secondary" onclick="scrollTo('explore')">Scopri i Paesi →</button>
+    </div>
+  </div>
+
+  <div class="hero-stats">
+    <div class="stat-card">
+      <span class="stat-number">195</span>
+      <span class="stat-label">Paesi nel DB</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">€500</span>
+      <span class="stat-label">Premio mensile</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-number">4.8★</span>
+      <span class="stat-label">Rating app</span>
+    </div>
+  </div>
+</section>
+
+<!-- FLIGHT BANNER -->
+<div class="flight-section">
+  <div class="flight-banner">
+    <div class="flight-banner-header">
+      <span class="flight-icon">✈️</span>
+      <h3>Flight Tracker</h3>
+      <span style="font-size:13px;color:var(--cream-dim);margin-left:auto">Inserisci il codice del tuo volo</span>
+    </div>
+    <div class="flight-input-row">
+      <input type="text" class="flight-input" id="flightInput" placeholder="es. FR834, AZ203..." maxlength="8" oninput="this.value=this.value.toUpperCase()">
+      <button class="flight-search-btn" onclick="searchFlight()">Cerca Volo</button>
+      <span id="flightLoading" style="display:none"><div class="spinner"></div></span>
+    </div>
+    <div class="flight-result" id="flightResult"></div>
+  </div>
+</div>
+
+<!-- ESPLORA PAESI -->
+<section id="explore">
+  <div class="section-label">🌍 Database Destinazioni</div>
+  <h2 class="section-title">Esplora il Mondo</h2>
+  <p class="section-subtitle">Pillole culturali, cibo autentico, gemme nascoste e clima — tutto per ogni paese del pianeta.</p>
+
+  <div class="countries-grid" id="countriesGrid">
+    <!-- Rendered by JS -->
+  </div>
+</section>
+
+<!-- CONTEST -->
+<section id="contest">
+  <div class="section-label">🏆 Gamification & Premio</div>
+  <h2 class="section-title">Contest Fotografico</h2>
+  <p class="section-subtitle">Carica le tue foto geolocalizzate, ricevi voti dalla community e scala la classifica per guadagnare premi reali.</p>
+
+  <div class="contest-layout">
+    <!-- Leaderboard -->
+    <div>
+      <div class="leaderboard">
+        <div class="leaderboard-header">
+          <div class="leaderboard-title">🏅 Classifica Mensile</div>
+          <div class="month-badge">Marzo 2026</div>
+        </div>
+        <div id="leaderboardList"></div>
+        <div class="lb-prize" style="border-radius:0;border:none;border-top:1px solid var(--glass-border)">
+          <div>
+            <div style="font-size:12px;color:var(--cream-dim);font-weight:600;text-transform:uppercase;letter-spacing:.08em">Premio 1° Classificato</div>
+            <div class="prize-amount" id="prizeCounter">€500</div>
+            <div class="prize-label">Bonifico diretto / Crediti viaggio</div>
+          </div>
+          <div style="font-size:48px">💰</div>
+        </div>
+      </div>
+      <div style="margin-top:16px;padding:16px;background:var(--navy-mid);border-radius:14px;border:1px solid var(--glass-border)">
+        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:8px;letter-spacing:.05em">COME FUNZIONA IL PREMIO</div>
+        <div style="font-size:13px;color:var(--cream-dim);line-height:1.8">
+          Il prize pool si auto-finanzia tramite: <span class="text-amber">abbonamenti Premium (40%)</span>, <span class="text-amber">sponsor contest (30%)</span>, pubblicità native e affiliazioni (30%). Il 1° classificato riceve bonifico diretto o crediti viaggio. Il sistema è sostenibile già da 5.000 utenti attivi.
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload -->
+    <div class="photo-upload-card">
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:24px">📸 Partecipa al Contest</div>
+      <div class="upload-zone" onclick="showToast('📸 Upload foto — funzione attiva nella versione full!')">
+        <span class="upload-icon">🌄</span>
+        <div class="upload-title">Carica la tua foto</div>
+        <div class="upload-sub" style="margin-bottom:16px">PNG, JPG fino a 20MB — EXIF GPS obbligatorio</div>
+        <div style="background:var(--amber);color:var(--ink);padding:10px 24px;border-radius:8px;font-weight:700;font-size:14px;display:inline-block">
+          Seleziona Foto
+        </div>
+      </div>
+      <div class="upload-requirements">
+        <div class="req-item"><span class="req-icon">📍</span> Geolocalizzazione GPS obbligatoria nell'EXIF</div>
+        <div class="req-item"><span class="req-icon">🌍</span> Luoghi naturali, urbani, monumenti — tutto il mondo</div>
+        <div class="req-item"><span class="req-icon">⭐</span> Rarità del luogo: bonus punti per posti meno fotografati</div>
+        <div class="req-item"><span class="req-icon">🤖</span> Moderazione AI automatica anti-spam e anti-fake</div>
+        <div class="req-item"><span class="req-icon">🗳️</span> 1 voto per utente per foto — community autentica</div>
+      </div>
+      <div style="margin-top:20px;display:flex;gap:8px">
+        <div style="flex:1;padding:14px;background:rgba(232,162,40,0.08);border:1px solid rgba(232,162,40,0.15);border-radius:10px;text-align:center">
+          <div style="font-size:24px;font-weight:900;font-family:'Playfair Display',serif;color:var(--amber)">5</div>
+          <div style="font-size:11px;color:var(--cream-dim)">Foto gratis/mese</div>
+        </div>
+        <div style="flex:1;padding:14px;background:rgba(24,197,168,0.08);border:1px solid rgba(24,197,168,0.15);border-radius:10px;text-align:center">
+          <div style="font-size:24px;font-weight:900;font-family:'Playfair Display',serif;color:var(--teal)">∞</div>
+          <div style="font-size:11px;color:var(--cream-dim)">Con Premium</div>
+        </div>
+        <div style="flex:1;padding:14px;background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;text-align:center">
+          <div style="font-size:24px;font-weight:900;font-family:'Playfair Display',serif;color:var(--cream)">×2</div>
+          <div style="font-size:11px;color:var(--cream-dim)">Boost visibilità</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANNER -->
+<section id="planner">
+  <div class="section-label">🧳 Pianificatore Intelligente</div>
+  <h2 class="section-title">Il tuo Itinerario su Misura</h2>
+  <p class="section-subtitle">Genera automaticamente itinerari personalizzati e la lista della valigia in base a destinazione, durata, stagione e tipo di viaggio.</p>
+
+  <div class="planner-container">
+    <div class="planner-form">
+      <div class="form-group">
+        <label class="form-label">🌍 Destinazione</label>
+        <select class="form-select" id="plannerDest">
+          <option value="">Seleziona paese...</option>
+          <option value="JP">🇯🇵 Giappone</option>
+          <option value="IS">🇮🇸 Islanda</option>
+          <option value="PE">🇵🇪 Perù</option>
+          <option value="IT">🇮🇹 Italia</option>
+          <option value="US">🇺🇸 USA</option>
+          <option value="TH">🇹🇭 Thailandia</option>
+          <option value="MX">🇲🇽 Messico</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">📅 Durata (giorni)</label>
+        <input type="range" id="durationRange" min="3" max="21" value="7" style="width:100%;accent-color:var(--amber)" oninput="document.getElementById('durationVal').textContent=this.value+' giorni'">
+        <div style="display:flex;justify-content:space-between;margin-top:6px">
+          <span style="font-size:12px;color:var(--cream-dim)">3 giorni</span>
+          <span style="font-size:14px;font-weight:700;color:var(--amber)" id="durationVal">7 giorni</span>
+          <span style="font-size:12px;color:var(--cream-dim)">21 giorni</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">🎯 Tipo di Viaggio</label>
+        <div class="trip-type-grid">
+          <button class="trip-type-btn" onclick="selectTripType(this,'relax')"><span>🏖️</span>Relax</button>
+          <button class="trip-type-btn selected" onclick="selectTripType(this,'adventure')"><span>🏔️</span>Avventura</button>
+          <button class="trip-type-btn" onclick="selectTripType(this,'culture')"><span>🏛️</span>Cultura</button>
+          <button class="trip-type-btn" onclick="selectTripType(this,'food')"><span>🍜</span>Gastronomia</button>
+          <button class="trip-type-btn" onclick="selectTripType(this,'work')"><span>💼</span>Lavoro</button>
+          <button class="trip-type-btn" onclick="selectTripType(this,'romance')"><span>❤️</span>Romantico</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">💰 Budget</label>
+        <select class="form-select" id="plannerBudget">
+          <option value="low">Economico (€40-80/giorno)</option>
+          <option value="mid" selected>Medio (€80-150/giorno)</option>
+          <option value="high">Lusso (€150+/giorno)</option>
+        </select>
+      </div>
+      <button class="btn-primary" style="width:100%;justify-content:center;display:flex;gap:8px" onclick="generateItinerary()">
+        ✨ Genera Itinerario con AI
+      </button>
+    </div>
+
+    <div class="itinerary-result" id="itineraryResult">
+      <div class="itinerary-placeholder">
+        <span class="placeholder-icon">🗺️</span>
+        <div class="placeholder-text">Seleziona destinazione e preferenze<br>per generare il tuo itinerario personalizzato</div>
+      </div>
+      <div class="itinerary-content" id="itineraryContent"></div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD -->
+<section id="dashboard">
+  <div class="section-label">👤 Area Personale</div>
+  <h2 class="section-title">La tua Dashboard</h2>
+  <p class="section-subtitle">Scratch map dei tuoi viaggi, badge guadagnati, foto in gara e statistiche personali.</p>
+
+  <div class="dashboard-grid">
+    <!-- Scratch Map -->
+    <div class="dash-card dash-card-wide">
+      <div class="dash-card-header">
+        <div class="dash-card-title">🗺️ Scratch Map</div>
+        <span class="dash-card-icon" style="font-size:13px;color:var(--cream-dim)">12 paesi visitati</span>
+      </div>
+      <div class="scratch-map" id="scratchMap">
+        <div style="font-size:13px;color:var(--cream-dim);text-align:center;padding:20px">
+          <div style="font-size:48px;margin-bottom:12px">🌍</div>
+          Mappa interattiva — i paesi visitati appaiono in dorato
+        </div>
+      </div>
+      <div class="map-countries">
+        <span class="map-country-tag">🇯🇵 Giappone</span>
+        <span class="map-country-tag">🇮🇸 Islanda</span>
+        <span class="map-country-tag">🇵🇪 Perù</span>
+        <span class="map-country-tag">🇫🇷 Francia</span>
+        <span class="map-country-tag">🇺🇸 USA</span>
+        <span class="map-country-tag">🇵🇹 Portogallo</span>
+        <span class="map-country-tag">🇲🇦 Marocco</span>
+        <span class="map-country-tag">🇳🇿 Nuova Zelanda</span>
+        <span class="map-country-tag">🇹🇭 Thailandia</span>
+        <span class="map-country-tag">🇲🇽 Messico</span>
+        <span class="map-country-tag">🇦🇷 Argentina</span>
+        <span class="map-country-tag">🇰🇪 Kenya</span>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">📊 Le Tue Statistiche</div>
+        <span class="dash-card-icon">⚡</span>
+      </div>
+      <div class="stats-list">
+        <div class="stat-row"><span class="stat-row-label">Foto caricate in gara</span><span class="stat-row-value">47</span></div>
+        <div class="stat-row"><span class="stat-row-label">Voti totali ricevuti</span><span class="stat-row-value">3.842</span></div>
+        <div class="stat-row"><span class="stat-row-label">Migliore posizione</span><span class="stat-row-value">#3 🥉</span></div>
+        <div class="stat-row"><span class="stat-row-label">Paesi esplorati</span><span class="stat-row-value">12</span></div>
+        <div class="stat-row"><span class="stat-row-label">Luoghi salvati</span><span class="stat-row-value">89</span></div>
+        <div class="stat-row"><span class="stat-row-label">Premi guadagnati</span><span class="stat-row-value text-amber">€120</span></div>
+      </div>
+    </div>
+
+    <!-- Foto in gara -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">📷 Foto in Gara</div>
+        <span class="dash-card-icon">🏆</span>
+      </div>
+      <div class="photo-submitted-grid">
+        <div class="photo-thumb" title="Shirakawa-go, Giappone">⛩️<div class="photo-votes-overlay">🗳️ 892</div></div>
+        <div class="photo-thumb" title="Askja, Islanda">🌋<div class="photo-votes-overlay">🗳️ 741</div></div>
+        <div class="photo-thumb" title="Machu Picchu, Perù">🏔️<div class="photo-votes-overlay">🗳️ 633</div></div>
+        <div class="photo-thumb" title="Naoshima, Giappone">🎨<div class="photo-votes-overlay">🗳️ 521</div></div>
+        <div class="photo-thumb" title="Colca Canyon, Perù">🦅<div class="photo-votes-overlay">🗳️ 488</div></div>
+        <div class="photo-thumb" title="Þórsmörk, Islanda">🌿<div class="photo-votes-overlay">🗳️ 367</div></div>
+      </div>
+    </div>
+
+    <!-- Badges -->
+    <div class="dash-card dash-card-wide">
+      <div class="dash-card-header">
+        <div class="dash-card-title">🏅 Badge Conquistati</div>
+        <span style="font-size:13px;color:var(--cream-dim)">8 / 24 sbloccati</span>
+      </div>
+      <div class="badges-grid">
+        <div class="badge-item earned"><span class="badge-icon">🌏</span><div class="badge-name">Primo Confine</div></div>
+        <div class="badge-item earned"><span class="badge-icon">📸</span><div class="badge-name">Fotografo Esordiente</div></div>
+        <div class="badge-item earned"><span class="badge-icon">🗳️</span><div class="badge-name">100 Voti</div></div>
+        <div class="badge-item earned"><span class="badge-icon">🥉</span><div class="badge-name">Top 3 Mensile</div></div>
+        <div class="badge-item earned"><span class="badge-icon">🌋</span><div class="badge-name">Terra Estrema</div></div>
+        <div class="badge-item earned"><span class="badge-icon">🍜</span><div class="badge-name">Gourmet Explorer</div></div>
+        <div class="badge-item earned"><span class="badge-icon">💎</span><div class="badge-name">Gemma Nascosta</div></div>
+        <div class="badge-item earned"><span class="badge-icon">⭐</span><div class="badge-name">Premium Member</div></div>
+        <div class="badge-item locked"><span class="badge-icon">🥇</span><div class="badge-name">1° Classificato</div></div>
+        <div class="badge-item locked"><span class="badge-icon">🌍</span><div class="badge-name">50 Paesi</div></div>
+        <div class="badge-item locked"><span class="badge-icon">🦅</span><div class="badge-name">Rarity Hunter</div></div>
+        <div class="badge-item locked"><span class="badge-icon">🏆</span><div class="badge-name">Champion</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITETTURA -->
+<section id="architecture">
+  <div class="section-label">⚙️ Documentazione Tecnica</div>
+  <h2 class="section-title">Architettura & Business Model</h2>
+  <p class="section-subtitle">Stack tecnologico, API consigliate, modello di revenue e schema database per il MVP di WanderQuest.</p>
+
+  <div class="arch-grid">
+    <div class="arch-card">
+      <span class="arch-card-icon">📱</span>
+      <div class="arch-card-title">Frontend</div>
+      <div class="arch-card-text">React Native per mobile (iOS + Android) con Expo. Next.js per la versione web PWA. State management con Zustand, data fetching con React Query. Mappe con Mapbox GL JS.</div>
+      <div class="tech-tags">
+        <span class="tech-tag tag-blue">React Native</span>
+        <span class="tech-tag tag-blue">Next.js</span>
+        <span class="tech-tag tag-amber">Mapbox</span>
+        <span class="tech-tag tag-gray">Zustand</span>
+        <span class="tech-tag tag-gray">TailwindCSS</span>
+      </div>
+    </div>
+    <div class="arch-card">
+      <span class="arch-card-icon">⚡</span>
+      <div class="arch-card-title">Backend</div>
+      <div class="arch-card-text">Node.js + Express (API REST) con PostgreSQL + PostGIS per dati geospaziali. Redis per cache e contatori voti real-time. RabbitMQ per code asincrone (moderazione foto, premi).</div>
+      <div class="tech-tags">
+        <span class="tech-tag tag-blue">Node.js</span>
+        <span class="tech-tag tag-blue">PostgreSQL</span>
+        <span class="tech-tag tag-amber">PostGIS</span>
+        <span class="tech-tag tag-gray">Redis</span>
+        <span class="tech-tag tag-gray">RabbitMQ</span>
+      </div>
+    </div>
+    <div class="arch-card">
+      <span class="arch-card-icon">☁️</span>
+      <div class="arch-card-title">Infrastruttura</div>
+      <div class="arch-card-text">Supabase come BaaS (auth, database, storage). Cloudflare R2 per foto (costo zero egress). Nginx come API Gateway con rate limiting. Firebase FCM per notifiche push.</div>
+      <div class="tech-tags">
+        <span class="tech-tag tag-blue">Supabase</span>
+        <span class="tech-tag tag-blue">Cloudflare R2</span>
+        <span class="tech-tag tag-gray">Firebase</span>
+        <span class="tech-tag tag-gray">Nginx</span>
+      </div>
+    </div>
+    <div class="arch-card">
+      <span class="arch-card-icon">✈️</span>
+      <div class="arch-card-title">API Voli</div>
+      <div class="arch-card-text">AeroDataBox (consigliata): real-time status, logo carrier, storico voli. 500 richieste gratuite/mese. Fallback su OpenSky Network per dati di posizione illimitati.</div>
+      <div class="tech-tags">
+        <span class="tech-tag tag-blue">AeroDataBox</span>
+        <span class="tech-tag tag-gray">AviationStack</span>
+        <span class="tech-tag tag-gray">OpenSky</span>
+      </div>
+    </div>
+    <div class="arch-card">
+      <span class="arch-card-icon">🌤️</span>
+      <div class="arch-card-title">API Meteo & Mappe</div>
+      <div class="arch-card-text">OpenWeatherMap per meteo corrente (1k req/giorno free). Open-Meteo per storico climatico illimitato e gratuito. Google Places API per ristoranti e POI locali.</div>
+      <div class="tech-tags">
+        <span class="tech-tag tag-blue">OpenWeatherMap</span>
+        <span class="tech-tag tag-blue">Open-Meteo</span>
+        <span class="tech-tag tag-amber">Google Places</span>
+      </div>
+    </div>
+    <div class="arch-card">
+      <span class="arch-card-icon">💳</span>
+      <div class="arch-card-title">Pagamenti & AI</div>
+      <div class="arch-card-text">Stripe per abbonamenti ricorrenti e payout ai vincitori. KYC con Stripe Identity. OpenAI GPT-4o per itinerari e moderazione. AWS Rekognition per analisi foto.</div>
+      <div class="tech-tags">
+        <span class="tech-tag tag-blue">Stripe</span>
+        <span class="tech-tag tag-amber">OpenAI GPT-4o</span>
+        <span class="tech-tag tag-gray">AWS Rekognition</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Revenue Model -->
+  <div class="revenue-card">
+    <div class="revenue-title">💰 Modello di Revenue — Scenario Anno 1 (5.000 utenti)</div>
+    <div class="revenue-streams">
+      <div class="revenue-stream">
+        <span class="revenue-stream-icon">⭐</span>
+        <div class="revenue-stream-name">Premium</div>
+        <div class="revenue-stream-amount">€3.995</div>
+        <div class="revenue-stream-period">500 utenti × €7.99/mese</div>
+      </div>
+      <div class="revenue-stream">
+        <span class="revenue-stream-icon">🤝</span>
+        <div class="revenue-stream-name">Sponsor Contest</div>
+        <div class="revenue-stream-amount">€800</div>
+        <div class="revenue-stream-period">Brand sponsorizza il premio mensile</div>
+      </div>
+      <div class="revenue-stream">
+        <span class="revenue-stream-icon">🔗</span>
+        <div class="revenue-stream-name">Affiliazioni</div>
+        <div class="revenue-stream-amount">€300</div>
+        <div class="revenue-stream-period">Booking, Skyscanner, Amazon</div>
+      </div>
+      <div class="revenue-stream">
+        <span class="revenue-stream-icon">📢</span>
+        <div class="revenue-stream-name">Ads Native</div>
+        <div class="revenue-stream-amount">€500</div>
+        <div class="revenue-stream-period">Destinazioni in evidenza</div>
+      </div>
+    </div>
+    <div class="revenue-total">
+      <div>
+        <div class="revenue-total-label">Revenue mensile totale (stimata)</div>
+        <div style="font-size:12px;color:var(--cream-dim);margin-top:4px">Costi server + API: ~€300 · Premio: €500 · Margine operativo: ~€4.795 ✅</div>
+      </div>
+      <div class="revenue-total-amount">€5.595<span style="font-size:16px;color:var(--cream-dim)">/mese</span></div>
+    </div>
+  </div>
+
+  <!-- API Table -->
+  <div style="margin-top:40px;background:var(--navy-mid);border:1px solid var(--glass-border);border-radius:20px;overflow:hidden;padding:28px">
+    <div style="font-family:'Playfair Display',serif;font-size:20px;font-weight:700;margin-bottom:20px">📡 Tabella API Complete</div>
+    <table class="api-table">
+      <thead>
+        <tr>
+          <th>Funzione</th>
+          <th>API</th>
+          <th>Piano Free</th>
+          <th>Costo</th>
+        </tr>
+      </thead>
+      <tbody id="apiTableBody"></tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">WanderQuest</div>
+  <p class="footer-text">Esplora. Fotografia. Guadagna. — Piattaforma di viaggio con gamification.<br>
+  <span style="color:var(--amber)">Architettura MVP v0.1</span> — Tutti i dati sono dimostrativi.</p>
+</footer>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal" onclick="this.id==='loginModal'&&closeModal()">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-title">Benvenuto 👋</div>
+    <div class="modal-sub">Entra nel mondo WanderQuest</div>
+    <div class="modal-tabs">
+      <button class="modal-tab active" onclick="switchModalTab(this,'login')">Accedi</button>
+      <button class="modal-tab" onclick="switchModalTab(this,'register')">Registrati</button>
+    </div>
+    <div id="loginForm">
+      <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="nome@esempio.com"></div>
+      <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" placeholder="••••••••"></div>
+      <button class="btn-primary" style="width:100%" onclick="closeModal();showToast('✅ Accesso effettuato con successo!')">Accedi</button>
+      <div style="text-align:center;margin-top:16px;font-size:13px;color:var(--cream-dim)">oppure continua con</div>
+      <div style="display:flex;gap:8px;margin-top:12px">
+        <button class="btn-secondary" style="flex:1;font-size:13px" onclick="closeModal();showToast('🔗 Login Google — funzione attiva nella versione full!')">🔍 Google</button>
+        <button class="btn-secondary" style="flex:1;font-size:13px" onclick="closeModal();showToast('🍎 Login Apple — funzione attiva nella versione full!')">🍎 Apple</button>
+      </div>
+    </div>
+    <div id="registerForm" style="display:none">
+      <div class="form-group"><label class="form-label">Nome utente</label><input type="text" class="form-input" placeholder="@nomeutente"></div>
+      <div class="form-group"><label class="form-label">Email</label><input type="email" class="form-input" placeholder="nome@esempio.com"></div>
+      <div class="form-group"><label class="form-label">Password</label><input type="password" class="form-input" placeholder="Min. 8 caratteri"></div>
+      <button class="btn-primary" style="width:100%" onclick="closeModal();showToast('🎉 Account creato! Benvenuto in WanderQuest!')">Crea Account Gratuito</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────
+const COUNTRIES = [
+  {
+    id:'JP', flag:'🇯🇵', name:'Giappone', heroEmoji:'🗾',
+    heroBg:'linear-gradient(135deg,#C8102E22,#FFFFFF11)',
+    pill:{
+      title:'La Terra del Sol Levante',
+      headline:'Dove la tradizione millenaria abbraccia il futuro',
+      summary:'Il Giappone è una nazione di contrasti sublimi: santuari shintoisti accanto a grattacieli al neon, cerimonie del tè in silenzio assoluto a pochi metri da un karaoke. Non è contraddizione — è il cuore dell\'identità giapponese.',
+      customs:[
+        {name:'Omotenashi',desc:'Ospitalità incondizionata e anticipatoria — il tuo bisogno viene soddisfatto prima che tu lo chieda, senza aspettarsi nulla in cambio.',tip:'Non lasciare mai la mancia: è considerato scortese.'},
+        {name:'Genkan',desc:'Le scarpe si tolgono sempre prima di entrare in casa o in un ryokan. Si indossano le pantofole fornite dall\'ospite.',tip:'Osserva sempre questo rituale nei ryokan tradizionali.'},
+        {name:'Silenzio pubblico',desc:'Parlare ad alta voce al telefono sui mezzi è considerato maleducato. I treni sono quasi sempre silenziosi.',tip:'Silenzia sempre il telefono in treno.'}
+      ],
+      fact:'Okinawa è una "Zona Blu": gli abitanti centenari sono così numerosi da essere oggetto di studio scientifico globale.'
+    },
+    food:[
+      {emoji:'🍜',name:'Ramen Tonkotsu',type:'Primo piatto',desc:'Brodo ricco di maiale con noodle, chashu, uovo marinato e nori. Ogni regione ha la sua variante.',price:'€6–12'},
+      {emoji:'🍣',name:'Sushi Omakase',type:'Esperienza',desc:'Il maestro prepara ogni nigiri davanti a te spiegando l\'origine del pesce. Contemplativo e indimenticabile.',price:'€30–300'},
+      {emoji:'🐙',name:'Takoyaki',type:'Street food',desc:'Polpette di pastella ripiene di polpo con salsa okonomiyaki e katsuobushi. Il re di Osaka.',price:'€3–5'},
+      {emoji:'🥩',name:'Wagyu Yakiniku',type:'Carne',desc:'Manzo A5 grigliato al tavolo su brace. Con sale marino e wasabi fresco — mai con salsa.',price:'€40–150'}
+    ],
+    gems:[
+      {name:'Yanaka',type:'Quartiere storico',city:'Tokyo',desc:'L\'unico quartiere sopravvissuto ai bombardamenti del \'45. Strade di legno, cimitero romantico, gatti ovunque. Tokyo com\'era prima del neon.',crowds:'Basso',insta:7,local:10,tip:'Parti all\'alba dal Yanaka Ginza — ogni vicolo è una scoperta.'},
+      {name:'Naoshima',type:'Isola d\'arte',city:'Kagawa',desc:'Un\'isola di pescatori trasformata in museo a cielo aperto da Tadao Ando. Il Chichu Art Museum ospita tre Monet scavati nella collina.',crowds:'Medio',insta:8,local:10,tip:'Affitta una bici e visita anche Teshima — il Teshima Art Museum è architettura impossibile.'},
+      {name:'Yakushima',type:'Foresta antica',city:'Kagoshima',desc:'Cedri giapponesi millenari (Jōmon Sugi: 7.200 anni). Ispirazione della foresta di Principessa Mononoke. Muschio ovunque.',crowds:'Basso',insta:8,local:10,tip:'Parti alle 4 del mattino per l\'alba in foresta — il trek dura 10 ore.'}
+    ],
+    seasons:[
+      {name:'Primavera',months:'Mar–Mag',min:8,max:22,precip:'Media',highlight:'🌸 Hanami — fioritura sakura',rating:'⭐⭐⭐⭐⭐'},
+      {name:'Estate',months:'Giu–Ago',min:22,max:36,precip:'Alta',highlight:'🎆 Festival matsuri, fuochi d\'artificio',rating:'⭐⭐⭐'},
+      {name:'Autunno',months:'Set–Nov',min:10,max:25,precip:'Bassa',highlight:'🍂 Koyo — foglie rosse a Kyoto',rating:'⭐⭐⭐⭐⭐'},
+      {name:'Inverno',months:'Dic–Feb',min:-2,max:10,precip:'Neve',highlight:'♨️ Onsen nella neve, Sapporo',rating:'⭐⭐⭐⭐'}
+    ]
+  },
+  {
+    id:'IS', flag:'🇮🇸', name:'Islanda', heroEmoji:'🏔️',
+    heroBg:'linear-gradient(135deg,#003897,#FFFFFF11)',
+    pill:{
+      title:'L\'Isola di Fuoco e Ghiaccio',
+      headline:'Dove la terra respira e gli uomini credono agli elfi',
+      summary:'L\'Islanda è giovane geologicamente parlando — ancora in formazione tra eruzioni vulcaniche e ghiacciai in ritiro. Ma ha anche il parlamento più antico del mondo (Althing, 930 d.C.) e i suoi 370.000 abitanti leggono più libri pro capite di qualsiasi altro paese.',
+      customs:[
+        {name:'Huldufólk — gli Elfi',desc:'Il 54% degli islandesi non esclude l\'esistenza degli elfi. Le strade vengono costruite attorno alle rocce "abitate". Non è superstizione — è cultura.',tip:'Non deridere questa credenza: è genuina e profonda.'},
+        {name:'Egalitarismo radicale',desc:'I cognomi islandesi usano patronimici (Jónsson = figlio di Jón). Non esistono cognomi ereditari. Il Presidente si chiama per nome.',tip:'Chiama tutti per nome — anche sconosciuti e figure pubbliche.'},
+        {name:'Þetta reddast',desc:'Il mantra nazionale: "andrà tutto bene". Riflette una resilienza profonda di un popolo abituato a condizioni estreme.',tip:'Usalo quando qualcosa va storto — gli islandesi apprezzeranno.'}
+      ],
+      fact:'L\'Islanda è il paese più pacifico al mondo (Global Peace Index) e non ha un esercito dal 1869. I bagni nelle vasche geotermiche (hot pots) sono il principale rituale sociale.'
+    },
+    food:[
+      {emoji:'🥛',name:'Skyr',type:'Latticino',desc:'Latticino fermentato con proteine elevatissime e gusto acidulo. Non è yogurt — gli islandesi lo mangiano da mille anni.',price:'€2–4'},
+      {emoji:'🐟',name:'Plokkfiskur',type:'Stufato',desc:'Merluzzo sfaldato con patate, cipolle e besciamella. Il comfort food islandese per eccellenza — piatto del giovedì per tradizione.',price:'€15–22'},
+      {emoji:'🦐',name:'Humarsúpa',type:'Zuppa',desc:'Zuppa cremosa di langoustine con panna e cognac. L\'acqua fredda rende le aragoste islandesi straordinariamente dolci.',price:'€20–35'},
+      {emoji:'🦈',name:'Hákarl',type:'Esperienza',desc:'Squalo fermentato per 6 mesi. Odore di ammoniaca pura. Con brennivín. Nessun turista lo ama, tutti devono provarlo.',price:'€5–10'}
+    ],
+    gems:[
+      {name:'Westfjords',type:'Regione remota',city:'Ísafjörður',desc:'La penisola più remota dell\'Islanda — fiordi antichi, cascata Dynjandi che cade nell\'oceano, foche sulle spiagge. L\'Islanda com\'era 20 anni fa.',crowds:'Bassissimo',insta:9,local:10,tip:'Noleggia un SUV 4x4 obbligatoriamente — le strade non sono asfaltate.'},
+      {name:'Askja Caldera',type:'Vulcano lunare',city:'Highlands',desc:'Caldera vulcanica dove gli astronauti dell\'Apollo si allenarono negli anni \'60. Il paesaggio ricorda la Luna. Solo in estate con jeep.',crowds:'Bassissimo',insta:10,local:9,tip:'Parti alle 5 AM da Reykjavík per arrivare all\'alba. Porta viveri per l\'intera giornata.'},
+      {name:'Þórsmörk',type:'Valle / Trekking',city:'Sud Islanda',desc:'Valle nascosta tra tre ghiacciai accessibile solo con fuoristrada speciali o a piedi. Foreste di betulle rare, fiori alpini. Punto finale del Laugavegur Trek.',crowds:'Basso',insta:8,local:10,tip:'Il Laugavegur Trek (55km, 4 giorni) è il trekking più bello d\'Europa.'}
+    ],
+    seasons:[
+      {name:'Primavera',months:'Apr–Mag',min:2,max:10,precip:'Media',highlight:'🐦 Puffin arrivano a maggio, cascate in piena',rating:'⭐⭐⭐⭐'},
+      {name:'Estate',months:'Giu–Ago',min:8,max:18,precip:'Bassa',highlight:'☀️ Sole di mezzanotte, Highlands accessibili',rating:'⭐⭐⭐⭐⭐'},
+      {name:'Autunno',months:'Set–Nov',min:0,max:10,precip:'Alta',highlight:'🌌 Prime aurore boreali da settembre',rating:'⭐⭐⭐⭐'},
+      {name:'Inverno',months:'Dic–Mar',min:-5,max:4,precip:'Alta',highlight:'💫 Aurora Boreale al massimo splendore',rating:'⭐⭐⭐⭐'}
+    ]
+  },
+  {
+    id:'PE', flag:'🇵🇪', name:'Perù', heroEmoji:'🦙',
+    heroBg:'linear-gradient(135deg,#D91023,#FFFFFF11)',
+    pill:{
+      title:'Il Figlio del Sole',
+      headline:'Dove gli Inca costruirono il cielo e il cibo è arte',
+      summary:'Il Perù è una delle culle della civiltà umana: la cultura Caral ha 5.000 anni e precede le piramidi egizie. L\'Impero Inca, costruito senza scrittura né ruota, ha dominato tutta l\'America del Sud. Oggi: povertà e raffinatezza gastronomica stellata, rovine millenarie e grattacieli.',
+      customs:[
+        {name:'Pachamama',desc:'La Madre Terra viene ancora venerata nelle Ande. Prima di bere si versa una goccia di chicha per terra — offerta quotidiana, non rituale.',tip:'Se un anziano andino fa questo gesto, imitalo in segno di rispetto.'},
+        {name:'Mate de coca',desc:'L\'infuso di foglie di coca è legale e consigliato per il mal di montagna. Non è una droga — è una pianta sacra usata per 8.000 anni.',tip:'All\'arrivo a Cusco (3.400m) bevi immediatamente il tè di coca.'},
+        {name:'Ayni',desc:'La reciprocità andina: oggi aiuto te, domani tu aiuti me. Ancora viva nelle comunità delle Ande come principio di vita.',tip:'In un villaggio, offriti di partecipare alle attività comunitarie.'}
+      ],
+      fact:'Lima è la capitale gastronomica del Sudamerica. Il ceviche peruviano è Patrimonio Culturale Immateriale UNESCO. Il Perù ha 4.000 varietà di patata e 650 specie di peperoncino.'
+    },
+    food:[
+      {emoji:'🐟',name:'Ceviche Clásico',type:'Piatto nazionale',desc:'Pesce bianco in succo di limone verde con aji amarillo, cipolla rossa e coriandolo. Si mangia al mezzogiorno — il ceviche della sera è sacrilegio.',price:'€8–40'},
+      {emoji:'🥩',name:'Lomo Saltado',type:'Stir-fry',desc:'Manzo saltato in wok con pomodori, aji, soia. Servito con patate fritte E riso bianco — fusione peruviano-cinese del XIX secolo.',price:'€6–20'},
+      {emoji:'🟡',name:'Causa Limeña',type:'Torta salata',desc:'Torta fredda di patata gialla con aji amarillo, avocado e tonno. Un\'esplosione di colori e sapori — cibo street food elevato alla perfezione.',price:'€4–12'},
+      {emoji:'🐹',name:'Cuy',type:'Tradizione andina',desc:'Porcellino d\'India arrosto — fonte proteica degli Inca per millenni. Servito intero, sapore tra coniglio e pollo. Un\'esperienza autentica.',price:'€8–20'}
+    ],
+    gems:[
+      {name:'Huacachina',type:'Oasi nel deserto',city:'Ica',desc:'Un lago smeraldo circondato da dune di 100 metri nel mezzo del deserto costiero. Sandboarding al tramonto. Una delle viste più surreali del Sudamerica.',crowds:'Medio',insta:10,local:8,tip:'Prendi il buggy alle 16:00 per essere in cima alle dune esattamente al tramonto.'},
+      {name:'Choquequirao',type:'Rovine Inca',city:'Cusco (remoto)',desc:'Le "Machu Picchu remote" — rovine più grandi di Machu Picchu, accessibili solo con 4 giorni di trekking. Quasi nessun turista.',crowds:'Bassissimo',insta:9,local:10,tip:'Una funivia potrebbe aprire il sito entro 2027. Vai ora finché è un\'avventura.'},
+      {name:'Colca Canyon',type:'Canyon',city:'Arequipa',desc:'Il canyon più profondo del mondo (3.400m — doppio del Grand Canyon). Condor che planano a livello degli occhi ogni mattina alle 9.',crowds:'Medio-basso',insta:9,local:10,tip:'Raggiungi Cruz del Condor viewpoint entro le 9 AM — i condor hanno apertura alare fino a 3,2m.'}
+    ],
+    seasons:[
+      {name:'Stagione Secca',months:'Mag–Nov',min:2,max:20,precip:'Bassa',highlight:'☀️ Machu Picchu senza nuvole, trek Inca Trail',rating:'⭐⭐⭐⭐⭐'},
+      {name:'Stagione Piogge',months:'Dic–Apr',min:5,max:18,precip:'Alta',highlight:'🌿 Verde lussureggiante, cascate magnifiche',rating:'⭐⭐⭐'},
+      {name:'Costa (Lima)',months:'Dic–Mar',min:18,max:28,precip:'Nulla',highlight:'🏖️ Estate lima, spiagge, vita notturna',rating:'⭐⭐⭐⭐'},
+      {name:'Amazzonia',months:'Tutto l\'anno',min:22,max:36,precip:'Alta',highlight:'🦜 Fauna selvaggia, foreste primarie',rating:'⭐⭐⭐⭐'}
+    ]
+  }
+];
+
+const LEADERBOARD = [
+  {rank:1,avatar:'🇯🇵',name:'sakura_lens',location:'Tokyo, Giappone',votes:4872,prize:'€500'},
+  {rank:2,avatar:'🇮🇸',name:'aurora_bjorn',location:'Reykjavík, Islanda',votes:3941,prize:'€100 crediti'},
+  {rank:3,avatar:'🇵🇪',name:'andean_foto',location:'Cusco, Perù',votes:3187,prize:'Badge + Boost'},
+  {rank:4,avatar:'🇮🇹',name:'marco_viaggia',location:'Milano, Italia',votes:2654,prize:'—'},
+  {rank:5,avatar:'🇧🇷',name:'rafaela_world',location:'São Paulo, Brasile',votes:2211,prize:'—'}
+];
+
+const API_TABLE = [
+  {fn:'Autenticazione',api:'Supabase Auth',free:'Free tier',cost:'Gratuito'},
+  {fn:'Database',api:'PostgreSQL via Supabase',free:'500MB free',cost:'Gratuito'},
+  {fn:'Storage foto',api:'Cloudflare R2',free:'10GB free',cost:'$0.015/GB'},
+  {fn:'Meteo corrente',api:'OpenWeatherMap',free:'1.000 req/giorno',cost:'Gratuito'},
+  {fn:'Meteo storico',api:'Open-Meteo',free:'Illimitato',cost:'Gratuito'},
+  {fn:'Voli real-time',api:'AeroDataBox',free:'500 req/mese',cost:'$10/mese'},
+  {fn:'Mappe & cluster',api:'Mapbox GL JS',free:'50.000 req/mese',cost:'$0.50/1k'},
+  {fn:'Ristoranti & POI',api:'Google Places API',free:'$200 credito',cost:'$17/1k req'},
+  {fn:'Moderazione foto',api:'AWS Rekognition',free:'5.000 img/mese',cost:'$1/1k img'},
+  {fn:'Itinerari AI',api:'OpenAI GPT-4o',free:'Nessuno',cost:'$0.015/1k tok'},
+  {fn:'Pagamenti',api:'Stripe',free:'Pay-per-use',cost:'1.4% + €0.25'},
+  {fn:'Notifiche push',api:'Firebase FCM',free:'Illimitato',cost:'Gratuito'}
+];
+
+const ITINERARIES = {
+  JP:{
+    dest:'🇯🇵 Giappone',
+    days:[
+      {title:'Arrivo a Tokyo — Shinjuku & Akihabara',activities:['09:00 Arrivo Narita, acquisto IC Card Suica','12:00 Ramen tonkotsu a Shinjuku Golden Gai','15:00 Visita Meiji Shrine + bosco di bambù','19:00 Passeggiata notturna Akihabara','21:00 Izakaya locale con yakitori e birra asahi']},
+      {title:'Harajuku, Shibuya & quartieri cult',activities:['08:00 Pancake al Omotesando Eggs','10:00 Takeshita Street → Harajuku','13:00 Soba fredda tipica (zarusoba)','15:00 Shibuya Crossing (il più trafficato al mondo)','18:00 Karaoke in privata (almeno 2 ore)']},
+      {title:'Kyoto — Fushimi Inari & Gion',activities:['06:00 Treno Shinkansen Tokyo→Kyoto (2h15m)','08:30 Fushimi Inari: migliaia di torii arancioni','12:00 Obanzai lunch nel mercato Nishiki','14:00 Gion: geishe district, tea house','17:00 Kinkaku-ji (Padiglione d\'Oro) al tramonto']}
+    ],
+    packing:['Ombrellino tascabile','IC Card Suica','Scarpe comode','Adattatore presa J','Maschera per sonno (aerei)','Borsa riutilizzabile','Maglione leggero','Medicinali (farmaci difficili da trovare)']
+  },
+  IS:{
+    dest:'🇮🇸 Islanda',
+    days:[
+      {title:'Reykjavík & Peninsula di Snæfellsnes',activities:['09:00 Volo internazionale → Keflavík, noleggio SUV 4x4','12:00 Grandi Mathöll food hall: lobster soup','14:00 Hallgrímskirkja church, vista panoramica','16:00 Drive verso Snæfellsnes peninsula','20:00 Hot pot naturale al tramonto']},
+      {title:'Ring Road: Cascate e Glaciar Lagoon',activities:['07:00 Partenza verso Seljalandsfoss (si passa dietro!)','09:00 Skógafoss e spiaggia nera di Reynisfjara','13:00 Skyr + langoustine soup in un porto','15:00 Jökulsárlón Glacier Lagoon: iceberg blu','18:00 Diamond Beach: ghiaccio sull\'oceano']},
+      {title:'Golden Circle & Aurora',activities:['08:00 Þingvellir National Park — placche tettoniche','10:30 Geysir Strokkur — eruzione ogni 5-10 minuti','12:30 Cascata Gullfoss — due livelli, potentissima','15:00 Rientro Reykjavík, cena tradizionale','21:00 Aurora boreale hunting fuori città']}
+    ],
+    packing:['Parka artico impermeabile','Strati merino (no cotone)','Stivali waterproof','Guanti impermeabili','Crema da sole (UV su neve)','Power bank','Torcia frontale','eSIM islandese']
+  },
+  PE:{
+    dest:'🇵🇪 Perù',
+    days:[
+      {title:'Lima — Gastronomia & Miraflores',activities:['10:00 Arrivo Jorge Chávez, taxi Taxi Beat app','12:00 Ceviche al Mercado de Surquillo','14:00 Miraflores: scogliere sull\'oceano Pacifico','16:00 Larco Museum — gioielli Inca e ceramiche','20:00 Pisco Sour al Bar Inglés del Country Club']},
+      {title:'Cusco — Acclimatazione e Plaza de Armas',activities:['06:00 Volo Lima→Cusco (1h15m)','08:00 Mate de coca immediato all\'arrivo (alt. 3.400m)','10:00 Passeggiata lenta Plaza de Armas e Catedral','12:00 Aji de gallina in un locale tipico','15:00 Mercado San Pedro — frutta, cuy, erbe medicinali','17:00 Riposo obbligatorio (acclimatazione)']},
+      {title:'Machu Picchu — Il Momento',activities:['04:30 Bus da Aguas Calientes (prenota prima)','06:00 Ingresso Machu Picchu all\'alba senza turisti','08:00 Trekking Sun Gate (Inti Punku) vista zenitale','12:00 Pranzo buffet Aguas Calientes','15:00 Treno panoramico rientro Cusco','19:00 Cena: lomo saltado + chicha morada']}
+    ],
+    packing:['Acetazolamide (mal di quota)','Repellente DEET 30%','Crema solare SPF50+','Scarpe da trekking','Poncho impermeabile leggero','Bottiglia filtro acqua','Soles (contante)','Adattatore presa C/A']
+  }
+};
+
+// ── CURSOR ────────────────────────────────────────────────────────────
+const cursor = document.getElementById('cursor');
+const cursorRing = document.getElementById('cursorRing');
+document.addEventListener('mousemove', e => {
+  cursor.style.left = e.clientX + 'px';
+  cursor.style.top = e.clientY + 'px';
+  setTimeout(() => {
+    cursorRing.style.left = e.clientX + 'px';
+    cursorRing.style.top = e.clientY + 'px';
+  }, 80);
+});
+document.addEventListener('mousedown', () => {
+  cursor.style.transform = 'translate(-50%,-50%) scale(0.6)';
+});
+document.addEventListener('mouseup', () => {
+  cursor.style.transform = 'translate(-50%,-50%) scale(1)';
+});
+
+// ── NAV SCROLL ────────────────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 60);
+  // Active nav link
+  const sections = ['home','explore','contest','planner','dashboard','architecture'];
+  let current = 'home';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 120) current = id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+});
+
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({behavior:'smooth'});
+}
+
+// ── RENDER COUNTRIES ─────────────────────────────────────────────────
+function renderCountries() {
+  const grid = document.getElementById('countriesGrid');
+  grid.innerHTML = COUNTRIES.map((c,i) => `
+    <div class="country-card" style="animation-delay:${i*0.1}s">
+      <div class="country-hero" style="background:${c.heroBg||'linear-gradient(135deg,var(--navy-mid),var(--navy-light))'}">
+        <div class="country-hero-bg">${c.heroEmoji}</div>
+        <div class="country-hero-gradient"></div>
+        <span class="country-flag">${c.flag}</span>
+        <span class="country-name-hero">${c.name}</span>
+      </div>
+      <div class="country-body">
+        <!-- Pill Trigger -->
+        <div class="country-pill-trigger clickable" onclick="togglePill('${c.id}')">
+          <span class="pill-trigger-label">💊 Pillola Culturale</span>
+          <span class="pill-trigger-arrow" id="arrow-${c.id}">▼</span>
+        </div>
+        <div class="country-pill-content" id="pill-${c.id}">
+          <div class="pill-inner">
+            <div class="pill-title">${c.pill.title}</div>
+            <div class="pill-headline">${c.pill.headline}</div>
+            <div class="pill-summary">${c.pill.summary}</div>
+            <div class="pill-customs">
+              ${c.pill.customs.map(cu=>`
+                <div class="custom-item">
+                  <div class="custom-name">🔸 ${cu.name}</div>
+                  <div class="custom-desc">${cu.desc}</div>
+                  <div style="margin-top:4px;font-size:11px;color:var(--amber)">💡 ${cu.tip}</div>
+                </div>
+              `).join('')}
+            </div>
+            <div style="margin-top:10px;padding:10px 12px;background:rgba(24,197,168,0.08);border-radius:8px;font-size:12px;color:var(--teal)">
+              ✨ ${c.pill.fact}
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="country-tabs">
+          <button class="country-tab active" onclick="switchTab('${c.id}','food',this)">🍽️ Cibo</button>
+          <button class="country-tab" onclick="switchTab('${c.id}','gems',this)">💎 Gemme</button>
+          <button class="country-tab" onclick="switchTab('${c.id}','climate',this)">🌤️ Clima</button>
+        </div>
+
+        <!-- Food Tab -->
+        <div class="tab-content active" id="tab-${c.id}-food">
+          ${c.food.map(f=>`
+            <div class="food-item">
+              <span class="food-emoji">${f.emoji}</span>
+              <div class="food-info">
+                <div class="food-name">${f.name}</div>
+                <div class="food-desc">${f.desc}</div>
+                <div class="food-price">${f.price}</div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Gems Tab -->
+        <div class="tab-content" id="tab-${c.id}-gems">
+          ${c.gems.map(g=>`
+            <div class="gem-item">
+              <div class="gem-name">${g.name}</div>
+              <div class="gem-type">${g.type} · ${g.city}</div>
+              <div class="gem-desc">${g.desc}</div>
+              <div class="gem-score">
+                <span class="score-badge score-insta">📸 Instagram ${g.insta}/10</span>
+                <span class="score-badge score-local">🌿 Locale ${g.local}/10</span>
+                <span class="score-badge" style="background:rgba(255,255,255,0.05);color:var(--cream-dim);font-size:10px;padding:3px 8px;border-radius:4px">👥 ${g.crowds}</span>
+              </div>
+              <div class="gem-tip">💡 ${g.tip}</div>
+            </div>
+          `).join('')}
+        </div>
+
+        <!-- Climate Tab -->
+        <div class="tab-content" id="tab-${c.id}-climate">
+          <div class="season-grid">
+            ${c.seasons.map(s=>`
+              <div class="season-card">
+                <div class="season-name">${s.name}</div>
+                <div class="season-months" style="font-size:11px;color:var(--cream-dim);margin-bottom:4px">${s.months}</div>
+                <div class="season-temp">${s.min}°–${s.max}°C</div>
+                <div class="season-precip" style="margin-top:4px">💧 ${s.precip}</div>
+                <div class="season-rating" style="margin-top:6px">${s.rating}</div>
+                <div class="season-highlight">${s.highlight}</div>
+              </div>
+            `).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function togglePill(id) {
+  const pill = document.getElementById('pill-'+id);
+  const arrow = document.getElementById('arrow-'+id);
+  pill.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function switchTab(countryId, tabName, btn) {
+  ['food','gems','climate'].forEach(t => {
+    const el = document.getElementById(`tab-${countryId}-${t}`);
+    if (el) el.classList.toggle('active', t === tabName);
+  });
+  btn.closest('.country-tabs').querySelectorAll('.country-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ── LEADERBOARD ───────────────────────────────────────────────────────
+function renderLeaderboard() {
+  document.getElementById('leaderboardList').innerHTML = LEADERBOARD.map(item => `
+    <div class="leaderboard-item">
+      <div class="rank ${item.rank<=3?'rank-'+item.rank:'rank-other'}">${item.rank <= 3 ? ['🥇','🥈','🥉'][item.rank-1] : item.rank}</div>
+      <div class="lb-avatar">${item.avatar}</div>
+      <div class="lb-info">
+        <div class="lb-name">@${item.name}</div>
+        <div class="lb-location">📍 ${item.location}</div>
+      </div>
+      <div class="lb-votes">
+        <span class="lb-votes-num">${item.votes.toLocaleString()}</span>
+        <span class="lb-votes-label">voti</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ── FLIGHT BANNER ─────────────────────────────────────────────────────
+const flightDB = {
+  'FR834': {airline:'Ryanair',logo:'✈️',bg:'#073590',from:'BGY',fromName:'Bergamo',to:'DUB',toName:'Dublino',dep:'06:25',arr:'08:40',duration:'2h15m',status:'on_time',gate:'B12',aircraft:'Boeing 737-800'},
+  'AZ203': {airline:'ITA Airways',logo:'🇮🇹',bg:'#003F8C',from:'FCO',fromName:'Roma Fiumicino',to:'JFK',toName:'New York JFK',dep:'11:05',arr:'14:30',duration:'10h25m',status:'on_time',gate:'E3',aircraft:'Airbus A330-200'},
+  'LX103': {airline:'Swiss',logo:'🇨🇭',bg:'#C8102E',from:'ZRH',fromName:'Zurigo',to:'NRT',toName:'Tokyo Narita',dep:'13:30',arr:'09:15',duration:'12h45m',status:'delayed',gate:'A22',aircraft:'Boeing 777-300ER'},
+  'EK211': {airline:'Emirates',logo:'🇦🇪',bg:'#C8102E',from:'DXB',fromName:'Dubai',to:'MXP',toName:'Milano Malpensa',dep:'08:10',arr:'13:05',duration:'7h55m',status:'on_time',gate:'C8',aircraft:'Airbus A380'},
+  'TK1882': {airline:'Turkish Airlines',logo:'🇹🇷',bg:'#E30A17',from:'IST',fromName:'Istanbul',to:'FCO',toName:'Roma Fiumicino',dep:'16:55',arr:'19:40',duration:'3h45m',status:'on_time',gate:'D15',aircraft:'Boeing 787-9'},
+  'FR743': {airline:'Ryanair',logo:'✈️',bg:'#073590',from:'DUB',fromName:'Dublino',to:'BCN',toName:'Barcellona',dep:'07:45',arr:'11:20',duration:'2h35m',status:'on_time',gate:'C7',aircraft:'Boeing 737 MAX 8-200'},
+};
+
+function searchFlight() {
+  const code = document.getElementById('flightInput').value.trim().toUpperCase();
+  const result = document.getElementById('flightResult');
+  const loading = document.getElementById('flightLoading');
+  if (!code) return showToast('⚠️ Inserisci un codice volo!');
+
+  result.classList.remove('show');
+  loading.style.display = 'inline-block';
+  
+  setTimeout(() => {
+    loading.style.display = 'none';
+    const flight = flightDB[code];
+    if (!flight) {
+      result.innerHTML = `<div style="color:var(--cream-dim);font-size:14px">❌ Volo <b style="color:var(--cream)">${code}</b> non trovato. Prova: FR834, AZ203, LX103, EK211, TK1882</div>`;
+      result.classList.add('show');
+      return;
+    }
+    const statusBadge = flight.status === 'on_time' 
+      ? '<span class="flight-badge badge-on-time">✅ In orario</span>'
+      : '<span class="flight-badge badge-delayed">⚠️ Ritardo 35 min</span>';
+    
+    result.innerHTML = `
+      <div class="airline-logo-box" style="color:${flight.bg};font-size:13px;font-weight:800;line-height:1.1;text-align:center">${flight.logo}<div style="font-size:9px;font-weight:900;color:${flight.bg};letter-spacing:-.5px">${flight.airline.split(' ')[0].toUpperCase()}</div></div>
+      <div class="flight-route">
+        <div class="flight-airport">
+          <span class="airport-code">${flight.from}</span>
+          <span class="airport-name">${flight.fromName}</span>
+          <span style="font-size:14px;font-weight:700;color:var(--amber);display:block;margin-top:4px">${flight.dep}</span>
+        </div>
+        <div class="flight-line">
+          <div class="flight-plane-icon">✈</div>
+          <div class="flight-dots"></div>
+          <div class="flight-duration">${flight.duration}</div>
+        </div>
+        <div class="flight-airport">
+          <span class="airport-code">${flight.to}</span>
+          <span class="airport-name">${flight.toName}</span>
+          <span style="font-size:14px;font-weight:700;color:var(--amber);display:block;margin-top:4px">${flight.arr}</span>
+        </div>
+      </div>
+      <div class="flight-info-badges">
+        ${statusBadge}
+        <span class="flight-badge badge-info">🚪 Gate ${flight.gate}</span>
+        <span class="flight-badge badge-info">✈️ ${flight.aircraft}</span>
+        <span class="flight-badge badge-info">🏷️ ${code}</span>
+      </div>
+    `;
+    result.classList.add('show');
+  }, 1200);
+}
+
+document.getElementById('flightInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') searchFlight();
+});
+
+// ── TRIP TYPE ─────────────────────────────────────────────────────────
+let selectedTripType = 'adventure';
+function selectTripType(btn, type) {
+  document.querySelectorAll('.trip-type-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedTripType = type;
+}
+
+// ── ITINERARY GENERATOR ───────────────────────────────────────────────
+function generateItinerary() {
+  const dest = document.getElementById('plannerDest').value;
+  const duration = document.getElementById('durationRange').value;
+  if (!dest) { showToast('⚠️ Seleziona una destinazione!'); return; }
+
+  const placeholder = document.querySelector('.itinerary-placeholder');
+  const content = document.getElementById('itineraryContent');
+  const result = document.getElementById('itineraryResult');
+
+  placeholder.style.display = 'flex';
+  placeholder.innerHTML = `<div class="spinner" style="width:32px;height:32px;margin-bottom:12px"></div><div style="color:var(--cream-dim);font-size:14px">Generando il tuo itinerario con AI...</div>`;
+  content.classList.remove('show');
+
+  setTimeout(() => {
+    const itinerary = ITINERARIES[dest];
+    if (!itinerary) {
+      showToast('⚠️ Itinerario per questa destinazione in arrivo presto!');
+      placeholder.innerHTML = `<span class="placeholder-icon">🗺️</span><div class="placeholder-text">Seleziona destinazione e preferenze</div>`;
+      return;
+    }
+    placeholder.style.display = 'none';
+    content.innerHTML = `
+      <div class="itinerary-header">
+        <div class="itinerary-dest">${itinerary.dest}</div>
+        <div class="itinerary-meta">📅 ${duration} giorni · 🎯 ${selectedTripType} · Generato con AI ✨</div>
+      </div>
+      ${itinerary.days.slice(0, Math.min(parseInt(duration), 3)).map((d,i) => `
+        <div class="itinerary-day">
+          <div class="day-header">
+            <div class="day-number">${i+1}</div>
+            <div class="day-title">${d.title}</div>
+          </div>
+          <ul class="day-activities">
+            ${d.activities.map(a => {
+              const timeMatch = a.match(/^(\d{2}:\d{2})\s+(.+)/);
+              if (timeMatch) return `<li><span class="activity-time">${timeMatch[1]}</span>${timeMatch[2]}</li>`;
+              return `<li><span class="activity-time">——</span>${a}</li>`;
+            }).join('')}
+          </ul>
+        </div>
+      `).join('')}
+      <div class="packing-list">
+        <div class="packing-title">🧳 Lista Valigia</div>
+        <div class="packing-grid">
+          ${itinerary.packing.map(item => `
+            <div class="packing-item"><span class="packing-check">✓</span>${item}</div>
+          `).join('')}
+        </div>
+      </div>
+    `;
+    content.classList.add('show');
+    result.style.alignItems = 'flex-start';
+    result.style.justifyContent = 'flex-start';
+  }, 1800);
+}
+
+// ── API TABLE ─────────────────────────────────────────────────────────
+function renderApiTable() {
+  document.getElementById('apiTableBody').innerHTML = API_TABLE.map(row => `
+    <tr>
+      <td style="color:var(--cream)">${row.fn}</td>
+      <td><span class="api-name">${row.api}</span></td>
+      <td>${row.free}</td>
+      <td class="${row.cost.includes('Gratuito')?'free-badge':'paid-badge'}">${row.cost}</td>
+    </tr>
+  `).join('');
+}
+
+// ── MODAL ─────────────────────────────────────────────────────────────
+function openModal() { document.getElementById('loginModal').classList.add('show'); }
+function closeModal() { document.getElementById('loginModal').classList.remove('show'); }
+function switchModalTab(btn, tab) {
+  document.querySelectorAll('.modal-tab').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('loginForm').style.display = tab === 'login' ? 'block' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? 'block' : 'none';
+}
+
+// ── TOAST ─────────────────────────────────────────────────────────────
+let toastTimeout;
+function showToast(msg) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  clearTimeout(toastTimeout);
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  const parts = msg.match(/^([\u{1F000}-\u{1FFFF}]|\S+\s)/u) || [''];
+  toast.innerHTML = `<span class="toast-text">${msg}</span>`;
+  document.body.appendChild(toast);
+  toastTimeout = setTimeout(() => { toast.style.opacity='0'; toast.style.transition='opacity .3s'; setTimeout(()=>toast.remove(),300); }, 3500);
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────
+renderCountries();
+renderLeaderboard();
+renderApiTable();
+
+// Intersection observer for animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.style.opacity = '1';
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.country-card, .arch-card, .dash-card').forEach(el => {
+  el.style.opacity = '0';
+  el.style.transition = 'opacity 0.6s ease, transform 0.35s cubic-bezier(0.23, 1, 0.32, 1)';
+  observer.observe(el);
+});
+</script>
+</body>
+</html>
