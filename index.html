@@ -2,7 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>WanderQuest v2.0 — Ecosistema Globale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,8 +30,8 @@
   --hero-grad: linear-gradient(160deg, #080C1A 0%, #0D1530 40%, #162040 100%);
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow-x: hidden; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow-x: hidden; -webkit-text-size-adjust: 100%; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--ink); }
 ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
@@ -50,9 +50,90 @@ nav {
 .nav-links { display: flex; gap: 4px; }
 .nav-links a { color: var(--cream-dim); text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; transition: all 0.2s; }
 .nav-links a:hover { color: var(--amber); background: rgba(232,162,40,0.08); }
+.nav-links a.active { color: var(--amber); background: rgba(232,162,40,0.08); }
 .badge-new { background: var(--teal); color: var(--ink); font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
 .nav-cta { background: var(--amber); color: var(--ink); border: none; padding: 9px 20px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; }
 .nav-cta:hover { background: var(--amber-bright); transform: translateY(-1px); }
+
+/* ── HAMBURGER ── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column; justify-content: center; align-items: center;
+  width: 36px; height: 36px; gap: 5px;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+  border-radius: 8px; cursor: pointer; padding: 0;
+  transition: background 0.2s;
+}
+.nav-hamburger:hover { background: rgba(255,255,255,0.1); }
+.nav-hamburger span {
+  display: block; width: 18px; height: 1.5px;
+  background: var(--cream); border-radius: 2px;
+  transition: all 0.25s ease;
+  transform-origin: center;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
+
+/* ── MOBILE DRAWER ── */
+.mobile-drawer {
+  position: fixed; top: 57px; left: 0; right: 0;
+  background: rgba(8,12,26,0.98);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--glass-border);
+  z-index: 190; padding: 16px 20px 20px;
+  display: flex; flex-direction: column; gap: 4px;
+  transform: translateY(-110%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.mobile-drawer.open { transform: translateY(0); }
+.mobile-drawer a {
+  display: flex; align-items: center; gap: 10px;
+  color: var(--cream-dim); text-decoration: none;
+  padding: 12px 16px; border-radius: 10px;
+  font-size: 14px; font-weight: 500;
+  transition: all 0.15s;
+}
+.mobile-drawer a:hover, .mobile-drawer a.active {
+  color: var(--amber); background: rgba(232,162,40,0.08);
+}
+.mobile-drawer-divider { height: 1px; background: var(--glass-border); margin: 8px 0; }
+.mobile-drawer-auth {
+  display: flex; gap: 8px; padding: 4px 0;
+}
+.mobile-drawer-btn {
+  flex: 1; padding: 11px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; border: none; transition: all 0.2s;
+}
+.mobile-drawer-btn.secondary {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); color: var(--cream);
+}
+.mobile-drawer-btn.primary { background: var(--amber); color: var(--ink); }
+.mobile-drawer-btn.primary:hover { background: var(--amber-bright); }
+
+/* ── VALIGIE BADGE in nav menu ── */
+.nav-valigie-badge {
+  margin-left: auto;
+  background: rgba(24,197,168,0.15); border: 1px solid rgba(24,197,168,0.25);
+  color: var(--teal); padding: 1px 7px; border-radius: 100px;
+  font-size: 10px; font-weight: 700;
+}
+
+/* ── BACK TO TOP ── */
+.back-to-top {
+  position: fixed; bottom: 28px; right: 28px; z-index: 300;
+  width: 44px; height: 44px; border-radius: 12px;
+  background: rgba(8,12,26,0.92); border: 1px solid var(--glass-border);
+  color: var(--cream-dim); font-size: 18px;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; opacity: 0; pointer-events: none;
+  transition: opacity 0.25s, transform 0.25s, background 0.2s;
+  transform: translateY(10px);
+  backdrop-filter: blur(10px);
+}
+.back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
+.back-to-top:hover { background: rgba(232,162,40,0.15); border-color: rgba(232,162,40,0.3); color: var(--amber); }
 
 /* ── SECTIONS ── */
 section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
@@ -168,8 +249,9 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 .city-tag { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 4px; padding: 2px 7px; font-size: 10px; font-weight: 500; color: var(--cream-dim); }
 
 /* ── CITY DETAIL ── */
-#city-detail { display: none; padding: 60px 48px; max-width: 1200px; margin: 0 auto; }
+#city-detail { display: none; max-width: 1200px; margin: 0 auto; }
 #city-detail.show { display: block; animation: fadeIn 0.5s ease; }
+.city-detail-inner { padding: 60px 48px; }
 .detail-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; gap: 20px; flex-wrap: wrap; }
 .detail-title { font-family: 'Playfair Display', serif; font-size: clamp(36px, 5vw, 56px); font-weight: 900; letter-spacing: -2px; }
 .detail-title .dest-country { font-size: 16px; font-family: 'DM Sans', sans-serif; font-weight: 400; color: var(--amber); letter-spacing: 0.05em; display: block; margin-bottom: 6px; }
@@ -387,21 +469,225 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 
 /* ── RESPONSIVE ── */
 @media(max-width:768px) {
-  nav { padding: 14px 20px; }
+
+  /* ── Nav ── */
+  nav { padding: 13px 16px; }
   .nav-links { display: none; }
-  section, #packing .inner, #premium .inner, #contest .inner, #explorer .inner { padding-left: 20px; padding-right: 20px; }
-  .flight-banner-inner { padding: 14px 20px; }
-  .detail-grid { grid-template-columns: 1fr; }
-  #hero { padding: 120px 24px 72px; }
-  .hero-title { letter-spacing: -1.5px; }
+  .nav-cta { display: none; }
+  .nav-hamburger { display: flex; }
+  .nav-logo { font-size: 18px; }
+  .nav-user-pill { padding: 6px 10px 6px 8px; font-size: 12px; }
+  .nav-user-avatar { width: 22px; height: 22px; font-size: 10px; }
+
+  /* ── Sections inner padding ── */
+  section,
+  #packing .inner,
+  #premium .inner,
+  #contest .inner,
+  #explorer .inner,
+  #how-it-works .inner,
+  #social-proof .inner { padding-left: 16px; padding-right: 16px; }
+
+  /* ── Hero ── */
+  #hero { padding: 108px 16px 60px; min-height: auto; }
+  .hero-title { font-size: clamp(28px, 8vw, 40px); letter-spacing: -1px; }
+  .hero-sub { font-size: 14px; margin-bottom: 28px; }
+  .hero-ctas { gap: 10px; }
+  .hero-cta-primary, .hero-cta-secondary { padding: 13px 22px; font-size: 14px; width: 100%; text-align: center; }
+  .hero-mockup { margin-top: 36px; }
   .mockup-preview { grid-template-columns: repeat(3,1fr); gap: 6px; }
-  .hiw-grid { grid-template-columns: 1fr; }
-  #how-it-works .inner, #social-proof .inner { padding-left: 20px; padding-right: 20px; }
+  .mockup-card { padding: 10px 6px; }
+  .mockup-card-emoji { font-size: 20px; }
+  .mockup-card-label { font-size: 9px; }
+  .mockup-card-sub { display: none; }
+
+  /* ── Explorer ── */
+  .continent-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
+  .country-grid   { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 10px; }
+  .city-grid      { grid-template-columns: 1fr; gap: 12px; }
+  .drill-steps    { gap: 6px; }
+  .drill-step     { font-size: 11px; padding: 6px 12px; }
+
+  /* ── City detail (inline style override) ── */
+  .city-detail-inner { padding: 24px 16px; }
+  .detail-header { flex-direction: column; gap: 12px; margin-bottom: 24px; }
+  .detail-title { font-size: clamp(26px, 7vw, 36px); letter-spacing: -1px; }
+  .detail-grid { grid-template-columns: 1fr; gap: 14px; }
+  .affiliate-grid { grid-template-columns: 1fr; }
+  .affiliate-title { font-size: 17px; }
+
+  /* ── Flight banner ── */
+  .flight-banner-inner { padding: 12px 16px; flex-direction: column; align-items: stretch; gap: 10px; }
+  .flight-input-wrap { min-width: 0; max-width: 100%; }
+  #flight-result { min-width: 0; }
+
+  /* ── How it works ── */
+  .hiw-grid { grid-template-columns: 1fr; gap: 14px; }
+  .hiw-card { padding: 24px 20px; }
+  .hiw-icon { font-size: 34px; }
+  .hiw-title { font-size: 18px; }
+
+  /* ── Packing planner ── */
+  .planner-controls { grid-template-columns: 1fr; gap: 12px; }
+  .packing-categories { grid-template-columns: 1fr; }
+  #packing-result > div:first-child { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .packing-save-btn, #packing-result button { width: 100%; justify-content: center; }
+
+  /* ── Social proof ── */
   .metrics-banner { grid-template-columns: repeat(2,1fr); }
-  .testimonials-grid { grid-template-columns: 1fr; }
-  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
-  #footer { padding: 48px 20px 28px; }
-  .footer-bottom { flex-direction: column; align-items: flex-start; }
+  .metric-value { font-size: 26px; }
+  .testimonials-grid { grid-template-columns: 1fr; gap: 14px; }
+
+  /* ── Premium table ── */
+  .compare-table thead th { padding: 14px 12px; }
+  .compare-table tbody td { padding: 12px; font-size: 12px; }
+  .plan-name { font-size: 16px; }
+  .plan-price { font-size: 20px; }
+
+  /* ── Modals ── */
+  .modal-overlay { padding: 0; align-items: flex-end; }
+  .auth-modal { border-radius: 20px 20px 0 0; padding: 28px 20px 32px; max-width: 100%; }
+  .modal-lg {
+    border-radius: 20px 20px 0 0;
+    max-height: 92vh;
+    max-width: 100%;
+  }
+  .modal-header { padding: 18px 20px 14px; }
+  .modal-body { padding: 16px 20px 20px; }
+  .upgrade-modal { border-radius: 20px 20px 0 0; max-width: 100%; }
+  .upgrade-modal-hero { padding: 24px 20px 18px; }
+  .upgrade-modal-price { font-size: 36px; }
+  .upgrade-modal-body { padding: 18px 20px 24px; }
+  .upgrade-perk { padding: 10px 12px; }
+  .profile-stats { grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .profile-stat { padding: 12px 8px; }
+  .profile-stat-val { font-size: 18px; }
+
+  /* ── Footer ── */
+  .footer-top { grid-template-columns: 1fr; gap: 28px; }
+  .footer-brand-desc { max-width: 100%; }
+  #footer { padding: 40px 16px 24px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .footer-badges { flex-wrap: wrap; gap: 6px; }
+
+  /* ── Back to top ── */
+  .back-to-top { bottom: 16px; right: 12px; width: 40px; height: 40px; font-size: 16px; }
+
+  /* ── Search ── */
+  .search-input-row { border-radius: 12px; }
+  #globalSearch { font-size: 14px; padding: 12px 0; }
+  .search-dropdown { border-radius: 0 0 14px 14px; }
+  .search-result-item { padding: 11px 14px; gap: 10px; }
+
+  /* ── Section titles ── */
+  .section-title { letter-spacing: -1px; }
+  .section-sub { font-size: 14px; margin-bottom: 32px; }
+
+  /* ── General ── */
+  .detail-grid { grid-template-columns: 1fr; }
+  .contest-layout { grid-template-columns: 1fr; }
+
+  /* ── Contest / leaderboard ── */
+  .leaderboard-header { flex-direction: column; align-items: flex-start; gap: 8px; }
+  .lb-row { padding: 12px 16px; gap: 10px; }
+  .swipe-explainer { padding: 16px; }
+
+  /* ── Premium table on mobile — stackable ── */
+  .compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .compare-table { min-width: 480px; }
+
+  /* ── Income streams ── */
+  .income-streams { grid-template-columns: 1fr 1fr; }
+
+  /* ── Nav user dropdown ── */
+  .nav-user-menu { right: -8px; min-width: 190px; }
+  .nav-menu-item { padding: 11px 16px; font-size: 12px; }
+}
+
+/* ── SMALL PHONES (≤480px) ── */
+@media(max-width:480px) {
+
+  /* Nav */
+  .nav-logo { font-size: 16px; }
+  .nav-auth-area { gap: 6px; }
+
+  /* Hero */
+  #hero { padding: 96px 14px 52px; }
+  .hero-title { font-size: clamp(24px, 9vw, 34px); }
+  .hero-eyebrow { font-size: 9px; padding: 4px 12px; }
+  .mockup-preview { grid-template-columns: repeat(3,1fr); gap: 4px; }
+
+  /* Explorer */
+  .continent-grid { grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .continent-card { padding: 16px 10px; }
+  .continent-emoji { font-size: 28px; }
+  .continent-name { font-size: 14px; }
+  .country-grid { grid-template-columns: repeat(2,1fr); gap: 8px; }
+  .country-card { padding: 14px 10px; }
+  .country-flag { font-size: 24px; }
+  .drill-step { font-size: 10px; padding: 5px 10px; }
+
+  /* City detail */
+  .city-detail-inner { padding: 18px 14px; }
+  .detail-title { font-size: clamp(22px, 8vw, 30px); }
+  .aff-img-placeholder { height: 90px; font-size: 36px; }
+
+  /* Sections */
+  section,
+  #packing .inner,
+  #premium .inner,
+  #contest .inner,
+  #explorer .inner,
+  #how-it-works .inner,
+  #social-proof .inner { padding-left: 14px; padding-right: 14px; }
+
+  /* How it works */
+  .hiw-card { padding: 20px 16px; }
+  .hiw-icon { font-size: 30px; }
+  .hiw-title { font-size: 16px; }
+  .hiw-text { font-size: 13px; }
+
+  /* Social proof */
+  .metrics-banner { grid-template-columns: repeat(2,1fr); }
+  .metric-value { font-size: 22px; }
+  .metric-label { font-size: 11px; }
+  .testimonial-card { padding: 20px 16px; }
+  .testimonial-text { font-size: 13px; }
+
+  /* Packing */
+  .generate-btn { padding: 11px 18px; font-size: 13px; }
+  .pack-item { gap: 8px; }
+
+  /* Modals */
+  .auth-modal { padding: 22px 16px 28px; }
+  .modal-header { padding: 16px 16px 12px; }
+  .modal-body { padding: 14px 16px 18px; }
+  .upgrade-modal-hero { padding: 20px 16px 14px; }
+  .upgrade-modal-price { font-size: 30px; }
+  .upgrade-modal-body { padding: 14px 16px 20px; }
+  .profile-stats { grid-template-columns: repeat(3,1fr); gap: 6px; }
+  .profile-stat-val { font-size: 16px; }
+  .profile-stat-lbl { font-size: 9px; }
+  .profile-hero { flex-direction: column; gap: 12px; }
+
+  /* Footer */
+  .footer-top { grid-template-columns: 1fr; }
+  #footer { padding: 32px 14px 20px; }
+  .footer-brand-logo { font-size: 18px; }
+  .footer-socials { gap: 8px; }
+
+  /* Income streams */
+  .income-streams { grid-template-columns: 1fr; }
+
+  /* Contest */
+  .lb-row { padding: 10px 14px; gap: 8px; }
+  .lb-photo { width: 36px; height: 36px; font-size: 18px; }
+
+  /* Search */
+  #globalSearch { font-size: 13px; }
+
+  /* Section titles */
+  .section-title { font-size: clamp(24px, 8vw, 36px); }
 }
 
 /* ── HERO SECTION ── */
@@ -713,6 +999,132 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   color: var(--cream-dim);
 }
 
+/* ── PROFILE & VALIGIE MODALS ── */
+.modal-lg {
+  background: #0E1628;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px; padding: 0;
+  width: 100%; max-width: 620px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  position: relative; overflow: hidden;
+  max-height: 88vh; display: flex; flex-direction: column;
+}
+.modal-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 24px 28px 20px;
+  border-bottom: 1px solid var(--glass-border);
+  flex-shrink: 0;
+}
+.modal-header-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 700; color: var(--cream);
+}
+.modal-header-sub { font-size: 12px; color: var(--cream-dim); margin-top: 2px; }
+.modal-body { padding: 24px 28px; overflow-y: auto; flex: 1; }
+.modal-body::-webkit-scrollbar { width: 3px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
+
+/* Profile */
+.profile-hero {
+  display: flex; align-items: center; gap: 18px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  border-radius: 14px; padding: 20px; margin-bottom: 20px;
+}
+.profile-avatar-lg {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber), var(--amber-dim));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px; font-weight: 800; color: var(--ink); flex-shrink: 0;
+}
+.profile-info-email { font-size: 14px; font-weight: 600; color: var(--cream); margin-bottom: 4px; }
+.profile-info-joined { font-size: 11px; color: var(--cream-dim); }
+.plan-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 12px; border-radius: 100px; font-size: 11px; font-weight: 800;
+  letter-spacing: 0.06em; text-transform: uppercase; margin-top: 6px;
+}
+.plan-badge.free { background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border); color: var(--cream-dim); }
+.plan-badge.pro  { background: rgba(232,162,40,0.15); border: 1px solid rgba(232,162,40,0.3); color: var(--amber); }
+.profile-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+.profile-stat {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  border-radius: 12px; padding: 16px 12px; text-align: center;
+}
+.profile-stat-val { font-family: 'DM Mono', monospace; font-size: 22px; font-weight: 500; color: var(--amber); }
+.profile-stat-lbl { font-size: 10px; color: var(--cream-dim); margin-top: 3px; line-height: 1.3; }
+.profile-upgrade-banner {
+  background: rgba(232,162,40,0.08); border: 1px solid rgba(232,162,40,0.2);
+  border-radius: 12px; padding: 16px 20px;
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+}
+.profile-upgrade-text { font-size: 13px; color: var(--cream); font-weight: 500; }
+.profile-upgrade-text strong { color: var(--amber); }
+.profile-upgrade-btn {
+  background: var(--amber); color: var(--ink);
+  border: none; padding: 9px 18px; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px;
+  cursor: pointer; white-space: nowrap; transition: background 0.2s;
+  flex-shrink: 0;
+}
+.profile-upgrade-btn:hover { background: var(--amber-bright); }
+
+/* Saved Valigie */
+.valigie-empty {
+  text-align: center; padding: 48px 24px;
+  color: var(--cream-dim); font-size: 14px; line-height: 1.7;
+}
+.valigie-empty-icon { font-size: 52px; margin-bottom: 14px; }
+.valigie-empty-cta {
+  display: inline-block; margin-top: 18px;
+  background: var(--amber); color: var(--ink);
+  border: none; padding: 11px 24px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+  cursor: pointer; transition: all 0.2s;
+}
+.valigie-empty-cta:hover { background: var(--amber-bright); }
+.valigia-card {
+  background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  border-radius: 14px; padding: 18px 20px; margin-bottom: 12px;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+  transition: border-color 0.2s;
+}
+.valigia-card:hover { border-color: rgba(255,255,255,0.2); }
+.valigia-card-left { flex: 1; min-width: 0; }
+.valigia-card-name { font-size: 15px; font-weight: 700; color: var(--cream); margin-bottom: 5px; }
+.valigia-card-meta { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+.valigia-meta-tag {
+  font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 4px;
+  background: rgba(24,197,168,0.1); border: 1px solid rgba(24,197,168,0.15); color: var(--teal);
+}
+.valigia-meta-tag.season { background: rgba(232,162,40,0.1); border-color: rgba(232,162,40,0.15); color: var(--amber); }
+.valigia-card-date { font-size: 11px; color: var(--cream-dim); }
+.valigia-card-actions { display: flex; gap: 8px; flex-shrink: 0; }
+.valigia-action-btn {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+  color: var(--cream-dim); padding: 6px 12px; border-radius: 7px;
+  font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+  font-family: 'DM Sans', sans-serif;
+}
+.valigia-action-btn:hover { background: rgba(255,255,255,0.1); color: var(--cream); }
+.valigia-action-btn.delete:hover { background: rgba(232,64,64,0.1); border-color: rgba(232,64,64,0.2); color: var(--red); }
+.valigie-count-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.2);
+  color: var(--amber); padding: 3px 10px; border-radius: 100px;
+  font-size: 11px; font-weight: 700; margin-left: 8px;
+}
+
+/* Save button in packing result */
+.packing-save-btn {
+  display: inline-flex; align-items: center; gap: 7px;
+  background: rgba(24,197,168,0.12); border: 1px solid rgba(24,197,168,0.25);
+  color: var(--teal); padding: 10px 18px; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 700;
+  cursor: pointer; transition: all 0.2s;
+}
+.packing-save-btn:hover { background: rgba(24,197,168,0.22); border-color: rgba(24,197,168,0.4); transform: translateY(-1px); }
+.packing-save-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
 /* ── AUTH MODAL ── */
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1000;
@@ -828,6 +1240,78 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── UPGRADE MODAL ── */
+.upgrade-modal {
+  background: #0E1628;
+  border: 1px solid rgba(232,162,40,0.2);
+  border-radius: 24px; padding: 0;
+  width: 100%; max-width: 500px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7), 0 0 0 1px rgba(232,162,40,0.06);
+  position: relative; overflow: hidden;
+}
+.upgrade-modal-hero {
+  background: linear-gradient(135deg, rgba(232,162,40,0.12) 0%, rgba(232,162,40,0.04) 100%);
+  border-bottom: 1px solid rgba(232,162,40,0.15);
+  padding: 32px 32px 24px; text-align: center;
+}
+.upgrade-modal-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(232,162,40,0.15); border: 1px solid rgba(232,162,40,0.3);
+  color: var(--amber); padding: 4px 14px; border-radius: 100px;
+  font-size: 11px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 14px;
+}
+.upgrade-modal-price {
+  font-family: 'DM Mono', monospace; font-size: 44px; font-weight: 500;
+  color: var(--amber); line-height: 1; margin-bottom: 4px;
+}
+.upgrade-modal-price sup { font-size: 22px; vertical-align: super; }
+.upgrade-modal-price sub { font-size: 16px; color: var(--cream-dim); font-family: 'DM Sans', sans-serif; }
+.upgrade-modal-tagline { font-size: 13px; color: var(--cream-dim); }
+.upgrade-modal-body { padding: 24px 32px 28px; }
+.upgrade-perks { display: flex; flex-direction: column; gap: 10px; margin-bottom: 22px; }
+.upgrade-perk {
+  display: flex; align-items: flex-start; gap: 12px;
+  padding: 12px 14px; border-radius: 10px;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+}
+.upgrade-perk-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+.upgrade-perk-text { font-size: 13px; color: var(--cream); line-height: 1.5; }
+.upgrade-perk-text strong { color: var(--amber); }
+.upgrade-modal-cta {
+  width: 100%; padding: 15px;
+  background: var(--amber); color: var(--ink);
+  border: none; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 16px;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 8px 28px rgba(232,162,40,0.4); margin-bottom: 10px;
+}
+.upgrade-modal-cta:hover { background: var(--amber-bright); transform: translateY(-2px); box-shadow: 0 12px 36px rgba(232,162,40,0.5); }
+.upgrade-modal-fine { font-size: 11px; color: var(--cream-dim); text-align: center; opacity: 0.7; }
+
+/* ── PRINT STYLES ── */
+@media print {
+  nav, .mobile-drawer, #hero, #how-it-works, #social-proof,
+  #premium, #contest, #footer, #flight-banner,
+  .back-to-top, .modal-overlay, .packing-save-btn,
+  button[onclick*="printPacking"], .affiliate-section,
+  .affiliate-disclaimer, #city-detail, #explorer { display: none !important; }
+  body { background: #fff !important; color: #111 !important; font-size: 12pt; }
+  #packing { background: #fff !important; padding: 0 !important; }
+  #packing .inner { padding: 0 !important; max-width: 100% !important; }
+  .pack-cat { border: 1px solid #ddd !important; background: #fff !important; break-inside: avoid; margin-bottom: 12pt; }
+  .pack-item { border-bottom: 1px solid #eee !important; }
+  .pack-item-label { color: #111 !important; font-size: 11pt; }
+  .pack-check { border: 1.5px solid #999 !important; }
+  .pack-check.checked { background: #333 !important; border-color: #333 !important; }
+  .pack-cat-title { color: #111 !important; font-size: 13pt; }
+  .pack-cat-count { color: #666 !important; }
+  .packing-categories { display: block !important; }
+  .pack-aff-btn { display: none !important; }
+  h2, h3 { color: #111 !important; }
+  .section-label { background: none !important; border: 1px solid #ccc !important; color: #555 !important; }
+}
+
 /* ── UTIL ── */
 .hidden { display: none !important; }
 </style>
@@ -860,15 +1344,35 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
         <div class="nav-menu-header">
           <div class="nav-menu-email" id="navUserEmail">—</div>
         </div>
-        <button class="nav-menu-item" onclick="showToast('👤 Sezione Profilo — disponibile presto!')">👤 Il mio Profilo</button>
-        <button class="nav-menu-item" onclick="showToast('🧳 Le mie Valigie salvate — disponibile presto!')">🧳 Le mie Valigie</button>
+        <button class="nav-menu-item" onclick="openMyProfile()">👤 Il mio Profilo</button>
+        <button class="nav-menu-item" onclick="openMyValigie()">🧳 Le mie Valigie <span class="nav-valigie-badge hidden" id="navValigieBadge">0</span></button>
         <div class="nav-menu-divider"></div>
         <button class="nav-menu-item danger" onclick="logoutUser()">← Esci</button>
       </div>
     </div>
     <button class="nav-cta" onclick="openUpgrade()">Diventa Pro →</button>
+    <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileDrawer()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
   </div>
 </nav>
+
+<!-- MOBILE DRAWER -->
+<div class="mobile-drawer" id="mobileDrawer">
+  <a href="#explorer"      onclick="closeMobileDrawer()">🌍 Explorer</a>
+  <a href="#how-it-works"  onclick="closeMobileDrawer()">⚙️ Come Funziona</a>
+  <a href="#packing"       onclick="closeMobileDrawer()">🧳 Packing Planner</a>
+  <a href="#premium"       onclick="closeMobileDrawer()">⭐ Premium</a>
+  <a href="#contest"       onclick="closeMobileDrawer()">📸 Contest</a>
+  <div class="mobile-drawer-divider"></div>
+  <div class="mobile-drawer-auth" id="mobileDrawerAuth">
+    <button class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openAuthModal('login')">Accedi</button>
+    <button class="mobile-drawer-btn primary"   onclick="closeMobileDrawer();openAuthModal('register')">Registrati</button>
+  </div>
+</div>
+
+<!-- BACK TO TOP -->
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Torna su">↑</button>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- HERO — VALUE PROPOSITION -->
@@ -1194,7 +1698,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
           <tr>
             <td></td>
             <td class="plan-free"><button onclick="showToast('👋 Benvenuto nel piano Free!')" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:14px;border-radius:10px;font-family:\'DM Sans\',sans-serif;font-weight:600;font-size:14px;cursor:pointer;">Continua gratis</button></td>
-            <td class="plan-pro"><button class="upgrade-btn" onclick="showToast('🚀 Reindirizzamento al checkout… (demo)')">Upgrade a Explorer Plus →</button></td>
+            <td class="plan-pro"><button class="upgrade-btn" onclick="openUpgrade()">Upgrade a Explorer Plus →</button></td>
           </tr>
         </tfoot>
       </table>
@@ -1286,20 +1790,20 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
       <div>
         <div class="footer-col-title">Azienda</div>
         <div class="footer-links">
-          <a href="#" onclick="showToast('📖 Chi siamo — pagina in arrivo!')">Chi siamo</a>
-          <a href="#" onclick="showToast('🤝 Diventa Partner — scrivici!')">Diventa Partner</a>
-          <a href="#" onclick="showToast('✍️ Blog — in arrivo!')">Blog di viaggio</a>
-          <a href="#" onclick="showToast('📧 Press kit disponibile su richiesta')">Press & Media</a>
+          <a href="#" onclick="openInfoModal('about')">Chi siamo</a>
+          <a href="#" onclick="openInfoModal('partner')">Diventa Partner</a>
+          <a href="#" onclick="openInfoModal('blog')">Blog di viaggio</a>
+          <a href="#" onclick="openInfoModal('press')">Press & Media</a>
         </div>
       </div>
       <!-- Legale -->
       <div>
         <div class="footer-col-title">Legale & Privacy</div>
         <div class="footer-links">
-          <a href="#" onclick="showToast('📄 Termini e Condizioni — in redazione')">Termini e Condizioni</a>
-          <a href="#" onclick="showToast('🔒 Privacy Policy (GDPR + Firebase Auth)')">Privacy Policy</a>
-          <a href="#" onclick="showToast('🍪 Gestione Cookie — in arrivo')">Cookie Policy</a>
-          <a href="#" onclick="showToast('⚖️ Note legali affiliazioni Amazon & Booking')">Affiliazioni</a>
+          <a href="#" onclick="openInfoModal('terms')">Termini e Condizioni</a>
+          <a href="#" onclick="openInfoModal('privacy')">Privacy Policy</a>
+          <a href="#" onclick="openInfoModal('cookies')">Cookie Policy</a>
+          <a href="#" onclick="openInfoModal('affiliates')">Affiliazioni</a>
         </div>
       </div>
     </div>
@@ -1313,6 +1817,92 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
     </div>
   </div>
 </footer>
+
+<!-- ═══ PROFILO MODAL ═══ -->
+<div class="modal-overlay hidden" id="profileOverlay" onclick="handleProfileOverlayClick(event)">
+  <div class="modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-header-title">👤 Il mio Profilo</div>
+        <div class="modal-header-sub" id="profileHeaderSub">WanderQuest Account</div>
+      </div>
+      <button class="modal-close" onclick="closeProfileModal()">✕</button>
+    </div>
+    <div class="modal-body" id="profileBody">
+      <div class="grid-spinner"><div class="spinner"></div><span>Caricamento profilo…</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ LE MIE VALIGIE MODAL ═══ -->
+<div class="modal-overlay hidden" id="valigieOverlay" onclick="handleValigieOverlayClick(event)">
+  <div class="modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-header-title">🧳 Le mie Valigie <span class="valigie-count-badge" id="valigieCountBadge">0</span></div>
+        <div class="modal-header-sub">Lista salvate su cloud · sincronizzate su tutti i dispositivi</div>
+      </div>
+      <button class="modal-close" onclick="closeValigieModal()">✕</button>
+    </div>
+    <div class="modal-body" id="valigieBody">
+      <div class="grid-spinner"><div class="spinner"></div><span>Caricamento valigie…</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ INFO MODAL (Chi siamo, Privacy, Terms, ecc.) ═══ -->
+<div class="modal-overlay hidden" id="infoOverlay" onclick="handleInfoOverlayClick(event)">
+  <div class="modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-header-title" id="infoModalTitle">Info</div>
+        <div class="modal-header-sub" id="infoModalSub">WanderQuest</div>
+      </div>
+      <button class="modal-close" onclick="closeInfoModal()">✕</button>
+    </div>
+    <div class="modal-body" id="infoModalBody" style="line-height:1.75;font-size:14px;color:var(--cream-dim)"></div>
+  </div>
+</div>
+
+<!-- ═══ UPGRADE MODAL ═══ -->
+<div class="modal-overlay hidden" id="upgradeOverlay" onclick="handleUpgradeOverlayClick(event)">
+  <div class="upgrade-modal">
+    <button class="modal-close" style="position:absolute;top:16px;right:18px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;z-index:1" onclick="closeUpgradeModal()">✕</button>
+    <div class="upgrade-modal-hero">
+      <div class="upgrade-modal-badge">⭐ Explorer Plus</div>
+      <div class="upgrade-modal-price"><sup>€</sup>6,99<sub>/mese</sub></div>
+      <div class="upgrade-modal-tagline">Annulla quando vuoi · nessun vincolo</div>
+    </div>
+    <div class="upgrade-modal-body">
+      <div class="upgrade-perks">
+        <div class="upgrade-perk">
+          <div class="upgrade-perk-icon">🌍</div>
+          <div class="upgrade-perk-text"><strong>Tutte le destinazioni</strong> sbloccate — 38 paesi, nessun paywall sulla mappa</div>
+        </div>
+        <div class="upgrade-perk">
+          <div class="upgrade-perk-icon">💎</div>
+          <div class="upgrade-perk-text"><strong>Tutte le 3 Gemme Nascoste</strong> per città — non solo l'anteprima</div>
+        </div>
+        <div class="upgrade-perk">
+          <div class="upgrade-perk-icon">🧳</div>
+          <div class="upgrade-perk-text"><strong>Valigie illimitate</strong> su cloud + link affiliati Amazon illimitati</div>
+        </div>
+        <div class="upgrade-perk">
+          <div class="upgrade-perk-icon">📸</div>
+          <div class="upgrade-perk-text">Moltiplicatore <strong>×2 sui voti</strong> contest — più chances di vincere €150</div>
+        </div>
+        <div class="upgrade-perk">
+          <div class="upgrade-perk-icon">🚫</div>
+          <div class="upgrade-perk-text"><strong>Zero pubblicità</strong> in tutta l'app · esperienza pulita</div>
+        </div>
+      </div>
+      <button class="upgrade-modal-cta" onclick="handleUpgradeCheckout()">
+        Inizia ora — €6,99/mese →
+      </button>
+      <div class="upgrade-modal-fine">Pagamento sicuro · dati protetti · annullabile in 1 click</div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══ AUTH MODAL ═══ -->
 <div class="modal-overlay hidden" id="authOverlay" onclick="handleOverlayClick(event)">
@@ -1373,8 +1963,8 @@ import { initializeApp }                                    from 'https://www.gs
 import { getAuth, createUserWithEmailAndPassword,
          signInWithEmailAndPassword, signOut,
          onAuthStateChanged }                               from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-import { getFirestore, collection, getDocs,
-         doc, setDoc, updateDoc, arrayUnion }               from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+import { getFirestore, collection, getDocs, getDoc,
+         doc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyCX-TpXeBbJ2zo4iaxQWlLrmncI0_Bn0_8",
@@ -1832,9 +2422,21 @@ function clearSearch() {
   searchFocusIndex = -1;
 }
 
-function voteDestination(dest) {
+async function voteDestination(dest) {
   document.getElementById('searchDropdown').style.display = 'none';
-  showToast(`🗺️ Grazie! Abbiamo registrato la tua preferenza per "${dest}"`);
+  const user = firebaseAuth.currentUser;
+  if (user) {
+    try {
+      await updateDoc(doc(firestoreDb, 'users', user.uid), {
+        votedMete: arrayUnion({ dest, votedAt: new Date().toISOString() }),
+      });
+      showToast(`🗺️ Grazie! "${dest}" registrata nel tuo profilo.`);
+    } catch {
+      showToast(`🗺️ Grazie! Abbiamo registrato la tua preferenza per "${dest}"`);
+    }
+  } else {
+    showToast(`🗺️ Grazie! Abbiamo registrato la tua preferenza per "${dest}"`);
+  }
 }
 
 // Close dropdown on outside click
@@ -2054,7 +2656,7 @@ function renderCityDetail(code, city, country) {
   `).join('');
 
   detail.innerHTML = `
-    <div style="padding:60px 48px;max-width:1200px;margin:0 auto;">
+    <div class="city-detail-inner">
       <div class="detail-header">
         <div>
           <div class="detail-title">
@@ -2199,6 +2801,9 @@ const PACKING_DB = {
   }
 };
 
+// Stato valigia corrente — letto da savePackingList()
+let currentPacking = null;
+
 function precompilePacking(cityCode) {
   document.getElementById('packCity').value = cityCode;
 }
@@ -2254,6 +2859,9 @@ function generatePacking() {
     </div>
   `).join('');
 
+  // Salva stato per il bottone cloud
+  currentPacking = { city, cityName, season, tripType, totalItems };
+
   const result = document.getElementById('packing-result');
   result.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
@@ -2261,7 +2869,10 @@ function generatePacking() {
         <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700">Lista Valigia: ${cityName}</div>
         <div style="font-size:13px;color:var(--cream-dim);margin-top:4px">📅 ${season} · 🎯 ${tripType} · ${totalItems} oggetti totali</div>
       </div>
-      <button onclick="printPacking()" style="background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:10px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🖨️ Stampa / Salva PDF</button>
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <button class="packing-save-btn" id="packingSaveBtn" onclick="savePackingList()">☁️ Salva su Cloud</button>
+        <button onclick="printPacking()" style="background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:10px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🖨️ Stampa / Salva PDF</button>
+      </div>
     </div>
     <div class="packing-categories">${catHTML}</div>
     <div class="affiliate-disclaimer" style="margin-top:16px">🔗 I pulsanti 🛒 Amazon aprono link affiliati: stesso prezzo per te, piccola commissione per WanderQuest. Grazie!</div>
@@ -2275,7 +2886,8 @@ function toggleCheck(el) {
 }
 
 function printPacking() {
-  showToast('🖨️ Funzione stampa PDF — disponibile nella versione Pro con layout ottimizzato!');
+  // Give browser a tick to render before printing
+  setTimeout(() => window.print(), 80);
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -2396,6 +3008,73 @@ function renderGlobalLeaderboard() {
 
 
 // ═══════════════════════════════════════════════════════════════════════
+// MOBILE DRAWER
+// ═══════════════════════════════════════════════════════════════════════
+function toggleMobileDrawer() {
+  const drawer = document.getElementById('mobileDrawer');
+  const btn    = document.getElementById('navHamburger');
+  const open   = drawer.classList.toggle('open');
+  btn.classList.toggle('open', open);
+  // Prevent body scroll when drawer is open
+  document.body.style.overflow = open ? 'hidden' : '';
+}
+
+function closeMobileDrawer() {
+  document.getElementById('mobileDrawer').classList.remove('open');
+  document.getElementById('navHamburger').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// Close drawer on outside click
+document.addEventListener('click', e => {
+  const drawer = document.getElementById('mobileDrawer');
+  const btn    = document.getElementById('navHamburger');
+  if (drawer.classList.contains('open') && !drawer.contains(e.target) && !btn.contains(e.target)) {
+    closeMobileDrawer();
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// SCROLL-SPY — active nav link
+// ═══════════════════════════════════════════════════════════════════════
+const NAV_SECTIONS = ['hero','explorer','how-it-works','packing','social-proof','premium','contest'];
+const NAV_MAP = {
+  'hero':         '#explorer',    // hero scrolls into explorer link
+  'explorer':     '#explorer',
+  'how-it-works': '#how-it-works',
+  'packing':      '#packing',
+  'social-proof': '#premium',
+  'premium':      '#premium',
+  'contest':      '#contest',
+};
+
+function updateScrollSpy(activeId) {
+  document.querySelectorAll('.nav-links a, .mobile-drawer a').forEach(a => {
+    const target = NAV_MAP[activeId];
+    a.classList.toggle('active', a.getAttribute('href') === target);
+  });
+}
+
+const scrollObserver = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) updateScrollSpy(entry.target.id);
+  });
+}, { rootMargin: '-20% 0px -60% 0px', threshold: 0 });
+
+NAV_SECTIONS.forEach(id => {
+  const el = document.getElementById(id);
+  if (el) scrollObserver.observe(el);
+});
+
+// ═══════════════════════════════════════════════════════════════════════
+// BACK TO TOP
+// ═══════════════════════════════════════════════════════════════════════
+window.addEventListener('scroll', () => {
+  const btn = document.getElementById('backToTop');
+  if (btn) btn.classList.toggle('visible', window.scrollY > 500);
+}, { passive: true });
+
+// ═══════════════════════════════════════════════════════════════════════
 // TOAST
 // ═══════════════════════════════════════════════════════════════════════
 function showToast(msg) {
@@ -2409,7 +3088,47 @@ function showToast(msg) {
 }
 
 function openUpgrade() {
-  showToast('🚀 Checkout Explorer Plus — €6.99/mese · annulla quando vuoi!');
+  // If user is not logged in, prompt login first, then open upgrade
+  const user = firebaseAuth.currentUser;
+  if (!user) {
+    showToast('🔒 Accedi prima per procedere con l\'upgrade!');
+    openAuthModal('login');
+    return;
+  }
+  document.getElementById('upgradeOverlay').classList.remove('hidden');
+}
+
+function closeUpgradeModal() {
+  document.getElementById('upgradeOverlay').classList.add('hidden');
+}
+
+function handleUpgradeOverlayClick(e) {
+  if (e.target === document.getElementById('upgradeOverlay')) closeUpgradeModal();
+}
+
+async function handleUpgradeCheckout() {
+  const user = firebaseAuth.currentUser;
+  // Simulate checkout — in production replace with Stripe/Paddle redirect
+  const btn = document.querySelector('.upgrade-modal-cta');
+  btn.disabled = true;
+  btn.textContent = '⏳ Reindirizzamento…';
+  await new Promise(r => setTimeout(r, 1200));
+  // Simulate successful upgrade (write to Firestore)
+  if (user) {
+    try {
+      await updateDoc(doc(firestoreDb, 'users', user.uid), { plan: 'pro' });
+      closeUpgradeModal();
+      showToast('🎉 Benvenuto in Explorer Plus! Tutte le funzionalità sono ora sbloccate.');
+    } catch (err) {
+      closeUpgradeModal();
+      showToast('✅ Upgrade simulato! (Integra Stripe per il pagamento reale)');
+    }
+  } else {
+    closeUpgradeModal();
+    showToast('✅ Upgrade simulato! Effettua il login per salvare il piano.');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Inizia ora — €6,99/mese →';
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -2524,19 +3243,52 @@ async function logoutUser() {
   showToast('👋 Hai effettuato il logout.');
 }
 
-function updateNavAuth(user) {
+async function updateNavAuth(user) {
   const loggedOut = document.getElementById('navLoggedOut');
   const loggedIn  = document.getElementById('navLoggedIn');
+  const drawerAuth = document.getElementById('mobileDrawerAuth');
+
   if (user) {
     loggedOut.classList.add('hidden');
     loggedIn.classList.remove('hidden');
     const initial = (user.email || '?')[0].toUpperCase();
-    document.getElementById('navAvatar').textContent      = initial;
-    document.getElementById('navUserLabel').textContent   = user.displayName || user.email.split('@')[0];
-    document.getElementById('navUserEmail').textContent   = user.email;
+    document.getElementById('navAvatar').textContent    = initial;
+    document.getElementById('navUserLabel').textContent = user.displayName || user.email.split('@')[0];
+    document.getElementById('navUserEmail').textContent = user.email;
+
+    // Update mobile drawer: replace auth buttons with user info
+    if (drawerAuth) {
+      drawerAuth.innerHTML = `
+        <button class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openMyProfile()" style="flex:1">👤 Profilo</button>
+        <button class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openMyValigie()" style="flex:1">🧳 Valigie</button>
+      `;
+    }
+
+    // Fetch valigie count for badge (non-blocking)
+    try {
+      const snap = await getDoc(doc(firestoreDb, 'users', user.uid));
+      if (snap.exists()) {
+        const count = (snap.data().valigie || []).length;
+        const badge = document.getElementById('navValigieBadge');
+        if (badge) {
+          badge.textContent = count;
+          badge.classList.toggle('hidden', count === 0);
+        }
+      }
+    } catch { /* silently fail — badge is cosmetic */ }
+
   } else {
     loggedOut.classList.remove('hidden');
     loggedIn.classList.add('hidden');
+    // Restore mobile drawer auth buttons
+    if (drawerAuth) {
+      drawerAuth.innerHTML = `
+        <button class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openAuthModal('login')">Accedi</button>
+        <button class="mobile-drawer-btn primary"   onclick="closeMobileDrawer();openAuthModal('register')">Registrati</button>
+      `;
+    }
+    const badge = document.getElementById('navValigieBadge');
+    if (badge) badge.classList.add('hidden');
   }
 }
 
@@ -2605,6 +3357,409 @@ async function migrateDB() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+// SALVA VALIGIA — Firestore
+// ═══════════════════════════════════════════════════════════════════════
+async function savePackingList() {
+  const user = firebaseAuth.currentUser;
+  if (!user) {
+    showToast('🔒 Accedi per salvare la valigia sul cloud!');
+    openAuthModal('login');
+    return;
+  }
+  if (!currentPacking) { showToast('⚠️ Genera prima una lista valigia.'); return; }
+
+  const btn = document.getElementById('packingSaveBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '☁️ Salvataggio…'; }
+
+  const valigia = {
+    nome:      `${currentPacking.cityName} — ${currentPacking.season}`,
+    città:     currentPacking.city,
+    cityName:  currentPacking.cityName,
+    stagione:  currentPacking.season,
+    tipo:      currentPacking.tripType,
+    totale:    currentPacking.totalItems,
+    savedAt:   new Date().toISOString(),
+  };
+
+  try {
+    await updateDoc(doc(firestoreDb, 'users', user.uid), {
+      valigie: arrayUnion(valigia),
+    });
+    showToast(`✅ "${valigia.nome}" salvata su cloud!`);
+    if (btn) { btn.textContent = '✅ Salvata!'; btn.style.color = 'var(--green)'; }
+  } catch (err) {
+    console.error('[WQ] savePackingList:', err);
+    showToast('❌ Errore nel salvataggio. Riprova.');
+    if (btn) { btn.disabled = false; btn.textContent = '☁️ Salva su Cloud'; }
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// LE MIE VALIGIE — Modal
+// ═══════════════════════════════════════════════════════════════════════
+async function openMyValigie() {
+  hideUserMenu();
+  const user = firebaseAuth.currentUser;
+  if (!user) { showToast('🔒 Accedi per vedere le tue valigie!'); openAuthModal('login'); return; }
+
+  document.getElementById('valigieOverlay').classList.remove('hidden');
+  document.getElementById('valigieBody').innerHTML =
+    '<div class="grid-spinner"><div class="spinner"></div><span>Caricamento valigie…</span></div>';
+
+  try {
+    const snap = await getDoc(doc(firestoreDb, 'users', user.uid));
+    const data = snap.exists() ? snap.data() : {};
+    const valigie = data.valigie || [];
+
+    document.getElementById('valigieCountBadge').textContent = valigie.length;
+
+    if (valigie.length === 0) {
+      document.getElementById('valigieBody').innerHTML = `
+        <div class="valigie-empty">
+          <div class="valigie-empty-icon">🧳</div>
+          <div style="font-size:18px;font-weight:700;color:var(--cream);margin-bottom:8px;">Nessuna valigia salvata</div>
+          <div>Genera una lista dal Packing Planner e premi <strong style="color:var(--teal)">Salva su Cloud</strong> per ritrovarla qui su qualsiasi dispositivo.</div>
+          <button class="valigie-empty-cta" onclick="closeValigieModal();document.getElementById('packing').scrollIntoView({behavior:'smooth'})">
+            🧳 Vai al Packing Planner
+          </button>
+        </div>
+      `;
+      return;
+    }
+
+    // Render in reverse order (più recente prima)
+    const sorted = [...valigie].reverse();
+    document.getElementById('valigieBody').innerHTML = sorted.map((v, i) => {
+      const realIdx = valigie.length - 1 - i; // indice originale per eliminazione
+      const date = v.savedAt ? new Date(v.savedAt).toLocaleDateString('it-IT', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+      return `
+        <div class="valigia-card" id="valigia-card-${realIdx}">
+          <div class="valigia-card-left">
+            <div class="valigia-card-name">🧳 ${v.nome || v.cityName}</div>
+            <div class="valigia-card-meta">
+              <span class="valigia-meta-tag">📍 ${v.cityName}</span>
+              <span class="valigia-meta-tag season">📅 ${v.stagione}</span>
+              <span class="valigia-meta-tag">🎯 ${v.tipo}</span>
+              <span class="valigia-meta-tag">${v.totale} oggetti</span>
+            </div>
+            <div class="valigia-card-date">Salvata il ${date}</div>
+          </div>
+          <div class="valigia-card-actions">
+            <button class="valigia-action-btn" onclick="reloadValiglia('${v.città}','${v.stagione}','${v.tipo}')">↩ Ricarica</button>
+            <button class="valigia-action-btn delete" onclick="deleteValiglia(${realIdx})">🗑</button>
+          </div>
+        </div>
+      `;
+    }).join('');
+  } catch (err) {
+    console.error('[WQ] openMyValigie:', err);
+    document.getElementById('valigieBody').innerHTML =
+      '<div class="valigie-empty"><div class="valigie-empty-icon">⚠️</div><div>Errore nel caricamento. Riprova.</div></div>';
+  }
+}
+
+function closeValigieModal() {
+  document.getElementById('valigieOverlay').classList.add('hidden');
+}
+function handleValigieOverlayClick(e) {
+  if (e.target === document.getElementById('valigieOverlay')) closeValigieModal();
+}
+
+async function deleteValiglia(index) {
+  const user = firebaseAuth.currentUser;
+  if (!user) return;
+  try {
+    const snap = await getDoc(doc(firestoreDb, 'users', user.uid));
+    const valigie = snap.exists() ? (snap.data().valigie || []) : [];
+    const toDelete = valigie[index];
+    if (!toDelete) return;
+    await updateDoc(doc(firestoreDb, 'users', user.uid), {
+      valigie: arrayRemove(toDelete),
+    });
+    showToast('🗑️ Valigia eliminata.');
+    openMyValigie(); // ricarica il modal
+  } catch (err) {
+    console.error('[WQ] deleteValiglia:', err);
+    showToast('❌ Errore nell\'eliminazione.');
+  }
+}
+
+function reloadValiglia(city, season, tipo) {
+  closeValigieModal();
+  document.getElementById('packCity').value   = city;
+  document.getElementById('packSeason').value = season;
+  document.getElementById('packType').value   = tipo;
+  generatePacking();
+  document.getElementById('packing').scrollIntoView({ behavior: 'smooth' });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// IL MIO PROFILO — Modal
+// ═══════════════════════════════════════════════════════════════════════
+async function openMyProfile() {
+  hideUserMenu();
+  const user = firebaseAuth.currentUser;
+  if (!user) { showToast('🔒 Accedi per vedere il tuo profilo!'); openAuthModal('login'); return; }
+
+  document.getElementById('profileOverlay').classList.remove('hidden');
+  document.getElementById('profileHeaderSub').textContent = user.email;
+  document.getElementById('profileBody').innerHTML =
+    '<div class="grid-spinner"><div class="spinner"></div><span>Caricamento profilo…</span></div>';
+
+  try {
+    const snap = await getDoc(doc(firestoreDb, 'users', user.uid));
+    const data = snap.exists() ? snap.data() : {};
+    const plan       = data.plan || 'free';
+    const valigie    = data.valigie || [];
+    const votedMete  = data.votedMete || [];
+    const initial    = (user.email || '?')[0].toUpperCase();
+    const joinDate   = data.createdAt
+      ? new Date(data.createdAt).toLocaleDateString('it-IT', { day:'2-digit', month:'long', year:'numeric' })
+      : 'Data non disponibile';
+
+    document.getElementById('profileBody').innerHTML = `
+      <div class="profile-hero">
+        <div class="profile-avatar-lg">${initial}</div>
+        <div>
+          <div class="profile-info-email">${user.email}</div>
+          <div class="profile-info-joined">Membro dal ${joinDate}</div>
+          <div class="plan-badge ${plan}">${plan === 'pro' ? '⭐ Explorer Plus' : '🆓 Piano Free'}</div>
+        </div>
+      </div>
+
+      <div class="profile-stats">
+        <div class="profile-stat">
+          <div class="profile-stat-val">${valigie.length}</div>
+          <div class="profile-stat-lbl">Valigie<br>salvate</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val">${votedMete.length}</div>
+          <div class="profile-stat-lbl">Mete<br>votate</div>
+        </div>
+        <div class="profile-stat">
+          <div class="profile-stat-val">${plan === 'pro' ? '∞' : '3'}</div>
+          <div class="profile-stat-lbl">Link affiliati<br>disponibili</div>
+        </div>
+      </div>
+
+      ${plan === 'free' ? `
+      <div class="profile-upgrade-banner">
+        <div class="profile-upgrade-text">Passa a <strong>Explorer Plus</strong> per valigie illimitate, zero pubblicità e ×2 voti contest.</div>
+        <button class="profile-upgrade-btn" onclick="closeProfileModal();openUpgrade()">Upgrade €6,99/mese</button>
+      </div>
+      ` : `
+      <div style="background:rgba(46,197,122,0.08);border:1px solid rgba(46,197,122,0.15);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--green);">
+        ✅ Sei su <strong>Explorer Plus</strong> — hai accesso a tutte le funzionalità premium.
+      </div>
+      `}
+    `;
+  } catch (err) {
+    console.error('[WQ] openMyProfile:', err);
+    document.getElementById('profileBody').innerHTML =
+      '<div style="color:var(--cream-dim);padding:40px;text-align:center">⚠️ Errore nel caricamento del profilo.</div>';
+  }
+}
+
+function closeProfileModal() {
+  document.getElementById('profileOverlay').classList.add('hidden');
+}
+function handleProfileOverlayClick(e) {
+  if (e.target === document.getElementById('profileOverlay')) closeProfileModal();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// INFO MODAL — Chi siamo, Privacy, Terms, ecc.
+// ═══════════════════════════════════════════════════════════════════════
+const INFO_CONTENT = {
+  about: {
+    title: '🌍 Chi siamo',
+    sub: 'Il team dietro WanderQuest',
+    html: `
+      <p style="margin-bottom:16px">WanderQuest nasce nel 2024 da un'idea semplice: <strong style="color:var(--cream)">le migliori esperienze di viaggio non si trovano su TripAdvisor</strong>. Si trovano parlando con chi ci vive.</p>
+      <p style="margin-bottom:16px">Siamo un piccolo team di viaggiatori, sviluppatori e fotografi convinti che il turismo di massa stia distruggendo ciò che rende speciali le destinazioni. WanderQuest è la nostra risposta: un ecosistema che premia chi esplora davvero, non chi si limita a scattare selfie davanti ai monumenti.</p>
+      <div style="background:rgba(232,162,40,0.08);border:1px solid rgba(232,162,40,0.15);border-radius:12px;padding:16px 20px;margin:20px 0">
+        <div style="font-size:12px;font-weight:700;color:var(--amber);letter-spacing:0.08em;text-transform:uppercase;margin-bottom:8px">La nostra missione</div>
+        <p>Costruire la community globale dei viaggiatori autentici — e premiarla per il valore che crea.</p>
+      </div>
+      <p style="margin-bottom:8px"><strong style="color:var(--cream)">Contatti:</strong> hello@wanderquest.app</p>
+      <p><strong style="color:var(--cream)">Sede:</strong> Remoto — team distribuito in Europa</p>
+    `
+  },
+  partner: {
+    title: '🤝 Diventa Partner',
+    sub: 'Collabora con WanderQuest',
+    html: `
+      <p style="margin-bottom:16px">WanderQuest offre diverse opportunità di partnership per brand, agenzie di viaggio, hotel e creator.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0">
+        ${[
+          ['🏨','Hotel & Strutture ricettive','Inserimento nella nostra lista curata con badge verificato e visibilità diretta nelle schede città.'],
+          ['📸','Content Creator','Collaborazioni editoriali per la produzione di gemme nascoste, foto e video autentici.'],
+          ['🛒','Brand & E-commerce','Posizionamento nei consigli valigia con link affiliati integrati nei consigli personalizzati.'],
+          ['✈️','Compagnie aeree & Tour Operator','Co-marketing su destinazioni specifiche con accesso alla community dei viaggiatori autentici.'],
+        ].map(([icon,title,desc]) => `
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;padding:14px 16px;display:flex;gap:12px">
+            <span style="font-size:22px;flex-shrink:0">${icon}</span>
+            <div><div style="font-weight:700;color:var(--cream);margin-bottom:4px">${title}</div><div style="font-size:12px">${desc}</div></div>
+          </div>`).join('')}
+      </div>
+      <p>Scrivici a <strong style="color:var(--amber)">partners@wanderquest.app</strong> con il soggetto "Partnership" per ricevere il media kit completo.</p>
+    `
+  },
+  blog: {
+    title: '✍️ Blog di Viaggio',
+    sub: 'Storie dal campo — prossimamente',
+    html: `
+      <p style="margin-bottom:20px">Il blog di WanderQuest sarà uno spazio per <strong style="color:var(--cream)">storie autentiche scritte da chi viaggia davvero</strong> — non recensioni pagate, non guide ottimizzate per SEO.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:24px">
+        ${[
+          ['🌅','Alba a Fushimi Inari','Come arrivare prima dei turisti e vivere un momento trascendentale — guida pratica.'],
+          ['🍽️','Mangiare a Roma come un romano','I bacari nascosti, le trattorie senza insegna, i mercati all\'alba.'],
+          ['🎒','Il minimalismo in viaggio','Come viaggiare con un solo zaino da 20L per 2 settimane — testato davvero.'],
+        ].map(([icon,title,desc]) => `
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;padding:14px 16px">
+            <div style="display:flex;gap:10px;align-items:flex-start">
+              <span style="font-size:20px">${icon}</span>
+              <div>
+                <div style="font-weight:700;color:var(--cream);margin-bottom:3px">${title}</div>
+                <div style="font-size:12px">${desc}</div>
+                <div style="font-size:10px;color:var(--teal);margin-top:6px;font-weight:600">IN ARRIVO</div>
+              </div>
+            </div>
+          </div>`).join('')}
+      </div>
+      <p>Vuoi scrivere per noi? Contattaci: <strong style="color:var(--amber)">blog@wanderquest.app</strong></p>
+    `
+  },
+  press: {
+    title: '📰 Press & Media',
+    sub: 'Kit stampa e contatti media',
+    html: `
+      <p style="margin-bottom:20px">Per richieste di interviste, collaborazioni editoriali o accesso al media kit completo, contatta il nostro ufficio stampa.</p>
+      <div style="background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:14px;padding:20px;margin-bottom:20px">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          ${[['📧 Email','press@wanderquest.app'],['📱 Telegram','@wanderquest_press'],['📊 Utenti attivi','12.400+'],['🌍 Paesi coperti','38'],['⭐ Valutazione media','4.8/5'],['📸 Foto nel contest','2.100+']].map(([k,v]) => `<div><div style="font-size:10px;color:var(--amber);font-weight:700;letter-spacing:0.08em;text-transform:uppercase;margin-bottom:4px">${k}</div><div style="font-weight:600;color:var(--cream);font-size:13px">${v}</div></div>`).join('')}
+        </div>
+      </div>
+      <p style="font-size:12px">Il media kit include: logo in alta risoluzione, screenshot dell'app, scheda prodotto, dati di crescita e bio del team fondatore.</p>
+    `
+  },
+  terms: {
+    title: '📄 Termini e Condizioni',
+    sub: 'Ultimo aggiornamento: Marzo 2025',
+    html: `
+      <p style="margin-bottom:16px">Utilizzando WanderQuest accetti i seguenti termini. Se non sei d\'accordo, ti preghiamo di non utilizzare il servizio.</p>
+      ${[
+        ['1. Accettazione','L\'uso dell\'app implica l\'accettazione integrale di questi termini. WanderQuest si riserva il diritto di modificarli con preavviso di 30 giorni via email.'],
+        ['2. Account utente','Sei responsabile della sicurezza del tuo account. Non condividere le credenziali. WanderQuest non sarà responsabile per accessi non autorizzati derivanti da negligenza dell\'utente.'],
+        ['3. Contenuti utente','Caricando foto o contenuti accetti che WanderQuest possa utilizzarli per promuovere il servizio, con attribuzione. Mantieni tutti i diritti sulle tue opere.'],
+        ['4. Piano Premium','L\'abbonamento Explorer Plus si rinnova automaticamente. Puoi cancellare in qualsiasi momento dalla sezione Profilo. Nessun rimborso per periodi parziali.'],
+        ['5. Link affiliati','WanderQuest utilizza link affiliati Amazon e Booking.com. Il prezzo per l\'utente rimane invariato. Le commissioni ci permettono di mantenere il servizio gratuito.'],
+        ['6. Limitazione di responsabilità','Le informazioni sulle destinazioni sono fornite a scopo informativo. WanderQuest non è responsabile per decisioni di viaggio basate sui contenuti dell\'app.'],
+      ].map(([t,c]) => `<div style="margin-bottom:16px"><div style="font-weight:700;color:var(--cream);margin-bottom:6px">${t}</div><p>${c}</p></div>`).join('')}
+    `
+  },
+  privacy: {
+    title: '🔒 Privacy Policy',
+    sub: 'GDPR compliant · Firebase Auth · Ultimo aggiornamento: Marzo 2025',
+    html: `
+      <p style="margin-bottom:16px">WanderQuest rispetta la tua privacy. Questa policy descrive quali dati raccogliamo e come li utilizziamo.</p>
+      ${[
+        ['Dati raccolti','Email e password (tramite Firebase Auth, mai accessibili a noi in chiaro). Dati di utilizzo anonimi (pagine visitate, funzionalità usate). Valigie salvate e preferenze di viaggio (Firestore, accessibili solo a te).'],
+        ['Come usiamo i tuoi dati','Per fornirti il servizio, personalizzare i contenuti, inviare notifiche di servizio (non marketing senza consenso esplicito).'],
+        ['Firebase & Google','Utilizziamo Firebase di Google per autenticazione e database. Google tratta i dati secondo la propria Privacy Policy. I server sono in Europa (region: europe-west1).'],
+        ['Link affiliati','Amazon e Booking.com possono ricevere dati tecnici anonimi (IP, browser) quando clicchi sui link. Non trasmettiamo mai il tuo nome o email a terze parti.'],
+        ['I tuoi diritti (GDPR)','Diritto di accesso, rettifica, cancellazione e portabilità dei dati. Per richieste: privacy@wanderquest.app. Risposta garantita entro 30 giorni.'],
+        ['Cancellazione account','Puoi richiedere la cancellazione completa di tutti i tuoi dati inviando email a privacy@wanderquest.app con oggetto "Cancellazione account".'],
+      ].map(([t,c]) => `<div style="margin-bottom:16px"><div style="font-weight:700;color:var(--cream);margin-bottom:6px">${t}</div><p>${c}</p></div>`).join('')}
+    `
+  },
+  cookies: {
+    title: '🍪 Cookie Policy',
+    sub: 'Ultimo aggiornamento: Marzo 2025',
+    html: `
+      <p style="margin-bottom:20px">WanderQuest è una <strong style="color:var(--cream)">Single Page Application</strong>. Utilizziamo un numero minimo di cookie, tutti necessari al funzionamento del servizio.</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px">
+        ${[
+          ['🔐','Cookie di autenticazione','firebase:authUser:*','Sessione','Necessario per mantenerti loggato. Rimosso al logout.'],
+          ['⚙️','Preferenze locali','wq_prefs','Persistente','Salva preferenze UI (tema, lingua). Non contiene dati personali.'],
+        ].map(([icon,name,key,dur,desc]) => `
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;padding:14px 16px">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+              <span>${icon}</span>
+              <strong style="color:var(--cream);font-size:13px">${name}</strong>
+              <code style="font-size:10px;background:rgba(255,255,255,0.08);padding:2px 7px;border-radius:4px;color:var(--teal)">${key}</code>
+              <span style="font-size:10px;color:var(--cream-dim);margin-left:auto">${dur}</span>
+            </div>
+            <p style="font-size:12px">${desc}</p>
+          </div>`).join('')}
+      </div>
+      <p style="font-size:12px">Non utilizziamo cookie di tracking, profilazione o pubblicitari. Non vendiamo dati a terze parti.</p>
+    `
+  },
+  affiliates: {
+    title: '⚖️ Note sulle Affiliazioni',
+    sub: 'Trasparenza completa sui link affiliati',
+    html: `
+      <p style="margin-bottom:16px">WanderQuest utilizza programmi di affiliazione per sostenere il servizio gratuito. Ecco come funziona in totale trasparenza.</p>
+      <div style="display:flex;flex-direction:column;gap:12px;margin:20px 0">
+        ${[
+          ['🛒','Amazon Associates','Quando clicchi su un link prodotto Amazon e acquisti, WanderQuest riceve una commissione del 3-8% sul valore dell\'ordine. Il prezzo che paghi rimane identico — non c\'è nessun costo aggiuntivo per te.'],
+          ['🏨','Booking.com Partner','Quando prenoti un alloggio tramite i nostri link, WanderQuest riceve una commissione di circa il 4% sul valore della prenotazione. Il prezzo finale è identico a quello che troveresti su Booking.com direttamente.'],
+        ].map(([icon,title,desc]) => `
+          <div style="background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;padding:16px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <span style="font-size:22px">${icon}</span>
+              <strong style="color:var(--cream)">${title}</strong>
+            </div>
+            <p style="font-size:13px">${desc}</p>
+          </div>`).join('')}
+      </div>
+      <div style="background:rgba(24,197,168,0.08);border:1px solid rgba(24,197,168,0.15);border-radius:10px;padding:14px 16px;font-size:13px">
+        <strong style="color:var(--teal)">Principio editoriale:</strong> I prodotti e gli alloggi consigliati sono selezionati esclusivamente per il loro valore per l\'utente. Non accettiamo pagamenti per inserire link — solo commissioni sulle transazioni effettive.
+      </div>
+    `
+  },
+};
+
+function openInfoModal(page) {
+  const content = INFO_CONTENT[page];
+  if (!content) return;
+  document.getElementById('infoModalTitle').textContent  = content.title;
+  document.getElementById('infoModalSub').textContent    = content.sub;
+  document.getElementById('infoModalBody').innerHTML     = content.html;
+  document.getElementById('infoOverlay').classList.remove('hidden');
+}
+
+function closeInfoModal() {
+  document.getElementById('infoOverlay').classList.add('hidden');
+}
+
+function handleInfoOverlayClick(e) {
+  if (e.target === document.getElementById('infoOverlay')) closeInfoModal();
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// KEYBOARD — Escape chiude tutti i modali aperti
+// ═══════════════════════════════════════════════════════════════════════
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  const modals = [
+    { id: 'infoOverlay',     close: closeInfoModal },
+    { id: 'upgradeOverlay',  close: closeUpgradeModal },
+    { id: 'profileOverlay',  close: closeProfileModal },
+    { id: 'valigieOverlay',  close: closeValigieModal },
+    { id: 'authOverlay',     close: closeAuthModal },
+  ];
+  for (const { id, close } of modals) {
+    const el = document.getElementById(id);
+    if (el && !el.classList.contains('hidden')) { close(); break; }
+  }
+  // Also close search dropdown
+  const dd = document.getElementById('searchDropdown');
+  if (dd && dd.style.display !== 'none') clearSearch();
+});
+
+// ═══════════════════════════════════════════════════════════════════════
 // WINDOW EXPORTS — necessari per onclick="" con type="module"
 // ═══════════════════════════════════════════════════════════════════════
 window.openAuthModal        = openAuthModal;
@@ -2615,6 +3770,17 @@ window.loginUser            = loginUser;
 window.registerUser         = registerUser;
 window.logoutUser           = logoutUser;
 window.showUserMenu         = showUserMenu;
+window.toggleMobileDrawer   = toggleMobileDrawer;
+window.closeMobileDrawer    = closeMobileDrawer;
+window.openMyProfile        = openMyProfile;
+window.closeProfileModal    = closeProfileModal;
+window.handleProfileOverlayClick = handleProfileOverlayClick;
+window.openMyValigie        = openMyValigie;
+window.closeValigieModal    = closeValigieModal;
+window.handleValigieOverlayClick = handleValigieOverlayClick;
+window.deleteValiglia       = deleteValiglia;
+window.reloadValiglia       = reloadValiglia;
+window.savePackingList      = savePackingList;
 window.selectContinent      = selectContinent;
 window.selectCountry        = selectCountry;
 window.selectCity           = selectCity;
@@ -2632,6 +3798,12 @@ window.precompilePacking    = precompilePacking;
 window.toggleCheck          = toggleCheck;
 window.printPacking         = printPacking;
 window.openUpgrade          = openUpgrade;
+window.closeUpgradeModal    = closeUpgradeModal;
+window.handleUpgradeOverlayClick = handleUpgradeOverlayClick;
+window.handleUpgradeCheckout = handleUpgradeCheckout;
+window.openInfoModal        = openInfoModal;
+window.closeInfoModal       = closeInfoModal;
+window.handleInfoOverlayClick = handleInfoOverlayClick;
 window.showToast            = showToast;
 window.migrateDB            = migrateDB;
 
