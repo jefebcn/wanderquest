@@ -19,13 +19,13 @@
   --teal: #18C5A8;
   --teal-dark: #0E8F7C;
   --cream: #F2EDE4;
-  --cream-dim: #C8C0B0;
+  --cream-dim: #D6D0C2;
   --white: #FFFFFF;
   --red: #E84040;
   --green: #2EC57A;
   --purple: #8B5CF6;
-  --glass: rgba(255,255,255,0.04);
-  --glass-border: rgba(255,255,255,0.08);
+  --glass: rgba(255,255,255,0.07);
+  --glass-border: rgba(255,255,255,0.13);
   --gold-grad: linear-gradient(135deg, #E8A228, #F5D080, #E8A228);
   --hero-grad: linear-gradient(160deg, #080C1A 0%, #0D1530 40%, #162040 100%);
 }
@@ -63,9 +63,9 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 /* ── FLIGHT BANNER ── */
 #flight-banner {
   background: linear-gradient(135deg, #0D1530 0%, #162040 100%);
+  border-top: 1px solid var(--glass-border);
   border-bottom: 1px solid var(--glass-border);
   padding: 0;
-  margin-top: 57px;
 }
 .flight-banner-inner {
   max-width: 1200px; margin: 0 auto;
@@ -104,7 +104,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 .flight-city-hint { font-size: 11px; color: var(--teal); margin-top: 1px; }
 
 /* ── DRILL-DOWN EXPLORER ── */
-#explorer { background: var(--navy); border-radius: 0; padding: 80px 0; }
+#explorer { background: var(--navy); border-radius: 0; padding: 80px 0; padding-top: calc(80px + 57px); }
 #explorer .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
 .drill-steps { display: flex; align-items: center; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
 .drill-step {
@@ -138,9 +138,14 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 }
 .country-card:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); transform: translateY(-2px); }
 .country-card.selected { background: rgba(232,162,40,0.12); border-color: var(--amber); }
+.country-card.disabled { cursor: default; opacity: 0.45; border-style: dashed; }
+.country-card.disabled:hover { background: var(--glass); border-color: var(--glass-border); transform: none; }
 .country-flag { font-size: 30px; margin-bottom: 8px; }
 .country-name { font-size: 15px; font-weight: 600; }
 .country-cities { font-size: 11px; color: var(--cream-dim); margin-top: 3px; }
+.coming-soon-divider { display: flex; align-items: center; gap: 14px; margin: 32px 0 16px; }
+.coming-soon-divider-line { flex: 1; height: 1px; background: var(--glass-border); }
+.coming-soon-label { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); color: var(--cream-dim); padding: 4px 12px; border-radius: 100px; font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
 
 .city-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 .city-card {
@@ -192,30 +197,50 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 .cultural-pill { font-size: 14px; color: var(--cream); line-height: 1.7; font-style: italic; padding: 16px; background: rgba(232,162,40,0.05); border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0; }
 .cultural-pill::before { content: '"'; font-size: 28px; color: var(--amber); line-height: 0; vertical-align: -10px; margin-right: 4px; font-family: 'Playfair Display', serif; }
 
-/* ── AFFILIATE PLACEHOLDERS ── */
+/* ── AFFILIATE PRODUCT CARDS ── */
 .affiliate-section { margin-top: 30px; }
 .affiliate-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-.affiliate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.affiliate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
 .affiliate-card {
-  background: var(--glass); border: 1px solid var(--glass-border);
-  border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
-  transition: all 0.2s;
+  background: #111827;
+  border: 1px solid var(--glass-border);
+  border-radius: 16px; overflow: hidden;
+  display: flex; flex-direction: column;
+  transition: all 0.25s; box-shadow: 0 4px 20px rgba(0,0,0,0.25);
 }
-.affiliate-card:hover { border-color: rgba(232,162,40,0.2); transform: translateY(-2px); }
-.affiliate-provider { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-.affiliate-provider.amazon { color: #FF9900; }
-.affiliate-provider.booking { color: #003580; background: #003580; color: #fff; padding: 2px 7px; border-radius: 3px; }
-.affiliate-item-name { font-size: 14px; font-weight: 600; }
-.affiliate-why { font-size: 11px; color: var(--cream-dim); line-height: 1.5; }
-.affiliate-link {
+.affiliate-card:hover { border-color: rgba(232,162,40,0.35); transform: translateY(-4px); box-shadow: 0 12px 40px rgba(0,0,0,0.4); }
+.aff-img-placeholder {
+  height: 120px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 48px; position: relative; overflow: hidden;
+  background: linear-gradient(135deg, rgba(232,162,40,0.08) 0%, rgba(24,197,168,0.06) 100%);
+  border-bottom: 1px solid var(--glass-border);
+}
+.aff-img-placeholder.amazon-bg { background: linear-gradient(135deg, rgba(255,153,0,0.1) 0%, rgba(232,162,40,0.06) 100%); }
+.aff-img-placeholder.booking-bg { background: linear-gradient(135deg, rgba(0,53,128,0.25) 0%, rgba(24,197,168,0.07) 100%); }
+.aff-img-emoji { position: relative; z-index: 1; filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4)); }
+.aff-body { padding: 14px 16px; flex: 1; display: flex; flex-direction: column; gap: 8px; }
+.aff-badge {
   display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.2);
-  color: var(--amber); text-decoration: none;
-  padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700;
-  transition: all 0.2s; cursor: pointer; align-self: flex-start;
+  font-size: 10px; font-weight: 800; letter-spacing: 0.08em;
+  text-transform: uppercase; padding: 3px 9px; border-radius: 5px;
+  align-self: flex-start;
 }
-.affiliate-link:hover { background: rgba(232,162,40,0.2); }
-.affiliate-disclaimer { font-size: 10px; color: var(--cream-dim); opacity: 0.5; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.15); border-radius: 6px; }
+.aff-badge.amazon { background: rgba(255,153,0,0.15); border: 1px solid rgba(255,153,0,0.3); color: #FF9900; }
+.aff-badge.booking { background: rgba(0,113,194,0.2); border: 1px solid rgba(0,113,194,0.4); color: #4EA8E0; }
+.aff-title { font-size: 14px; font-weight: 700; color: var(--cream); line-height: 1.4; }
+.aff-why { font-size: 12px; color: var(--cream-dim); line-height: 1.55; flex: 1; }
+.aff-cta {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  margin: 0 16px 16px; padding: 11px 16px; border-radius: 10px;
+  font-size: 13px; font-weight: 700; text-decoration: none;
+  transition: all 0.2s; cursor: pointer; letter-spacing: 0.01em;
+}
+.aff-cta.amazon-cta { background: #FF9900; color: #111; }
+.aff-cta.amazon-cta:hover { background: #FFB340; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,153,0,0.35); }
+.aff-cta.booking-cta { background: #0071C2; color: #fff; }
+.aff-cta.booking-cta:hover { background: #0085E6; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,113,194,0.4); }
+.affiliate-disclaimer { font-size: 10px; color: var(--cream-dim); opacity: 0.6; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.15); border-radius: 6px; }
 
 /* ── PACKING PLANNER ── */
 #packing { background: linear-gradient(180deg, var(--ink) 0%, var(--navy) 100%); padding: 80px 0; }
@@ -264,7 +289,6 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 .pack-check { width: 16px; height: 16px; border: 1.5px solid rgba(255,255,255,0.15); border-radius: 4px; flex-shrink: 0; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
 .pack-check.checked { background: var(--green); border-color: var(--green); }
 .pack-check.checked::after { content: '✓'; font-size: 10px; color: var(--ink); font-weight: 700; }
-.pack-item-label { font-size: 13px; flex: 1; }
 .pack-aff-btn { background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.2); color: #FF9900; border-radius: 4px; padding: 2px 7px; font-size: 9px; font-weight: 700; cursor: pointer; text-decoration: none; white-space: nowrap; }
 
 /* ── PREMIUM TABLE ── */
@@ -356,35 +380,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 .swipe-text { font-size: 13px; color: var(--cream-dim); line-height: 1.5; }
 .prize-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,162,40,0.12); border: 1px solid rgba(232,162,40,0.2); color: var(--amber); padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; margin-top: 14px; }
 
-/* ── JSON SCHEMA VIEWER ── */
-#schema { padding: 80px 0; background: var(--ink); }
-#schema .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.code-viewer {
-  background: #0A0F1E; border: 1px solid var(--glass-border);
-  border-radius: 14px; overflow: hidden; margin-top: 30px;
-}
-.code-viewer-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 18px; background: rgba(255,255,255,0.04);
-  border-bottom: 1px solid var(--glass-border);
-}
-.code-dots { display: flex; gap: 6px; }
-.code-dot { width: 12px; height: 12px; border-radius: 50%; }
-.dot-red { background: #FF5F56; }
-.dot-yellow { background: #FFBD2E; }
-.dot-green { background: #27C93F; }
-.code-filename { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--cream-dim); }
-.copy-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); color: var(--cream-dim); padding: 4px 12px; border-radius: 5px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'DM Mono', monospace; }
-.copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--cream); }
-.code-body { padding: 24px; overflow-x: auto; max-height: 500px; overflow-y: auto; }
-.code-body pre { font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.7; }
-.json-key { color: #79B8FF; }
-.json-str { color: #9ECE6A; }
-.json-num { color: #FF9E64; }
-.json-bool { color: #BB9AF7; }
-.json-null { color: #FF6B6B; }
-.json-bracket { color: var(--cream-dim); }
-.json-comment { color: #5C6370; font-style: italic; }
+
 
 /* ── TOAST ── */
 .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--navy-mid); border: 1px solid var(--glass-border); color: var(--cream); padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 9999; box-shadow: 0 8px 32px rgba(0,0,0,0.4); animation: fadeIn 0.3s ease; max-width: 380px; text-align: center; }
@@ -393,10 +389,240 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 @media(max-width:768px) {
   nav { padding: 14px 20px; }
   .nav-links { display: none; }
-  section, #packing .inner, #premium .inner, #contest .inner, #schema .inner, #explorer .inner { padding-left: 20px; padding-right: 20px; }
+  section, #packing .inner, #premium .inner, #contest .inner, #explorer .inner { padding-left: 20px; padding-right: 20px; }
   .flight-banner-inner { padding: 14px 20px; }
   .detail-grid { grid-template-columns: 1fr; }
 }
+
+/* ── PREDICTIVE SEARCH ── */
+.search-wrap {
+  position: relative;
+  margin-bottom: 32px;
+}
+.search-input-row {
+  display: flex; align-items: center; gap: 0;
+  background: rgba(255,255,255,0.06);
+  border: 1.5px solid var(--glass-border);
+  border-radius: 14px; overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.search-input-row:focus-within {
+  border-color: var(--amber);
+  box-shadow: 0 0 0 3px rgba(232,162,40,0.12);
+}
+.search-icon {
+  padding: 0 16px;
+  font-size: 16px;
+  color: var(--cream-dim);
+  flex-shrink: 0;
+  pointer-events: none;
+}
+#globalSearch {
+  flex: 1;
+  background: transparent;
+  border: none; outline: none;
+  color: var(--cream);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 15px; font-weight: 400;
+  padding: 14px 0;
+}
+#globalSearch::placeholder { color: var(--cream-dim); opacity: 0.7; }
+.search-clear {
+  background: none; border: none;
+  color: var(--cream-dim); font-size: 18px;
+  padding: 0 16px; cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.15s;
+  flex-shrink: 0;
+}
+.search-clear.visible { opacity: 1; pointer-events: auto; }
+.search-clear:hover { color: var(--cream); }
+
+.search-dropdown {
+  position: absolute; top: calc(100% + 8px); left: 0; right: 0;
+  background: #111827;
+  border: 1px solid rgba(255,255,255,0.14);
+  border-radius: 14px; overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+  z-index: 100;
+  animation: fadeIn 0.15s ease;
+  max-height: 380px; overflow-y: auto;
+}
+.search-dropdown::-webkit-scrollbar { width: 3px; }
+.search-dropdown::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
+
+.search-result-item {
+  display: flex; align-items: center; gap: 14px;
+  padding: 12px 18px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.15s;
+}
+.search-result-item:last-child { border-bottom: none; }
+.search-result-item:hover { background: rgba(232,162,40,0.08); }
+.search-result-emoji { font-size: 22px; flex-shrink: 0; width: 32px; text-align: center; }
+.search-result-info { flex: 1; min-width: 0; }
+.search-result-name { font-size: 14px; font-weight: 700; color: var(--cream); }
+.search-result-name mark {
+  background: rgba(232,162,40,0.25);
+  color: var(--amber-bright);
+  border-radius: 2px; padding: 0 1px;
+}
+.search-result-sub { font-size: 11px; color: var(--cream-dim); margin-top: 2px; }
+.search-result-type {
+  font-size: 9px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 3px 8px; border-radius: 5px; flex-shrink: 0;
+}
+.search-result-type.city  { background: rgba(24,197,168,0.12); color: var(--teal); border: 1px solid rgba(24,197,168,0.2); }
+.search-result-type.country { background: rgba(232,162,40,0.1); color: var(--amber); border: 1px solid rgba(232,162,40,0.2); }
+
+/* ── EMPTY STATE ── */
+.search-empty-state {
+  padding: 40px 24px;
+  text-align: center;
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.empty-state-globe { font-size: 52px; line-height: 1; filter: grayscale(0.3); }
+.empty-state-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 20px; font-weight: 700; color: var(--cream);
+}
+.empty-state-sub { font-size: 13px; color: var(--cream-dim); line-height: 1.6; max-width: 280px; }
+.empty-state-cta {
+  margin-top: 6px;
+  background: var(--amber); color: var(--ink);
+  border: none; padding: 11px 22px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 14px;
+  cursor: pointer; transition: all 0.2s;
+  box-shadow: 0 4px 18px rgba(232,162,40,0.3);
+}
+.empty-state-cta:hover { background: var(--amber-bright); transform: translateY(-2px); }
+
+/* ── PACKING MICRO-INTERACTIONS ── */
+.pack-item-label {
+  font-size: 13px; flex: 1;
+  transition: opacity 0.35s ease, color 0.35s ease;
+}
+.pack-check.checked + .pack-item-label {
+  text-decoration: line-through;
+  opacity: 0.45;
+  color: var(--cream-dim);
+}
+
+/* ── AUTH MODAL ── */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(4,7,18,0.82);
+  backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  animation: fadeIn 0.2s ease;
+}
+.modal-overlay.hidden { display: none !important; }
+.auth-modal {
+  background: #0E1628;
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px; padding: 36px;
+  width: 100%; max-width: 420px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.7);
+  position: relative;
+}
+.modal-close {
+  position: absolute; top: 16px; right: 18px;
+  background: none; border: none; color: var(--cream-dim);
+  font-size: 20px; cursor: pointer; line-height: 1;
+  transition: color 0.15s;
+}
+.modal-close:hover { color: var(--cream); }
+.modal-logo { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 900; color: var(--amber); margin-bottom: 24px; }
+.auth-tabs { display: flex; gap: 0; background: rgba(255,255,255,0.04); border-radius: 10px; padding: 4px; margin-bottom: 28px; }
+.auth-tab {
+  flex: 1; padding: 9px; border-radius: 7px; border: none;
+  background: none; color: var(--cream-dim); font-family: 'DM Sans', sans-serif;
+  font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.auth-tab.active { background: var(--navy-light); color: var(--cream); box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+.auth-form { display: flex; flex-direction: column; gap: 14px; }
+.auth-form.hidden { display: none; }
+.auth-field label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); margin-bottom: 7px; }
+.auth-field input {
+  width: 100%;
+  background: rgba(255,255,255,0.05); border: 1.5px solid var(--glass-border);
+  color: var(--cream); padding: 12px 15px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
+  transition: border-color 0.2s;
+}
+.auth-field input:focus { border-color: var(--amber); }
+.auth-field input::placeholder { color: var(--cream-dim); opacity: 0.5; }
+.auth-submit {
+  width: 100%; background: var(--amber); color: var(--ink);
+  border: none; padding: 13px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px;
+  cursor: pointer; transition: all 0.2s; margin-top: 6px;
+  box-shadow: 0 6px 22px rgba(232,162,40,0.3);
+}
+.auth-submit:hover { background: var(--amber-bright); transform: translateY(-1px); }
+.auth-submit:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+.auth-error {
+  background: rgba(232,64,64,0.1); border: 1px solid rgba(232,64,64,0.25);
+  color: #FF7A7A; border-radius: 8px; padding: 10px 14px;
+  font-size: 12px; line-height: 1.5; display: none;
+}
+.auth-error.show { display: block; }
+.auth-divider { text-align: center; font-size: 11px; color: var(--cream-dim); margin: 4px 0; }
+
+/* ── NAV AUTH ── */
+.nav-auth-area { display: flex; align-items: center; gap: 10px; }
+.nav-btn-accedi {
+  background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border);
+  color: var(--cream); padding: 8px 18px; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 13px;
+  cursor: pointer; transition: all 0.2s;
+}
+.nav-btn-accedi:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.2); }
+.nav-user-wrap { position: relative; }
+.nav-user-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.2);
+  padding: 7px 14px 7px 10px; border-radius: 100px; cursor: pointer;
+  transition: all 0.2s; font-size: 13px; font-weight: 600; color: var(--amber);
+}
+.nav-user-pill:hover { background: rgba(232,162,40,0.18); }
+.nav-user-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--amber); color: var(--ink); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 800; }
+.nav-user-menu {
+  position: absolute; top: calc(100% + 10px); right: 0;
+  background: #0E1628; border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 14px; overflow: hidden; min-width: 200px;
+  box-shadow: 0 20px 50px rgba(0,0,0,0.6);
+  animation: fadeIn 0.15s ease;
+}
+.nav-user-menu.hidden { display: none; }
+.nav-menu-header { padding: 14px 18px 10px; border-bottom: 1px solid var(--glass-border); }
+.nav-menu-email { font-size: 11px; color: var(--cream-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nav-menu-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 18px; color: var(--cream); font-size: 13px; font-weight: 500;
+  cursor: pointer; transition: background 0.15s; border: none;
+  background: none; width: 100%; text-align: left; font-family: 'DM Sans', sans-serif;
+}
+.nav-menu-item:hover { background: rgba(255,255,255,0.05); }
+.nav-menu-item.danger { color: var(--red); }
+.nav-menu-item.danger:hover { background: rgba(232,64,64,0.08); }
+.nav-menu-divider { height: 1px; background: var(--glass-border); }
+
+/* ── GRID SPINNER ── */
+.grid-spinner {
+  grid-column: 1/-1;
+  display: flex; align-items: center; justify-content: center;
+  padding: 60px 0; gap: 12px; color: var(--cream-dim); font-size: 13px;
+}
+.spinner {
+  width: 22px; height: 22px; border-radius: 50%;
+  border: 2.5px solid rgba(232,162,40,0.2);
+  border-top-color: var(--amber);
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
 /* ── UTIL ── */
 .hidden { display: none !important; }
@@ -412,22 +638,32 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
     <a href="#packing">🧳 Valigia</a>
     <a href="#premium">⭐ Premium</a>
     <a href="#contest">📸 Contest</a>
-    <a href="#schema">🗄️ Schema DB</a>
   </div>
-  <button class="nav-cta" onclick="openUpgrade()">Diventa Pro →</button>
-</nav>
-
-<!-- FLIGHT BANNER -->
-<div id="flight-banner">
-  <div class="flight-banner-inner">
-    <div class="flight-banner-label">✈️ Traccia Volo</div>
-    <div class="flight-input-wrap">
-      <input type="text" id="flightInput" placeholder="es. FR1234, IB3456, AZ610…" maxlength="8">
-      <button class="flight-btn" onclick="searchFlight()">Cerca</button>
+  <div class="nav-auth-area">
+    <!-- Logged-out state -->
+    <div id="navLoggedOut">
+      <button class="nav-btn-accedi" onclick="openAuthModal('login')">Accedi</button>
     </div>
-    <div id="flight-result"></div>
+    <!-- Logged-in state -->
+    <div id="navLoggedIn" class="nav-user-wrap hidden">
+      <div class="nav-user-pill" onclick="showUserMenu()">
+        <div class="nav-user-avatar" id="navAvatar">?</div>
+        <span id="navUserLabel">Profilo</span>
+        <span style="font-size:10px;opacity:0.6">▾</span>
+      </div>
+      <div class="nav-user-menu hidden" id="userDropdown">
+        <div class="nav-menu-header">
+          <div class="nav-menu-email" id="navUserEmail">—</div>
+        </div>
+        <button class="nav-menu-item" onclick="showToast('👤 Sezione Profilo — disponibile presto!')">👤 Il mio Profilo</button>
+        <button class="nav-menu-item" onclick="showToast('🧳 Le mie Valigie salvate — disponibile presto!')">🧳 Le mie Valigie</button>
+        <div class="nav-menu-divider"></div>
+        <button class="nav-menu-item danger" onclick="logoutUser()">← Esci</button>
+      </div>
+    </div>
+    <button class="nav-cta" onclick="openUpgrade()">Diventa Pro →</button>
   </div>
-</div>
+</nav>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- SECTION 1 — DRILL-DOWN EXPLORER -->
@@ -437,6 +673,23 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
     <div class="section-label">🌐 Database Globale</div>
     <h2 class="section-title">Esplora il Mondo<br><em style="font-style:italic;color:var(--amber)">Passo dopo Passo</em></h2>
     <p class="section-sub">Seleziona continente → paese → città per scoprire gemme nascoste, cibo autentico, pillole culturali e la lista valigia automatica.</p>
+
+    <!-- Predictive Search -->
+    <div class="search-wrap" id="searchWrap">
+      <div class="search-input-row">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          id="globalSearch"
+          placeholder="Cerca una città o nazione… (es. Roma, Giappone)"
+          autocomplete="off"
+          oninput="handleSearch(this.value)"
+          onkeydown="handleSearchKey(event)"
+        >
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="Cancella ricerca">✕</button>
+      </div>
+      <div class="search-dropdown" id="searchDropdown" style="display:none"></div>
+    </div>
 
     <!-- Breadcrumb -->
     <div class="drill-steps" id="drillSteps">
@@ -472,6 +725,18 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 
 <!-- City Detail Panel -->
 <div id="city-detail"></div>
+
+<!-- FLIGHT BANNER -->
+<div id="flight-banner">
+  <div class="flight-banner-inner">
+    <div class="flight-banner-label">✈️ Traccia Volo</div>
+    <div class="flight-input-wrap">
+      <input type="text" id="flightInput" placeholder="es. FR1234, IB3456, AZ610…" maxlength="8">
+      <button class="flight-btn" onclick="searchFlight()">Cerca</button>
+    </div>
+    <div id="flight-result"></div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- SECTION 2 — PACKING PLANNER -->
@@ -617,22 +882,51 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 5 — JSON DATABASE SCHEMA -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<div id="schema">
-  <div class="inner">
-    <div class="section-label">🗄️ Database Schema</div>
-    <h2 class="section-title">Struttura JSON<br><em style="font-style:italic;color:var(--amber)">Gerarchica</em></h2>
-    <p class="section-sub">Il database è organizzato come Continente → Paese → Città. Ogni città contiene tutti i dati necessari per popolare l'app automaticamente.</p>
 
-    <div class="code-viewer">
-      <div class="code-viewer-header">
-        <div class="code-dots"><div class="code-dot dot-red"></div><div class="code-dot dot-yellow"></div><div class="code-dot dot-green"></div></div>
-        <div class="code-filename">wanderquest-db.json</div>
-        <button class="copy-btn" onclick="copySchema()">📋 Copia</button>
+<!-- ═══ AUTH MODAL ═══ -->
+<div class="modal-overlay hidden" id="authOverlay" onclick="handleOverlayClick(event)">
+  <div class="auth-modal">
+    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <div class="modal-logo">🌍 WanderQuest</div>
+
+    <!-- Tabs -->
+    <div class="auth-tabs">
+      <button class="auth-tab active" id="tabLogin"  onclick="switchAuthTab('login')">Accedi</button>
+      <button class="auth-tab"        id="tabRegister" onclick="switchAuthTab('register')">Registrati</button>
+    </div>
+
+    <!-- Login form -->
+    <div class="auth-form" id="formLogin">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="loginEmail" placeholder="nome@email.com" autocomplete="email">
       </div>
-      <div class="code-body"><pre id="schemaCode"></pre></div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="loginPassword" placeholder="La tua password" autocomplete="current-password">
+      </div>
+      <div class="auth-error" id="loginError"></div>
+      <button class="auth-submit" id="loginSubmit" onclick="loginUser()">Accedi →</button>
+      <div class="auth-divider">Non hai un account? <span style="color:var(--amber);cursor:pointer;font-weight:600" onclick="switchAuthTab('register')">Registrati gratis</span></div>
+    </div>
+
+    <!-- Register form -->
+    <div class="auth-form hidden" id="formRegister">
+      <div class="auth-field">
+        <label>Email</label>
+        <input type="email" id="regEmail" placeholder="nome@email.com" autocomplete="email">
+      </div>
+      <div class="auth-field">
+        <label>Password</label>
+        <input type="password" id="regPassword" placeholder="Minimo 6 caratteri" autocomplete="new-password">
+      </div>
+      <div class="auth-field">
+        <label>Conferma Password</label>
+        <input type="password" id="regPasswordConfirm" placeholder="Ripeti la password" autocomplete="new-password">
+      </div>
+      <div class="auth-error" id="regError"></div>
+      <button class="auth-submit" id="regSubmit" onclick="registerUser()">Crea Account →</button>
+      <div class="auth-divider">Hai già un account? <span style="color:var(--amber);cursor:pointer;font-weight:600" onclick="switchAuthTab('login')">Accedi</span></div>
     </div>
   </div>
 </div>
@@ -640,7 +934,29 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 <!-- TOAST -->
 <div id="toastContainer"></div>
 
-<script>
+<script type="module">
+// ═══════════════════════════════════════════════════════════════════════
+// FIREBASE — SDK MODULARE v10
+// ═══════════════════════════════════════════════════════════════════════
+import { initializeApp }                                    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getAuth, createUserWithEmailAndPassword,
+         signInWithEmailAndPassword, signOut,
+         onAuthStateChanged }                               from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getFirestore, collection, getDocs,
+         doc, setDoc }                                      from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:            "AIzaSyCX-TpXeBbJ2zo4iaxQWlLrmncI0_Bn0_8",
+  authDomain:        "wanderquest-aac22.firebaseapp.com",
+  projectId:         "wanderquest-aac22",
+  storageBucket:     "wanderquest-aac22.firebasestorage.app",
+  messagingSenderId: "811873678158",
+  appId:             "1:811873678158:web:9c816974e5b00ebb13a41f"
+};
+
+const firebaseApp  = initializeApp(firebaseConfig);
+const firebaseAuth = getAuth(firebaseApp);
+const firestoreDb  = getFirestore(firebaseApp);
 // ═══════════════════════════════════════════════════════════════════════
 // DATABASE GERARCHICO COMPLETO
 // ═══════════════════════════════════════════════════════════════════════
@@ -914,14 +1230,215 @@ const DB = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════
+// PREDICTIVE SEARCH
+// ═══════════════════════════════════════════════════════════════════════
+
+// Build a flat, searchable index from the DB at runtime
+function buildSearchIndex() {
+  const index = [];
+  Object.entries(DB.continents).forEach(([contCode, cont]) => {
+    Object.entries(cont.countries).forEach(([countryCode, country]) => {
+      // Index country itself (if it has cities)
+      const cityCount = Object.keys(country.cities || {}).length;
+      if (cityCount > 0) {
+        index.push({
+          type: 'country',
+          label: country.name,
+          sub: `${cont.name} · ${cityCount} città`,
+          emoji: country.emoji,
+          contCode, countryCode, cityCode: null,
+        });
+      }
+      // Index every city
+      Object.entries(country.cities || {}).forEach(([cityCode, city]) => {
+        index.push({
+          type: 'city',
+          label: city.name,
+          sub: `${country.emoji} ${country.name} · ${cont.name}`,
+          emoji: city.emoji,
+          contCode, countryCode, cityCode,
+        });
+      });
+    });
+  });
+  return index;
+}
+
+const SEARCH_INDEX = buildSearchIndex();
+let searchFocusIndex = -1;
+
+function highlightMatch(text, query) {
+  const escaped = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+}
+
+function handleSearch(query) {
+  const dropdown = document.getElementById('searchDropdown');
+  const clearBtn = document.getElementById('searchClear');
+  const q = query.trim();
+
+  clearBtn.classList.toggle('visible', q.length > 0);
+  searchFocusIndex = -1;
+
+  if (q.length < 2) {
+    dropdown.style.display = 'none';
+    return;
+  }
+
+  const lower = q.toLowerCase();
+  const results = SEARCH_INDEX.filter(item =>
+    item.label.toLowerCase().includes(lower)
+  ).slice(0, 8); // cap at 8 results
+
+  dropdown.style.display = 'block';
+
+  if (results.length === 0) {
+    dropdown.innerHTML = `
+      <div class="search-empty-state">
+        <div class="empty-state-globe">🌐</div>
+        <div class="empty-state-title">Non siamo ancora arrivati qui</div>
+        <div class="empty-state-sub">
+          <strong>${q}</strong> non è ancora nel database di WanderQuest.<br>
+          Aiutaci a capire dove vuoi andare!
+        </div>
+        <button class="empty-state-cta" onclick="voteDestination('${q.replace(/'/g,"\\'")}')">
+          ✈️ Vota questa meta
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  dropdown.innerHTML = results.map((r, i) => `
+    <div
+      class="search-result-item"
+      data-index="${i}"
+      onclick="selectSearchResult(${JSON.stringify(r).replace(/"/g,'&quot;')})"
+    >
+      <div class="search-result-emoji">${r.emoji}</div>
+      <div class="search-result-info">
+        <div class="search-result-name">${highlightMatch(r.label, q)}</div>
+        <div class="search-result-sub">${r.sub}</div>
+      </div>
+      <span class="search-result-type ${r.type}">${r.type === 'city' ? 'Città' : 'Nazione'}</span>
+    </div>
+  `).join('');
+}
+
+function handleSearchKey(e) {
+  const dropdown = document.getElementById('searchDropdown');
+  if (dropdown.style.display === 'none') return;
+  const items = dropdown.querySelectorAll('.search-result-item');
+  if (!items.length) return;
+
+  if (e.key === 'ArrowDown') {
+    e.preventDefault();
+    searchFocusIndex = Math.min(searchFocusIndex + 1, items.length - 1);
+  } else if (e.key === 'ArrowUp') {
+    e.preventDefault();
+    searchFocusIndex = Math.max(searchFocusIndex - 1, 0);
+  } else if (e.key === 'Enter' && searchFocusIndex >= 0) {
+    e.preventDefault();
+    items[searchFocusIndex].click();
+    return;
+  } else if (e.key === 'Escape') {
+    clearSearch();
+    return;
+  }
+
+  items.forEach((el, i) => {
+    el.style.background = i === searchFocusIndex ? 'rgba(232,162,40,0.1)' : '';
+  });
+}
+
+function selectSearchResult(result) {
+  clearSearch();
+
+  // Update state
+  selectedContinent = result.contCode;
+  selectedCountry   = result.countryCode;
+
+  // Update breadcrumb steps visually
+  document.getElementById('step-continent').className = 'drill-step done';
+  document.getElementById('step-country').className   = 'drill-step done';
+
+  if (result.type === 'city') {
+    selectedCity = result.cityCode;
+    document.getElementById('step-city').className = 'drill-step done';
+
+    // Hydrate the drill-down grids silently so back-navigation works
+    renderContinents();
+    renderCountries(result.contCode);
+    renderCities(result.contCode, result.countryCode);
+    goToLevel('city');
+
+    const city    = DB.continents[result.contCode].countries[result.countryCode].cities[result.cityCode];
+    const country = DB.continents[result.contCode].countries[result.countryCode];
+    renderCityDetail(result.cityCode, city, country);
+    document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  } else {
+    // Country selected: jump to city picker
+    selectedCity = null;
+    document.getElementById('step-city').className = 'drill-step active';
+
+    renderContinents();
+    renderCountries(result.contCode);
+    renderCities(result.contCode, result.countryCode);
+    goToLevel('city');
+
+    document.getElementById('explorer').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+function clearSearch() {
+  const input = document.getElementById('globalSearch');
+  const dropdown = document.getElementById('searchDropdown');
+  const clearBtn = document.getElementById('searchClear');
+  input.value = '';
+  dropdown.style.display = 'none';
+  clearBtn.classList.remove('visible');
+  searchFocusIndex = -1;
+}
+
+function voteDestination(dest) {
+  document.getElementById('searchDropdown').style.display = 'none';
+  showToast(`🗺️ Grazie! Abbiamo registrato la tua preferenza per "${dest}"`);
+}
+
+// Close dropdown on outside click
+document.addEventListener('click', e => {
+  if (!document.getElementById('searchWrap').contains(e.target)) {
+    const dd = document.getElementById('searchDropdown');
+    if (dd) dd.style.display = 'none';
+  }
+});
+
+// ═══════════════════════════════════════════════════════════════════════
 // DRILL-DOWN EXPLORER
 // ═══════════════════════════════════════════════════════════════════════
 let selectedContinent = null;
 let selectedCountry = null;
 let selectedCity = null;
 
-function renderContinents() {
+async function renderContinents() {
   const grid = document.getElementById('continentGrid');
+  grid.innerHTML = '<div class="grid-spinner"><div class="spinner"></div><span>Caricamento continenti…</span></div>';
+  try {
+    const snapshot = await getDocs(collection(firestoreDb, 'continents'));
+    if (!snapshot.empty) {
+      snapshot.forEach(docSnap => {
+        if (!DB.continents[docSnap.id]) DB.continents[docSnap.id] = { countries: {} };
+        const d = docSnap.data();
+        DB.continents[docSnap.id].name         = d.name         ?? DB.continents[docSnap.id].name;
+        DB.continents[docSnap.id].emoji        = d.emoji        ?? DB.continents[docSnap.id].emoji;
+        DB.continents[docSnap.id].countryCount = d.countryCount ?? DB.continents[docSnap.id].countryCount;
+      });
+      SEARCH_INDEX.splice(0); SEARCH_INDEX.push(...buildSearchIndex());
+    }
+  } catch (err) {
+    console.warn('[WQ] Firestore continents — fallback locale:', err.message);
+  }
   grid.innerHTML = Object.entries(DB.continents).map(([code, c]) => `
     <div class="continent-card ${selectedContinent === code ? 'selected' : ''}" onclick="selectContinent('${code}')">
       <div class="continent-emoji">${c.emoji}</div>
@@ -931,47 +1448,103 @@ function renderContinents() {
   `).join('');
 }
 
-function selectContinent(code) {
+async function selectContinent(code) {
   selectedContinent = code;
   selectedCountry = null;
   selectedCity = null;
   renderContinents();
-  renderCountries(code);
+  await renderCountries(code);
   goToLevel('country');
   document.getElementById('step-continent').className = 'drill-step done';
   document.getElementById('step-country').className = 'drill-step active';
   document.getElementById('step-city').className = 'drill-step';
 }
 
-function renderCountries(continentCode) {
+async function renderCountries(continentCode) {
   const countries = DB.continents[continentCode].countries;
   const grid = document.getElementById('countryGrid');
-  grid.innerHTML = Object.entries(countries).map(([code, c]) => {
+  grid.innerHTML = '<div class="grid-spinner"><div class="spinner"></div><span>Caricamento paesi…</span></div>';
+
+  try {
+    const snapshot = await getDocs(collection(firestoreDb, `continents/${continentCode}/countries`));
+    if (!snapshot.empty) {
+      snapshot.forEach(docSnap => {
+        const d = docSnap.data();
+        if (!countries[docSnap.id]) countries[docSnap.id] = { cities: {} };
+        countries[docSnap.id].name  = d.name  ?? countries[docSnap.id].name;
+        countries[docSnap.id].emoji = d.emoji ?? countries[docSnap.id].emoji;
+      });
+      SEARCH_INDEX.splice(0); SEARCH_INDEX.push(...buildSearchIndex());
+    }
+  } catch (err) {
+    console.warn('[WQ] Firestore countries — fallback locale:', err.message);
+  }
+
+  const active = [];
+  const comingSoon = [];
+  Object.entries(countries).forEach(([code, c]) => {
     const cityCount = Object.keys(c.cities || {}).length;
-    const hasData = cityCount > 0;
-    return `
-      <div class="country-card ${!hasData ? 'opacity-50' : ''}" onclick="${hasData ? `selectCountry('${code}')` : `showToast('🚧 ${c.name} — Contenuti in arrivo!')`}" style="${!hasData ? 'opacity:0.4' : ''}">
-        <div class="country-flag">${c.emoji}</div>
-        <div class="country-name">${c.name}</div>
-        <div class="country-cities">${hasData ? cityCount + ' città disponibili' : '🔜 Prossimamente'}</div>
-      </div>
-    `;
-  }).join('');
+    if (cityCount > 0) active.push({ code, c, cityCount });
+    else comingSoon.push({ code, c });
+  });
+
+  const activeHTML = active.map(({ code, c, cityCount }) => `
+    <div class="country-card" onclick="selectCountry('${code}')">
+      <div class="country-flag">${c.emoji}</div>
+      <div class="country-name">${c.name}</div>
+      <div class="country-cities">${cityCount} città disponibili</div>
+    </div>
+  `).join('');
+
+  const comingSoonHTML = comingSoon.length === 0 ? '' : `
+    <div class="coming-soon-divider">
+      <div class="coming-soon-divider-line"></div>
+      <div class="coming-soon-label">🔜 Prossime aperture</div>
+      <div class="coming-soon-divider-line"></div>
+    </div>
+    <div class="country-grid">
+      ${comingSoon.map(({ c }) => `
+        <div class="country-card disabled">
+          <div class="country-flag">${c.emoji}</div>
+          <div class="country-name">${c.name}</div>
+          <div class="country-cities">In arrivo</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  grid.innerHTML = activeHTML + comingSoonHTML;
 }
 
-function selectCountry(code) {
+async function selectCountry(code) {
   selectedCountry = code;
   selectedCity = null;
-  renderCities(selectedContinent, code);
+  await renderCities(selectedContinent, code);
   goToLevel('city');
   document.getElementById('step-country').className = 'drill-step done';
   document.getElementById('step-city').className = 'drill-step active';
 }
 
-function renderCities(continentCode, countryCode) {
-  const cities = DB.continents[continentCode].countries[countryCode].cities;
+async function renderCities(continentCode, countryCode) {
   const grid = document.getElementById('cityGrid');
-  const countryName = DB.continents[continentCode].countries[countryCode].name;
+  grid.innerHTML = '<div class="grid-spinner"><div class="spinner"></div><span>Caricamento città…</span></div>';
+
+  try {
+    const snapshot = await getDocs(
+      collection(firestoreDb, `continents/${continentCode}/countries/${countryCode}/cities`)
+    );
+    if (!snapshot.empty) {
+      const countryObj = DB.continents[continentCode].countries[countryCode];
+      snapshot.forEach(docSnap => {
+        const d = docSnap.data();
+        countryObj.cities[docSnap.id] = { ...countryObj.cities[docSnap.id], ...d };
+      });
+      SEARCH_INDEX.splice(0); SEARCH_INDEX.push(...buildSearchIndex());
+    }
+  } catch (err) {
+    console.warn('[WQ] Firestore cities — fallback locale:', err.message);
+  }
+
+  const cities = DB.continents[continentCode].countries[countryCode].cities;
   grid.innerHTML = Object.entries(cities).map(([code, city]) => `
     <div class="city-card ${selectedCity === code ? 'selected' : ''}" onclick="selectCity('${code}')">
       <div class="city-thumb" style="background:${city.bg}">
@@ -1019,22 +1592,32 @@ function renderCityDetail(code, city, country) {
 
   const amazonAff = city.affiliates_amazon.map(a => `
     <div class="affiliate-card">
-      <div><span class="affiliate-provider amazon">amazon</span></div>
-      <div class="affiliate-item-name">${a.item}</div>
-      <div class="affiliate-why">${a.why}</div>
-      <a class="affiliate-link" href="https://amazon.it/dp/${a.asin}?tag=wanderquest-21" target="_blank" onclick="showToast('🛒 Commissione 3-8% per WanderQuest — stesso prezzo per te!')">
-        🛒 Vedi su Amazon
+      <div class="aff-img-placeholder amazon-bg">
+        <span class="aff-img-emoji">🛍️</span>
+      </div>
+      <div class="aff-body">
+        <span class="aff-badge amazon">⚡ Amazon</span>
+        <div class="aff-title">${a.item}</div>
+        <div class="aff-why">${a.why}</div>
+      </div>
+      <a class="aff-cta amazon-cta" href="https://amazon.it/dp/${a.asin}?tag=wanderquest-21" target="_blank">
+        🛒 Vedi su Amazon →
       </a>
     </div>
   `).join('');
 
   const bookingAff = city.affiliates_booking.map(b => `
     <div class="affiliate-card">
-      <div><span class="affiliate-provider booking">booking</span></div>
-      <div class="affiliate-item-name">${b.name}</div>
-      <div class="affiliate-why">${b.why}</div>
-      <a class="affiliate-link" href="https://booking.com/searchresults.html?ss=${encodeURIComponent(city.name)}" target="_blank" onclick="showToast('🏨 Commissione ~4% per WanderQuest sulla prenotazione')">
-        🏨 Cerca su Booking
+      <div class="aff-img-placeholder booking-bg">
+        <span class="aff-img-emoji">🏨</span>
+      </div>
+      <div class="aff-body">
+        <span class="aff-badge booking">🏨 Booking.com</span>
+        <div class="aff-title">${b.name}</div>
+        <div class="aff-why">${b.why}</div>
+      </div>
+      <a class="aff-cta booking-cta" href="https://booking.com/searchresults.html?ss=${encodeURIComponent(city.name)}" target="_blank">
+        Cerca disponibilità →
       </a>
     </div>
   `).join('');
@@ -1380,89 +1963,6 @@ function renderGlobalLeaderboard() {
   document.getElementById('globalLeaderboard').innerHTML = GLOBAL_LB.map(renderLBRow).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// JSON SCHEMA VIEWER
-// ═══════════════════════════════════════════════════════════════════════
-const SCHEMA_EXAMPLE = {
-  "// WanderQuest Database Schema v2.0": "Struttura gerarchica: Continent > Country > City",
-  "continents": {
-    "EU": {
-      "name": "Europa",
-      "emoji": "🌍",
-      "countryCount": 45,
-      "countries": {
-        "IT": {
-          "name": "Italia",
-          "emoji": "🇮🇹",
-          "cities": {
-            "ROM": {
-              "name": "Roma",
-              "emoji": "🏛️",
-              "hidden_gems": [
-                { "name": "Quartiere Pigneto", "desc": "Il Brooklyn romano..." },
-                { "name": "Centrale Montemartini", "desc": "Sculture tra macchinari industriali..." },
-                { "name": "Giardino degli Aranci", "desc": "Vista segreta su Roma..." }
-              ],
-              "food": {
-                "dishes": ["Cacio e Pepe", "Supplì al Telefono", "Maritozzo"],
-                "spots": ["Osteria da Fortunata", "Forno Campo de' Fiori"]
-              },
-              "cultural_pill": "A Roma non si cammina veloci. Il dolce far niente è filosofia.",
-              "weather": { "estate": "☀️ 30-35°C", "inverno": "🌧️ 8-12°C" },
-              "weather_tags": ["hot_summer", "mild_spring"],
-              "affiliates_amazon": [
-                { "item": "Scarpe comode walking", "asin": "B07XQM3VFF", "why": "Sampietrini ovunque" }
-              ],
-              "affiliates_booking": [
-                { "name": "Hotel Trastevere", "why": "Zona autentica" }
-              ]
-            },
-            "FLR": { "name": "Firenze", "...": "same structure" },
-            "VCE": { "name": "Venezia", "...": "same structure" }
-          }
-        },
-        "ES": {
-          "name": "Spagna",
-          "emoji": "🇪🇸",
-          "cities": {
-            "BCN": { "name": "Barcellona", "...": "same structure" },
-            "MAD": { "name": "Madrid", "...": "same structure" },
-            "SVQ": { "name": "Siviglia", "...": "same structure" }
-          }
-        }
-      }
-    },
-    "AS": {
-      "name": "Asia",
-      "emoji": "🌏",
-      "countries": {
-        "JP": {
-          "name": "Giappone",
-          "emoji": "🇯🇵",
-          "cities": {
-            "TYO": { "name": "Tokyo", "...": "same structure" },
-            "KIX": { "name": "Osaka", "...": "same structure" },
-            "UKY": { "name": "Kyoto", "...": "same structure" }
-          }
-        }
-      }
-    }
-  }
-};
-
-function syntaxHighlight(json) {
-  return JSON.stringify(json, null, 2)
-    .replace(/("\/\/ [^"]*":\s*"[^"]*")/g, '<span class="json-comment">$1</span>')
-    .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
-    .replace(/: "([^"]*)"/g, ': <span class="json-str">"$1"</span>')
-    .replace(/: (\d+)/g, ': <span class="json-num">$1</span>')
-    .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>')
-    .replace(/: (null)/g, ': <span class="json-null">$1</span>');
-}
-
-function copySchema() {
-  navigator.clipboard.writeText(JSON.stringify(SCHEMA_EXAMPLE, null, 2)).then(() => showToast('📋 Schema JSON copiato negli appunti!')).catch(() => showToast('⚠️ Copia manuale: seleziona il testo nel box'));
-}
 
 // ═══════════════════════════════════════════════════════════════════════
 // TOAST
@@ -1482,6 +1982,217 @@ function openUpgrade() {
 }
 
 // ═══════════════════════════════════════════════════════════════════════
+// FIREBASE AUTH — UI & LOGICA
+// ═══════════════════════════════════════════════════════════════════════
+
+function openAuthModal(tab = 'login') {
+  document.getElementById('authOverlay').classList.remove('hidden');
+  switchAuthTab(tab);
+  setTimeout(() => {
+    const id = tab === 'login' ? 'loginEmail' : 'regEmail';
+    document.getElementById(id)?.focus();
+  }, 80);
+}
+
+function closeAuthModal() {
+  document.getElementById('authOverlay').classList.add('hidden');
+  ['loginError','regError'].forEach(id => {
+    const el = document.getElementById(id);
+    el.textContent = ''; el.classList.remove('show');
+  });
+}
+
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('authOverlay')) closeAuthModal();
+}
+
+function switchAuthTab(tab) {
+  const isLogin = tab === 'login';
+  document.getElementById('tabLogin').classList.toggle('active', isLogin);
+  document.getElementById('tabRegister').classList.toggle('active', !isLogin);
+  document.getElementById('formLogin').classList.toggle('hidden', !isLogin);
+  document.getElementById('formRegister').classList.toggle('hidden', isLogin);
+}
+
+function setAuthLoading(formId, loading) {
+  const btn = document.getElementById(formId === 'login' ? 'loginSubmit' : 'regSubmit');
+  btn.disabled = loading;
+  btn.textContent = loading ? 'Caricamento…' : (formId === 'login' ? 'Accedi →' : 'Crea Account →');
+}
+
+function showAuthError(formId, msg) {
+  const el = document.getElementById(formId === 'login' ? 'loginError' : 'regError');
+  el.textContent = msg; el.classList.add('show');
+}
+
+async function loginUser() {
+  const email    = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  const errEl    = document.getElementById('loginError');
+  errEl.classList.remove('show');
+  if (!email || !password) { showAuthError('login', 'Inserisci email e password.'); return; }
+  setAuthLoading('login', true);
+  try {
+    await signInWithEmailAndPassword(firebaseAuth, email, password);
+    closeAuthModal();
+    showToast('👋 Bentornato!');
+  } catch (err) {
+    const msgs = {
+      'auth/user-not-found':  'Nessun account trovato con questa email.',
+      'auth/wrong-password':  'Password errata. Riprova.',
+      'auth/invalid-email':   'Formato email non valido.',
+      'auth/too-many-requests': 'Troppi tentativi. Attendi qualche minuto.',
+      'auth/invalid-credential': 'Email o password non corretti.',
+    };
+    showAuthError('login', msgs[err.code] || `Errore: ${err.message}`);
+  } finally {
+    setAuthLoading('login', false);
+  }
+}
+
+async function registerUser() {
+  const email    = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  const confirm  = document.getElementById('regPasswordConfirm').value;
+  document.getElementById('regError').classList.remove('show');
+  if (!email || !password) { showAuthError('reg', 'Compila tutti i campi.'); return; }
+  if (password.length < 6)  { showAuthError('reg', 'La password deve avere almeno 6 caratteri.'); return; }
+  if (password !== confirm)  { showAuthError('reg', 'Le password non coincidono.'); return; }
+  setAuthLoading('reg', true);
+  try {
+    await createUserWithEmailAndPassword(firebaseAuth, email, password);
+    closeAuthModal();
+    showToast('🎉 Account creato! Benvenuto in WanderQuest.');
+  } catch (err) {
+    const msgs = {
+      'auth/email-already-in-use': 'Questa email è già registrata.',
+      'auth/invalid-email':        'Formato email non valido.',
+      'auth/weak-password':        'Password troppo debole.',
+    };
+    showAuthError('reg', msgs[err.code] || `Errore: ${err.message}`);
+  } finally {
+    setAuthLoading('reg', false);
+  }
+}
+
+async function logoutUser() {
+  hideUserMenu();
+  await signOut(firebaseAuth);
+  showToast('👋 Hai effettuato il logout.');
+}
+
+function updateNavAuth(user) {
+  const loggedOut = document.getElementById('navLoggedOut');
+  const loggedIn  = document.getElementById('navLoggedIn');
+  if (user) {
+    loggedOut.classList.add('hidden');
+    loggedIn.classList.remove('hidden');
+    const initial = (user.email || '?')[0].toUpperCase();
+    document.getElementById('navAvatar').textContent      = initial;
+    document.getElementById('navUserLabel').textContent   = user.displayName || user.email.split('@')[0];
+    document.getElementById('navUserEmail').textContent   = user.email;
+  } else {
+    loggedOut.classList.remove('hidden');
+    loggedIn.classList.add('hidden');
+  }
+}
+
+function showUserMenu() {
+  document.getElementById('userDropdown').classList.toggle('hidden');
+}
+function hideUserMenu() {
+  document.getElementById('userDropdown').classList.add('hidden');
+}
+
+// Close user menu on outside click
+document.addEventListener('click', e => {
+  const wrap = document.getElementById('navLoggedIn');
+  if (wrap && !wrap.contains(e.target)) hideUserMenu();
+});
+
+// Auth state observer
+onAuthStateChanged(firebaseAuth, user => updateNavAuth(user));
+
+// ═══════════════════════════════════════════════════════════════════════
+// FIRESTORE MIGRATION SCRIPT
+// Run migrateDB() once in the browser console to seed Firestore.
+// Comment out or delete after migration is complete.
+// ═══════════════════════════════════════════════════════════════════════
+async function migrateDB() {
+  console.log('[WQ Migration] Avvio migrazione DB → Firestore…');
+  let written = 0;
+  for (const [contCode, cont] of Object.entries(DB.continents)) {
+    // continents/{contCode}
+    await setDoc(doc(firestoreDb, 'continents', contCode), {
+      name:         cont.name,
+      emoji:        cont.emoji,
+      countryCount: cont.countryCount ?? Object.keys(cont.countries).length,
+    });
+    for (const [countryCode, country] of Object.entries(cont.countries)) {
+      // continents/{contCode}/countries/{countryCode}
+      await setDoc(
+        doc(firestoreDb, `continents/${contCode}/countries`, countryCode),
+        { name: country.name, emoji: country.emoji }
+      );
+      for (const [cityCode, city] of Object.entries(country.cities || {})) {
+        // continents/{contCode}/countries/{countryCode}/cities/{cityCode}
+        const cityPayload = {
+          name:               city.name,
+          emoji:              city.emoji,
+          bg:                 city.bg,
+          weather:            city.weather,
+          weather_tags:       city.weather_tags,
+          cultural_pill:      city.cultural_pill,
+          hidden_gems:        city.hidden_gems,
+          food:               city.food,
+          affiliates_amazon:  city.affiliates_amazon,
+          affiliates_booking: city.affiliates_booking,
+        };
+        await setDoc(
+          doc(firestoreDb, `continents/${contCode}/countries/${countryCode}/cities`, cityCode),
+          cityPayload
+        );
+        written++;
+        console.log(`[WQ Migration] ✅ ${city.name} (${cityCode}) scritta`);
+      }
+    }
+  }
+  console.log(`[WQ Migration] ✅ Completata — ${written} città migrate su Firestore.`);
+  showToast(`✅ Migrazione completata: ${written} città su Firestore!`);
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// WINDOW EXPORTS — necessari per onclick="" con type="module"
+// ═══════════════════════════════════════════════════════════════════════
+window.openAuthModal        = openAuthModal;
+window.closeAuthModal       = closeAuthModal;
+window.handleOverlayClick   = handleOverlayClick;
+window.switchAuthTab        = switchAuthTab;
+window.loginUser            = loginUser;
+window.registerUser         = registerUser;
+window.logoutUser           = logoutUser;
+window.showUserMenu         = showUserMenu;
+window.selectContinent      = selectContinent;
+window.selectCountry        = selectCountry;
+window.selectCity           = selectCity;
+window.goToLevel            = goToLevel;
+window.renderCountryLeaderboard = renderCountryLeaderboard;
+window.handleSearch         = handleSearch;
+window.handleSearchKey      = handleSearchKey;
+window.clearSearch          = clearSearch;
+window.voteDestination      = voteDestination;
+window.selectSearchResult   = selectSearchResult;
+window.searchFlight         = searchFlight;
+window.quickJumpCity        = quickJumpCity;
+window.generatePacking      = generatePacking;
+window.precompilePacking    = precompilePacking;
+window.toggleCheck          = toggleCheck;
+window.printPacking         = printPacking;
+window.openUpgrade          = openUpgrade;
+window.showToast            = showToast;
+window.migrateDB            = migrateDB;
+
+// ═══════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════
 renderContinents();
@@ -1489,7 +2200,6 @@ renderPremiumTable();
 renderIncomeStreams();
 renderCountryLeaderboard('IT');
 renderGlobalLeaderboard();
-document.getElementById('schemaCode').innerHTML = syntaxHighlight(SCHEMA_EXAMPLE);
 </script>
 </body>
 </html>
