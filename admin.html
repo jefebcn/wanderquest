@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WanderQuest — Admin Panel</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #080C1A; --navy: #0D1530; --navy-mid: #162040;
+  --amber: #E8A228; --amber-bright: #F5B840;
+  --teal: #18C5A8; --cream: #F2EDE4; --cream-dim: #D6D0C2;
+  --red: #E84040; --green: #2EC57A; --purple: #8B5CF6;
+  --glass: rgba(255,255,255,0.06); --glass-border: rgba(255,255,255,0.12);
+}
+*,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); min-height: 100vh; overflow-x: hidden; }
+
+/* ── LOGIN SCREEN ── */
+#loginScreen {
+  min-height: 100vh; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(232,162,40,0.06) 0%, transparent 60%);
+}
+.login-card {
+  background: #0E1628; border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 40px; width: 100%; max-width: 400px;
+  box-shadow: 0 32px 80px rgba(0,0,0,0.6);
+}
+.login-logo { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 900; color: var(--amber); margin-bottom: 4px; }
+.login-logo span { color: var(--cream); }
+.login-badge { font-size: 10px; background: rgba(232,64,64,0.15); border: 1px solid rgba(232,64,64,0.3); color: #FF7A7A; padding: 3px 10px; border-radius: 5px; font-weight: 700; letter-spacing: 0.08em; }
+.login-title { font-size: 24px; font-weight: 700; margin: 20px 0 6px; }
+.login-sub { font-size: 13px; color: var(--cream-dim); margin-bottom: 28px; }
+.form-field { margin-bottom: 16px; }
+.form-field label { display: block; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); margin-bottom: 7px; }
+.form-field input {
+  width: 100%; background: rgba(255,255,255,0.05); border: 1.5px solid var(--glass-border);
+  color: var(--cream); padding: 12px 15px; border-radius: 10px;
+  font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none; transition: border-color 0.2s;
+}
+.form-field input:focus { border-color: var(--amber); }
+.login-btn {
+  width: 100%; background: var(--amber); color: var(--ink); border: none;
+  padding: 13px; border-radius: 10px; font-family: 'DM Sans', sans-serif;
+  font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.2s;
+  margin-top: 6px; box-shadow: 0 6px 22px rgba(232,162,40,0.3);
+}
+.login-btn:hover { background: var(--amber-bright); transform: translateY(-1px); }
+.login-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+.login-error { background: rgba(232,64,64,0.1); border: 1px solid rgba(232,64,64,0.25); color: #FF7A7A; border-radius: 8px; padding: 10px 14px; font-size: 12px; margin-top: 12px; display: none; }
+.login-error.show { display: block; }
+.login-note { font-size: 11px; color: var(--cream-dim); opacity: 0.6; text-align: center; margin-top: 16px; }
+
+/* ── ADMIN LAYOUT ── */
+#adminApp { display: none; min-height: 100vh; }
+.admin-sidebar {
+  position: fixed; top: 0; left: 0; width: 240px; height: 100vh;
+  background: #060A16; border-right: 1px solid var(--glass-border);
+  padding: 24px 16px; display: flex; flex-direction: column; gap: 4px;
+  z-index: 100; overflow-y: auto;
+}
+.sidebar-logo { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 900; color: var(--amber); padding: 0 8px 20px; border-bottom: 1px solid var(--glass-border); margin-bottom: 8px; }
+.sidebar-logo span { color: var(--cream); }
+.sidebar-logo small { display: block; font-family: 'DM Sans', sans-serif; font-size: 9px; font-weight: 700; letter-spacing: 0.1em; color: #FF7A7A; margin-top: 2px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 12px; border-radius: 9px; cursor: pointer;
+  font-size: 13px; font-weight: 500; color: var(--cream-dim);
+  transition: all 0.15s; border: none; background: none; width: 100%; text-align: left;
+  font-family: 'DM Sans', sans-serif;
+}
+.nav-item:hover { background: var(--glass); color: var(--cream); }
+.nav-item.active { background: rgba(232,162,40,0.1); color: var(--amber); font-weight: 600; }
+.nav-item .nav-icon { width: 20px; text-align: center; font-size: 15px; }
+.nav-section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--cream-dim); opacity: 0.5; padding: 12px 12px 4px; }
+.sidebar-footer { margin-top: auto; padding-top: 16px; border-top: 1px solid var(--glass-border); }
+.sidebar-user { font-size: 11px; color: var(--cream-dim); padding: 8px 12px; margin-bottom: 6px; }
+.sidebar-user strong { display: block; color: var(--cream); font-size: 13px; }
+.logout-btn {
+  width: 100%; background: rgba(232,64,64,0.08); border: 1px solid rgba(232,64,64,0.15);
+  color: #FF7A7A; padding: 9px 12px; border-radius: 8px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+}
+.logout-btn:hover { background: rgba(232,64,64,0.15); }
+
+.admin-main {
+  margin-left: 240px; padding: 32px 36px; min-height: 100vh;
+}
+.page { display: none; }
+.page.active { display: block; animation: fadeIn 0.2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+.page-header { margin-bottom: 28px; }
+.page-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; margin-bottom: 4px; }
+.page-sub { font-size: 13px; color: var(--cream-dim); }
+
+/* ── STAT CARDS ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: 14px; padding: 20px;
+}
+.stat-card-val { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 500; color: var(--amber); }
+.stat-card-lbl { font-size: 12px; color: var(--cream-dim); margin-top: 4px; }
+.stat-card-delta { font-size: 11px; margin-top: 6px; }
+.delta-up { color: var(--green); } .delta-dn { color: var(--red); }
+
+/* ── TABLE ── */
+.admin-table-wrap { overflow-x: auto; }
+.admin-table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.admin-table thead th {
+  text-align: left; padding: 12px 16px; font-size: 10px; font-weight: 700;
+  letter-spacing: 0.08em; text-transform: uppercase; color: var(--cream-dim);
+  background: rgba(255,255,255,0.03); border-bottom: 1px solid var(--glass-border);
+}
+.admin-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+.admin-table tbody tr:hover { background: var(--glass); }
+.admin-table tbody td { padding: 13px 16px; font-size: 13px; vertical-align: middle; }
+.table-badge { display: inline-flex; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 700; }
+.badge-free { background: rgba(255,255,255,0.07); color: var(--cream-dim); }
+.badge-pro  { background: rgba(232,162,40,0.15); color: var(--amber); }
+.badge-admin{ background: rgba(232,64,64,0.15); color: #FF7A7A; }
+
+/* ── FORM PANEL ── */
+.form-panel {
+  background: var(--glass); border: 1px solid var(--glass-border);
+  border-radius: 16px; padding: 24px; margin-bottom: 20px;
+}
+.form-panel-title { font-size: 16px; font-weight: 700; margin-bottom: 18px; display: flex; align-items: center; gap: 8px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-grid-3 { grid-template-columns: 1fr 1fr 1fr; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); }
+.form-group input, .form-group select, .form-group textarea {
+  background: rgba(255,255,255,0.05); border: 1.5px solid var(--glass-border);
+  color: var(--cream); padding: 10px 13px; border-radius: 9px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none; transition: border-color 0.2s;
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--amber); }
+.form-group select option { background: var(--navy-mid); }
+.btn { padding: 10px 20px; border-radius: 9px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; border: none; transition: all 0.2s; }
+.btn-primary { background: var(--amber); color: var(--ink); }
+.btn-primary:hover { background: var(--amber-bright); transform: translateY(-1px); }
+.btn-danger { background: rgba(232,64,64,0.12); border: 1px solid rgba(232,64,64,0.25); color: #FF7A7A; }
+.btn-danger:hover { background: rgba(232,64,64,0.22); }
+.btn-ghost { background: var(--glass); border: 1px solid var(--glass-border); color: var(--cream-dim); }
+.btn-ghost:hover { background: rgba(255,255,255,0.1); color: var(--cream); }
+.btn-ai { background: linear-gradient(135deg, #7C3AED, #06B6D4); color: white; }
+.btn-ai:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-sm { padding: 6px 12px; font-size: 11px; }
+.btn-row { display: flex; gap: 10px; margin-top: 18px; flex-wrap: wrap; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--navy-mid); border: 1px solid var(--glass-border); color: var(--cream); padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 9999; box-shadow: 0 8px 32px rgba(0,0,0,0.4); animation: fadeIn 0.3s ease; max-width: 380px; text-align: center; }
+
+/* ── ACTIVITY LOG ── */
+.log-entry { display: flex; gap: 12px; align-items: flex-start; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 12px; }
+.log-entry:last-child { border-bottom: none; }
+.log-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 4px; }
+.log-dot.green { background: var(--green); } .log-dot.amber { background: var(--amber); } .log-dot.red { background: var(--red); }
+.log-time { color: var(--cream-dim); white-space: nowrap; }
+.log-msg { color: var(--cream); flex: 1; }
+
+/* ── SPINNER ── */
+.spinner { width: 22px; height: 22px; border-radius: 50%; border: 2.5px solid rgba(232,162,40,0.2); border-top-color: var(--amber); animation: spin 0.7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-row { display: flex; align-items: center; gap: 10px; color: var(--cream-dim); font-size: 13px; padding: 20px 0; }
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="loginScreen">
+  <div class="login-card">
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:24px">
+      <div>
+        <div class="login-logo">Wander<span>Quest</span></div>
+        <span class="login-badge">ADMIN PANEL</span>
+      </div>
+    </div>
+    <div class="login-title">Accesso Amministratore</div>
+    <p class="login-sub">Solo gli account con privilegi admin possono accedere.</p>
+    <div class="form-field">
+      <label>Email Admin</label>
+      <input type="email" id="adminEmail" placeholder="admin@wanderquest.app" autocomplete="email">
+    </div>
+    <div class="form-field">
+      <label>Password</label>
+      <input type="password" id="adminPassword" placeholder="Password" autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')adminLogin()">
+    </div>
+    <div class="login-error" id="loginErr"></div>
+    <button class="login-btn" id="loginBtn" onclick="adminLogin()">Accedi all'Admin Panel →</button>
+    <p class="login-note">🔒 Accesso solo per utenti autorizzati · I tentativi vengono registrati</p>
+  </div>
+</div>
+
+<!-- ═══ ADMIN APP ═══ -->
+<div id="adminApp">
+
+  <!-- Sidebar -->
+  <nav class="admin-sidebar">
+    <div class="sidebar-logo">Wander<span>Quest</span><small>⚙️ ADMIN PANEL</small></div>
+
+    <div class="nav-section-label">Dashboard</div>
+    <button class="nav-item active" onclick="showPage('dashboard')">
+      <span class="nav-icon">📊</span> Dashboard
+    </button>
+
+    <div class="nav-section-label">Contenuti</div>
+    <button class="nav-item" onclick="showPage('cities')">
+      <span class="nav-icon">🌍</span> Gestione Città
+    </button>
+    <button class="nav-item" onclick="showPage('addCity')">
+      <span class="nav-icon">➕</span> Aggiungi Città
+    </button>
+    <button class="nav-item" onclick="showPage('aiCity')">
+      <span class="nav-icon">🤖</span> Genera con AI
+    </button>
+
+    <div class="nav-section-label">Utenti</div>
+    <button class="nav-item" onclick="showPage('users')">
+      <span class="nav-icon">👥</span> Utenti
+    </button>
+    <button class="nav-item" onclick="showPage('admins')">
+      <span class="nav-icon">🔑</span> Amministratori
+    </button>
+
+    <div class="nav-section-label">Sistema</div>
+    <button class="nav-item" onclick="showPage('migration')">
+      <span class="nav-icon">☁️</span> Migrazione DB
+    </button>
+    <button class="nav-item" onclick="showPage('logs')">
+      <span class="nav-icon">📋</span> Activity Log
+    </button>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <strong id="sidebarUserName">—</strong>
+        <span id="sidebarUserEmail">—</span>
+      </div>
+      <button class="logout-btn" onclick="adminLogout()">← Esci</button>
+    </div>
+  </nav>
+
+  <!-- Main content -->
+  <main class="admin-main">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <h1 class="page-title">📊 Dashboard</h1>
+        <p class="page-sub">Panoramica in tempo reale — aggiornata ad ogni accesso</p>
+      </div>
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card"><div class="loading-row"><div class="spinner"></div></div></div>
+        <div class="stat-card"><div class="loading-row"><div class="spinner"></div></div></div>
+        <div class="stat-card"><div class="loading-row"><div class="spinner"></div></div></div>
+        <div class="stat-card"><div class="loading-row"><div class="spinner"></div></div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div class="form-panel">
+          <div class="form-panel-title">📋 Activity Log Recente</div>
+          <div id="recentLogs"><div class="loading-row"><div class="spinner"></div><span>Caricamento…</span></div></div>
+        </div>
+        <div class="form-panel">
+          <div class="form-panel-title">🌍 Città nel Database</div>
+          <div id="cityCountByContinent" style="font-size:13px;color:var(--cream-dim)">
+            <div class="loading-row"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GESTIONE CITTÀ -->
+    <div class="page" id="page-cities">
+      <div class="page-header">
+        <h1 class="page-title">🌍 Gestione Città</h1>
+        <p class="page-sub">Tutte le città nel database Firestore</p>
+      </div>
+      <div style="display:flex;gap:10px;margin-bottom:20px">
+        <input type="text" id="citySearchFilter" placeholder="Filtra per nome…"
+          oninput="filterCityTable(this.value)"
+          style="background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);padding:9px 14px;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;flex:1;max-width:320px">
+        <button class="btn btn-primary btn-sm" onclick="showPage('addCity')">+ Aggiungi città</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadCities()">↻ Ricarica</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Città</th><th>Continente</th><th>Paese</th>
+              <th>Gemme</th><th>Piatti</th><th>Azioni</th>
+            </tr>
+          </thead>
+          <tbody id="cityTableBody">
+            <tr><td colspan="6"><div class="loading-row"><div class="spinner"></div><span>Caricamento città…</span></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AGGIUNGI CITTÀ -->
+    <div class="page" id="page-addCity">
+      <div class="page-header">
+        <h1 class="page-title">➕ Aggiungi Città</h1>
+        <p class="page-sub">Compila il form per aggiungere una nuova destinazione al database</p>
+      </div>
+      <div class="form-panel">
+        <div class="form-panel-title">📍 Informazioni Base</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome città *</label>
+            <input type="text" id="fc-name" placeholder="Es. Napoli">
+          </div>
+          <div class="form-group">
+            <label>Codice (3-4 lettere) *</label>
+            <input type="text" id="fc-code" placeholder="Es. NAP" maxlength="6" style="text-transform:uppercase">
+          </div>
+          <div class="form-group">
+            <label>Emoji</label>
+            <input type="text" id="fc-emoji" placeholder="🏛️" maxlength="4">
+          </div>
+          <div class="form-group">
+            <label>Continente *</label>
+            <select id="fc-continent">
+              <option value="EU">🌍 Europa (EU)</option>
+              <option value="AS">🌏 Asia (AS)</option>
+              <option value="AM">🌎 Americhe (AM)</option>
+              <option value="AF">🌍 Africa (AF)</option>
+              <option value="OC">🗺️ Oceania (OC)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Codice Paese *</label>
+            <input type="text" id="fc-country" placeholder="Es. IT, JP, ES" maxlength="2" style="text-transform:uppercase">
+          </div>
+          <div class="form-group">
+            <label>Background gradient</label>
+            <input type="text" id="fc-bg" placeholder="linear-gradient(135deg,#8B0000,#C0392B)">
+          </div>
+        </div>
+      </div>
+
+      <div class="form-panel">
+        <div class="form-panel-title">🌦️ Meteo</div>
+        <div class="form-grid form-grid-3">
+          <div class="form-group"><label>Estate</label><input type="text" id="fc-w-estate" placeholder="☀️ 30-35°C"></div>
+          <div class="form-group"><label>Inverno</label><input type="text" id="fc-w-inverno" placeholder="🌧️ 8-12°C"></div>
+          <div class="form-group"><label>Primavera</label><input type="text" id="fc-w-primavera" placeholder="⛅ 18-22°C"></div>
+          <div class="form-group"><label>Autunno</label><input type="text" id="fc-w-autunno" placeholder="🍂 15-20°C"></div>
+          <div class="form-group full"><label>Weather tags (virgola separati)</label>
+            <input type="text" id="fc-weather-tags" placeholder="hot_summer, mild_spring, mild_autumn"></div>
+        </div>
+      </div>
+
+      <div class="form-panel">
+        <div class="form-panel-title">💎 Gemme Nascoste</div>
+        <div id="gemsContainer"></div>
+        <button class="btn btn-ghost btn-sm" onclick="addGemRow()">+ Aggiungi gemma</button>
+      </div>
+
+      <div class="form-panel">
+        <div class="form-panel-title">🍽️ Cibo</div>
+        <div class="form-group" style="margin-bottom:12px">
+          <label>Piatti tipici (uno per riga)</label>
+          <textarea id="fc-dishes" placeholder="Cacio e Pepe&#10;Supplì&#10;Maritozzo"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Ristoranti consigliati (uno per riga)</label>
+          <textarea id="fc-spots" placeholder="Trattoria Da Mario — descrizione&#10;Forno Campo de Fiori — descrizione"></textarea>
+        </div>
+      </div>
+
+      <div class="form-panel">
+        <div class="form-panel-title">🌐 Pillola Culturale</div>
+        <div class="form-group full">
+          <label>Testo (max 200 caratteri)</label>
+          <textarea id="fc-cultural" placeholder="Una frase autentica sulla cultura locale…" maxlength="200"></textarea>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="saveCity()">💾 Salva su Firestore</button>
+        <button class="btn btn-ghost" onclick="resetCityForm()">✕ Reset form</button>
+      </div>
+      <div id="saveCityStatus" style="margin-top:12px;font-size:13px"></div>
+    </div>
+
+    <!-- AI GENERATE CITY -->
+    <div class="page" id="page-aiCity">
+      <div class="page-header">
+        <h1 class="page-title">🤖 Genera Città con AI</h1>
+        <p class="page-sub">Usa Claude Haiku per generare automaticamente la scheda di una nuova destinazione</p>
+      </div>
+      <div class="form-panel">
+        <div class="form-panel-title">✨ Generazione automatica</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Nome Destinazione *</label>
+            <input type="text" id="ai-city-name" placeholder="Es. Lisbona, Seoul, Buenos Aires…">
+          </div>
+          <div class="form-group">
+            <label>Continente</label>
+            <select id="ai-city-continent">
+              <option value="EU">Europa</option>
+              <option value="AS">Asia</option>
+              <option value="AM">Americhe</option>
+              <option value="AF">Africa</option>
+              <option value="OC">Oceania</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Codice Paese (2 lettere)</label>
+            <input type="text" id="ai-city-country" placeholder="PT, KR, AR…" maxlength="2" style="text-transform:uppercase">
+          </div>
+          <div class="form-group">
+            <label>Codice Città (3-6 lettere)</label>
+            <input type="text" id="ai-city-code" placeholder="LIS, ICN, EZE…" maxlength="6" style="text-transform:uppercase">
+          </div>
+          <div class="form-group">
+            <label>Claude API Key</label>
+            <input type="password" id="ai-apikey" placeholder="sk-ant-api03-… (opzionale se già nel main)">
+          </div>
+        </div>
+        <div class="btn-row">
+          <button class="btn btn-ai" id="aiGenCityBtn" onclick="adminAIGenerateCity()">🤖 Genera con Claude AI</button>
+        </div>
+      </div>
+      <div class="loading-row hidden" id="aiCityLoading"><div class="spinner"></div><span>Claude sta generando la scheda città…</span></div>
+      <div class="form-panel hidden" id="aiCityPreview">
+        <div class="form-panel-title">👁️ Anteprima generata — rivedi prima di salvare</div>
+        <pre id="aiCityJson" style="font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);white-space:pre-wrap;word-break:break-word;max-height:400px;overflow-y:auto"></pre>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="saveAICity()">💾 Salva su Firestore</button>
+          <button class="btn btn-ghost" onclick="document.getElementById('aiCityPreview').classList.add('hidden')">✕ Scarta</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- UTENTI -->
+    <div class="page" id="page-users">
+      <div class="page-header">
+        <h1 class="page-title">👥 Utenti</h1>
+        <p class="page-sub">Tutti gli utenti registrati — dati da Firestore</p>
+      </div>
+      <div style="margin-bottom:16px">
+        <button class="btn btn-ghost btn-sm" onclick="loadUsers()">↻ Ricarica utenti</button>
+      </div>
+      <div class="admin-table-wrap">
+        <table class="admin-table">
+          <thead>
+            <tr><th>Email</th><th>Piano</th><th>Valigie</th><th>Mete Votate</th><th>Registrato</th><th>Azioni</th></tr>
+          </thead>
+          <tbody id="usersTableBody">
+            <tr><td colspan="6"><div class="loading-row"><div class="spinner"></div><span>Caricamento utenti…</span></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- AMMINISTRATORI -->
+    <div class="page" id="page-admins">
+      <div class="page-header">
+        <h1 class="page-title">🔑 Amministratori</h1>
+        <p class="page-sub">Email autorizzate ad accedere a questo pannello</p>
+      </div>
+      <div class="form-panel">
+        <div class="form-panel-title">Email autorizzate</div>
+        <div id="adminListEl" style="margin-bottom:16px;font-size:13px;color:var(--cream-dim)">Caricamento…</div>
+        <div style="display:flex;gap:10px">
+          <input type="email" id="newAdminEmail" placeholder="nuovoadmin@email.com"
+            style="background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);padding:9px 14px;border-radius:9px;font-size:13px;outline:none;flex:1;font-family:'DM Sans',sans-serif">
+          <button class="btn btn-primary btn-sm" onclick="addAdmin()">+ Aggiungi</button>
+        </div>
+        <p style="font-size:11px;color:var(--cream-dim);margin-top:10px;opacity:0.7">
+          Gli admin vengono salvati su Firestore in <code style="color:var(--teal)">config/admins</code>. Solo un super-admin può aggiungere altri admin.
+        </p>
+      </div>
+    </div>
+
+    <!-- MIGRAZIONE DB -->
+    <div class="page" id="page-migration">
+      <div class="page-header">
+        <h1 class="page-title">☁️ Migrazione Database</h1>
+        <p class="page-sub">Sincronizza il database locale verso Firestore</p>
+      </div>
+      <div class="form-panel">
+        <div class="form-panel-title">⚠️ Attenzione</div>
+        <p style="font-size:13px;color:var(--cream-dim);margin-bottom:16px;line-height:1.6">
+          La migrazione scrive l'intero DB locale su Firestore usando <code style="color:var(--teal)">setDoc</code> (idempotente — sicuro da rieseguire).
+          Usa questa funzione solo dopo aver modificato i dati nel file <code>index.html</code> e vuoi propagare le modifiche al cloud.
+        </p>
+        <div class="btn-row">
+          <button class="btn btn-primary" onclick="runMigration()">☁️ Avvia Migrazione</button>
+        </div>
+        <div id="migrationLog" style="margin-top:16px;font-family:'DM Mono',monospace;font-size:11px;color:var(--teal);white-space:pre-wrap;max-height:300px;overflow-y:auto;background:rgba(0,0,0,0.2);padding:12px;border-radius:8px;display:none"></div>
+      </div>
+    </div>
+
+    <!-- ACTIVITY LOG -->
+    <div class="page" id="page-logs">
+      <div class="page-header">
+        <h1 class="page-title">📋 Activity Log</h1>
+        <p class="page-sub">Registro delle operazioni admin</p>
+      </div>
+      <div class="form-panel">
+        <div id="fullLogEl"><div class="loading-row"><div class="spinner"></div></div></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<script type="module">
+import { initializeApp }                       from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getAuth, signInWithEmailAndPassword,
+         signOut, onAuthStateChanged }          from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getFirestore, collection, getDocs,
+         doc, setDoc, getDoc, updateDoc,
+         deleteDoc, arrayUnion, query,
+         orderBy, limit }                       from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+// ── CONFIG ──────────────────────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey:            "AIzaSyCX-TpXeBbJ2zo4iaxQWlLrmncI0_Bn0_8",
+  authDomain:        "wanderquest-aac22.firebaseapp.com",
+  projectId:         "wanderquest-aac22",
+  storageBucket:     "wanderquest-aac22.firebasestorage.app",
+  messagingSenderId: "811873678158",
+  appId:             "1:811873678158:web:9c816974e5b00ebb13a41f"
+};
+
+// ─── CLAUDE API KEY ────────────────────────────────────────────────────
+// Inserisci qui la tua chiave per la feature "Genera con AI"
+const CLAUDE_API_KEY  = '';   // ← 'sk-ant-api03-...'
+const CLAUDE_MODEL    = 'claude-haiku-4-5-20251001';
+const CLAUDE_ENDPOINT = 'https://api.anthropic.com/v1/messages';
+
+const app  = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db   = getFirestore(app);
+
+// ── ADMIN EMAIL WHITELIST (fallback locale se Firestore non disponibile) ──
+const LOCAL_ADMIN_EMAILS = [
+  // Aggiungi qui le tue email admin di backup
+  // 'tuaemail@esempio.com',
+];
+
+let currentAdminUser = null;
+let gemRowCount = 0;
+let aiCityData  = null;
+const activityLog = [];
+
+// ── HELPERS ──────────────────────────────────────────────────────────────
+function showToast(msg, dur = 3500) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+  const t = document.createElement('div');
+  t.className = 'toast'; t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, dur);
+}
+
+function logActivity(type, msg) {
+  const entry = { type, msg, time: new Date().toLocaleTimeString('it-IT') };
+  activityLog.unshift(entry);
+  if (activityLog.length > 50) activityLog.pop();
+  renderLog();
+}
+
+function renderLog() {
+  const colors = { green: ['green','✅'], amber: ['amber','⚙️'], red: ['red','⚠️'] };
+  const html = activityLog.slice(0, 20).map(e => {
+    const [cls] = colors[e.type] || ['amber'];
+    return `<div class="log-entry">
+      <div class="log-dot ${cls}"></div>
+      <div class="log-time">${e.time}</div>
+      <div class="log-msg">${e.msg}</div>
+    </div>`;
+  }).join('');
+  const el = document.getElementById('recentLogs');
+  if (el) el.innerHTML = html || '<p style="color:var(--cream-dim);font-size:13px">Nessuna attività recente.</p>';
+  const fullEl = document.getElementById('fullLogEl');
+  if (fullEl) fullEl.innerHTML = html || '<p style="color:var(--cream-dim);font-size:13px">Nessuna attività.</p>';
+}
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+async function isAdmin(email) {
+  // Check Firestore config/admins
+  try {
+    const snap = await getDoc(doc(db, 'config', 'admins'));
+    if (snap.exists()) {
+      const list = snap.data().emails || [];
+      if (list.includes(email)) return true;
+    }
+  } catch {}
+  // Fallback: local whitelist
+  return LOCAL_ADMIN_EMAILS.includes(email);
+}
+
+window.adminLogin = async function() {
+  const email    = document.getElementById('adminEmail').value.trim();
+  const password = document.getElementById('adminPassword').value;
+  const errEl    = document.getElementById('loginErr');
+  const btn      = document.getElementById('loginBtn');
+  errEl.classList.remove('show');
+  if (!email || !password) { errEl.textContent='Compila email e password.'; errEl.classList.add('show'); return; }
+  btn.disabled = true; btn.textContent = 'Verifica in corso…';
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    const ok = await isAdmin(cred.user.email);
+    if (!ok) {
+      await signOut(auth);
+      errEl.textContent = '⛔ Questo account non ha privilegi admin.';
+      errEl.classList.add('show');
+      btn.disabled = false; btn.textContent = 'Accedi all\'Admin Panel →';
+      return;
+    }
+    // Admin OK — handled by onAuthStateChanged
+  } catch (err) {
+    const msgs = {
+      'auth/invalid-credential': 'Email o password non corretti.',
+      'auth/user-not-found': 'Nessun account trovato.',
+      'auth/wrong-password': 'Password errata.',
+      'auth/too-many-requests': 'Troppi tentativi. Attendi.',
+    };
+    errEl.textContent = msgs[err.code] || err.message;
+    errEl.classList.add('show');
+    btn.disabled = false; btn.textContent = 'Accedi all\'Admin Panel →';
+  }
+};
+
+window.adminLogout = async function() {
+  await signOut(auth);
+  document.getElementById('adminApp').style.display = 'none';
+  document.getElementById('loginScreen').style.display = 'flex';
+};
+
+onAuthStateChanged(auth, async user => {
+  if (user) {
+    const ok = await isAdmin(user.email);
+    if (!ok) { await signOut(auth); return; }
+    currentAdminUser = user;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminApp').style.display = 'block';
+    document.getElementById('sidebarUserName').textContent = user.displayName || user.email.split('@')[0];
+    document.getElementById('sidebarUserEmail').textContent = user.email;
+    loadDashboard();
+    logActivity('green', `Login admin: ${user.email}`);
+  }
+});
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────
+window.showPage = function(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(`page-${id}`)?.classList.add('active');
+  document.querySelector(`[onclick="showPage('${id}')"]`)?.classList.add('active');
+  // Lazy load
+  if (id === 'cities')    loadCities();
+  if (id === 'users')     loadUsers();
+  if (id === 'admins')    loadAdmins();
+  if (id === 'logs')      renderLog();
+};
+
+// ── DASHBOARD ────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  try {
+    // Count users
+    const usersSnap = await getDocs(collection(db, 'users'));
+    const users = usersSnap.docs.map(d => d.data());
+    const totalUsers = users.length;
+    const proUsers   = users.filter(u => u.plan === 'pro').length;
+    const totalValigie = users.reduce((a,u) => a + (u.valigie?.length||0), 0);
+    const totalVotes   = users.reduce((a,u) => a + (u.votedMete?.length||0), 0);
+
+    document.getElementById('statsGrid').innerHTML = [
+      { val: totalUsers, lbl: 'Utenti Totali', delta: '+' + totalUsers + ' registrati', color: 'green' },
+      { val: proUsers,   lbl: 'Utenti Pro',    delta: ((proUsers/Math.max(totalUsers,1)*100).toFixed(1)) + '% conversion', color: 'amber' },
+      { val: totalValigie, lbl: 'Valigie Salvate', delta: '~' + (totalValigie/Math.max(totalUsers,1)).toFixed(1) + ' per utente', color: 'teal' },
+      { val: totalVotes, lbl: 'Mete Votate', delta: 'wishlist aggregate', color: 'purple' },
+    ].map(s => `
+      <div class="stat-card">
+        <div class="stat-card-val" style="color:var(--${s.color})">${s.val}</div>
+        <div class="stat-card-lbl">${s.lbl}</div>
+        <div class="stat-card-delta delta-up">${s.delta}</div>
+      </div>
+    `).join('');
+
+    // City count by continent
+    const continents = { EU:'Europa', AS:'Asia', AM:'Americhe', AF:'Africa', OC:'Oceania' };
+    let cityCountHTML = '';
+    for (const [code, name] of Object.entries(continents)) {
+      try {
+        const countriesSnap = await getDocs(collection(db, `continents/${code}/countries`));
+        let cityCount = 0;
+        for (const cDoc of countriesSnap.docs) {
+          const citiesSnap = await getDocs(collection(db, `continents/${code}/countries/${cDoc.id}/cities`));
+          cityCount += citiesSnap.size;
+        }
+        cityCountHTML += `<div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--glass-border)">
+          <span>${name}</span>
+          <strong style="color:var(--amber)">${cityCount} città</strong>
+        </div>`;
+      } catch {}
+    }
+    document.getElementById('cityCountByContinent').innerHTML = cityCountHTML || '<span>Nessun dato disponibile</span>';
+    logActivity('green', 'Dashboard caricata');
+  } catch (err) {
+    logActivity('red', 'Errore caricamento dashboard: ' + err.message);
+  }
+}
+
+// ── CITIES ────────────────────────────────────────────────────────────────
+let allCitiesData = [];
+async function loadCities() {
+  const tbody = document.getElementById('cityTableBody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="loading-row"><div class="spinner"></div><span>Caricamento…</span></div></td></tr>';
+  allCitiesData = [];
+  const continents = ['EU','AS','AM','AF','OC'];
+  try {
+    for (const contCode of continents) {
+      const countriesSnap = await getDocs(collection(db, `continents/${contCode}/countries`));
+      for (const cDoc of countriesSnap.docs) {
+        const citiesSnap = await getDocs(collection(db, `continents/${contCode}/countries/${cDoc.id}/cities`));
+        citiesSnap.forEach(cityDoc => {
+          allCitiesData.push({ contCode, countryCode: cDoc.id, cityCode: cityDoc.id, ...cityDoc.data() });
+        });
+      }
+    }
+    renderCityTable(allCitiesData);
+    logActivity('green', `Caricate ${allCitiesData.length} città`);
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--red);padding:16px">Errore: ${err.message}</td></tr>`;
+    logActivity('red', 'Errore caricamento città: ' + err.message);
+  }
+}
+
+function renderCityTable(cities) {
+  const tbody = document.getElementById('cityTableBody');
+  if (!cities.length) { tbody.innerHTML='<tr><td colspan="6" style="color:var(--cream-dim);padding:16px">Nessuna città trovata.</td></tr>'; return; }
+  tbody.innerHTML = cities.map(c => `
+    <tr>
+      <td>${c.emoji||'🌍'} <strong>${c.name||c.cityCode}</strong></td>
+      <td style="color:var(--cream-dim)">${c.contCode}</td>
+      <td style="color:var(--cream-dim)">${c.countryCode}</td>
+      <td>${c.hidden_gems?.length||0}</td>
+      <td>${c.food?.dishes?.length||0}</td>
+      <td>
+        <button class="btn btn-danger btn-sm" onclick="deleteCity('${c.contCode}','${c.countryCode}','${c.cityCode}','${(c.name||'').replace(/'/g,"\\'")}')">🗑</button>
+      </td>
+    </tr>
+  `).join('');
+}
+
+window.filterCityTable = function(q) {
+  const filtered = allCitiesData.filter(c =>
+    (c.name||'').toLowerCase().includes(q.toLowerCase()) ||
+    c.cityCode.toLowerCase().includes(q.toLowerCase()) ||
+    c.countryCode.toLowerCase().includes(q.toLowerCase())
+  );
+  renderCityTable(filtered);
+};
+
+window.deleteCity = async function(contCode, countryCode, cityCode, cityName) {
+  if (!confirm(`Eliminare ${cityName} (${cityCode}) da Firestore?\nQuesta operazione è irreversibile.`)) return;
+  try {
+    await deleteDoc(doc(db, `continents/${contCode}/countries/${countryCode}/cities`, cityCode));
+    showToast(`🗑️ ${cityName} eliminata da Firestore`);
+    logActivity('red', `Eliminata città: ${cityName} (${cityCode})`);
+    loadCities();
+  } catch (err) {
+    showToast('❌ Errore eliminazione: ' + err.message);
+  }
+};
+
+// ── ADD CITY FORM ─────────────────────────────────────────────────────────
+window.addGemRow = function() {
+  gemRowCount++;
+  const div = document.createElement('div');
+  div.id = `gem-row-${gemRowCount}`;
+  div.style.cssText = 'display:grid;grid-template-columns:1fr 2fr auto;gap:10px;margin-bottom:10px;align-items:start';
+  div.innerHTML = `
+    <input type="text" placeholder="Nome gemma" style="background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);padding:9px 12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none" id="gem-name-${gemRowCount}">
+    <textarea placeholder="Descrizione autentica…" style="background:var(--glass);border:1px solid var(--glass-border);color:var(--cream);padding:9px 12px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;outline:none;resize:vertical;min-height:60px" id="gem-desc-${gemRowCount}"></textarea>
+    <button class="btn btn-danger btn-sm" onclick="document.getElementById('gem-row-${gemRowCount}').remove()">✕</button>
+  `;
+  document.getElementById('gemsContainer').appendChild(div);
+};
+addGemRow(); addGemRow(); // Start with 2 gem rows
+
+window.resetCityForm = function() {
+  ['fc-name','fc-code','fc-emoji','fc-country','fc-bg','fc-w-estate','fc-w-inverno','fc-w-primavera','fc-w-autunno','fc-weather-tags','fc-dishes','fc-spots','fc-cultural'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value='';
+  });
+  document.getElementById('gemsContainer').innerHTML = '';
+  gemRowCount = 0; addGemRow(); addGemRow();
+  document.getElementById('saveCityStatus').textContent='';
+};
+
+window.saveCity = async function() {
+  const name       = document.getElementById('fc-name').value.trim();
+  const code       = document.getElementById('fc-code').value.trim().toUpperCase();
+  const contCode   = document.getElementById('fc-continent').value;
+  const countryCode= document.getElementById('fc-country').value.trim().toUpperCase();
+  if (!name || !code || !countryCode) { showToast('⚠️ Compila almeno Nome, Codice e Paese'); return; }
+
+  const hidden_gems = [];
+  document.querySelectorAll('[id^="gem-name-"]').forEach(el => {
+    const i = el.id.split('-')[2];
+    const n = el.value.trim();
+    const d = document.getElementById(`gem-desc-${i}`)?.value.trim();
+    if (n) hidden_gems.push({ name: n, desc: d || '' });
+  });
+
+  const cityPayload = {
+    name,
+    emoji:         document.getElementById('fc-emoji').value || '🌍',
+    bg:            document.getElementById('fc-bg').value || 'linear-gradient(135deg,#1a1a2e,#16213e)',
+    weather: {
+      estate:    document.getElementById('fc-w-estate').value,
+      inverno:   document.getElementById('fc-w-inverno').value,
+      primavera: document.getElementById('fc-w-primavera').value,
+      autunno:   document.getElementById('fc-w-autunno').value,
+    },
+    weather_tags: document.getElementById('fc-weather-tags').value.split(',').map(t=>t.trim()).filter(Boolean),
+    hidden_gems,
+    food: {
+      dishes: document.getElementById('fc-dishes').value.split('\n').map(t=>t.trim()).filter(Boolean),
+      spots:  document.getElementById('fc-spots').value.split('\n').map(t=>t.trim()).filter(Boolean),
+    },
+    cultural_pill:      document.getElementById('fc-cultural').value,
+    affiliates_amazon:  [],
+    affiliates_booking: [],
+  };
+
+  const statusEl = document.getElementById('saveCityStatus');
+  statusEl.textContent = '⏳ Salvataggio in corso…';
+  statusEl.style.color = 'var(--cream-dim)';
+  try {
+    await setDoc(doc(db, `continents/${contCode}/countries/${countryCode}/cities`, code), cityPayload);
+    statusEl.textContent = `✅ ${name} (${code}) salvata con successo!`;
+    statusEl.style.color = 'var(--green)';
+    showToast(`✅ ${name} aggiunta al database!`);
+    logActivity('green', `Aggiunta nuova città: ${name} (${code}) in ${contCode}/${countryCode}`);
+  } catch (err) {
+    statusEl.textContent = '❌ Errore: ' + err.message;
+    statusEl.style.color = 'var(--red)';
+    logActivity('red', `Errore salvataggio ${name}: ${err.message}`);
+  }
+};
+
+// ── AI CITY GENERATION ────────────────────────────────────────────────────
+window.adminAIGenerateCity = async function() {
+  const cityName   = document.getElementById('ai-city-name').value.trim();
+  const contCode   = document.getElementById('ai-city-continent').value;
+  const countryCode= document.getElementById('ai-city-country').value.trim().toUpperCase();
+  const cityCode   = document.getElementById('ai-city-code').value.trim().toUpperCase();
+  const apiKey     = document.getElementById('ai-apikey').value.trim() || CLAUDE_API_KEY;
+  if (!cityName) { showToast('⚠️ Inserisci il nome della destinazione'); return; }
+  if (!apiKey) { showToast('⚠️ Inserisci la Claude API key'); return; }
+
+  const btn = document.getElementById('aiGenCityBtn');
+  const loading = document.getElementById('aiCityLoading');
+  const preview = document.getElementById('aiCityPreview');
+  btn.disabled = true; btn.textContent = '⏳ Generando…';
+  loading.classList.remove('hidden'); preview.classList.add('hidden');
+
+  const systemPrompt = `Rispondi SOLO con JSON valido, zero testo fuori dal JSON.`;
+  const userPrompt = `Genera una scheda WanderQuest per "${cityName}" in JSON:
+{"name":"${cityName}","emoji":"emoji","bg":"linear-gradient(135deg,#col1,#col2)","weather":{"estate":"emoji°C","inverno":"emoji°C","primavera":"emoji°C","autunno":"emoji°C"},"weather_tags":["tag1","tag2","tag3"],"hidden_gems":[{"name":"gemma1","desc":"desc1"},{"name":"gemma2","desc":"desc2"},{"name":"gemma3","desc":"desc3"}],"food":{"dishes":["piatto1","piatto2","piatto3","piatto4"],"spots":["locale1 — desc","locale2 — desc"]},"cultural_pill":"frase culturale autentica","affiliates_amazon":[{"item":"prodotto","why":"motivo","asin":"B000000000"}],"affiliates_booking":[{"name":"tipo alloggio","why":"motivo"}]}`;
+
+  try {
+    const res = await fetch(CLAUDE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01' },
+      body: JSON.stringify({ model: CLAUDE_MODEL, max_tokens: 1000, system: systemPrompt, messages: [{ role:'user', content: userPrompt }] }),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const data = await res.json();
+    const raw = data.content?.[0]?.text || '';
+    const clean = raw.replace(/```json\n?/g,'').replace(/```\n?/g,'').trim();
+    aiCityData = {
+      ...JSON.parse(clean),
+      _meta: { contCode, countryCode: countryCode || 'XX', cityCode: cityCode || cityName.slice(0,4).toUpperCase() }
+    };
+    document.getElementById('aiCityJson').textContent = JSON.stringify(aiCityData, null, 2);
+    preview.classList.remove('hidden');
+    logActivity('green', `AI generata: ${cityName}`);
+  } catch (err) {
+    showToast('❌ Errore: ' + err.message);
+    logActivity('red', `Errore AI gen ${cityName}: ${err.message}`);
+  }
+  btn.disabled = false; btn.textContent = '🤖 Genera con Claude AI';
+  loading.classList.add('hidden');
+};
+
+window.saveAICity = async function() {
+  if (!aiCityData) return;
+  const { _meta, ...payload } = aiCityData;
+  const { contCode, countryCode, cityCode } = _meta;
+  try {
+    await setDoc(doc(db, `continents/${contCode}/countries/${countryCode}/cities`, cityCode), payload);
+    showToast(`✅ ${payload.name} salvata su Firestore!`);
+    document.getElementById('aiCityPreview').classList.add('hidden');
+    logActivity('green', `Salvata città AI: ${payload.name} (${cityCode}) in ${contCode}/${countryCode}`);
+    aiCityData = null;
+  } catch (err) {
+    showToast('❌ ' + err.message);
+  }
+};
+
+// ── USERS ─────────────────────────────────────────────────────────────────
+async function loadUsers() {
+  const tbody = document.getElementById('usersTableBody');
+  tbody.innerHTML = '<tr><td colspan="6"><div class="loading-row"><div class="spinner"></div><span>Caricamento…</span></div></td></tr>';
+  try {
+    const snap = await getDocs(collection(db, 'users'));
+    if (snap.empty) { tbody.innerHTML='<tr><td colspan="6" style="color:var(--cream-dim);padding:16px">Nessun utente registrato.</td></tr>'; return; }
+    tbody.innerHTML = snap.docs.map(d => {
+      const u = d.data();
+      const date = u.createdAt ? new Date(u.createdAt).toLocaleDateString('it-IT') : '—';
+      const planBadge = u.plan === 'pro'
+        ? '<span class="table-badge badge-pro">Pro</span>'
+        : '<span class="table-badge badge-free">Free</span>';
+      return `<tr>
+        <td>${u.email||d.id}</td>
+        <td>${planBadge}</td>
+        <td>${u.valigie?.length||0}</td>
+        <td>${u.votedMete?.length||0}</td>
+        <td style="color:var(--cream-dim)">${date}</td>
+        <td>
+          <button class="btn btn-ghost btn-sm" onclick="toggleUserPlan('${d.id}','${u.plan||'free'}')">
+            ${u.plan === 'pro' ? '↓ Free' : '↑ Pro'}
+          </button>
+        </td>
+      </tr>`;
+    }).join('');
+    logActivity('green', `Caricati ${snap.size} utenti`);
+  } catch (err) {
+    tbody.innerHTML = `<tr><td colspan="6" style="color:var(--red);padding:16px">Errore: ${err.message}</td></tr>`;
+  }
+}
+
+window.toggleUserPlan = async function(uid, currentPlan) {
+  const newPlan = currentPlan === 'pro' ? 'free' : 'pro';
+  try {
+    await updateDoc(doc(db, 'users', uid), { plan: newPlan });
+    showToast(`✅ Piano aggiornato a ${newPlan}`);
+    logActivity('amber', `Piano utente ${uid.slice(0,8)}… → ${newPlan}`);
+    loadUsers();
+  } catch (err) { showToast('❌ ' + err.message); }
+};
+
+// ── ADMINS ────────────────────────────────────────────────────────────────
+let currentAdminList = [];
+async function loadAdmins() {
+  const el = document.getElementById('adminListEl');
+  try {
+    const snap = await getDoc(doc(db, 'config', 'admins'));
+    currentAdminList = snap.exists() ? (snap.data().emails || []) : [];
+    el.innerHTML = currentAdminList.length
+      ? currentAdminList.map(email => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--glass-border)">
+            <span>${email}</span>
+            ${email !== currentAdminUser?.email
+              ? `<button class="btn btn-danger btn-sm" onclick="removeAdmin('${email}')">✕ Rimuovi</button>`
+              : '<span style="font-size:11px;color:var(--amber)">Tu</span>'}
+          </div>`).join('')
+      : '<p style="color:var(--cream-dim);font-size:13px">Nessun admin nel database. Aggiungiti tu come primo admin.</p>';
+  } catch { el.textContent = 'Errore caricamento admin.'; }
+}
+
+window.addAdmin = async function() {
+  const email = document.getElementById('newAdminEmail').value.trim();
+  if (!email || !email.includes('@')) { showToast('⚠️ Email non valida'); return; }
+  if (currentAdminList.includes(email)) { showToast('Email già presente'); return; }
+  try {
+    await setDoc(doc(db, 'config', 'admins'), { emails: arrayUnion(email) }, { merge: true });
+    showToast(`✅ ${email} aggiunto come admin`);
+    document.getElementById('newAdminEmail').value = '';
+    logActivity('amber', `Aggiunto admin: ${email}`);
+    loadAdmins();
+  } catch (err) { showToast('❌ ' + err.message); }
+};
+
+window.removeAdmin = async function(email) {
+  if (!confirm(`Rimuovere ${email} dagli admin?`)) return;
+  const { arrayRemove } = await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js');
+  try {
+    await updateDoc(doc(db, 'config', 'admins'), { emails: arrayRemove(email) });
+    showToast(`✅ ${email} rimosso`);
+    logActivity('amber', `Rimosso admin: ${email}`);
+    loadAdmins();
+  } catch (err) { showToast('❌ ' + err.message); }
+};
+
+// ── MIGRATION ─────────────────────────────────────────────────────────────
+window.runMigration = async function() {
+  const logEl = document.getElementById('migrationLog');
+  logEl.style.display = 'block';
+  logEl.textContent = '[Migration] Avvio migrazione DB → Firestore…\n';
+
+  // DB is defined in index.html, not here — show instructions
+  logEl.textContent += '[Migration] ⚠️ Questo pannello non ha accesso al DB locale di index.html.\n';
+  logEl.textContent += '[Migration] Per eseguire la migrazione, apri index.html nel browser e digita:\n';
+  logEl.textContent += '   > migrateDB()\n';
+  logEl.textContent += '[Migration] nella console del browser (F12 → Console).\n';
+  logEl.textContent += '[Migration] La funzione migrateDB() è già implementata in index.html.\n';
+  logActivity('amber', 'Istruzioni migrazione visualizzate');
+};
+
+// ── INITIAL LOG ENTRIES ───────────────────────────────────────────────────
+logActivity('amber', 'Admin panel inizializzato');
+renderLog();
+</script>
+</body>
+</html>
