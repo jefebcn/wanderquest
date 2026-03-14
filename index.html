@@ -3,31 +3,31 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>WanderQuest v2.0 — Ecosistema Globale</title>
+<title>WanderQuest v3.0 — Drill-down · Paywall · Swipe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
+/* ════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS
+════════════════════════════════════════════════════════════════════ */
 :root {
-  --ink: #080C1A;
-  --navy: #0D1530;
-  --navy-mid: #162040;
-  --navy-light: #1E2D55;
-  --amber: #E8A228;
+  --ink:          #080C1A;
+  --navy:         #0D1530;
+  --navy-mid:     #162040;
+  --navy-light:   #1E2D55;
+  --amber:        #E8A228;
   --amber-bright: #F5B840;
-  --amber-dim: #A8721A;
-  --teal: #18C5A8;
-  --teal-dark: #0E8F7C;
-  --cream: #F2EDE4;
-  --cream-dim: #C8C0B0;
-  --white: #FFFFFF;
-  --red: #E84040;
-  --green: #2EC57A;
-  --purple: #8B5CF6;
-  --glass: rgba(255,255,255,0.04);
+  --amber-dim:    #A8721A;
+  --teal:         #18C5A8;
+  --teal-dark:    #0E8F7C;
+  --cream:        #F2EDE4;
+  --cream-dim:    #C8C0B0;
+  --red:          #E84040;
+  --green:        #2EC57A;
+  --purple:       #8B5CF6;
+  --glass:        rgba(255,255,255,0.04);
   --glass-border: rgba(255,255,255,0.08);
-  --gold-grad: linear-gradient(135deg, #E8A228, #F5D080, #E8A228);
-  --hero-grad: linear-gradient(160deg, #080C1A 0%, #0D1530 40%, #162040 100%);
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -35,1438 +35,1662 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--ink); }
 ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
+button { font-family: 'DM Sans', sans-serif; }
 
 /* ── NAV ── */
 nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 300;
   display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 48px;
-  background: rgba(8,12,26,0.95);
-  backdrop-filter: blur(16px);
+  padding: 0 48px; height: 58px;
+  background: rgba(8,12,26,0.97);
+  backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
 }
-.nav-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--amber); }
+.nav-logo { font-family: 'Playfair Display', serif; font-size: 21px; font-weight: 900; color: var(--amber); display: flex; align-items: center; gap: 10px; }
 .nav-logo span { color: var(--cream); }
-.nav-links { display: flex; gap: 4px; }
-.nav-links a { color: var(--cream-dim); text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; transition: all 0.2s; }
-.nav-links a:hover { color: var(--amber); background: rgba(232,162,40,0.08); }
-.badge-new { background: var(--teal); color: var(--ink); font-size: 9px; font-weight: 700; padding: 2px 5px; border-radius: 3px; margin-left: 4px; vertical-align: middle; }
-.nav-cta { background: var(--amber); color: var(--ink); border: none; padding: 9px 20px; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.nav-ver { font-family: 'DM Mono', monospace; font-size: 10px; background: rgba(24,197,168,0.15); border: 1px solid rgba(24,197,168,0.25); color: var(--teal); padding: 2px 8px; border-radius: 4px; }
+.nav-tabs { display: flex; gap: 2px; }
+.nav-tab { color: var(--cream-dim); text-decoration: none; padding: 7px 14px; border-radius: 7px; font-size: 13px; font-weight: 500; transition: all 0.2s; background: none; border: none; cursor: pointer; }
+.nav-tab:hover, .nav-tab.active { color: var(--amber); background: rgba(232,162,40,0.08); }
+.nav-right { display: flex; align-items: center; gap: 10px; }
+.nav-user-badge { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; padding: 6px 12px; border-radius: 7px; border: 1px solid var(--glass-border); background: var(--glass); color: var(--cream-dim); cursor: pointer; transition: all 0.2s; }
+.nav-user-badge.pro { border-color: rgba(232,162,40,0.3); background: rgba(232,162,40,0.08); color: var(--amber); }
+.nav-cta { background: var(--amber); color: var(--ink); border: none; padding: 8px 20px; border-radius: 8px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s; }
 .nav-cta:hover { background: var(--amber-bright); transform: translateY(-1px); }
 
-/* ── SECTIONS ── */
-section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
-.section-label { display: inline-flex; align-items: center; gap: 8px; background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.2); color: var(--amber); padding: 5px 14px; border-radius: 100px; font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 20px; }
-.section-title { font-family: 'Playfair Display', serif; font-size: clamp(32px, 5vw, 52px); font-weight: 900; line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 12px; }
-.section-sub { color: var(--cream-dim); font-size: 16px; font-weight: 300; line-height: 1.7; max-width: 580px; margin-bottom: 48px; }
+/* ── PAGE SECTIONS ── */
+.page { display: none; min-height: calc(100vh - 58px); margin-top: 58px; }
+.page.active { display: block; animation: fadeUp 0.35s ease; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
 
-/* ── FLIGHT BANNER ── */
-#flight-banner {
-  background: linear-gradient(135deg, #0D1530 0%, #162040 100%);
-  border-bottom: 1px solid var(--glass-border);
-  padding: 0;
-  margin-top: 57px;
-}
-.flight-banner-inner {
-  max-width: 1200px; margin: 0 auto;
-  padding: 18px 48px;
-  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
-}
-.flight-banner-label { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); white-space: nowrap; }
-.flight-input-wrap { display: flex; gap: 0; flex: 1; min-width: 260px; max-width: 400px; }
-.flight-input-wrap input {
-  flex: 1;
-  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
-  border-right: none;
-  color: var(--cream); padding: 10px 16px; border-radius: 8px 0 0 8px;
-  font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 500;
-  text-transform: uppercase; outline: none;
-  transition: border-color 0.2s;
-}
-.flight-input-wrap input:focus { border-color: var(--amber); }
-.flight-input-wrap input::placeholder { color: var(--cream-dim); opacity: 0.5; text-transform: none; font-family: 'DM Sans', sans-serif; }
-.flight-btn {
-  background: var(--amber); color: var(--ink); border: none; padding: 10px 18px;
-  border-radius: 0 8px 8px 0; font-weight: 700; font-size: 13px; cursor: pointer;
-  transition: background 0.2s; white-space: nowrap;
-}
-.flight-btn:hover { background: var(--amber-bright); }
-#flight-result { flex: 1; min-width: 200px; }
-.flight-card {
-  display: flex; align-items: center; gap: 12px;
-  background: rgba(232,162,40,0.08); border: 1px solid rgba(232,162,40,0.15);
-  border-radius: 8px; padding: 10px 16px;
-  animation: fadeIn 0.4s ease;
-}
-@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
-.flight-airline { font-size: 11px; color: var(--amber); font-weight: 700; letter-spacing: 0.05em; }
-.flight-route { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--cream); }
-.flight-city-hint { font-size: 11px; color: var(--teal); margin-top: 1px; }
+.inner { max-width: 1200px; margin: 0 auto; padding: 56px 48px; }
+@media(max-width:768px){ .inner { padding: 40px 20px; } nav { padding: 0 20px; } .nav-tabs { display: none; } }
 
-/* ── DRILL-DOWN EXPLORER ── */
-#explorer { background: var(--navy); border-radius: 0; padding: 80px 0; }
-#explorer .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.drill-steps { display: flex; align-items: center; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
-.drill-step {
-  display: flex; align-items: center; gap: 8px;
-  padding: 8px 16px; border-radius: 100px;
-  font-size: 13px; font-weight: 600;
-  background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
-  color: var(--cream-dim); transition: all 0.2s;
-}
-.drill-step.active { background: rgba(232,162,40,0.12); border-color: rgba(232,162,40,0.3); color: var(--amber); }
-.drill-step.done { background: rgba(24,197,168,0.08); border-color: rgba(24,197,168,0.2); color: var(--teal); cursor: pointer; }
-.drill-arrow { color: var(--cream-dim); opacity: 0.4; font-size: 12px; }
+/* ── SECTION LABELS ── */
+.sec-label { display: inline-flex; align-items: center; gap: 7px; background: rgba(232,162,40,0.08); border: 1px solid rgba(232,162,40,0.18); color: var(--amber); padding: 4px 13px; border-radius: 100px; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 16px; }
+.sec-title { font-family: 'Playfair Display', serif; font-size: clamp(30px, 5vw, 50px); font-weight: 900; line-height: 1.05; letter-spacing: -1.5px; margin-bottom: 10px; }
+.sec-title em { font-style: italic; color: var(--amber); }
+.sec-sub { color: var(--cream-dim); font-size: 15px; font-weight: 300; line-height: 1.7; max-width: 560px; margin-bottom: 44px; }
 
-.continent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
-.continent-card {
+/* ════════════════════════════════════════════════════════════════════
+   PAGE 1 — EXPLORER (DRILL-DOWN)
+════════════════════════════════════════════════════════════════════ */
+
+/* BREADCRUMB */
+.breadcrumb {
+  display: flex; align-items: center; gap: 0;
+  background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border);
+  border-radius: 10px; padding: 8px 4px;
+  margin-bottom: 36px; overflow-x: auto;
+  scrollbar-width: none;
+}
+.breadcrumb::-webkit-scrollbar { display: none; }
+.bc-item {
+  display: flex; align-items: center; gap: 6px;
+  padding: 6px 14px; border-radius: 7px;
+  font-size: 13px; font-weight: 500; color: var(--cream-dim);
+  cursor: pointer; transition: all 0.2s; white-space: nowrap;
+  position: relative;
+}
+.bc-item.clickable:hover { background: rgba(232,162,40,0.08); color: var(--amber); }
+.bc-item.current { color: var(--cream); font-weight: 600; }
+.bc-item.current::after { content: ''; position: absolute; bottom: -1px; left: 14px; right: 14px; height: 2px; background: var(--amber); border-radius: 1px; }
+.bc-sep { color: rgba(255,255,255,0.15); font-size: 12px; padding: 0 2px; }
+.bc-emoji { font-size: 16px; }
+
+/* CONTINENT GRID */
+.continent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(175px, 1fr)); gap: 14px; }
+.cont-card {
   background: var(--glass); border: 1px solid var(--glass-border);
-  border-radius: 14px; padding: 24px 20px;
-  cursor: pointer; transition: all 0.25s; text-align: center;
+  border-radius: 16px; padding: 26px 18px 20px;
+  cursor: pointer; transition: all 0.25s; text-align: center; position: relative; overflow: hidden;
 }
-.continent-card:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); transform: translateY(-3px); }
-.continent-card.selected { background: rgba(232,162,40,0.12); border-color: var(--amber); }
-.continent-emoji { font-size: 36px; margin-bottom: 10px; }
-.continent-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; }
-.continent-count { font-size: 11px; color: var(--cream-dim); margin-top: 4px; }
+.cont-card::before { content: ''; position: absolute; inset: 0; background: var(--amber); opacity: 0; transition: opacity 0.25s; }
+.cont-card:hover::before { opacity: 0.04; }
+.cont-card:hover { border-color: rgba(232,162,40,0.25); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
+.cont-emoji { font-size: 40px; margin-bottom: 12px; display: block; position: relative; z-index: 1; }
+.cont-name { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; position: relative; z-index: 1; }
+.cont-meta { font-size: 11px; color: var(--cream-dim); margin-top: 5px; position: relative; z-index: 1; }
 
-.country-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 12px; }
-.country-card {
+/* COUNTRY GRID */
+.country-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(155px, 1fr)); gap: 12px; }
+.ctry-card {
   background: var(--glass); border: 1px solid var(--glass-border);
-  border-radius: 12px; padding: 18px 16px;
-  cursor: pointer; transition: all 0.2s; text-align: center;
+  border-radius: 13px; padding: 20px 14px; cursor: pointer; transition: all 0.2s; text-align: center;
 }
-.country-card:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); transform: translateY(-2px); }
-.country-card.selected { background: rgba(232,162,40,0.12); border-color: var(--amber); }
-.country-flag { font-size: 30px; margin-bottom: 8px; }
-.country-name { font-size: 15px; font-weight: 600; }
-.country-cities { font-size: 11px; color: var(--cream-dim); margin-top: 3px; }
+.ctry-card:hover { border-color: rgba(232,162,40,0.25); background: rgba(232,162,40,0.05); transform: translateY(-2px); }
+.ctry-card.locked { opacity: 0.45; cursor: default; }
+.ctry-flag { font-size: 32px; margin-bottom: 8px; display: block; }
+.ctry-name { font-size: 14px; font-weight: 600; }
+.ctry-cities { font-size: 11px; color: var(--cream-dim); margin-top: 3px; }
+.ctry-lock { font-size: 10px; color: var(--amber); background: rgba(232,162,40,0.1); border-radius: 4px; padding: 2px 7px; margin-top: 5px; display: inline-block; }
 
-.city-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+/* CITY GRID */
+.city-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 18px; }
 .city-card {
   background: var(--glass); border: 1px solid var(--glass-border);
-  border-radius: 14px; overflow: hidden;
-  cursor: pointer; transition: all 0.25s;
+  border-radius: 16px; overflow: hidden; cursor: pointer; transition: all 0.25s;
 }
-.city-card:hover { border-color: rgba(232,162,40,0.3); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
-.city-card.selected { border-color: var(--amber); box-shadow: 0 0 0 1px var(--amber); }
+.city-card:hover { border-color: rgba(232,162,40,0.3); transform: translateY(-4px); box-shadow: 0 16px 50px rgba(0,0,0,0.35); }
 .city-thumb {
-  height: 110px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 48px;
+  height: 120px; display: flex; align-items: center; justify-content: center;
+  font-size: 54px; position: relative;
+}
+.city-thumb-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.1); }
+.city-body { padding: 16px; }
+.city-name { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; margin-bottom: 6px; }
+.city-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.city-tag { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 4px; padding: 2px 8px; font-size: 10px; font-weight: 500; color: var(--cream-dim); }
+
+/* CITY DETAIL */
+#city-detail-wrap { display: none; animation: fadeUp 0.4s ease; }
+#city-detail-wrap.show { display: block; }
+
+.detail-hero {
+  border-radius: 20px; padding: 40px; margin-bottom: 28px;
   position: relative; overflow: hidden;
+  min-height: 220px; display: flex; flex-direction: column; justify-content: flex-end;
 }
-.city-thumb-bg { position: absolute; inset: 0; opacity: 0.15; }
-.city-body { padding: 14px; }
-.city-name { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 4px; }
-.city-tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.city-tag { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); border-radius: 4px; padding: 2px 7px; font-size: 10px; font-weight: 500; color: var(--cream-dim); }
+.detail-hero-bg { position: absolute; inset: 0; opacity: 0.6; }
+.detail-hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(8,12,26,0.95) 0%, rgba(8,12,26,0.3) 60%, transparent 100%); }
+.detail-hero-emoji { position: absolute; top: 30px; right: 40px; font-size: 80px; opacity: 0.5; }
+.detail-breadcrumb { position: relative; z-index: 2; font-size: 12px; color: var(--amber); font-weight: 600; letter-spacing: 0.05em; margin-bottom: 10px; }
+.detail-title { position: relative; z-index: 2; font-family: 'Playfair Display', serif; font-size: clamp(36px, 6vw, 64px); font-weight: 900; letter-spacing: -2px; line-height: 1; }
+.detail-meta-row { position: relative; z-index: 2; display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+.detail-weather-badge { background: rgba(255,255,255,0.12); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 7px 14px; font-size: 12px; font-weight: 500; }
+.detail-weather-season { font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); margin-bottom: 2px; }
 
-/* ── CITY DETAIL ── */
-#city-detail { display: none; padding: 60px 48px; max-width: 1200px; margin: 0 auto; }
-#city-detail.show { display: block; animation: fadeIn 0.5s ease; }
-.detail-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 40px; gap: 20px; flex-wrap: wrap; }
-.detail-title { font-family: 'Playfair Display', serif; font-size: clamp(36px, 5vw, 56px); font-weight: 900; letter-spacing: -2px; }
-.detail-title .dest-country { font-size: 16px; font-family: 'DM Sans', sans-serif; font-weight: 400; color: var(--amber); letter-spacing: 0.05em; display: block; margin-bottom: 6px; }
-.detail-climate { display: flex; gap: 8px; flex-wrap: wrap; }
-.climate-badge { background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 8px; padding: 8px 14px; font-size: 12px; font-weight: 500; }
-.climate-season { font-size: 10px; color: var(--cream-dim); margin-bottom: 2px; letter-spacing: 0.05em; }
-.climate-temp { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--cream); }
+.detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 18px; margin-bottom: 28px; }
+.det-card { background: var(--glass); border: 1px solid var(--glass-border); border-radius: 16px; padding: 24px; transition: transform 0.2s; }
+.det-card:hover { transform: translateY(-2px); }
+.det-card-head { display: flex; align-items: center; gap: 10px; margin-bottom: 18px; }
+.det-card-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.ic-gem    { background: rgba(24,197,168,0.12); }
+.ic-food   { background: rgba(232,162,40,0.1); }
+.ic-cult   { background: rgba(139,92,246,0.12); }
+.ic-aff    { background: rgba(46,197,122,0.1); }
+.det-card-title { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; }
 
-.detail-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; margin-bottom: 40px; }
-.detail-card {
-  background: var(--glass); border: 1px solid var(--glass-border);
-  border-radius: 16px; padding: 24px;
-  transition: transform 0.2s;
-}
-.detail-card:hover { transform: translateY(-2px); }
-.detail-card-icon { font-size: 24px; margin-bottom: 12px; }
-.detail-card-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin-bottom: 14px; }
-.gem-item { display: flex; gap: 10px; margin-bottom: 12px; padding-bottom: 12px; border-bottom: 1px solid var(--glass-border); }
+/* GEMS — FREE vs PRO */
+.gem-item { margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.05); }
 .gem-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
-.gem-dot { width: 6px; height: 6px; background: var(--teal); border-radius: 50%; flex-shrink: 0; margin-top: 6px; }
-.gem-name { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-.gem-desc { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
-.food-dish { display: inline-flex; align-items: center; gap: 5px; background: rgba(24,197,168,0.08); border: 1px solid rgba(24,197,168,0.15); border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 500; color: var(--teal); margin: 3px; }
-.food-spot { font-size: 12px; color: var(--cream-dim); padding: 6px 0; border-top: 1px solid var(--glass-border); margin-top: 8px; }
-.cultural-pill { font-size: 14px; color: var(--cream); line-height: 1.7; font-style: italic; padding: 16px; background: rgba(232,162,40,0.05); border-left: 3px solid var(--amber); border-radius: 0 8px 8px 0; }
-.cultural-pill::before { content: '"'; font-size: 28px; color: var(--amber); line-height: 0; vertical-align: -10px; margin-right: 4px; font-family: 'Playfair Display', serif; }
+.gem-name { font-size: 13px; font-weight: 700; color: var(--teal); margin-bottom: 4px; display: flex; align-items: center; gap: 7px; }
+.gem-desc { font-size: 12px; color: var(--cream-dim); line-height: 1.6; }
+.gem-blurred { filter: blur(5px); user-select: none; pointer-events: none; transition: filter 0.3s; }
+.gem-lock-overlay {
+  position: relative; cursor: pointer;
+}
+.gem-lock-badge {
+  position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: rgba(8,12,26,0.6); border-radius: 8px; backdrop-filter: blur(2px);
+  border: 1px dashed rgba(232,162,40,0.3);
+  flex-direction: column; gap: 4px; z-index: 2;
+}
+.gem-lock-badge span { font-size: 11px; font-weight: 700; color: var(--amber); }
+.gem-lock-badge small { font-size: 10px; color: var(--cream-dim); }
+.gem-free-badge { font-size: 9px; background: rgba(46,197,122,0.15); border: 1px solid rgba(46,197,122,0.25); color: var(--green); border-radius: 4px; padding: 1px 6px; }
+.gem-pro-badge  { font-size: 9px; background: rgba(232,162,40,0.12); border: 1px solid rgba(232,162,40,0.25); color: var(--amber); border-radius: 4px; padding: 1px 6px; }
 
-/* ── AFFILIATE PLACEHOLDERS ── */
-.affiliate-section { margin-top: 30px; }
-.affiliate-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
-.affiliate-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
-.affiliate-card {
+/* FOOD */
+.dish-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.dish-chip { background: rgba(232,162,40,0.08); border: 1px solid rgba(232,162,40,0.15); color: var(--amber); border-radius: 6px; padding: 4px 10px; font-size: 12px; font-weight: 500; }
+.food-spot { font-size: 12px; color: var(--cream-dim); padding: 8px 0; border-top: 1px solid rgba(255,255,255,0.05); display: flex; align-items: flex-start; gap: 7px; }
+.food-spot-dot { width: 5px; height: 5px; background: var(--teal); border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+
+/* CULTURE PILL */
+.culture-pill { font-size: 14px; color: var(--cream); line-height: 1.7; font-style: italic; padding: 18px 20px; background: rgba(139,92,246,0.06); border-left: 3px solid var(--purple); border-radius: 0 10px 10px 0; }
+.culture-char-count { font-size: 10px; color: var(--cream-dim); opacity: 0.5; margin-top: 10px; font-style: normal; font-family: 'DM Mono', monospace; }
+
+/* AFFILIATE CARDS */
+.aff-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.aff-card { background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 10px; padding: 12px; transition: all 0.2s; }
+.aff-card:hover { border-color: rgba(232,162,40,0.2); }
+.aff-provider { font-size: 9px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 5px; }
+.aff-amazon { color: #FF9900; }
+.aff-booking { color: #4a90d9; }
+.aff-item { font-size: 12px; font-weight: 600; margin-bottom: 4px; }
+.aff-why { font-size: 11px; color: var(--cream-dim); line-height: 1.5; margin-bottom: 8px; }
+.aff-btn { display: inline-flex; align-items: center; gap: 4px; background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.2); color: var(--amber); padding: 5px 11px; border-radius: 6px; font-size: 11px; font-weight: 700; cursor: pointer; text-decoration: none; transition: all 0.2s; }
+.aff-btn:hover { background: rgba(232,162,40,0.18); }
+.aff-disclaimer { font-size: 10px; color: var(--cream-dim); opacity: 0.45; margin-top: 10px; font-style: italic; }
+
+/* BACK BUTTON */
+.back-btn { display: inline-flex; align-items: center; gap: 6px; background: none; border: 1px solid var(--glass-border); color: var(--cream-dim); padding: 8px 16px; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; margin-bottom: 24px; }
+.back-btn:hover { border-color: rgba(232,162,40,0.3); color: var(--amber); }
+
+/* ════════════════════════════════════════════════════════════════════
+   PAGE 2 — CONTEST (SWIPE + LEADERBOARD)
+════════════════════════════════════════════════════════════════════ */
+
+.contest-layout { display: grid; grid-template-columns: 1fr 380px; gap: 30px; align-items: start; }
+@media(max-width:900px){ .contest-layout { grid-template-columns: 1fr; } }
+
+/* SWIPE CARD */
+.swipe-arena {
   background: var(--glass); border: 1px solid var(--glass-border);
-  border-radius: 12px; padding: 16px; display: flex; flex-direction: column; gap: 10px;
-  transition: all 0.2s;
+  border-radius: 20px; padding: 28px; text-align: center;
 }
-.affiliate-card:hover { border-color: rgba(232,162,40,0.2); transform: translateY(-2px); }
-.affiliate-provider { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; }
-.affiliate-provider.amazon { color: #FF9900; }
-.affiliate-provider.booking { color: #003580; background: #003580; color: #fff; padding: 2px 7px; border-radius: 3px; }
-.affiliate-item-name { font-size: 14px; font-weight: 600; }
-.affiliate-why { font-size: 11px; color: var(--cream-dim); line-height: 1.5; }
-.affiliate-link {
-  display: inline-flex; align-items: center; gap: 5px;
-  background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.2);
-  color: var(--amber); text-decoration: none;
-  padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 700;
-  transition: all 0.2s; cursor: pointer; align-self: flex-start;
-}
-.affiliate-link:hover { background: rgba(232,162,40,0.2); }
-.affiliate-disclaimer { font-size: 10px; color: var(--cream-dim); opacity: 0.5; margin-top: 8px; padding: 8px; background: rgba(0,0,0,0.15); border-radius: 6px; }
+.swipe-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+.swipe-title { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; }
+.swipe-counter { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--cream-dim); background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 4px 10px; border-radius: 6px; }
 
-/* ── PACKING PLANNER ── */
-#packing { background: linear-gradient(180deg, var(--ink) 0%, var(--navy) 100%); padding: 80px 0; }
-#packing .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.planner-controls { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; margin-bottom: 30px; }
-.planner-field label { display: block; font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--amber); margin-bottom: 8px; }
-.planner-field select {
-  width: 100%;
-  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-  color: var(--cream); padding: 11px 14px; border-radius: 8px;
-  font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
-  cursor: pointer; transition: border-color 0.2s;
-  appearance: none; -webkit-appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23C8C0B0' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-  background-repeat: no-repeat; background-position: right 12px center; background-size: 16px;
-  padding-right: 36px;
+.swipe-stack { position: relative; height: 380px; margin-bottom: 24px; }
+.swipe-card {
+  position: absolute; inset: 0;
+  background: linear-gradient(180deg, rgba(22,32,64,0.6) 0%, rgba(8,12,26,0.95) 100%);
+  border: 1px solid var(--glass-border); border-radius: 18px; overflow: hidden;
+  cursor: grab; user-select: none;
+  transition: box-shadow 0.2s;
+  display: flex; flex-direction: column;
 }
-.planner-field select:focus { border-color: var(--amber); }
-.planner-field select option { background: var(--navy-mid); }
-.generate-btn {
-  background: var(--amber); color: var(--ink); border: none;
-  padding: 12px 28px; border-radius: 10px; font-family: 'DM Sans', sans-serif;
-  font-weight: 700; font-size: 15px; cursor: pointer; transition: all 0.25s;
-  box-shadow: 0 6px 24px rgba(232,162,40,0.3); align-self: flex-end;
+.swipe-card:active { cursor: grabbing; }
+.swipe-card.dragging { transition: none; z-index: 10; }
+.swipe-card.vote-yes {
+  border-color: var(--green);
+  box-shadow: 0 0 50px rgba(46,197,122,0.35), inset 0 0 60px rgba(46,197,122,0.08);
+  transition: all 0.15s;
 }
-.generate-btn:hover { background: var(--amber-bright); transform: translateY(-2px); }
+.swipe-card.vote-no {
+  border-color: var(--red);
+  box-shadow: 0 0 50px rgba(232,64,64,0.35), inset 0 0 60px rgba(232,64,64,0.08);
+  transition: all 0.15s;
+}
+.swipe-card.fly-right { animation: flyRight 0.45s cubic-bezier(0.23,1,0.32,1) forwards; }
+.swipe-card.fly-left  { animation: flyLeft  0.45s cubic-bezier(0.23,1,0.32,1) forwards; }
+@keyframes flyRight { to { transform: translateX(130%) rotate(18deg); opacity: 0; } }
+@keyframes flyLeft  { to { transform: translateX(-130%) rotate(-18deg); opacity: 0; } }
 
-#packing-result { display: none; animation: fadeIn 0.5s ease; }
-#packing-result.show { display: block; }
-.packing-categories { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 20px; }
-.pack-cat {
+.swipe-card-photo {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  font-size: 90px; position: relative; overflow: hidden;
+}
+.swipe-photo-bg { position: absolute; inset: 0; opacity: 0.25; }
+.swipe-card-info { padding: 18px 20px; text-align: left; }
+.swipe-card-user { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.swipe-avatar { width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; background: rgba(255,255,255,0.08); border: 2px solid var(--glass-border); flex-shrink: 0; }
+.swipe-username { font-size: 13px; font-weight: 700; }
+.swipe-user-pro { font-size: 9px; background: rgba(232,162,40,0.12); border: 1px solid rgba(232,162,40,0.25); color: var(--amber); border-radius: 4px; padding: 1px 5px; font-weight: 700; }
+.swipe-dest { font-size: 12px; color: var(--cream-dim); }
+.swipe-votes-row { display: flex; align-items: center; justify-content: space-between; margin-top: 6px; }
+.swipe-current-votes { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--amber); }
+
+/* VOTE LABELS */
+.vote-hint {
+  position: absolute; top: 22px; font-size: 22px; font-weight: 900;
+  padding: 6px 14px; border-radius: 8px; opacity: 0;
+  transition: opacity 0.15s; z-index: 20; letter-spacing: -0.5px;
+  pointer-events: none;
+}
+.vote-hint-yes { left: 20px; background: rgba(46,197,122,0.2); border: 2px solid var(--green); color: var(--green); }
+.vote-hint-no  { right: 20px; background: rgba(232,64,64,0.2);  border: 2px solid var(--red); color: var(--red); }
+
+/* SWIPE BUTTONS */
+.swipe-buttons { display: flex; align-items: center; justify-content: center; gap: 16px; }
+.swipe-btn {
+  width: 62px; height: 62px; border-radius: 50%; border: 2px solid;
+  background: none; display: flex; align-items: center; justify-content: center;
+  font-size: 24px; cursor: pointer; transition: all 0.2s;
+}
+.swipe-btn-skip { border-color: var(--red);   color: var(--red);   }
+.swipe-btn-like { border-color: var(--green); color: var(--green); }
+.swipe-btn-skip:hover { background: rgba(232,64,64,0.1);   transform: scale(1.08); }
+.swipe-btn-like:hover { background: rgba(46,197,122,0.1); transform: scale(1.08); }
+.swipe-btn-super { width: 48px; height: 48px; border-color: var(--amber); color: var(--amber); font-size: 18px; }
+.swipe-btn-super:hover { background: rgba(232,162,40,0.1); transform: scale(1.08); }
+.swipe-points-row { margin-top: 16px; font-size: 12px; color: var(--cream-dim); }
+.swipe-points-val { font-family: 'DM Mono', monospace; color: var(--amber); font-weight: 700; font-size: 15px; }
+
+/* DONE STATE */
+.swipe-done {
+  display: none; flex-direction: column; align-items: center; justify-content: center;
+  height: 380px; gap: 14px; text-align: center;
+}
+.swipe-done.show { display: flex; }
+.swipe-done-icon { font-size: 54px; }
+.swipe-done h3 { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; }
+.swipe-done p { font-size: 14px; color: var(--cream-dim); max-width: 280px; line-height: 1.6; }
+
+/* LEADERBOARD PANEL */
+.lb-panel {
   background: var(--glass); border: 1px solid var(--glass-border);
-  border-radius: 14px; padding: 20px;
+  border-radius: 20px; overflow: hidden; position: sticky; top: 76px;
 }
-.pack-cat-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
-.pack-cat-icon { width: 34px; height: 34px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.cat-green { background: rgba(46,197,122,0.15); }
-.cat-amber { background: rgba(232,162,40,0.12); }
-.cat-teal { background: rgba(24,197,168,0.12); }
-.cat-purple { background: rgba(139,92,246,0.12); }
-.cat-red { background: rgba(232,64,64,0.12); }
-.pack-cat-title { font-size: 14px; font-weight: 700; }
-.pack-cat-count { font-size: 10px; color: var(--cream-dim); }
-.pack-item { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
-.pack-item:last-child { border-bottom: none; }
-.pack-check { width: 16px; height: 16px; border: 1.5px solid rgba(255,255,255,0.15); border-radius: 4px; flex-shrink: 0; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; }
-.pack-check.checked { background: var(--green); border-color: var(--green); }
-.pack-check.checked::after { content: '✓'; font-size: 10px; color: var(--ink); font-weight: 700; }
-.pack-item-label { font-size: 13px; flex: 1; }
-.pack-aff-btn { background: rgba(255,153,0,0.1); border: 1px solid rgba(255,153,0,0.2); color: #FF9900; border-radius: 4px; padding: 2px 7px; font-size: 9px; font-weight: 700; cursor: pointer; text-decoration: none; white-space: nowrap; }
-
-/* ── PREMIUM TABLE ── */
-#premium { background: var(--navy); padding: 80px 0; }
-#premium .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.compare-table-wrap { overflow-x: auto; }
-.compare-table { width: 100%; border-collapse: separate; border-spacing: 0; }
-.compare-table thead th { padding: 20px 24px; text-align: left; font-size: 13px; font-weight: 600; color: var(--cream-dim); border-bottom: 1px solid var(--glass-border); }
-.compare-table thead th.plan-free { background: rgba(255,255,255,0.03); border-radius: 12px 12px 0 0; }
-.compare-table thead th.plan-pro {
-  background: rgba(232,162,40,0.08);
-  border: 1px solid rgba(232,162,40,0.2);
-  border-bottom: none;
-  border-radius: 12px 12px 0 0;
-}
-.plan-name { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--cream); display: block; margin-bottom: 4px; }
-.plan-name.pro { color: var(--amber); }
-.plan-price { font-family: 'DM Mono', monospace; font-size: 28px; font-weight: 500; color: var(--cream); }
-.plan-price .per { font-size: 13px; color: var(--cream-dim); font-family: 'DM Sans', sans-serif; }
-.plan-price.pro-price { color: var(--amber); }
-.compare-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.04); }
-.compare-table tbody tr:hover { background: rgba(255,255,255,0.02); }
-.compare-table tbody td { padding: 15px 24px; font-size: 14px; vertical-align: middle; }
-.compare-table tbody td:first-child { color: var(--cream-dim); font-weight: 500; }
-.compare-table tbody td.plan-free { background: rgba(255,255,255,0.015); text-align: center; }
-.compare-table tbody td.plan-pro { background: rgba(232,162,40,0.04); border-left: 1px solid rgba(232,162,40,0.1); border-right: 1px solid rgba(232,162,40,0.1); text-align: center; }
-.feature-icon.yes { color: var(--green); font-size: 18px; }
-.feature-icon.no { color: rgba(255,255,255,0.2); font-size: 18px; }
-.feature-val { font-size: 13px; font-weight: 600; color: var(--amber); }
-.pro-highlight { background: rgba(232,162,40,0.1); color: var(--amber); border-radius: 5px; padding: 3px 8px; font-size: 12px; font-weight: 700; }
-.compare-table tfoot td { padding: 20px 24px; }
-.compare-table tfoot td.plan-pro { border: 1px solid rgba(232,162,40,0.2); border-radius: 0 0 12px 12px; }
-.upgrade-btn {
-  width: 100%; background: var(--amber); color: var(--ink);
-  border: none; padding: 14px; border-radius: 10px;
-  font-family: 'DM Sans', sans-serif; font-weight: 700; font-size: 15px;
-  cursor: pointer; transition: all 0.2s;
-  box-shadow: 0 6px 24px rgba(232,162,40,0.3);
-}
-.upgrade-btn:hover { background: var(--amber-bright); transform: translateY(-2px); }
-.passive-income-note { margin-top: 30px; background: rgba(46,197,122,0.08); border: 1px solid rgba(46,197,122,0.15); border-radius: 14px; padding: 24px; }
-.passive-income-note h3 { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; color: var(--green); margin-bottom: 12px; }
-.income-streams { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 14px; }
-.income-stream { background: rgba(46,197,122,0.06); border: 1px solid rgba(46,197,122,0.1); border-radius: 10px; padding: 14px; }
-.income-stream-val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; color: var(--green); }
-.income-stream-label { font-size: 12px; color: var(--cream-dim); margin-top: 3px; }
-
-/* ── PHOTO CONTEST ── */
-#contest { padding: 80px 0; }
-#contest .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.contest-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-@media(max-width:768px) { .contest-layout { grid-template-columns: 1fr; } }
-.leaderboard {
-  background: var(--glass); border: 1px solid var(--glass-border);
-  border-radius: 18px; overflow: hidden;
-}
-.leaderboard-header {
-  background: rgba(255,255,255,0.04);
-  padding: 20px 24px; border-bottom: 1px solid var(--glass-border);
-  display: flex; justify-content: space-between; align-items: center;
-}
-.leaderboard-title { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; }
-.leaderboard-filter {
-  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
-  color: var(--cream); padding: 6px 12px; border-radius: 6px; font-size: 12px;
-  font-family: 'DM Sans', sans-serif; cursor: pointer; outline: none;
-}
-.leaderboard-filter option { background: var(--navy-mid); }
-.lb-row { display: flex; align-items: center; gap: 14px; padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.2s; }
-.lb-row:hover { background: rgba(255,255,255,0.03); }
-.lb-row:last-child { border-bottom: none; }
-.lb-rank { width: 28px; height: 28px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500; flex-shrink: 0; background: rgba(255,255,255,0.06); color: var(--cream-dim); }
-.lb-rank.gold { background: rgba(232,162,40,0.2); color: var(--amber); }
-.lb-rank.silver { background: rgba(200,192,176,0.15); color: var(--cream-dim); }
-.lb-rank.bronze { background: rgba(180,120,60,0.2); color: #CD7F32; }
-.lb-photo { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 22px; }
-.lb-info { flex: 1; min-width: 0; }
-.lb-user { font-size: 14px; font-weight: 600; }
-.lb-dest { font-size: 11px; color: var(--cream-dim); margin-top: 1px; }
-.lb-votes { text-align: right; }
-.lb-vote-count { font-family: 'DM Mono', monospace; font-size: 16px; font-weight: 500; color: var(--amber); }
-.lb-vote-label { font-size: 10px; color: var(--cream-dim); margin-top: 1px; }
-
-.swipe-explainer { background: rgba(139,92,246,0.08); border: 1px solid rgba(139,92,246,0.15); border-radius: 16px; padding: 24px; margin-top: 20px; }
-.swipe-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--purple); margin-bottom: 12px; }
-.swipe-steps { display: flex; flex-direction: column; gap: 10px; }
-.swipe-step { display: flex; gap: 12px; align-items: flex-start; }
-.swipe-num { width: 22px; height: 22px; border-radius: 50%; background: rgba(139,92,246,0.2); border: 1px solid rgba(139,92,246,0.3); color: var(--purple); font-size: 11px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; }
-.swipe-text { font-size: 13px; color: var(--cream-dim); line-height: 1.5; }
-.prize-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(232,162,40,0.12); border: 1px solid rgba(232,162,40,0.2); color: var(--amber); padding: 6px 14px; border-radius: 8px; font-size: 13px; font-weight: 700; margin-top: 14px; }
-
-/* ── JSON SCHEMA VIEWER ── */
-#schema { padding: 80px 0; background: var(--ink); }
-#schema .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.code-viewer {
-  background: #0A0F1E; border: 1px solid var(--glass-border);
-  border-radius: 14px; overflow: hidden; margin-top: 30px;
-}
-.code-viewer-header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 12px 18px; background: rgba(255,255,255,0.04);
+.lb-top {
+  padding: 20px 24px 16px;
   border-bottom: 1px solid var(--glass-border);
+  background: rgba(255,255,255,0.02);
 }
-.code-dots { display: flex; gap: 6px; }
-.code-dot { width: 12px; height: 12px; border-radius: 50%; }
-.dot-red { background: #FF5F56; }
-.dot-yellow { background: #FFBD2E; }
-.dot-green { background: #27C93F; }
-.code-filename { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--cream-dim); }
-.copy-btn { background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); color: var(--cream-dim); padding: 4px 12px; border-radius: 5px; font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.2s; font-family: 'DM Mono', monospace; }
-.copy-btn:hover { background: rgba(255,255,255,0.1); color: var(--cream); }
-.code-body { padding: 24px; overflow-x: auto; max-height: 500px; overflow-y: auto; }
-.code-body pre { font-family: 'DM Mono', monospace; font-size: 12px; line-height: 1.7; }
-.json-key { color: #79B8FF; }
-.json-str { color: #9ECE6A; }
-.json-num { color: #FF9E64; }
-.json-bool { color: #BB9AF7; }
-.json-null { color: #FF6B6B; }
-.json-bracket { color: var(--cream-dim); }
-.json-comment { color: #5C6370; font-style: italic; }
+.lb-top-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+.lb-title { font-family: 'Playfair Display', serif; font-size: 19px; font-weight: 700; }
+.lb-live { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; color: var(--green); }
+.lb-live-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 1.4s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.25} }
 
-/* ── TOAST ── */
-.toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%); background: var(--navy-mid); border: 1px solid var(--glass-border); color: var(--cream); padding: 12px 20px; border-radius: 10px; font-size: 14px; z-index: 9999; box-shadow: 0 8px 32px rgba(0,0,0,0.4); animation: fadeIn 0.3s ease; max-width: 380px; text-align: center; }
+/* COUNTDOWN */
+.lb-countdown { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; }
+.countdown-unit { background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border); border-radius: 8px; padding: 8px 4px; text-align: center; }
+.countdown-val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; color: var(--amber); line-height: 1; }
+.countdown-lbl { font-size: 9px; color: var(--cream-dim); margin-top: 3px; letter-spacing: 0.06em; }
 
-/* ── RESPONSIVE ── */
-@media(max-width:768px) {
-  nav { padding: 14px 20px; }
-  .nav-links { display: none; }
-  section, #packing .inner, #premium .inner, #contest .inner, #schema .inner, #explorer .inner { padding-left: 20px; padding-right: 20px; }
-  .flight-banner-inner { padding: 14px 20px; }
-  .detail-grid { grid-template-columns: 1fr; }
+/* LB FILTER */
+.lb-filter-row { display: flex; gap: 6px; padding: 14px 24px; border-bottom: 1px solid var(--glass-border); }
+.lb-filter-btn { background: var(--glass); border: 1px solid var(--glass-border); color: var(--cream-dim); padding: 5px 12px; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.lb-filter-btn.active { background: rgba(232,162,40,0.1); border-color: rgba(232,162,40,0.3); color: var(--amber); }
+
+/* LB ROWS */
+.lb-list { max-height: 420px; overflow-y: auto; }
+.lb-list::-webkit-scrollbar { width: 3px; }
+.lb-list::-webkit-scrollbar-thumb { background: var(--amber-dim); }
+.lb-row { display: flex; align-items: center; gap: 12px; padding: 13px 24px; border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.2s; cursor: pointer; }
+.lb-row:hover { background: rgba(255,255,255,0.03); }
+.lb-row.my-row { background: rgba(232,162,40,0.06); border-left: 2px solid var(--amber); }
+.lb-rank-badge { width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 700; flex-shrink: 0; background: rgba(255,255,255,0.05); color: var(--cream-dim); }
+.lb-rank-badge.r1 { background: rgba(232,162,40,0.2); color: var(--amber); font-size: 14px; }
+.lb-rank-badge.r2 { background: rgba(200,192,176,0.15); color: var(--cream-dim); }
+.lb-rank-badge.r3 { background: rgba(180,120,60,0.15); color: #CD7F32; }
+.lb-photo-thumb { width: 44px; height: 44px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); }
+.lb-info { flex: 1; min-width: 0; }
+.lb-user { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 5px; }
+.lb-verified { font-size: 9px; background: rgba(232,162,40,0.12); border: 1px solid rgba(232,162,40,0.25); color: var(--amber); border-radius: 3px; padding: 1px 5px; font-weight: 700; }
+.lb-dest { font-size: 11px; color: var(--cream-dim); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lb-vote-col { text-align: right; flex-shrink: 0; }
+.lb-vote-count { font-family: 'DM Mono', monospace; font-size: 15px; font-weight: 500; color: var(--amber); }
+.lb-delta { font-size: 10px; color: var(--green); }
+.lb-delta.neg { color: var(--red); }
+
+/* MY POSITION */
+.lb-my-pos { padding: 14px 24px; border-top: 1px solid var(--glass-border); background: rgba(232,162,40,0.04); }
+.lb-my-pos-label { font-size: 10px; color: var(--amber); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 6px; }
+.lb-my-pos-row { display: flex; align-items: center; justify-content: space-between; }
+.lb-my-pos-rank { font-family: 'DM Mono', monospace; font-size: 22px; color: var(--amber); font-weight: 500; }
+.lb-my-pos-info { font-size: 12px; color: var(--cream-dim); text-align: right; line-height: 1.5; }
+.lb-my-share-btn { margin-top: 10px; width: 100%; background: none; border: 1px solid rgba(232,162,40,0.2); color: var(--amber); padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.lb-my-share-btn:hover { background: rgba(232,162,40,0.08); }
+
+/* NOTIF BANNER */
+.notif-banner {
+  position: fixed; top: 72px; right: 20px; z-index: 500;
+  background: var(--navy-mid); border: 1px solid rgba(232,162,40,0.3);
+  border-radius: 14px; padding: 14px 18px; max-width: 320px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+  animation: slideIn 0.4s cubic-bezier(0.23,1,0.32,1);
+  display: none;
 }
+.notif-banner.show { display: flex; gap: 12px; align-items: flex-start; }
+@keyframes slideIn { from{opacity:0;transform:translateX(40px)} to{opacity:1;transform:translateX(0)} }
+.notif-icon { font-size: 26px; flex-shrink: 0; }
+.notif-title { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+.notif-body { font-size: 12px; color: var(--cream-dim); line-height: 1.5; }
+.notif-close { position: absolute; top: 10px; right: 12px; background: none; border: none; color: var(--cream-dim); cursor: pointer; font-size: 16px; }
+.notif-action { display: inline-flex; margin-top: 8px; background: var(--amber); color: var(--ink); border: none; padding: 5px 14px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; }
 
-/* ── UTIL ── */
-.hidden { display: none !important; }
+/* ════════════════════════════════════════════════════════════════════
+   PAGE 3 — PRO PAYWALL
+════════════════════════════════════════════════════════════════════ */
+.paywall-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+@media(max-width:900px){ .paywall-layout { grid-template-columns: 1fr; } }
+
+.plan-card {
+  border-radius: 20px; padding: 32px; border: 1px solid var(--glass-border);
+  background: var(--glass); position: relative; overflow: hidden;
+}
+.plan-card.pro-plan {
+  border-color: rgba(232,162,40,0.3);
+  background: rgba(232,162,40,0.04);
+}
+.plan-card.pro-plan::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 80% 0%, rgba(232,162,40,0.08) 0%, transparent 60%);
+  pointer-events: none;
+}
+.plan-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; padding: 4px 10px; border-radius: 5px; display: inline-block; margin-bottom: 14px; }
+.plan-tag.free { background: rgba(255,255,255,0.06); color: var(--cream-dim); border: 1px solid var(--glass-border); }
+.plan-tag.pro  { background: rgba(232,162,40,0.15); color: var(--amber); border: 1px solid rgba(232,162,40,0.3); }
+.plan-name { font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 900; margin-bottom: 6px; }
+.plan-price { font-family: 'DM Mono', monospace; font-size: 38px; font-weight: 500; margin-bottom: 4px; }
+.plan-price.pro-price { color: var(--amber); }
+.plan-period { font-size: 12px; color: var(--cream-dim); margin-bottom: 28px; }
+.plan-features { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.plan-feature { display: flex; align-items: flex-start; gap: 10px; font-size: 14px; }
+.pf-icon { width: 20px; height: 20px; border-radius: 5px; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-top: 1px; }
+.pf-yes  { background: rgba(46,197,122,0.15); color: var(--green); }
+.pf-no   { background: rgba(255,255,255,0.05); color: var(--cream-dim); }
+.pf-pro  { background: rgba(232,162,40,0.12); color: var(--amber); }
+.pf-text { line-height: 1.5; }
+.pf-text .locked-text { color: var(--cream-dim); }
+.pf-text .pro-text { color: var(--cream); }
+.plan-cta-btn {
+  width: 100%; margin-top: 28px; padding: 15px; border-radius: 12px;
+  font-size: 16px; font-weight: 700; cursor: pointer; border: none;
+  transition: all 0.25s;
+}
+.plan-cta-btn.free-cta { background: rgba(255,255,255,0.06); color: var(--cream-dim); border: 1px solid var(--glass-border); }
+.plan-cta-btn.pro-cta { background: var(--amber); color: var(--ink); box-shadow: 0 8px 30px rgba(232,162,40,0.3); }
+.plan-cta-btn.pro-cta:hover { background: var(--amber-bright); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,162,40,0.4); }
+
+/* PAYWALL DEMO */
+.paywall-demo { border-radius: 20px; background: var(--glass); border: 1px solid var(--glass-border); padding: 32px; }
+.demo-title { font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+.demo-sub { font-size: 13px; color: var(--cream-dim); margin-bottom: 24px; }
+.blur-demo { position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 20px; }
+.blur-content { padding: 18px; background: rgba(255,255,255,0.03); border: 1px solid var(--glass-border); border-radius: 12px; }
+.blur-content.blurred { filter: blur(6px); user-select: none; }
+.blur-gate {
+  position: absolute; inset: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 10px;
+  background: rgba(8,12,26,0.7); backdrop-filter: blur(4px);
+  border-radius: 12px; border: 1px dashed rgba(232,162,40,0.3);
+  cursor: pointer; transition: background 0.2s;
+}
+.blur-gate:hover { background: rgba(8,12,26,0.8); }
+.blur-gate-icon { font-size: 32px; }
+.blur-gate-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--amber); }
+.blur-gate-sub { font-size: 12px; color: var(--cream-dim); text-align: center; max-width: 220px; line-height: 1.5; }
+.blur-gate-btn { background: var(--amber); color: var(--ink); border: none; padding: 9px 22px; border-radius: 8px; font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.2s; }
+.blur-gate-btn:hover { background: var(--amber-bright); transform: scale(1.04); }
+
+/* PRO MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(8,12,26,0.85); backdrop-filter: blur(10px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal-overlay.show { opacity: 1; pointer-events: all; }
+.pro-modal {
+  background: var(--navy-mid); border: 1px solid rgba(232,162,40,0.25);
+  border-radius: 24px; padding: 40px; max-width: 480px; width: 100%;
+  position: relative; transform: scale(0.9); transition: transform 0.3s;
+  box-shadow: 0 30px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,162,40,0.1);
+  overflow: hidden;
+}
+.pro-modal::before { content: ''; position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(232,162,40,0.1) 0%, transparent 70%); pointer-events: none; }
+.modal-overlay.show .pro-modal { transform: scale(1); }
+.modal-close { position: absolute; top: 16px; right: 18px; background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border); color: var(--cream-dim); width: 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px; transition: all 0.2s; }
+.modal-close:hover { background: rgba(255,255,255,0.1); color: var(--cream); }
+.modal-star { font-size: 40px; margin-bottom: 14px; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 900; letter-spacing: -1px; margin-bottom: 8px; }
+.modal-title span { color: var(--amber); }
+.modal-sub { font-size: 14px; color: var(--cream-dim); line-height: 1.6; margin-bottom: 24px; }
+.modal-perks { display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+.modal-perk { display: flex; align-items: center; gap: 11px; padding: 11px 14px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; }
+.modal-perk-icon { font-size: 20px; width: 36px; text-align: center; flex-shrink: 0; }
+.modal-perk-text { font-size: 13px; font-weight: 600; }
+.modal-perk-sub { font-size: 11px; color: var(--cream-dim); margin-top: 1px; }
+.modal-price-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 18px; }
+.modal-price { font-family: 'DM Mono', monospace; font-size: 36px; color: var(--amber); }
+.modal-price-period { font-size: 14px; color: var(--cream-dim); }
+.modal-cta { width: 100%; background: var(--amber); color: var(--ink); border: none; padding: 16px; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; transition: all 0.25s; box-shadow: 0 6px 30px rgba(232,162,40,0.35); }
+.modal-cta:hover { background: var(--amber-bright); transform: translateY(-2px); box-shadow: 0 10px 40px rgba(232,162,40,0.45); }
+.modal-fine { font-size: 11px; color: var(--cream-dim); opacity: 0.6; text-align: center; margin-top: 12px; }
+.modal-pro-feature-badge { position: absolute; top: -1px; left: -1px; right: -1px; display: flex; align-items: center; justify-content: center; gap: 6px; background: linear-gradient(90deg, var(--amber-dim), var(--amber), var(--amber-dim)); color: var(--ink); font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; padding: 5px; }
+
+/* ════════════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════════════ */
+.toast {
+  position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%);
+  background: var(--navy-mid); border: 1px solid var(--glass-border);
+  color: var(--cream); padding: 12px 22px; border-radius: 12px;
+  font-size: 14px; z-index: 9999; pointer-events: none;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.4); animation: fadeUp 0.3s ease;
+  max-width: 380px; text-align: center; white-space: nowrap;
+}
 </style>
 </head>
 <body>
 
-<!-- NAV -->
+<!-- ─── NAV ─────────────────────────────────────────────────────────── -->
 <nav>
-  <div class="nav-logo">Wander<span>Quest</span> <span style="font-size:11px;background:rgba(24,197,168,0.15);border:1px solid rgba(24,197,168,0.2);color:var(--teal);padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;vertical-align:middle;">v2.0</span></div>
-  <div class="nav-links">
-    <a href="#explorer">🌍 Explorer</a>
-    <a href="#packing">🧳 Valigia</a>
-    <a href="#premium">⭐ Premium</a>
-    <a href="#contest">📸 Contest</a>
-    <a href="#schema">🗄️ Schema DB</a>
+  <div class="nav-logo">Wander<span>Quest</span> <span class="nav-ver">v3.0</span></div>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showPage('explorer',this)">🌍 Explorer</button>
+    <button class="nav-tab" onclick="showPage('contest',this)">📸 Contest</button>
+    <button class="nav-tab" onclick="showPage('premium',this)">⭐ Pro</button>
   </div>
-  <button class="nav-cta" onclick="openUpgrade()">Diventa Pro →</button>
+  <div class="nav-right">
+    <div class="nav-user-badge" id="navUserBadge" onclick="toggleProStatus()">👤 Free</div>
+    <button class="nav-cta" onclick="openProModal('nav')">Diventa Pro →</button>
+  </div>
 </nav>
 
-<!-- FLIGHT BANNER -->
-<div id="flight-banner">
-  <div class="flight-banner-inner">
-    <div class="flight-banner-label">✈️ Traccia Volo</div>
-    <div class="flight-input-wrap">
-      <input type="text" id="flightInput" placeholder="es. FR1234, IB3456, AZ610…" maxlength="8">
-      <button class="flight-btn" onclick="searchFlight()">Cerca</button>
-    </div>
-    <div id="flight-result"></div>
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 1 — EXPLORER
+══════════════════════════════════════════════════════════════════ -->
+<div id="page-explorer" class="page active">
+<div class="inner">
+
+  <div class="sec-label">🌐 Navigazione Globale</div>
+  <h1 class="sec-title">Esplora il Mondo<br><em>in Tre Click</em></h1>
+  <p class="sec-sub">Continente → Paese → Città. Ogni destinazione include gemme nascoste, cibo autentico e pillola culturale — alcune solo per utenti Pro.</p>
+
+  <!-- BREADCRUMB -->
+  <div class="breadcrumb" id="breadcrumb">
+    <div class="bc-item current" id="bc-home">🏠 Home</div>
   </div>
+
+  <!-- LEVELS -->
+  <div id="level-continents"></div>
+  <div id="level-countries"  style="display:none"></div>
+  <div id="level-cities"     style="display:none"></div>
+  <div id="city-detail-wrap" class="city-detail-wrap"></div>
+
+</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 1 — DRILL-DOWN EXPLORER -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<div id="explorer">
-  <div class="inner">
-    <div class="section-label">🌐 Database Globale</div>
-    <h2 class="section-title">Esplora il Mondo<br><em style="font-style:italic;color:var(--amber)">Passo dopo Passo</em></h2>
-    <p class="section-sub">Seleziona continente → paese → città per scoprire gemme nascoste, cibo autentico, pillole culturali e la lista valigia automatica.</p>
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 2 — CONTEST
+══════════════════════════════════════════════════════════════════ -->
+<div id="page-contest" class="page">
+<div class="inner">
 
-    <!-- Breadcrumb -->
-    <div class="drill-steps" id="drillSteps">
-      <div class="drill-step active" id="step-continent">1 · Continente</div>
-      <div class="drill-arrow">›</div>
-      <div class="drill-step" id="step-country">2 · Paese</div>
-      <div class="drill-arrow">›</div>
-      <div class="drill-step" id="step-city">3 · Città</div>
-    </div>
+  <div class="sec-label">📸 Gamification</div>
+  <h2 class="sec-title">Vota & <em>Guadagna Punti</em></h2>
+  <p class="sec-sub">Swipe le foto della community. Ogni voto conta per la classifica mensile. Il vincitore porta a casa <strong style="color:var(--amber)">€150</strong> in premi.</p>
 
-    <!-- Level 1: Continents -->
-    <div id="level-continent">
-      <div class="continent-grid" id="continentGrid"></div>
-    </div>
-
-    <!-- Level 2: Countries -->
-    <div id="level-country" class="hidden">
-      <div id="countryBack" style="margin-bottom:16px">
-        <button onclick="goToLevel('continent')" style="background:none;border:none;color:var(--amber);font-size:13px;font-weight:600;cursor:pointer;">← Tutti i continenti</button>
-      </div>
-      <div class="country-grid" id="countryGrid"></div>
-    </div>
-
-    <!-- Level 3: Cities -->
-    <div id="level-city" class="hidden">
-      <div style="margin-bottom:16px">
-        <button onclick="goToLevel('country')" style="background:none;border:none;color:var(--amber);font-size:13px;font-weight:600;cursor:pointer;">← Tutti i paesi</button>
-      </div>
-      <div class="city-grid" id="cityGrid"></div>
-    </div>
-  </div>
-</div>
-
-<!-- City Detail Panel -->
-<div id="city-detail"></div>
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 2 — PACKING PLANNER -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<div id="packing">
-  <div class="inner">
-    <div class="section-label">🧳 Algoritmo Valigia</div>
-    <h2 class="section-title">Lista Bagaglio<br><em style="font-style:italic;color:var(--amber)">Automatica</em></h2>
-    <p class="section-sub">Scegli destinazione, stagione e tipo di viaggio. L'algoritmo genera la lista completa con link di acquisto affiliati.</p>
-
-    <div class="planner-controls">
-      <div class="planner-field">
-        <label>Destinazione</label>
-        <select id="packCity">
-          <option value="">Seleziona città…</option>
-          <option value="ROM">🏛️ Roma, Italia</option>
-          <option value="FLR">🌸 Firenze, Italia</option>
-          <option value="VCE">🚤 Venezia, Italia</option>
-          <option value="BCN">🎨 Barcellona, Spagna</option>
-          <option value="MAD">👑 Madrid, Spagna</option>
-          <option value="SVQ">💃 Siviglia, Spagna</option>
-          <option value="TYO">🏙️ Tokyo, Giappone</option>
-          <option value="KIX">🍜 Osaka, Giappone</option>
-          <option value="UKY">⛩️ Kyoto, Giappone</option>
-        </select>
-      </div>
-      <div class="planner-field">
-        <label>Stagione</label>
-        <select id="packSeason">
-          <option value="estate">☀️ Estate (Giu-Ago)</option>
-          <option value="autunno">🍂 Autunno (Set-Nov)</option>
-          <option value="inverno">❄️ Inverno (Dic-Feb)</option>
-          <option value="primavera">🌸 Primavera (Mar-Mag)</option>
-        </select>
-      </div>
-      <div class="planner-field">
-        <label>Tipo Viaggio</label>
-        <select id="packType">
-          <option value="vacanza">🏖️ Vacanza / Relax</option>
-          <option value="cultura">🏛️ Cultura / Musei</option>
-          <option value="avventura">🥾 Avventura / Trekking</option>
-          <option value="business">💼 Business</option>
-          <option value="luxury">🥂 Luxury</option>
-        </select>
-      </div>
-      <div class="planner-field" style="display:flex;align-items:flex-end;">
-        <button class="generate-btn" onclick="generatePacking()">🧳 Genera Lista</button>
-      </div>
-    </div>
-
-    <div id="packing-result"></div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 3 — PREMIUM TABLE -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<div id="premium">
-  <div class="inner">
-    <div class="section-label">⭐ Guadagno Passivo</div>
-    <h2 class="section-title">Free vs<br><em style="font-style:italic;color:var(--amber)">Explorer Plus</em></h2>
-    <p class="section-sub">Confronta i piani e scopri come WanderQuest genera revenue passiva attraverso abbonamenti, affiliazioni e pubblicità native.</p>
-
-    <div class="compare-table-wrap">
-      <table class="compare-table">
-        <thead>
-          <tr>
-            <th style="width:40%">Funzionalità</th>
-            <th class="plan-free" style="width:28%">
-              <span class="plan-name">Free</span>
-              <span class="plan-price">€0 <span class="per">/mese</span></span>
-            </th>
-            <th class="plan-pro" style="width:28%">
-              <span class="plan-name pro">Explorer Plus ⭐</span>
-              <span class="plan-price pro-price">€6,99 <span class="per">/mese</span></span>
-            </th>
-          </tr>
-        </thead>
-        <tbody id="compareTableBody"></tbody>
-        <tfoot>
-          <tr>
-            <td></td>
-            <td class="plan-free"><button onclick="showToast('👋 Benvenuto nel piano Free!')" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:14px;border-radius:10px;font-family:\'DM Sans\',sans-serif;font-weight:600;font-size:14px;cursor:pointer;">Continua gratis</button></td>
-            <td class="plan-pro"><button class="upgrade-btn" onclick="showToast('🚀 Reindirizzamento al checkout… (demo)')">Upgrade a Explorer Plus →</button></td>
-          </tr>
-        </tfoot>
-      </table>
-    </div>
-
-    <div class="passive-income-note">
-      <h3>💰 Come WanderQuest Genera Guadagno Passivo</h3>
-      <p style="font-size:14px;color:var(--cream-dim);line-height:1.6;">Il modello di business si basa su 3 flussi di revenue complementari che scalano automaticamente con la crescita degli utenti:</p>
-      <div class="income-streams" id="incomeStreams"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 4 — PHOTO CONTEST & LEADERBOARD -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<div id="contest">
-  <div class="inner">
-    <div class="section-label">📸 Gamification</div>
-    <h2 class="section-title">Contest Fotografico<br><em style="font-style:italic;color:var(--amber)">& Classifica</em></h2>
-    <p class="section-sub">La community vota le foto con un sistema swipe. I punti si accumulano in classifiche per paese e globale. Il vincitore mensile riceve un premio in denaro.</p>
-
-    <div class="contest-layout">
-      <div>
-        <div class="leaderboard">
-          <div class="leaderboard-header">
-            <div class="leaderboard-title">🏆 Classifica Paese</div>
-            <select class="leaderboard-filter" onchange="renderCountryLeaderboard(this.value)">
-              <option value="IT">🇮🇹 Italia</option>
-              <option value="ES">🇪🇸 Spagna</option>
-              <option value="JP">🇯🇵 Giappone</option>
-            </select>
-          </div>
-          <div id="countryLeaderboard"></div>
+  <div class="contest-layout">
+    <!-- SWIPE ARENA -->
+    <div>
+      <div class="swipe-arena">
+        <div class="swipe-header">
+          <div class="swipe-title">Vota le Foto</div>
+          <div class="swipe-counter" id="swipeCounter">1 / 8</div>
         </div>
 
-        <div class="swipe-explainer">
-          <div class="swipe-title">⚡ Come funziona il voto Swipe</div>
-          <div class="swipe-steps">
-            <div class="swipe-step"><div class="swipe-num">1</div><div class="swipe-text">Vedi una foto anonima nel feed del paese che stai esplorando</div></div>
-            <div class="swipe-step"><div class="swipe-num">2</div><div class="swipe-text">Swipe ❤️ destra = +1 punto, swipe ✗ sinistra = skip (no penalità)</div></div>
-            <div class="swipe-step"><div class="swipe-num">3</div><div class="swipe-text">Gli utenti Pro hanno un moltiplicatore ×2 sui voti dati e ricevuti</div></div>
-            <div class="swipe-step"><div class="swipe-num">4</div><div class="swipe-text">La foto con più punti entro il 28 del mese vince. Pareggio → voto jury panel (top 3 fotografi della community)</div></div>
+        <div class="swipe-stack" id="swipeStack">
+          <!-- cards injected by JS -->
+          <div class="swipe-done" id="swipeDone">
+            <div class="swipe-done-icon">🎉</div>
+            <h3>Hai votato tutto!</h3>
+            <p>Torna domani per nuove foto. I tuoi voti sono stati conteggiati in classifica.</p>
+            <button onclick="resetSwipe()" style="background:var(--amber);color:var(--ink);border:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;margin-top:8px">🔄 Ricomincia (Demo)</button>
           </div>
-          <div class="prize-badge">🏆 Premio mensile: €150 + Badge Verified Explorer</div>
+        </div>
+
+        <div class="swipe-buttons" id="swipeButtons">
+          <button class="swipe-btn swipe-btn-skip" onclick="vote(false)" title="Salta">✕</button>
+          <button class="swipe-btn swipe-btn-super" onclick="voteSuper()"  title="Super ⭐ (solo Pro)">⭐</button>
+          <button class="swipe-btn swipe-btn-like" onclick="vote(true)"  title="Mi piace">♥</button>
+        </div>
+
+        <div class="swipe-points-row">
+          Punti guadagnati oggi: <span class="swipe-points-val" id="swipePoints">0</span>
+          <span style="font-size:10px;color:var(--cream-dim);margin-left:6px">(Pro ×2)</span>
         </div>
       </div>
 
-      <div>
-        <div class="leaderboard">
-          <div class="leaderboard-header">
-            <div class="leaderboard-title">🌍 Classifica Globale</div>
-            <div style="font-size:11px;color:var(--teal);font-weight:600;">LIVE · Marzo 2025</div>
+      <!-- HOW IT WORKS -->
+      <div style="margin-top:20px;background:rgba(139,92,246,0.06);border:1px solid rgba(139,92,246,0.12);border-radius:16px;padding:22px;">
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--purple);margin-bottom:14px">⚡ Come funziona</div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;gap:10px;font-size:13px;color:var(--cream-dim)"><span style="color:var(--purple);font-weight:700;min-width:16px">1</span>Swipe ♥ destra = +1 voto alla foto + 2 punti a te</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:var(--cream-dim)"><span style="color:var(--purple);font-weight:700;min-width:16px">2</span>La foto con più voti entro il 28 vince €150 cash</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:var(--cream-dim)"><span style="color:var(--purple);font-weight:700;min-width:16px">3</span>Gli utenti <span style="color:var(--amber);font-weight:700">&nbsp;Pro&nbsp;</span> ricevono ×2 moltiplicatore su tutti i voti</div>
+          <div style="display:flex;gap:10px;font-size:13px;color:var(--cream-dim)"><span style="color:var(--purple);font-weight:700;min-width:16px">4</span>⭐ Super-like (solo Pro): vale +3 voti ed evidenzia la foto</div>
+        </div>
+        <div style="margin-top:14px;padding:10px 14px;background:rgba(232,162,40,0.08);border:1px solid rgba(232,162,40,0.15);border-radius:8px;font-size:12px;color:var(--amber);font-weight:600">
+          🏆 Premio mensile: €150 al vincitore + Badge "Verified Explorer"
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div>
+      <div class="lb-panel">
+        <div class="lb-top">
+          <div class="lb-top-row">
+            <div class="lb-title">🏆 Classifica</div>
+            <div class="lb-live"><div class="lb-live-dot"></div> LIVE</div>
           </div>
-          <div id="globalLeaderboard"></div>
+          <div class="lb-countdown" id="lbCountdown"></div>
+        </div>
+
+        <div class="lb-filter-row">
+          <button class="lb-filter-btn active" onclick="setLbFilter('global',this)">🌍 Global</button>
+          <button class="lb-filter-btn" onclick="setLbFilter('IT',this)">🇮🇹 Italia</button>
+          <button class="lb-filter-btn" onclick="setLbFilter('ES',this)">🇪🇸 Spagna</button>
+          <button class="lb-filter-btn" onclick="setLbFilter('JP',this)">🇯🇵 Giappone</button>
+        </div>
+
+        <div class="lb-list" id="lbList"></div>
+
+        <div class="lb-my-pos">
+          <div class="lb-my-pos-label">La tua posizione</div>
+          <div class="lb-my-pos-row">
+            <div class="lb-my-pos-rank" id="myRankDisp">#14</div>
+            <div class="lb-my-pos-info" id="myPosInfo">312 voti ricevuti<br><span style="color:var(--amber)">+48 oggi</span></div>
+          </div>
+          <button class="lb-my-share-btn" onclick="triggerShareNotif()">📲 Condividi per scalare la classifica</button>
         </div>
       </div>
     </div>
   </div>
+
+</div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<!-- SECTION 5 — JSON DATABASE SCHEMA -->
-<!-- ═══════════════════════════════════════════════════════════════════ -->
-<div id="schema">
-  <div class="inner">
-    <div class="section-label">🗄️ Database Schema</div>
-    <h2 class="section-title">Struttura JSON<br><em style="font-style:italic;color:var(--amber)">Gerarchica</em></h2>
-    <p class="section-sub">Il database è organizzato come Continente → Paese → Città. Ogni città contiene tutti i dati necessari per popolare l'app automaticamente.</p>
+<!-- ══════════════════════════════════════════════════════════════════
+     PAGE 3 — PRO PAYWALL
+══════════════════════════════════════════════════════════════════ -->
+<div id="page-premium" class="page">
+<div class="inner">
 
-    <div class="code-viewer">
-      <div class="code-viewer-header">
-        <div class="code-dots"><div class="code-dot dot-red"></div><div class="code-dot dot-yellow"></div><div class="code-dot dot-green"></div></div>
-        <div class="code-filename">wanderquest-db.json</div>
-        <button class="copy-btn" onclick="copySchema()">📋 Copia</button>
-      </div>
-      <div class="code-body"><pre id="schemaCode"></pre></div>
+  <div class="sec-label">⭐ Freemium</div>
+  <h2 class="sec-title">Free vs <em>Explorer Plus</em></h2>
+  <p class="sec-sub">Un paywall etico: il contenuto free è già prezioso. Il Pro lo porta a un altro livello. Nessun dark pattern.</p>
+
+  <div class="paywall-layout" style="margin-bottom:48px">
+    <!-- FREE PLAN -->
+    <div class="plan-card">
+      <div class="plan-tag free">Piano Free</div>
+      <div class="plan-name">Explorer</div>
+      <div class="plan-price">€0</div>
+      <div class="plan-period">Per sempre gratuito</div>
+      <ul class="plan-features">
+        <li class="plan-feature"><div class="pf-icon pf-yes">✓</div><div class="pf-text">1 gemma nascosta per città (su 3)</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-yes">✓</div><div class="pf-text">Cibo & pillola culturale completi</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-yes">✓</div><div class="pf-text">Lista valigia automatica</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-yes">✓</div><div class="pf-text">Contest: 1 foto/mese, voti ×1</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-no">—</div><div class="pf-text locked-text">Gemme 2 e 3 bloccate</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-no">—</div><div class="pf-text locked-text">Pubblicità contestuale presente</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-no">—</div><div class="pf-text locked-text">No Super-like nel contest</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-no">—</div><div class="pf-text locked-text">No badge Verified Explorer</div></li>
+      </ul>
+      <button class="plan-cta-btn free-cta">Piano attuale</button>
     </div>
+
+    <!-- PRO PLAN -->
+    <div class="plan-card pro-plan">
+      <div class="modal-pro-feature-badge">⭐ Più popolare</div>
+      <div style="margin-top:18px"><div class="plan-tag pro">Explorer Plus</div></div>
+      <div class="plan-name" style="color:var(--amber)">Pro</div>
+      <div class="plan-price pro-price">€4,99</div>
+      <div class="plan-period">al mese · cancella quando vuoi</div>
+      <ul class="plan-features">
+        <li class="plan-feature"><div class="pf-icon pf-pro">★</div><div class="pf-text pro-text"><strong>Tutte e 3 le gemme nascoste</strong></div></li>
+        <li class="plan-feature"><div class="pf-icon pf-pro">★</div><div class="pf-text pro-text">Contest: 3 foto/mese, voti <strong>×2</strong></div></li>
+        <li class="plan-feature"><div class="pf-icon pf-pro">★</div><div class="pf-text pro-text">Super-like ⭐ nel contest (vale ×3)</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-pro">★</div><div class="pf-text pro-text">Badge "✅ Verified Explorer"</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-pro">★</div><div class="pf-text pro-text">Zero pubblicità</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-pro">★</div><div class="pf-text pro-text">PDF itinerari stampabili</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-pro">★</div><div class="pf-text pro-text">Notifiche volo illimitate</div></li>
+        <li class="plan-feature"><div class="pf-icon pf-pro">★</div><div class="pf-text pro-text">Early access nuove destinazioni</div></li>
+      </ul>
+      <button class="plan-cta-btn pro-cta" onclick="openProModal('plan')">Inizia 7 giorni gratis →</button>
+    </div>
+  </div>
+
+  <!-- BLUR DEMO LIVE -->
+  <div class="paywall-demo">
+    <div class="demo-title">🔒 Anteprima Paywall — Come appare alle Gemme Nascoste</div>
+    <div class="demo-sub">La gemma 1 è sempre gratuita. Le gemme 2 e 3 sono oscurate con blur e un popup accattivante. Clicca sull'area bloccata per vedere il modale Pro.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <!-- GEM 1 - FREE -->
+      <div class="blur-content" style="border-color:rgba(46,197,122,0.2)">
+        <div style="font-size:11px;font-weight:700;color:var(--green);margin-bottom:8px">💎 Gemma 1 · GRATIS</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:5px">Bunkers del Carmel</div>
+        <div style="font-size:12px;color:var(--cream-dim);line-height:1.5">Vista panoramica su Barcellona. I locali ci vanno al tramonto con birra e chitarra.</div>
+      </div>
+
+      <!-- GEM 2 - LOCKED -->
+      <div class="blur-demo">
+        <div class="blur-content blurred">
+          <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:8px">💎 Gemma 2 · PRO</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:5px">Mercato de l'Abaceria</div>
+          <div style="font-size:12px;color:var(--cream-dim);line-height:1.5">Il vero mercato del quartiere Gràcia. Tapas da 1.5€, solo spagnoli.</div>
+        </div>
+        <div class="blur-gate" onclick="openProModal('gem')">
+          <div class="blur-gate-icon">🔐</div>
+          <div class="blur-gate-title">Solo Pro</div>
+          <div class="blur-gate-sub">Sblocca tutte le gemme con Explorer Plus</div>
+          <button class="blur-gate-btn">Sblocca €4,99/mese</button>
+        </div>
+      </div>
+
+      <!-- GEM 3 - LOCKED -->
+      <div class="blur-demo">
+        <div class="blur-content blurred">
+          <div style="font-size:11px;font-weight:700;color:var(--amber);margin-bottom:8px">💎 Gemma 3 · PRO</div>
+          <div style="font-size:13px;font-weight:700;margin-bottom:5px">Barri de Poblenou</div>
+          <div style="font-size:12px;color:var(--cream-dim);line-height:1.5">La Barcellona alternativa. Street art, bar di design, zero souvenir.</div>
+        </div>
+        <div class="blur-gate" onclick="openProModal('gem')">
+          <div class="blur-gate-icon">🔐</div>
+          <div class="blur-gate-title">Solo Pro</div>
+          <div class="blur-gate-sub">Sblocca tutte le gemme con Explorer Plus</div>
+          <button class="blur-gate-btn">Sblocca €4,99/mese</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ─── PRO MODAL ─────────────────────────────────────────────────── -->
+<div class="modal-overlay" id="proModal" onclick="closeProModal(event)">
+  <div class="pro-modal">
+    <button class="modal-close" onclick="closeProModal()">✕</button>
+    <div class="modal-star">⭐</div>
+    <div class="modal-title">Diventa <span>Explorer Plus</span></div>
+    <div class="modal-sub" id="modalSub">Sblocca le gemme nascoste, elimina la pubblicità e moltiplica i tuoi punti contest.</div>
+    <div class="modal-perks">
+      <div class="modal-perk">
+        <div class="modal-perk-icon">💎</div>
+        <div><div class="modal-perk-text">Tutte e 3 le Gemme Nascoste</div><div class="modal-perk-sub">Luoghi esclusivi che solo i locals conoscono</div></div>
+      </div>
+      <div class="modal-perk">
+        <div class="modal-perk-icon">📸</div>
+        <div><div class="modal-perk-text">Contest Pro: 3 foto/mese + voti ×2</div><div class="modal-perk-sub">Badge "✅ Verified Explorer" sulla tua foto</div></div>
+      </div>
+      <div class="modal-perk">
+        <div class="modal-perk-icon">🚫</div>
+        <div><div class="modal-perk-text">Zero pubblicità, mai</div><div class="modal-perk-sub">Esperienza pulita, solo contenuto</div></div>
+      </div>
+      <div class="modal-perk">
+        <div class="modal-perk-icon">🗺️</div>
+        <div><div class="modal-perk-text">PDF itinerari stampabili</div><div class="modal-perk-sub">La tua lista valigia in formato stampabile</div></div>
+      </div>
+    </div>
+    <div class="modal-price-row">
+      <div class="modal-price">€4,99</div>
+      <div class="modal-price-period">/ mese · cancella quando vuoi</div>
+    </div>
+    <button class="modal-cta" onclick="activatePro()">Inizia 7 giorni gratis →</button>
+    <div class="modal-fine">Nessun addebito nei primi 7 giorni. Cancella in 2 click.</div>
   </div>
 </div>
 
-<!-- TOAST -->
-<div id="toastContainer"></div>
+<!-- ─── NOTIFICATION BANNER ──────────────────────────────────────── -->
+<div class="notif-banner" id="notifBanner">
+  <button class="notif-close" onclick="closeNotif()">✕</button>
+  <div class="notif-icon" id="notifIcon">🔔</div>
+  <div>
+    <div class="notif-title" id="notifTitle">Sei stato superato!</div>
+    <div class="notif-body"  id="notifBody">@carlos_photo ti ha superato in classifica Italia. Condividi la tua foto per recuperare!</div>
+    <button class="notif-action" onclick="closeNotif();triggerShareFlow()">📲 Condividi ora</button>
+  </div>
+</div>
 
 <script>
-// ═══════════════════════════════════════════════════════════════════════
-// DATABASE GERARCHICO COMPLETO
-// ═══════════════════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════════════
+   STATE
+════════════════════════════════════════════════════════════════════ */
+let isPro = false;
+let swipeIdx = 0;
+let swipePoints = 0;
+let lbFilter = 'global';
+let countdownInterval = null;
+let notifTimeout = null;
+
+// Breadcrumb state
+let bcState = [{ label: '🏠 Home', level: 'continents', id: null }];
+
+/* ════════════════════════════════════════════════════════════════════
+   DATABASE
+════════════════════════════════════════════════════════════════════ */
 const DB = {
-  continents: {
-    EU: {
-      name: "Europa", emoji: "🌍", countryCount: 45,
-      countries: {
-        IT: {
-          name: "Italia", emoji: "🇮🇹",
-          cities: {
-            ROM: {
-              name: "Roma", emoji: "🏛️",
-              bg: "linear-gradient(135deg,#8B0000,#C0392B)",
-              hidden_gems: [
-                { name: "Quartiere Pigneto", desc: "Il Brooklyn romano: street art autentica, cocktail bar alternativi e locali frequentati solo dai romani. Zero turisti." },
-                { name: "Centrale Montemartini", desc: "Museo unico al mondo: sculture greche e romane collocate tra enormi macchinari industriali a vapore degli anni '30." },
-                { name: "Giardino degli Aranci", desc: "Terrazza sull'Aventino con la migliore vista segreta su Roma. La mattina è quasi deserta. Tramonto mozzafiato." }
-              ],
-              food: {
-                dishes: ["Cacio e Pepe", "Supplì al Telefono", "Gricia", "Maritozzo con la panna"],
-                spots: ["Osteria da Fortunata — pasta fatta a mano davanti ai tuoi occhi", "Forno Campo de' Fiori — pizza bianca ancora calda"]
-              },
-              cultural_pill: "A Roma non si cammina veloci. Il 'dolce far niente' è filosofia: siediti al bar, ordina un espresso, osserva il mondo passare.",
-              weather: { estate: "☀️ 30-35°C", inverno: "🌧️ 8-12°C", primavera: "⛅ 18-22°C", autunno: "🍂 15-20°C" },
-              weather_tags: ["hot_summer", "mild_spring", "mild_autumn", "cool_winter"],
-              affiliates_amazon: [
-                { item: "Scarpe comode da walking", why: "Roma ha sampietrini ovunque: non venire con tacchi o sneaker piatte", asin: "B07XQM3VFF" },
-                { item: "Borsa antitaccheggio", why: "Zona Colosseo e Trevi: turisti = target facile", asin: "B09GHJK123" }
-              ],
-              affiliates_booking: [
-                { name: "Hotel zone Trastevere", why: "Posizione autentica, niente turisti, tutto raggiungibile a piedi" },
-                { name: "B&B Pigneto", why: "Il quartiere cool di Roma, a 10min dal centro in metro" }
-              ]
-            },
-            FLR: {
-              name: "Firenze", emoji: "🌸",
-              bg: "linear-gradient(135deg,#8B4513,#D4A017)",
-              hidden_gems: [
-                { name: "Piazzale Michelangelo at Sunrise", desc: "Tutti ci vanno al tramonto. All'alba alle 6:00 sei solo tu, la nebbia sul Duomo e un caffè termos." },
-                { name: "Oltrarno — Via de' Bardi", desc: "La Firenze vera: artigiani del cuoio, botteghe di restauro, nessun ristorante con foto plastificate." },
-                { name: "Museo Bardini", desc: "Il museo meno visitato di Firenze. 3 euro, zero file, collezione privata stupefacente." }
-              ],
-              food: {
-                dishes: ["Lampredotto (quinto quarto)", "Ribollita", "Bistecca Fiorentina", "Schiacciata all'uva"],
-                spots: ["Lampredotto da Nerbone — Mercato Centrale, 5€, l'originale", "Il Latini — trattoria storica, si mangia tutti insieme"]
-              },
-              cultural_pill: "I fiorentini sono orgogliosi e diretti. Non fare i turisti: entra in una bottega, chiedi, ascolta. Saranno ospitali.",
-              weather: { estate: "☀️ 32-37°C", inverno: "🌧️ 6-10°C", primavera: "⛅ 16-21°C", autunno: "🍂 14-19°C" },
-              weather_tags: ["very_hot_summer", "mild_spring", "mild_autumn", "cool_winter"],
-              affiliates_amazon: [
-                { item: "Zaino day-pack 20L", why: "Musei su musei: servono mani libere e zaino controllato ai metal detector", asin: "B08XYZ1234" },
-                { item: "Guida Firenze offline", why: "Wi-Fi nei musei è lento. La guida cartacea non muore mai", asin: "B07ABC5678" }
-              ],
-              affiliates_booking: [
-                { name: "Hotel Oltrarno", why: "Lontano dalle masse, autenticamente fiorentino" },
-                { name: "Appartamento San Niccolò", why: "Zona residenziale, mercato quotidiano, vero sapore locale" }
-              ]
-            },
-            VCE: {
-              name: "Venezia", emoji: "🚤",
-              bg: "linear-gradient(135deg,#1a3a5c,#0e6e8c)",
-              hidden_gems: [
-                { name: "Cannaregio — Fondamenta della Misericordia", desc: "Bacari (bar veneziani) locali dove i veneziani bevono l'ombra (bicchiere di vino) alle 18. Zero inglese." },
-                { name: "Isola di Torcello", desc: "L'isola più antica della laguna, 20 minuti di vaporetto. 50 abitanti, un'osteria, silenzio assoluto." },
-                { name: "Scuola Grande di San Rocco", desc: "Il Tintoretto più spettacolare del mondo, meno noto degli Uffizi. Sala superiore da togliere il fiato." }
-              ],
-              food: {
-                dishes: ["Sarde in saor", "Baccalà mantecato", "Cicchetti misti", "Risotto al nero di seppia"],
-                spots: ["Trattoria da Jonatan — Cannaregio, prenota, solo veneziani", "All'Arco — cicchetti freschi ogni mattina, in piedi al banco"]
-              },
-              cultural_pill: "Venezia si vive lentamente e ci si perde apposta. Non usare Google Maps: gira a caso, ogni vicolo nasconde qualcosa.",
-              weather: { estate: "☀️ 28-33°C", inverno: "🌫️ 2-7°C (acqua alta)", primavera: "⛅ 15-20°C", autunno: "🌧️ 12-18°C" },
-              weather_tags: ["hot_summer", "foggy_winter", "mild_spring", "rainy_autumn"],
-              affiliates_amazon: [
-                { item: "Stivali di gomma waterproof", why: "Acqua alta: ottobre-marzo, arriva senza preavviso", asin: "B09BOOTS01" },
-                { item: "Trolley cabina senza ruote hard", why: "I ponti veneziani: niente ruote. Solo trolley da sollevare", asin: "B08TROLLE5" }
-              ],
-              affiliates_booking: [
-                { name: "B&B Cannaregio", why: "Il sestiere più autentico, lontano da San Marco" },
-                { name: "Appartamento Dorsoduro", why: "Quartiere degli studenti, vita reale veneziana" }
-              ]
-            }
-          }
-        },
-        ES: {
-          name: "Spagna", emoji: "🇪🇸",
-          cities: {
-            BCN: {
-              name: "Barcellona", emoji: "🎨",
-              bg: "linear-gradient(135deg,#B22222,#FFD700)",
-              hidden_gems: [
-                { name: "Bunkers del Carmel", desc: "La migliore vista panoramica su Barcellona. I locali ci vanno al tramonto con birra e chitarra. Nessun turista informato." },
-                { name: "Mercato de l'Abaceria (Gràcia)", desc: "Il vero mercato del quartiere Gràcia. Tapas da 1.5€, prodotti locali, solo spagnoli." },
-                { name: "Barri de Poblenou", desc: "Il Williamsburg di Barcellona. Street art, co-working, cocktail bar e zero souvenir." }
-              ],
-              food: {
-                dishes: ["Pa amb tomàquet", "Patatas bravas", "Croquetas de jamón", "Bombas (Barceloneta)"],
-                spots: ["Bar Calders — Eixample, aperitivo del venerdì, solo locali", "La Pepita (mercadona alternativa) — brunch autentico"]
-              },
-              cultural_pill: "A Barcellona non chiamarla 'spagnola': è catalana. I locali parlano catalano tra di loro. Un 'Gràcies' (non Gracias) apre molte porte.",
-              weather: { estate: "☀️ 28-32°C", inverno: "🌤️ 10-14°C", primavera: "⛅ 18-23°C", autunno: "🍂 16-21°C" },
-              weather_tags: ["hot_summer", "mild_winter", "warm_spring", "warm_autumn"],
-              affiliates_amazon: [
-                { item: "Foulard leggero UPF50", why: "Sagrada Família e Gaudí richiedono spalle coperte: portalo sempre", asin: "B07SCARF99" },
-                { item: "Borsa antifurto crossbody", why: "Las Ramblas: zona a rischio borseggio, documentata", asin: "B08ANTITHEFT" }
-              ],
-              affiliates_booking: [
-                { name: "Hotel Gràcia / Eixample", why: "Fuori dal centro turistico, molto più autentico" },
-                { name: "Apartamento Poblenou", why: "Il quartiere più cool del momento, vicino alla spiaggia" }
-              ]
-            },
-            MAD: {
-              name: "Madrid", emoji: "👑",
-              bg: "linear-gradient(135deg,#8B0000,#C0392B)",
-              hidden_gems: [
-                { name: "Lavapiés Tabacalera", desc: "Centro culturale squat auto-gestito in un'ex fabbrica di tabacco. Concerti gratis, arte anarchica, Madrid alternativa." },
-                { name: "Rastro del Domingo", desc: "Il mercato delle pulci più grande d'Europa, solo domenica mattina. Arrivi entro le 9 o trovi solo turisti con selfie stick." },
-                { name: "El Retiro all'Alba", desc: "Il parco apre alle 6. Corri, medita o semplicemente siediti: hai 350 ettari solo per te." }
-              ],
-              food: {
-                dishes: ["Bocadillo de calamares", "Cocido madrileño", "Tortilla española", "Churros con chocolate"],
-                spots: ["Mercado de San Miguel — ma solo per i pintxos del mattino", "Casa Julio — tortilla de patatas, ordinane solo quella"]
-              },
-              cultural_pill: "Madrid cena alle 22:00 e fa vita alle 3:00 di notte. Non cercare di adattarti: abbraccia il ritmo. La notte è la vera Madrid.",
-              weather: { estate: "☀️ 34-40°C", inverno: "❄️ 4-8°C (a volte neve)", primavera: "⛅ 17-22°C", autunno: "🍂 14-19°C" },
-              weather_tags: ["extreme_heat_summer", "cold_winter", "mild_spring", "mild_autumn"],
-              affiliates_amazon: [
-                { item: "Protezione solare SPF50+", why: "Estate madrilena: 40°C con sole diretto. Non scherzare", asin: "B09SPF5050" },
-                { item: "Borraccia termica 750ml", why: "L'acqua in bottiglia in estate a Madrid è una spesa continua", asin: "B08THERMOS7" }
-              ],
-              affiliates_booking: [
-                { name: "Hostal zona Malasaña", why: "Il quartiere alternativo, vita notturna autentica" },
-                { name: "Hotel Lavapiés", why: "Multiculturale, economico, vero Madrid" }
-              ]
-            },
-            SVQ: {
-              name: "Siviglia", emoji: "💃",
-              bg: "linear-gradient(135deg,#8B4513,#D2691E)",
-              hidden_gems: [
-                { name: "Triana alle 7 di mattina", desc: "Il quartiere del flamenco autentico. La mattina presto le tortillerías aprono con churros appena fritti. Nessun turista sveglio." },
-                { name: "Metropol Parasol (Las Setas)", desc: "La struttura lignea più grande al mondo. Sul tetto al tramonto: 2€ di ingresso, vista impareggiabile." },
-                { name: "Bodega El Tamboril", desc: "Bodega storica, Barrio Santa Cruz. Il vino si versa direttamente dalla botte. Tapas gratis con ogni consumazione." }
-              ],
-              food: {
-                dishes: ["Gazpacho autentico (non in brick)", "Espinacas con garbanzos", "Montaditos de pringá", "Pescaíto frito"],
-                spots: ["Bar El Comercio — tapas gratis, frequentato da operai e anziani", "La Azotea — cucina moderna sivigliana, prenota"]
-              },
-              cultural_pill: "A Siviglia si vive in strada. Le 5 del pomeriggio sono il momento della 'sobremesa': conversazione post-pranzo che dura ore. Non avere fretta.",
-              weather: { estate: "🔥 38-44°C", inverno: "🌤️ 12-16°C", primavera: "🌸 20-26°C", autunno: "☀️ 18-24°C" },
-              weather_tags: ["extreme_heat_summer", "warm_winter", "perfect_spring", "warm_autumn"],
-              affiliates_amazon: [
-                { item: "Ventaglio artigianale (abanicos)", why: "Estate in Andalusia: non è folklore, è necessità fisica", asin: "B07FANSPAI" },
-                { item: "Sandali comfort walking", why: "Siviglia si visita a piedi: le pietre del centro rovinano le scarpe", asin: "B09SANDALS" }
-              ],
-              affiliates_booking: [
-                { name: "Pensión Triana", why: "Quartiere flamenco autentico, non Santa Cruz (troppo turistico)" },
-                { name: "Casa Rural Aljarafe", why: "Fuori città, vista sulle olive grove, silenzio assoluto" }
-              ]
-            }
-          }
-        }
-      }
-    },
-    AS: {
-      name: "Asia", emoji: "🌏", countryCount: 49,
-      countries: {
-        JP: {
-          name: "Giappone", emoji: "🇯🇵",
-          cities: {
-            TYO: {
-              name: "Tokyo", emoji: "🏙️",
-              bg: "linear-gradient(135deg,#1a1a2e,#e94560)",
-              hidden_gems: [
-                { name: "Yanaka Ginza", desc: "Il quartiere shitamachi (Edo vecchio) sopravvissuto ai bombardamenti. Carciofieri, gatti randagi, Japan pre-moderno. Zero neon." },
-                { name: "Koenji — Ura-Harajuku", desc: "La Tokyo alternativa: vinili rari, vintage anni '70, bar jazz sotterranei. I giovani creativi vivono qui." },
-                { name: "Shimokitazawa Market", desc: "Mercato vintage ogni fine settimana. Vinili, kimono di seconda mano, caffè indipendenti. Impossibile non trovare qualcosa." }
-              ],
-              food: {
-                dishes: ["Tonkotsu Ramen (Shinjuku Golden Gai)", "Taiyaki (pesce caldo ripieno)", "Gyudon (Yoshinoya alle 3:00)", "Yakitori sotto i binari di Yurakucho"],
-                spots: ["Tsukiji Outer Market — breakfast tuna sashimi alle 7:00", "Standing ramen Ichiran — mangia solo, in silenzio, concentrato"]
-              },
-              cultural_pill: "In Giappone il silenzio è rispetto, non imbarazzo. Non mangiare in movimento, non parlare al telefono in metro. Osserva e imita.",
-              weather: { estate: "🌡️ 32-38°C (umidità 90%)", inverno: "❄️ 3-8°C (secco)", primavera: "🌸 15-22°C (sakura)", autunno: "🍁 16-22°C (momiji)" },
-              weather_tags: ["hot_humid_summer", "cold_dry_winter", "cherry_blossom_spring", "foliage_autumn"],
-              affiliates_amazon: [
-                { item: "Pocket WiFi / SIM Docomo", why: "Il Wi-Fi pubblico in Giappone è limitato. Pocket WiFi è essenziale", asin: "B08WIFIJP1" },
-                { item: "IC Card Suica (precaricata)", why: "Per treni, bus, convenience store, distributori: tutto con tap", asin: "B07SUICA11" }
-              ],
-              affiliates_booking: [
-                { name: "Capsule Hotel Ginza", why: "Esperienza unica giapponese, economica, centrale" },
-                { name: "Ryokan Yanaka", why: "Inn tradizionale nel quartiere storico: futon, yukata, onsen" }
-              ]
-            },
-            KIX: {
-              name: "Osaka", emoji: "🍜",
-              bg: "linear-gradient(135deg,#2d1b69,#11998e)",
-              hidden_gems: [
-                { name: "Shinsekai District", desc: "Il quartiere dimenticato di Osaka: tower billards, kushikatsu da 80yen, anziani che giocano a shogi. Autentico e un po' bizzarro." },
-                { name: "Nakazakicho", desc: "Cafè indie, gallerie micro, vintage shop anni '60. La Osaka bohémienne che i turisti non cercano." },
-                { name: "Tempozan Marketplace alle 8:00", desc: "Prima che apra l'Acquario, il mercato del pesce sul porto è attivissimo. Tuna auction in miniatura, sashimi freschissimo." }
-              ],
-              food: {
-                dishes: ["Takoyaki originale (Dotonbori non vale)", "Kushikatsu Shinsekai", "Okonomiyaki con maionese Kewpie", "Horumon (frattaglie grigliate)"],
-                spots: ["Juhachiban — takoyaki da 8 generazioni, Namba", "Daruma — kushikatsu originale del 1929, Shinsekai"]
-              },
-              cultural_pill: "Osaka vive di 'kuidaore': mangiare fino a rovinarsi. L'orgoglio è nel cibo, non nell'eleganza. I locali adorano chi mangia con entusiasmo.",
-              weather: { estate: "🌡️ 33-37°C", inverno: "❄️ 4-9°C", primavera: "🌸 14-20°C", autunno: "🍁 15-21°C" },
-              weather_tags: ["hot_summer", "cold_winter", "mild_spring", "mild_autumn"],
-              affiliates_amazon: [
-                { item: "Bottiglia takoyaki fridge magnet", why: "Il souvenir più onesto di Osaka", asin: "B07TAKOOSAK" },
-                { item: "Guida Kansai in italiano", why: "Osaka + Kyoto + Nara: ottimizza i tuoi spostamenti in treno", asin: "B09KANSAI22" }
-              ],
-              affiliates_booking: [
-                { name: "Guesthouse Shinsekai", why: "Nel cuore del quartiere autentico, prezzi minimi" },
-                { name: "Business Hotel Namba", why: "Posizione centrale, clean, economico" }
-              ]
-            },
-            UKY: {
-              name: "Kyoto", emoji: "⛩️",
-              bg: "linear-gradient(135deg,#1a4a2e,#a8e063)",
-              hidden_gems: [
-                { name: "Fushimi Inari alle 5:30", desc: "Il sentiero dei 10.000 torii si percorre vuoto solo all'alba. I turisti arrivano alle 9. Porta una torcia e silenzio." },
-                { name: "Nishiki Market dopo le 17:00", desc: "Quando i turisti tornano agli hotel, i fornitori locali tirano fuori i prezzi veri. Assaggi gratis, conversazioni autentiche." },
-                { name: "Arashiyama — Foresta di Bambù alle 6:00", desc: "Alle 6 la foresta è nebbiosa e deserta. Un'esperienza trascendentale. Alle 10 è un corridoio di selfie stick." }
-              ],
-              food: {
-                dishes: ["Kaiseki (menu degustazione a 10 portate)", "Yudofu (tofu bolito in dashi)", "Matcha everything (autentico, non Starbucks)", "Obanzai (cucina casalinga kiotense)"],
-                spots: ["Nishiki Market — mangia camminando ogni tipo di street food kyotoese", "Ippudo Kyoto — ramen con ingredienti locali"]
-              },
-              cultural_pill: "A Kyoto esiste il concetto di 'uraomote': faccia pubblica vs privata. I locali sono riservati ma profondi. Guadagna la loro fiducia gradualmente.",
-              weather: { estate: "☀️ 34-38°C (molto umido)", inverno: "❄️ 2-7°C (possibile neve sui templi)", primavera: "🌸 13-20°C (sakura 2 settimane)", autunno: "🍁 14-22°C (momiji 3 settimane)" },
-              weather_tags: ["hot_humid_summer", "cold_winter_snow", "sakura_spring", "foliage_autumn"],
-              affiliates_amazon: [
-                { item: "Taccuino Muji (A6 blank)", why: "Kyoto ispira: i giapponesi scrivono tutto. Unisciti a loro", asin: "B08MUJI100" },
-                { item: "Ombrello pieghevole ultralight", why: "Le stagioni di pioggia (tsuyu) colpiscono senza preavviso", asin: "B07KASA222" }
-              ],
-              affiliates_booking: [
-                { name: "Ryokan Gion", why: "Notte in ryokan tradizionale nel distretto geisha" },
-                { name: "Machiya (casa townhouse)", why: "Vivere in una casa di legno tradizionale Edo-era" }
-              ]
-            }
-          }
-        }
-      }
-    },
-    AM: {
-      name: "Americhe", emoji: "🌎", countryCount: 35,
-      countries: {
-        US: { name: "USA", emoji: "🇺🇸", cities: {} },
-        MX: { name: "Messico", emoji: "🇲🇽", cities: {} },
-        BR: { name: "Brasile", emoji: "🇧🇷", cities: {} }
-      }
-    },
-    AF: {
-      name: "Africa", emoji: "🌍", countryCount: 54,
-      countries: {
-        MA: { name: "Marocco", emoji: "🇲🇦", cities: {} },
-        ZA: { name: "Sud Africa", emoji: "🇿🇦", cities: {} },
-        TZ: { name: "Tanzania", emoji: "🇹🇿", cities: {} }
-      }
-    },
-    OC: {
-      name: "Oceania", emoji: "🗺️", countryCount: 14,
-      countries: {
-        AU: { name: "Australia", emoji: "🇦🇺", cities: {} },
-        NZ: { name: "Nuova Zelanda", emoji: "🇳🇿", cities: {} }
-      }
+  EU: {
+    name: 'Europa', emoji: '🌍', bg: 'linear-gradient(135deg,#162040,#1E2D55)',
+    countries: {
+      IT: { name: 'Italia',   emoji: '🇮🇹', cities: ['ROM','FLR','VCE'], available: true },
+      ES: { name: 'Spagna',   emoji: '🇪🇸', cities: ['BCN','MAD','SVQ'], available: true },
+      FR: { name: 'Francia',  emoji: '🇫🇷', cities: [],                  available: false },
+      DE: { name: 'Germania', emoji: '🇩🇪', cities: [],                  available: false },
+      PT: { name: 'Portogallo', emoji: '🇵🇹', cities: [],               available: false },
+      GR: { name: 'Grecia',   emoji: '🇬🇷', cities: [],                  available: false },
+    }
+  },
+  AS: {
+    name: 'Asia', emoji: '🌏', bg: 'linear-gradient(135deg,#1a0a30,#2d1a5e)',
+    countries: {
+      JP: { name: 'Giappone', emoji: '🇯🇵', cities: ['TYO','KIX','UKY'], available: true },
+      TH: { name: 'Tailandia', emoji: '🇹🇭', cities: [],                 available: false },
+      VN: { name: 'Vietnam',  emoji: '🇻🇳', cities: [],                  available: false },
+      KR: { name: 'Corea del Sud', emoji: '🇰🇷', cities: [],             available: false },
+    }
+  },
+  AM: {
+    name: 'Americhe', emoji: '🌎', bg: 'linear-gradient(135deg,#0e2a1a,#1a4a2e)',
+    countries: {
+      US: { name: 'USA',     emoji: '🇺🇸', cities: [], available: false },
+      MX: { name: 'Messico', emoji: '🇲🇽', cities: [], available: false },
+      BR: { name: 'Brasile', emoji: '🇧🇷', cities: [], available: false },
+      PE: { name: 'Perù',    emoji: '🇵🇪', cities: [], available: false },
+    }
+  },
+  AF: {
+    name: 'Africa', emoji: '🌍', bg: 'linear-gradient(135deg,#2a1a0e,#4a2a10)',
+    countries: {
+      MA: { name: 'Marocco',    emoji: '🇲🇦', cities: [], available: false },
+      ZA: { name: 'Sud Africa', emoji: '🇿🇦', cities: [], available: false },
+      TZ: { name: 'Tanzania',   emoji: '🇹🇿', cities: [], available: false },
+    }
+  },
+  OC: {
+    name: 'Oceania', emoji: '🗺️', bg: 'linear-gradient(135deg,#0e1a2a,#1a2d4a)',
+    countries: {
+      AU: { name: 'Australia',     emoji: '🇦🇺', cities: [], available: false },
+      NZ: { name: 'Nuova Zelanda', emoji: '🇳🇿', cities: [], available: false },
     }
   }
 };
 
-// ═══════════════════════════════════════════════════════════════════════
-// DRILL-DOWN EXPLORER
-// ═══════════════════════════════════════════════════════════════════════
-let selectedContinent = null;
-let selectedCountry = null;
-let selectedCity = null;
+const CITIES = {
+  ROM: {
+    name: 'Roma', country: 'IT', continent: 'EU', emoji: '🏛️',
+    bg: 'linear-gradient(135deg,#6B1515,#B02020)',
+    weather: { estate:'☀️ 30-35°C', inverno:'🌧️ 8-12°C', primavera:'🌸 18-23°C', autunno:'🍂 15-20°C' },
+    weather_tags: ['hot_summer','mild_spring'],
+    hidden_gems: [
+      { name: 'Quartiere Pigneto', desc: 'Il Brooklyn romano: street art autentica, cocktail bar alternativi frequentati solo dai romani. Zero turisti.', pro: false },
+      { name: 'Centrale Montemartini', desc: 'Museo unico al mondo: sculture greche e romane tra enormi macchinari industriali degli anni \'30.', pro: true },
+      { name: 'Giardino degli Aranci', desc: 'La migliore vista segreta su Roma sull\'Aventino. La mattina è quasi deserta. Tramonto mozzafiato.', pro: true }
+    ],
+    food: {
+      dishes: ['Cacio e Pepe', 'Supplì al Telefono', 'Gricia', 'Maritozzo con la panna'],
+      spots: ['Osteria da Fortunata — pasta fatta a mano davanti a te', 'Forno Campo de\' Fiori — pizza bianca ancora calda alle 8:00']
+    },
+    culture_pill: 'A Roma non si cammina veloci. Il "dolce far niente" è filosofia: siediti, ordina un espresso, osserva il mondo passare.',
+    affiliates: [
+      { type: 'amazon', item: 'Scarpe comode da walking', why: 'I sampietrini romani distruggono le scarpe: scarpe comode sono essenziali', asin: 'B07WALKING' },
+      { type: 'amazon', item: 'Borsa antitaccheggio', why: 'Zona Colosseo e Trevi: zona ad alto rischio borseggio', asin: 'B08ANTITHFT' },
+      { type: 'booking', item: 'Hotel Trastevere', why: 'Zona autentica, tutto a piedi, atmosfera locale' },
+      { type: 'booking', item: 'B&B Pigneto', why: 'Il quartiere alternativo di Roma, 10min dal centro' }
+    ]
+  },
+  FLR: {
+    name: 'Firenze', country: 'IT', continent: 'EU', emoji: '🌸',
+    bg: 'linear-gradient(135deg,#6B3A0E,#B0681A)',
+    weather: { estate:'☀️ 32-37°C', inverno:'🌧️ 6-10°C', primavera:'🌸 16-21°C', autunno:'🍂 14-19°C' },
+    weather_tags: ['very_hot_summer','mild_spring'],
+    hidden_gems: [
+      { name: 'Piazzale Michelangelo all\'Alba', desc: 'Tutti ci vanno al tramonto. Alle 6:00 mattina sei solo tu, la nebbia sul Duomo e un caffè in thermos.', pro: false },
+      { name: 'Oltrarno — Via de\' Bardi', desc: 'La Firenze vera: artigiani del cuoio, botteghe di restauro, nessun ristorante con foto plastificate.', pro: true },
+      { name: 'Museo Bardini', desc: 'Il museo meno visitato di Firenze. 3 euro, zero file, collezione privata stupefacente e intatta.', pro: true }
+    ],
+    food: {
+      dishes: ['Lampredotto (quinto quarto)', 'Ribollita', 'Bistecca Fiorentina', 'Schiacciata all\'uva'],
+      spots: ['Lampredotto da Nerbone — Mercato Centrale, 5€, l\'originale dal 1872', 'Il Latini — trattoria storica, si mangia tutti insieme, menu fisso']
+    },
+    culture_pill: 'I fiorentini sono orgogliosi e diretti. Non fare il turista: entra in una bottega, chiedi, ascolta. Saranno genuinamente ospitali.',
+    affiliates: [
+      { type: 'amazon', item: 'Zaino day-pack 20L', why: 'Musei su musei: mani libere e zaino controllato ai metal detector', asin: 'B08DAYBAG2' },
+      { type: 'amazon', item: 'Guida Firenze offline app', why: 'Wi-Fi nei musei è lento. Scaricala prima di partire', asin: 'B07GUIDA22' },
+      { type: 'booking', item: 'Hotel Oltrarno', why: 'Lontano dalle masse, autenticamente fiorentino' },
+      { type: 'booking', item: 'Appartamento San Niccolò', why: 'Zona residenziale, mercato quotidiano, vero sapore locale' }
+    ]
+  },
+  VCE: {
+    name: 'Venezia', country: 'IT', continent: 'EU', emoji: '🚤',
+    bg: 'linear-gradient(135deg,#0E2A4A,#1A5A7A)',
+    weather: { estate:'☀️ 28-33°C', inverno:'🌫️ 2-7°C', primavera:'⛅ 15-20°C', autunno:'🌧️ 12-18°C' },
+    weather_tags: ['hot_summer','foggy_winter','acqua_alta'],
+    hidden_gems: [
+      { name: 'Fondamenta della Misericordia', desc: 'Bacari veneziani dove i locali bevono l\'ombra alle 18. Zero inglese parlato, cicchetti da 1€.', pro: false },
+      { name: 'Isola di Torcello', desc: '20 minuti di vaporetto. 50 abitanti, un\'osteria, silenzio assoluto. L\'isola più antica della laguna.', pro: true },
+      { name: 'Scuola Grande di San Rocco', desc: 'Il Tintoretto più spettacolare del mondo, meno noto degli Uffizi. Sala superiore da togliere il fiato.', pro: true }
+    ],
+    food: {
+      dishes: ['Sarde in saor', 'Baccalà mantecato', 'Cicchetti misti', 'Risotto al nero di seppia'],
+      spots: ['Trattoria da Jonatan — Cannaregio, solo veneziani, prenota', 'All\'Arco — cicchetti freschi ogni mattina, in piedi al banco']
+    },
+    culture_pill: 'Venezia si vive lentamente e ci si perde apposta. Non usare Google Maps: gira a caso, ogni vicolo nasconde qualcosa di inaspettato.',
+    affiliates: [
+      { type: 'amazon', item: 'Stivali di gomma waterproof', why: 'Acqua alta: ottobre-marzo, arriva senza preavviso. Sono essenziali.', asin: 'B09RUBBER9' },
+      { type: 'amazon', item: 'Trolley senza ruote / borsone', why: 'I ponti veneziani: niente ruote. Solo borse da sollevare.', asin: 'B08BORSA55' },
+      { type: 'booking', item: 'B&B Cannaregio', why: 'Il sestiere più autentico, lontano da San Marco e dai turisti' },
+      { type: 'booking', item: 'Appartamento Dorsoduro', why: 'Quartiere degli studenti, vita reale veneziana' }
+    ]
+  },
+  BCN: {
+    name: 'Barcellona', country: 'ES', continent: 'EU', emoji: '🎨',
+    bg: 'linear-gradient(135deg,#8B1A1A,#D4B800)',
+    weather: { estate:'☀️ 28-32°C', inverno:'🌤️ 10-14°C', primavera:'⛅ 18-23°C', autunno:'🍂 16-21°C' },
+    weather_tags: ['hot_summer','mild_winter','beach_city'],
+    hidden_gems: [
+      { name: 'Bunkers del Carmel', desc: 'La migliore vista panoramica su Barcellona. I locali ci vanno al tramonto con birra e chitarra. Zero turisti informati.', pro: false },
+      { name: 'Mercato de l\'Abaceria (Gràcia)', desc: 'Il vero mercato del quartiere Gràcia. Tapas da 1.5€, prodotti locali, solo spagnoli.', pro: true },
+      { name: 'Barri de Poblenou', desc: 'Il Williamsburg di Barcellona. Street art, co-working, cocktail bar e zero souvenir.', pro: true }
+    ],
+    food: {
+      dishes: ['Pa amb tomàquet', 'Patatas bravas', 'Croquetas de jamón', 'Bombas (Barceloneta)'],
+      spots: ['Bar Calders — Eixample, aperitivo del venerdì solo locali', 'La Cova Fumada — inventori della bomba, senza insegna, cash only']
+    },
+    culture_pill: 'Non chiamarla "spagnola": è catalana. I locali parlano catalano tra di loro. Un "Gràcies" (non Gracias) apre molte porte.',
+    affiliates: [
+      { type: 'amazon', item: 'Foulard leggero UPF50', why: 'Sagrada Família e Gaudì richiedono spalle coperte: portalo sempre', asin: 'B07FOULARD' },
+      { type: 'amazon', item: 'Borsa antifurto crossbody', why: 'Las Ramblas: zona ad alto rischio borseggio documentato', asin: 'B08ANTITHFT' },
+      { type: 'booking', item: 'Hotel Gràcia / Eixample', why: 'Fuori dal centro turistico, molto più autentico e vivibile' },
+      { type: 'booking', item: 'Apartamento Poblenou', why: 'Il quartiere più cool, vicino alla spiaggia locale (non turistica)' }
+    ]
+  },
+  MAD: {
+    name: 'Madrid', country: 'ES', continent: 'EU', emoji: '👑',
+    bg: 'linear-gradient(135deg,#6B0E0E,#A01818)',
+    weather: { estate:'🔥 34-40°C', inverno:'❄️ 4-8°C', primavera:'⛅ 17-22°C', autunno:'🍂 14-19°C' },
+    weather_tags: ['extreme_heat','cold_winter'],
+    hidden_gems: [
+      { name: 'Lavapiés Tabacalera', desc: 'Centro culturale squat auto-gestito in un\'ex fabbrica di tabacco. Concerti gratis, arte anarchica, Madrid autentica.', pro: false },
+      { name: 'Rastro del Domingo', desc: 'Il mercato delle pulci più grande d\'Europa. Arriva entro le 9:00 altrimenti trovi solo turisti con selfie stick.', pro: true },
+      { name: 'El Retiro all\'Alba', desc: 'Il parco apre alle 6:00. 350 ettari completamente vuoti solo per te. Un\'esperienza mediatativa.', pro: true }
+    ],
+    food: {
+      dishes: ['Bocadillo de calamares', 'Cocido madrileño', 'Tortilla española', 'Churros con chocolate'],
+      spots: ['Mercado de San Miguel — solo per i pintxos del mattino', 'Casa Julio — tortilla de patatas, ordinane solo quella']
+    },
+    culture_pill: 'Madrid cena alle 22:00 e fa vita alle 3:00 di notte. Non cercare di adattarti: abbraccia il ritmo. La notte è la vera Madrid.',
+    affiliates: [
+      { type: 'amazon', item: 'Protezione solare SPF50+', why: 'Estate madrilena: 40°C con sole diretto. Non è opzionale.', asin: 'B09SPF5050' },
+      { type: 'amazon', item: 'Borraccia termica 750ml', why: 'L\'acqua in bottiglia in estate a Madrid costa moltissimo', asin: 'B08THERMOS' },
+      { type: 'booking', item: 'Hostal Malasaña', why: 'Il quartiere alternativo, vita notturna autentica' },
+      { type: 'booking', item: 'Hotel Lavapiés', why: 'Multiculturale, economico, vero Madrid operaio' }
+    ]
+  },
+  SVQ: {
+    name: 'Siviglia', country: 'ES', continent: 'EU', emoji: '💃',
+    bg: 'linear-gradient(135deg,#6B3A0E,#A05A10)',
+    weather: { estate:'🔥 38-44°C', inverno:'🌤️ 12-16°C', primavera:'🌸 20-26°C', autunno:'☀️ 18-24°C' },
+    weather_tags: ['extreme_andalusian_heat','perfect_spring'],
+    hidden_gems: [
+      { name: 'Triana alle 7 di mattina', desc: 'Il quartiere del flamenco autentico. La mattina le tortillerías aprono con churros freschi. Nessun turista sveglio.', pro: false },
+      { name: 'Metropol Parasol (Las Setas)', desc: 'La struttura lignea più grande al mondo. Sul tetto al tramonto: 2€ di ingresso, vista imbattibile.', pro: true },
+      { name: 'Bodega El Tamboril', desc: 'Bodega storica nel Barrio Santa Cruz. Il vino si versa dalla botte. Tapas gratis con ogni consumazione.', pro: true }
+    ],
+    food: {
+      dishes: ['Gazpacho autentico', 'Espinacas con garbanzos', 'Montaditos de pringá', 'Pescaíto frito'],
+      spots: ['Bar El Comercio — tapas gratis, frequentato da operai e anziani', 'La Azotea — cucina sivigliana moderna, prenota obbligatorio']
+    },
+    culture_pill: 'A Siviglia si vive in strada. Le 5 del pomeriggio sono il momento della "sobremesa": conversazione post-pranzo che dura ore. Non avere fretta.',
+    affiliates: [
+      { type: 'amazon', item: 'Ventaglio artigianale (abanicos)', why: 'Estate in Andalusia: non è folklore, è necessità fisica reale', asin: 'B07ABANICOS' },
+      { type: 'amazon', item: 'Sandali comfort walking', why: 'Siviglia si visita a piedi: le pietre del centro rovinano le scarpe', asin: 'B09SANDALS' },
+      { type: 'booking', item: 'Pensión Triana', why: 'Quartiere flamenco autentico, non Santa Cruz (troppo turistico)' },
+      { type: 'booking', item: 'Casa Aljarafe', why: 'Fuori città, vista olive grove, silenzio assoluto' }
+    ]
+  },
+  TYO: {
+    name: 'Tokyo', country: 'JP', continent: 'AS', emoji: '🏙️',
+    bg: 'linear-gradient(135deg,#1A1A2E,#C41B3A)',
+    weather: { estate:'🌡️ 32-38°C', inverno:'❄️ 3-8°C', primavera:'🌸 15-22°C (sakura)', autunno:'🍁 16-22°C (momiji)' },
+    weather_tags: ['hot_humid_summer','cold_dry_winter','cherry_blossom'],
+    hidden_gems: [
+      { name: 'Yanaka Ginza', desc: 'Il quartiere shitamachi sopravvissuto ai bombardamenti. Carciofieri, gatti randagi, Japan pre-moderno. Zero neon.', pro: false },
+      { name: 'Koenji — Ura-Harajuku', desc: 'La Tokyo alternativa: vinili rari, vintage anni \'70, bar jazz sotterranei. I giovani creativi vivono qui.', pro: true },
+      { name: 'Shimokitazawa Market', desc: 'Mercato vintage ogni fine settimana. Vinili, kimono di seconda mano, caffè indie. Impossibile non trovare qualcosa.', pro: true }
+    ],
+    food: {
+      dishes: ['Tonkotsu Ramen Shinjuku Golden Gai', 'Taiyaki (pesce caldo ripieno)', 'Gyudon Yoshinoya alle 3:00', 'Yakitori sotto i binari Yurakucho'],
+      spots: ['Tsukiji Outer Market — breakfast tuna sashimi alle 7:00', 'Ichiran — ramen in box singoli, mangi solo, in silenzio']
+    },
+    culture_pill: 'In Giappone il silenzio è rispetto, non imbarazzo. Non mangiare in movimento, non parlare al telefono in metro. Osserva e imita.',
+    affiliates: [
+      { type: 'amazon', item: 'Pocket WiFi Docomo', why: 'Il Wi-Fi pubblico in Giappone è limitatissimo. Pocket WiFi è essenziale', asin: 'B08WIFIJP1' },
+      { type: 'amazon', item: 'IC Card Suica precaricata', why: 'Per treni, bus, convenience store, distributori: tutto con tap', asin: 'B07SUICA11' },
+      { type: 'booking', item: 'Capsule Hotel Ginza', why: 'Esperienza unica giapponese, economica, centralissima' },
+      { type: 'booking', item: 'Ryokan Yanaka', why: 'Inn tradizionale nel quartiere storico: futon, yukata, onsen' }
+    ]
+  },
+  KIX: {
+    name: 'Osaka', country: 'JP', continent: 'AS', emoji: '🍜',
+    bg: 'linear-gradient(135deg,#2D1B69,#11998E)',
+    weather: { estate:'🌡️ 33-37°C', inverno:'❄️ 4-9°C', primavera:'🌸 14-20°C', autunno:'🍁 15-21°C' },
+    weather_tags: ['hot_summer','kuidaore_culture'],
+    hidden_gems: [
+      { name: 'Shinsekai District', desc: 'Il quartiere dimenticato di Osaka: kushibatsu da 80yen, anziani che giocano a shogi. Autentico e bizzarro.', pro: false },
+      { name: 'Nakazakicho', desc: 'Cafè indie, gallerie micro, vintage anni \'60. La Osaka bohémienne che i turisti non cercano mai.', pro: true },
+      { name: 'Tempozan alle 8:00', desc: 'Prima che apra l\'acquario, il mercato del pesce sul porto è attivissimo. Sashimi freschissimo a prezzi locali.', pro: true }
+    ],
+    food: {
+      dishes: ['Takoyaki originale (non Dotonbori)', 'Kushikatsu Shinsekai', 'Okonomiyaki con maionese Kewpie', 'Horumon (frattaglie grigliate)'],
+      spots: ['Juhachiban — takoyaki da 8 generazioni, Namba', 'Daruma — kushikatsu originale del 1929, Shinsekai']
+    },
+    culture_pill: 'Osaka vive di "kuidaore": mangiare fino a rovinarsi. L\'orgoglio è nel cibo, non nell\'eleganza. Mangiate con entusiasmo: i locali lo adorano.',
+    affiliates: [
+      { type: 'amazon', item: 'Guida Kansai Area in italiano', why: 'Osaka + Kyoto + Nara: ottimizza gli spostamenti in treno', asin: 'B09KANSAI2' },
+      { type: 'amazon', item: 'Yen in contanti (preparali)', why: 'Molti locali di Osaka rifiutano ancora le carte. Cash only.', asin: null },
+      { type: 'booking', item: 'Guesthouse Shinsekai', why: 'Nel cuore del quartiere autentico, prezzi minimi' },
+      { type: 'booking', item: 'Business Hotel Namba', why: 'Posizione centrale, clean, economico' }
+    ]
+  },
+  UKY: {
+    name: 'Kyoto', country: 'JP', continent: 'AS', emoji: '⛩️',
+    bg: 'linear-gradient(135deg,#1A4A2E,#2E7A3E)',
+    weather: { estate:'☀️ 34-38°C (molto umido)', inverno:'❄️ 2-7°C (neve sui templi)', primavera:'🌸 13-20°C (sakura 2 sett)', autunno:'🍁 14-22°C (momiji 3 sett)' },
+    weather_tags: ['hot_humid_summer','snow_winter','sakura_spring','foliage_autumn'],
+    hidden_gems: [
+      { name: 'Fushimi Inari alle 5:30', desc: 'Il sentiero dei 10.000 torii si percorre vuoto solo all\'alba. I turisti arrivano alle 9. Porta una torcia.', pro: false },
+      { name: 'Nishiki Market dopo le 17:00', desc: 'Quando i turisti tornano agli hotel, i fornitori tirano fuori i prezzi veri. Assaggi gratis e conversazioni autentiche.', pro: true },
+      { name: 'Arashiyama — Foresta alle 6:00', desc: 'Alle 6:00 la foresta è nebbiosa e deserta. Un\'esperienza trascendentale. Alle 10 è un corridoio di selfie stick.', pro: true }
+    ],
+    food: {
+      dishes: ['Kaiseki (menu degustazione 10 portate)', 'Yudofu (tofu in dashi)', 'Matcha autentico (non Starbucks)', 'Obanzai (cucina casalinga kiotense)'],
+      spots: ['Nishiki Market — street food kyotoese ogni tipo', 'Ippudo Kyoto — ramen con ingredienti locali stagionali']
+    },
+    culture_pill: 'A Kyoto esiste il concetto di "uraomote": faccia pubblica vs privata. I locali sono riservati ma profondi. Guadagna la loro fiducia gradualmente.',
+    affiliates: [
+      { type: 'amazon', item: 'Taccuino Muji A6 blank', why: 'Kyoto ispira: i giapponesi scrivono tutto. Unisciti a loro', asin: 'B08MUJI100' },
+      { type: 'amazon', item: 'Ombrello pieghevole ultralight', why: 'Le stagioni di pioggia (tsuyu) colpiscono senza preavviso', asin: 'B07KASA222' },
+      { type: 'booking', item: 'Ryokan Gion', why: 'Notte in ryokan tradizionale nel distretto geisha' },
+      { type: 'booking', item: 'Machiya (townhouse Edo)', why: 'Vivere in una casa di legno tradizionale dell\'era Edo' }
+    ]
+  }
+};
 
-function renderContinents() {
-  const grid = document.getElementById('continentGrid');
-  grid.innerHTML = Object.entries(DB.continents).map(([code, c]) => `
-    <div class="continent-card ${selectedContinent === code ? 'selected' : ''}" onclick="selectContinent('${code}')">
-      <div class="continent-emoji">${c.emoji}</div>
-      <div class="continent-name">${c.name}</div>
-      <div class="continent-count">${c.countryCount || Object.keys(c.countries).length} paesi</div>
-    </div>
-  `).join('');
+const LEADERBOARDS = {
+  global: [
+    { user:'@yuki_tabi',      dest:'🇯🇵 Kyoto — Fushimi Inari alba', photo:'⛩️', votes:8921, delta:+234, rank:1, pro:true },
+    { user:'@carlos_photo',   dest:'🇪🇸 Barcellona — Bunkers',       photo:'🌆', votes:7645, delta:+87,  rank:2, pro:true },
+    { user:'@hiroshi_photo',  dest:'🇯🇵 Tokyo — Yanaka Ginza',       photo:'🏘️', votes:6543, delta:-12, rank:3, pro:false },
+    { user:'@marco_scatta',   dest:'🇮🇹 Venezia — Cannaregio',       photo:'🏛️', votes:5211, delta:+156, rank:4, pro:true },
+    { user:'@ana_cataluña',   dest:'🇪🇸 Siviglia — Triana',          photo:'💃', votes:4891, delta:+44,  rank:5, pro:false },
+    { user:'@sakura_lens',    dest:'🇯🇵 Osaka — Shinsekai',          photo:'🌃', votes:4102, delta:-31,  rank:6, pro:true },
+    { user:'@lucia_lens',     dest:'🇮🇹 Roma — Pigneto',             photo:'🏟️', votes:3876, delta:+22,  rank:7, pro:false },
+    { user:'@[TU]',           dest:'🇮🇹 Firenze — Oltrarno',         photo:'🌉', votes:312,  delta:+48,  rank:14, pro:false, isMe:true },
+  ],
+  IT: [
+    { user:'@marco_scatta',  dest:'Venezia — Cannaregio alba', photo:'🏛️', votes:1247, delta:+89,  rank:1, pro:true },
+    { user:'@lucia_lens',    dest:'Roma — Pigneto',            photo:'🏟️', votes:1089, delta:+12,  rank:2, pro:false },
+    { user:'@giovanna_ph',   dest:'Firenze — Oltrarno',        photo:'🌉', votes:891,  delta:-8,   rank:3, pro:true },
+    { user:'@andrea_snap',   dest:'Roma — Aventino',           photo:'🌅', votes:744,  delta:+67,  rank:4, pro:false },
+    { user:'@federica_click',dest:'Venezia — Torcello',        photo:'🚤', votes:612,  delta:+3,   rank:5, pro:true },
+    { user:'@[TU]',          dest:'Firenze — Piazzale alba',   photo:'🌇', votes:312,  delta:+48,  rank:8, pro:false, isMe:true },
+  ],
+  ES: [
+    { user:'@carlos_photo',  dest:'Barcellona — Gràcia',       photo:'🎨', votes:2103, delta:+87,  rank:1, pro:true },
+    { user:'@ana_cataluña',  dest:'Siviglia — Triana',         photo:'💃', votes:1876, delta:+44,  rank:2, pro:false },
+    { user:'@pablo_shots',   dest:'Madrid — Lavapiés',         photo:'🎭', votes:1540, delta:-22,  rank:3, pro:true },
+    { user:'@isabella_es',   dest:'Barcellona — Bunkers',      photo:'🌆', votes:1201, delta:+101, rank:4, pro:false },
+    { user:'@rafaela_foto',  dest:'Siviglia — Las Setas',      photo:'🏗️', votes:987,  delta:+55,  rank:5, pro:true },
+    { user:'@[TU]',          dest:'Barcellona — Poblenou',     photo:'🎨', votes:312,  delta:+48,  rank:11, pro:false, isMe:true },
+  ],
+  JP: [
+    { user:'@yuki_tabi',     dest:'Kyoto — Fushimi (alba)',    photo:'⛩️', votes:3421, delta:+234, rank:1, pro:true },
+    { user:'@hiroshi_photo', dest:'Tokyo — Yanaka',            photo:'🏘️', votes:2987, delta:-12,  rank:2, pro:false },
+    { user:'@sakura_lens',   dest:'Osaka — Shinsekai',         photo:'🌃', votes:2654, delta:+78,  rank:3, pro:true },
+    { user:'@kenji_snap',    dest:'Kyoto — Bamboo alba',       photo:'🎋', votes:2103, delta:+34,  rank:4, pro:false },
+    { user:'@mika_frame',    dest:'Tokyo — Koenji',            photo:'🎵', votes:1876, delta:+89,  rank:5, pro:true },
+    { user:'@[TU]',          dest:'Tokyo — Yanaka market',     photo:'🏘️', votes:312,  delta:+48,  rank:17, pro:false, isMe:true },
+  ]
+};
+
+const SWIPE_PHOTOS = [
+  { user:'@yuki_tabi',     dest:'Kyoto — Fushimi Inari',  photo:'⛩️', bg:'linear-gradient(135deg,#1A4A2E,#2E7A3E)', votes:8921, pro:true  },
+  { user:'@marco_scatta',  dest:'Venezia — Cannaregio',   photo:'🚤', bg:'linear-gradient(135deg,#0E2A4A,#1A5A7A)', votes:5211, pro:false },
+  { user:'@carlos_photo',  dest:'Barcellona — Bunkers',   photo:'🌆', bg:'linear-gradient(135deg,#8B1A1A,#D4B800)', votes:7645, pro:true  },
+  { user:'@lucia_lens',    dest:'Roma — Pigneto',         photo:'🏙️', bg:'linear-gradient(135deg,#6B1515,#B02020)', votes:3876, pro:false },
+  { user:'@ana_cataluña',  dest:'Siviglia — Triana',      photo:'💃', bg:'linear-gradient(135deg,#6B3A0E,#A05A10)', votes:4891, pro:false },
+  { user:'@sakura_lens',   dest:'Osaka — Shinsekai',      photo:'🌃', bg:'linear-gradient(135deg,#2D1B69,#11998E)', votes:4102, pro:true  },
+  { user:'@hiroshi_photo', dest:'Tokyo — Yanaka Ginza',   photo:'🏘️', bg:'linear-gradient(135deg,#1A1A2E,#C41B3A)', votes:6543, pro:false },
+  { user:'@giovanna_ph',   dest:'Firenze — Oltrarno',     photo:'🌉', bg:'linear-gradient(135deg,#6B3A0E,#B0681A)', votes:891,  pro:true  },
+];
+
+/* ════════════════════════════════════════════════════════════════════
+   PAGE NAVIGATION
+════════════════════════════════════════════════════════════════════ */
+function showPage(id, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.querySelectorAll('.nav-tab').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
 }
 
-function selectContinent(code) {
-  selectedContinent = code;
-  selectedCountry = null;
-  selectedCity = null;
-  renderContinents();
-  renderCountries(code);
-  goToLevel('country');
-  document.getElementById('step-continent').className = 'drill-step done';
-  document.getElementById('step-country').className = 'drill-step active';
-  document.getElementById('step-city').className = 'drill-step';
-}
-
-function renderCountries(continentCode) {
-  const countries = DB.continents[continentCode].countries;
-  const grid = document.getElementById('countryGrid');
-  grid.innerHTML = Object.entries(countries).map(([code, c]) => {
-    const cityCount = Object.keys(c.cities || {}).length;
-    const hasData = cityCount > 0;
+/* ════════════════════════════════════════════════════════════════════
+   BREADCRUMB ENGINE
+════════════════════════════════════════════════════════════════════ */
+function renderBreadcrumb() {
+  const bc = document.getElementById('breadcrumb');
+  bc.innerHTML = bcState.map((item, i) => {
+    const isLast = i === bcState.length - 1;
+    const sep = i < bcState.length - 1 ? '<div class="bc-sep">›</div>' : '';
     return `
-      <div class="country-card ${!hasData ? 'opacity-50' : ''}" onclick="${hasData ? `selectCountry('${code}')` : `showToast('🚧 ${c.name} — Contenuti in arrivo!')`}" style="${!hasData ? 'opacity:0.4' : ''}">
-        <div class="country-flag">${c.emoji}</div>
-        <div class="country-name">${c.name}</div>
-        <div class="country-cities">${hasData ? cityCount + ' città disponibili' : '🔜 Prossimamente'}</div>
+      <div class="bc-item ${isLast ? 'current' : 'clickable'}" onclick="${!isLast ? `bcNavTo(${i})` : ''}">
+        ${item.emoji ? `<span class="bc-emoji">${item.emoji}</span>` : ''}
+        ${item.label}
       </div>
+      ${sep}
     `;
   }).join('');
 }
 
-function selectCountry(code) {
-  selectedCountry = code;
-  selectedCity = null;
-  renderCities(selectedContinent, code);
-  goToLevel('city');
-  document.getElementById('step-country').className = 'drill-step done';
-  document.getElementById('step-city').className = 'drill-step active';
+function bcNavTo(idx) {
+  const target = bcState[idx];
+  bcState = bcState.slice(0, idx + 1);
+  renderBreadcrumb();
+  // Show appropriate level
+  if (target.level === 'continents') showContinents();
+  else if (target.level === 'countries') showCountries(target.id);
+  else if (target.level === 'cities') showCities(target.id);
 }
 
-function renderCities(continentCode, countryCode) {
-  const cities = DB.continents[continentCode].countries[countryCode].cities;
-  const grid = document.getElementById('cityGrid');
-  const countryName = DB.continents[continentCode].countries[countryCode].name;
-  grid.innerHTML = Object.entries(cities).map(([code, city]) => `
-    <div class="city-card ${selectedCity === code ? 'selected' : ''}" onclick="selectCity('${code}')">
-      <div class="city-thumb" style="background:${city.bg}">
-        <span style="position:relative;z-index:1;font-size:52px">${city.emoji}</span>
+/* ════════════════════════════════════════════════════════════════════
+   EXPLORER LEVELS
+════════════════════════════════════════════════════════════════════ */
+function showContinents() {
+  setLevel('continents');
+  const grid = document.getElementById('level-continents');
+  grid.innerHTML = `<div class="continent-grid">
+    ${Object.entries(DB).map(([code, cont]) => `
+      <div class="cont-card" onclick="drillToCountries('${code}')">
+        <span class="cont-emoji">${cont.emoji}</span>
+        <div class="cont-name">${cont.name}</div>
+        <div class="cont-meta">${Object.keys(cont.countries).length} paesi</div>
       </div>
-      <div class="city-body">
-        <div class="city-name">${city.name}</div>
-        <div class="city-tags">
-          ${city.weather_tags.slice(0,3).map(t => `<div class="city-tag">${t.replace(/_/g,' ')}</div>`).join('')}
-        </div>
-      </div>
-    </div>
-  `).join('');
+    `).join('')}
+  </div>`;
 }
 
-function selectCity(code) {
-  selectedCity = code;
-  const city = DB.continents[selectedContinent].countries[selectedCountry].cities[code];
-  const countryData = DB.continents[selectedContinent].countries[selectedCountry];
-  document.getElementById('step-city').className = 'drill-step done';
-  renderCityDetail(code, city, countryData);
-  document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+function drillToCountries(continentCode) {
+  const cont = DB[continentCode];
+  bcState = [
+    { label: '🏠 Home', level: 'continents', id: null },
+    { label: cont.name, level: 'countries', id: continentCode, emoji: cont.emoji }
+  ];
+  renderBreadcrumb();
+  showCountries(continentCode);
 }
 
-function renderCityDetail(code, city, country) {
-  const detail = document.getElementById('city-detail');
-  detail.className = 'show';
+function showCountries(continentCode) {
+  setLevel('countries');
+  const cont = DB[continentCode];
+  const grid = document.getElementById('level-countries');
+  grid.innerHTML = `
+    <button class="back-btn" onclick="bcNavTo(0)">← Tutti i continenti</button>
+    <div class="country-grid">
+      ${Object.entries(cont.countries).map(([code, ctry]) => {
+        const hasData = ctry.available;
+        return `
+          <div class="ctry-card ${!hasData ? 'locked' : ''}"
+               onclick="${hasData ? `drillToCities('${continentCode}','${code}')` : `showToast('🔜 ${ctry.name} — Disponibile prossimamente!')`}">
+            <span class="ctry-flag">${ctry.emoji}</span>
+            <div class="ctry-name">${ctry.name}</div>
+            <div class="ctry-cities">${hasData ? ctry.cities.length + ' città' : ''}</div>
+            ${!hasData ? '<div class="ctry-lock">🔜 Presto</div>' : ''}
+          </div>
+        `;
+      }).join('')}
+    </div>
+  `;
+}
 
-  const gemsHTML = city.hidden_gems.map(g => `
-    <div class="gem-item">
-      <div class="gem-dot"></div>
-      <div><div class="gem-name">${g.name}</div><div class="gem-desc">${g.desc}</div></div>
+function drillToCities(continentCode, countryCode) {
+  const cont = DB[continentCode];
+  const ctry = cont.countries[countryCode];
+  bcState = [
+    { label: '🏠 Home',   level: 'continents', id: null },
+    { label: cont.name,   level: 'countries',  id: continentCode, emoji: cont.emoji },
+    { label: ctry.name,   level: 'cities',     id: countryCode,   emoji: ctry.emoji }
+  ];
+  renderBreadcrumb();
+  showCities(countryCode);
+}
+
+function showCities(countryCode) {
+  setLevel('cities');
+  const countryData = Object.values(DB).flatMap(c => Object.entries(c.countries)).find(([k]) => k === countryCode);
+  const ctry = countryData ? countryData[1] : null;
+  const continentCode = Object.keys(DB).find(k => DB[k].countries[countryCode]);
+
+  const grid = document.getElementById('level-cities');
+  grid.innerHTML = `
+    <button class="back-btn" onclick="bcNavTo(1)">← ${ctry ? ctry.name : 'Paesi'}</button>
+    <div class="city-grid">
+      ${(ctry ? ctry.cities : []).map(cityCode => {
+        const city = CITIES[cityCode];
+        return city ? `
+          <div class="city-card" onclick="drillToCity('${cityCode}')">
+            <div class="city-thumb" style="background:${city.bg}">
+              <span style="position:relative;z-index:2;font-size:54px">${city.emoji}</span>
+              <div class="city-thumb-overlay"></div>
+            </div>
+            <div class="city-body">
+              <div class="city-name">${city.name}</div>
+              <div class="city-tags">
+                ${city.weather_tags.slice(0,3).map(t => `<div class="city-tag">${t.replace(/_/g,' ')}</div>`).join('')}
+              </div>
+            </div>
+          </div>
+        ` : '';
+      }).join('')}
+    </div>
+  `;
+  document.getElementById('city-detail-wrap').innerHTML = '';
+  document.getElementById('city-detail-wrap').className = '';
+}
+
+function drillToCity(cityCode) {
+  const city = CITIES[cityCode];
+  const countryCode = city.country;
+  const continentCode = city.continent;
+  const cont = DB[continentCode];
+  const ctry = cont.countries[countryCode];
+
+  bcState = [
+    { label: '🏠 Home',   level: 'continents', id: null },
+    { label: cont.name,   level: 'countries',  id: continentCode, emoji: cont.emoji },
+    { label: ctry.name,   level: 'cities',     id: countryCode,   emoji: ctry.emoji },
+    { label: city.name,   level: 'city',       id: cityCode,      emoji: city.emoji }
+  ];
+  renderBreadcrumb();
+  renderCityDetail(cityCode);
+  setTimeout(() => document.getElementById('city-detail-wrap').scrollIntoView({ behavior: 'smooth', block: 'start' }), 50);
+}
+
+function renderCityDetail(cityCode) {
+  const city = CITIES[cityCode];
+  const wrap = document.getElementById('city-detail-wrap');
+  wrap.className = 'show';
+
+  // Weather badges
+  const weatherHTML = Object.entries(city.weather).map(([s, v]) => `
+    <div class="detail-weather-badge">
+      <div class="detail-weather-season">${s}</div>
+      <div>${v}</div>
     </div>
   `).join('');
 
-  const dishesHTML = city.food.dishes.map(d => `<div class="food-dish">🍽️ ${d}</div>`).join('');
-  const spotsHTML = city.food.spots.map(s => `<div class="food-spot">📍 ${s}</div>`).join('');
-
-  const climateHTML = Object.entries(city.weather).map(([season, info]) => `
-    <div class="climate-badge">
-      <div class="climate-season">${season.toUpperCase()}</div>
-      <div class="climate-temp">${info}</div>
-    </div>
-  `).join('');
-
-  const amazonAff = city.affiliates_amazon.map(a => `
-    <div class="affiliate-card">
-      <div><span class="affiliate-provider amazon">amazon</span></div>
-      <div class="affiliate-item-name">${a.item}</div>
-      <div class="affiliate-why">${a.why}</div>
-      <a class="affiliate-link" href="https://amazon.it/dp/${a.asin}?tag=wanderquest-21" target="_blank" onclick="showToast('🛒 Commissione 3-8% per WanderQuest — stesso prezzo per te!')">
-        🛒 Vedi su Amazon
-      </a>
-    </div>
-  `).join('');
-
-  const bookingAff = city.affiliates_booking.map(b => `
-    <div class="affiliate-card">
-      <div><span class="affiliate-provider booking">booking</span></div>
-      <div class="affiliate-item-name">${b.name}</div>
-      <div class="affiliate-why">${b.why}</div>
-      <a class="affiliate-link" href="https://booking.com/searchresults.html?ss=${encodeURIComponent(city.name)}" target="_blank" onclick="showToast('🏨 Commissione ~4% per WanderQuest sulla prenotazione')">
-        🏨 Cerca su Booking
-      </a>
-    </div>
-  `).join('');
-
-  detail.innerHTML = `
-    <div style="padding:60px 48px;max-width:1200px;margin:0 auto;">
-      <div class="detail-header">
-        <div>
-          <div class="detail-title">
-            <span class="dest-country">${country.emoji} ${country.name}</span>
-            ${city.emoji} ${city.name}
+  // Gems
+  const gemsHTML = city.hidden_gems.map((g, i) => {
+    if (g.pro && !isPro) {
+      return `
+        <div class="gem-lock-overlay" onclick="openProModal('gem')">
+          <div class="gem-item gem-blurred">
+            <div class="gem-name">💎 ${g.name} <span class="gem-pro-badge">PRO</span></div>
+            <div class="gem-desc">${g.desc}</div>
+          </div>
+          <div class="gem-lock-badge">
+            <span>🔐 Gemma ${i+1} · Solo Pro</span>
+            <small>Clicca per sbloccare</small>
           </div>
         </div>
-        <div class="detail-climate">${climateHTML}</div>
-      </div>
-
-      <div class="detail-grid">
-        <div class="detail-card">
-          <div class="detail-card-icon">💎</div>
-          <div class="detail-card-title">Gemme Nascoste</div>
-          ${gemsHTML}
-        </div>
-        <div class="detail-card">
-          <div class="detail-card-icon">🍽️</div>
-          <div class="detail-card-title">Cibo & Ristoranti</div>
-          <div style="margin-bottom:10px">${dishesHTML}</div>
-          ${spotsHTML}
-        </div>
-        <div class="detail-card">
-          <div class="detail-card-icon">🌐</div>
-          <div class="detail-card-title">Pillola Culturale</div>
-          <div class="cultural-pill">${city.cultural_pill}</div>
-          <div style="margin-top:14px;font-size:11px;color:var(--cream-dim)">📏 ${city.cultural_pill.length} / 200 caratteri</div>
-        </div>
-      </div>
-
-      <div class="affiliate-section">
-        <div class="affiliate-title">🛒 Amazon <span style="font-size:14px;font-weight:400;color:var(--cream-dim)">— Essenziali consigliati</span></div>
-        <div class="affiliate-grid">${amazonAff}</div>
-        <div class="affiliate-title" style="margin-top:24px">🏨 Booking.com <span style="font-size:14px;font-weight:400;color:var(--cream-dim)">— Dove dormire davvero</span></div>
-        <div class="affiliate-grid">${bookingAff}</div>
-        <div class="affiliate-disclaimer">🔗 Link affiliati: WanderQuest riceve una commissione se acquisti o prenoti tramite questi link. Il prezzo per te rimane identico. Grazie per supportare il progetto.</div>
-      </div>
-
-      <div style="margin-top:30px;text-align:center">
-        <button class="generate-btn" onclick="precompilePacking('${code}');document.getElementById('packing').scrollIntoView({behavior:'smooth'})">
-          🧳 Genera Lista Valigia per ${city.name} →
-        </button>
-      </div>
-    </div>
-  `;
-}
-
-function goToLevel(level) {
-  document.getElementById('level-continent').classList.toggle('hidden', level !== 'continent');
-  document.getElementById('level-country').classList.toggle('hidden', level !== 'country');
-  document.getElementById('level-city').classList.toggle('hidden', level !== 'city');
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// FLIGHT BANNER
-// ═══════════════════════════════════════════════════════════════════════
-const FLIGHTS = {
-  'FR1234': { airline: 'Ryanair', from: 'MXP', to: 'BCN', fromCity: 'Milano', toCity: 'Barcellona', countryCode: 'ES', cityCode: 'BCN' },
-  'IB3456': { airline: 'Iberia', from: 'FCO', to: 'MAD', fromCity: 'Roma', toCity: 'Madrid', countryCode: 'ES', cityCode: 'MAD' },
-  'AZ610':  { airline: 'ITA Airways', from: 'FCO', to: 'TYO', fromCity: 'Roma', toCity: 'Tokyo', countryCode: 'JP', cityCode: 'TYO' },
-  'NH204':  { airline: 'ANA', from: 'MXP', to: 'UKY', fromCity: 'Milano', toCity: 'Kyoto', countryCode: 'JP', cityCode: 'UKY' },
-  'VY6250': { airline: 'Vueling', from: 'MXP', to: 'SVQ', fromCity: 'Milano', toCity: 'Siviglia', countryCode: 'ES', cityCode: 'SVQ' },
-  'AZ300':  { airline: 'ITA Airways', from: 'NAP', to: 'TYO', fromCity: 'Napoli', toCity: 'Tokyo', countryCode: 'JP', cityCode: 'TYO' },
-};
-
-function searchFlight() {
-  const code = document.getElementById('flightInput').value.trim().toUpperCase();
-  const result = document.getElementById('flight-result');
-  if (!code) return;
-  const f = FLIGHTS[code];
-  if (!f) {
-    result.innerHTML = `<div class="flight-card" style="border-color:rgba(232,64,64,0.2);background:rgba(232,64,64,0.06)"><span>⚠️ Volo <b>${code}</b> non trovato nel database — prova FR1234, AZ610, IB3456</span></div>`;
-    return;
-  }
-  result.innerHTML = `
-    <div class="flight-card">
-      <div style="font-size:22px">✈️</div>
-      <div>
-        <div class="flight-airline">${f.airline} · ${code}</div>
-        <div class="flight-route">${f.from} → ${f.to}</div>
-        <div class="flight-city-hint">${f.fromCity} → ${f.toCity} · <span style="cursor:pointer;text-decoration:underline" onclick="quickJumpCity('${f.countryCode}','${f.cityCode}')">Vedi info città →</span></div>
-      </div>
-    </div>
-  `;
-}
-
-function quickJumpCity(countryCode, cityCode) {
-  // Find continent
-  for (const [contCode, cont] of Object.entries(DB.continents)) {
-    if (cont.countries[countryCode]) {
-      selectedContinent = contCode;
-      selectedCountry = countryCode;
-      selectedCity = cityCode;
-      const city = cont.countries[countryCode].cities[cityCode];
-      if (city) {
-        renderCityDetail(cityCode, city, cont.countries[countryCode]);
-        document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth' });
-        showToast(`✈️ Info su ${city.name} caricate dal codice volo!`);
-      }
-      break;
+      `;
     }
-  }
-}
-
-document.getElementById('flightInput').addEventListener('keydown', e => { if(e.key==='Enter') searchFlight(); });
-
-// ═══════════════════════════════════════════════════════════════════════
-// PACKING ALGORITHM
-// ═══════════════════════════════════════════════════════════════════════
-const PACKING_DB = {
-  base: [
-    { item: "Passaporto / Carta d'identità", aff: null },
-    { item: "Assicurazione viaggio", aff: null },
-    { item: "Power bank 20.000mAh", aff: "B07PB20000" },
-    { item: "Adattatore universale", aff: "B08ADAPT99" },
-    { item: "Kit primo soccorso mini", aff: "B07FIRSTAID" },
-    { item: "Farmaci personali", aff: null },
-  ],
-  seasonal: {
-    estate:    [{ item: "Protezione solare SPF50+", aff: "B09SPF5050" }, { item: "Occhiali da sole", aff: "B08SUNGL22" }, { item: "T-shirt traspiranti ×5", aff: null }, { item: "Shorts ×3", aff: null }, { item: "Sandali comfort", aff: "B09SANDALS" }, { item: "Cappello a tesa larga", aff: "B07HATHAT1" }],
-    autunno:   [{ item: "Giacca impermeabile leggera", aff: "B08RAIN77" }, { item: "Felpe/maglioni ×2", aff: null }, { item: "Scarpe chiuse impermeabili", aff: "B09SHOES55" }, { item: "Sciarpa leggera", aff: null }],
-    inverno:   [{ item: "Giacca termica", aff: "B07JACKET9" }, { item: "Guanti e berretto", aff: "B08GLOVES2" }, { item: "Maglioni ×3", aff: null }, { item: "Calze termiche ×3", aff: "B07THERMO3" }, { item: "Stivali waterproof", aff: "B09BOOTS88" }],
-    primavera: [{ item: "Giacca a vento leggera", aff: "B08WIND55" }, { item: "Layering mix (t-shirt + felpa)", aff: null }, { item: "Scarpe comode da walking", aff: "B07SHOES22" }, { item: "Ombrello ultralight", aff: "B08OMBR33" }],
-  },
-  tripType: {
-    vacanza:   [{ item: "Costume da bagno ×2", aff: null }, { item: "Asciugamano microfibra", aff: "B08TOWEL11" }, { item: "Libro / e-reader", aff: "B09KINDLE5" }, { item: "Borsa da spiaggia", aff: null }],
-    cultura:   [{ item: "Guida cartacea / offline", aff: "B09GUIDE55" }, { item: "Taccuino + penna", aff: "B08MUJI100" }, { item: "Foulard per chiese", aff: "B07SCARF99" }, { item: "Scarpe comodissime walking", aff: "B07WALK99" }],
-    avventura: [{ item: "Zaino trekking 40L", aff: "B08TREK40L" }, { item: "Scarpe trekking impermeabili", aff: "B07TREK88" }, { item: "Crema antizanzare DEET", aff: "B09DEET555" }, { item: "Bastoncini trekking", aff: "B08POLES33" }, { item: "Lampada frontale", aff: "B07HEAD22" }],
-    business:  [{ item: "Abito formale / blazer", aff: null }, { item: "Camicie ×3 stirate", aff: null }, { item: "Scarpe formali", aff: null }, { item: "Borsa laptop 15\"", aff: "B08LAPTOP9" }, { item: "Biglietti da visita", aff: null }],
-    luxury:    [{ item: "Abito/vestito da sera", aff: null }, { item: "Profumo da viaggio", aff: "B09PERF55" }, { item: "Accessori formali", aff: null }, { item: "Cosmetici premium", aff: null }],
-  },
-  citySpecific: {
-    TYO: [{ item: "IC Card Suica ricaricabile", aff: "B07SUICA11" }, { item: "Pocket WiFi prenotato", aff: "B08WIFIJP1" }, { item: "Biglietti Shinkansen (prenotare)", aff: null }],
-    UKY: [{ item: "Yukata leggero (da portare)", aff: "B07YUKATA1" }, { item: "Ombrello pieghevole", aff: "B08KASA222" }],
-    KIX: [{ item: "Yen in contanti (molti locali no card)", aff: null }, { item: "Guida Kansai Pass", aff: null }],
-    BCN: [{ item: "Borsa antifurto crossbody", aff: "B08ANTITHEFT" }, { item: "Foulard per luoghi sacri", aff: "B07SCARF99" }],
-    MAD: [{ item: "Borraccia termica 750ml", aff: "B08THERMOS7" }, { item: "Mappe metro offline", aff: null }],
-    SVQ: [{ item: "Ventaglio (abanicos)", aff: "B07FANSPAI" }, { item: "Scarpe comode per sampietrini", aff: null }],
-    VCE: [{ item: "Stivali di gomma (ottobre-marzo)", aff: "B09BOOTS01" }],
-    ROM: [{ item: "Scarpe comode antiscivolo (sampietrini)", aff: "B07XQM3VFF" }],
-    FLR: [{ item: "Zaino day-pack per musei", aff: "B08XYZ1234" }],
-  }
-};
-
-function precompilePacking(cityCode) {
-  document.getElementById('packCity').value = cityCode;
-}
-
-function generatePacking() {
-  const city = document.getElementById('packCity').value;
-  const season = document.getElementById('packSeason').value;
-  const tripType = document.getElementById('packType').value;
-
-  if (!city) { showToast('⚠️ Seleziona una destinazione!'); return; }
-
-  // Find city name
-  let cityName = city;
-  for (const cont of Object.values(DB.continents)) {
-    for (const country of Object.values(cont.countries)) {
-      if (country.cities && country.cities[city]) {
-        cityName = country.cities[city].name;
-        break;
-      }
-    }
-  }
-
-  const essentials = PACKING_DB.base;
-  const seasonal = PACKING_DB.seasonal[season] || [];
-  const typeItems = PACKING_DB.tripType[tripType] || [];
-  const cityItems = PACKING_DB.citySpecific[city] || [];
-
-  const categories = [
-    { title: 'Documenti & Essenziali', icon: '📋', iconClass: 'cat-green', items: essentials },
-    { title: `Abbigliamento — ${season.charAt(0).toUpperCase()+season.slice(1)}`, icon: '👕', iconClass: 'cat-amber', items: seasonal },
-    { title: `Tipo Viaggio — ${tripType.charAt(0).toUpperCase()+tripType.slice(1)}`, icon: '🎯', iconClass: 'cat-teal', items: typeItems },
-    { title: `Specifico per ${cityName}`, icon: '📍', iconClass: 'cat-purple', items: cityItems.length ? cityItems : [{ item: 'Nessun extra specifico per questa città', aff: null }] },
-  ];
-
-  const totalItems = categories.reduce((s,c) => s + c.items.length, 0);
-
-  const catHTML = categories.map(cat => `
-    <div class="pack-cat">
-      <div class="pack-cat-header">
-        <div class="pack-cat-icon ${cat.iconClass}">${cat.icon}</div>
-        <div>
-          <div class="pack-cat-title">${cat.title}</div>
-          <div class="pack-cat-count">${cat.items.length} oggetti</div>
-        </div>
+    return `
+      <div class="gem-item">
+        <div class="gem-name">💎 ${g.name} ${g.pro ? '<span class="gem-pro-badge">PRO ✓</span>' : '<span class="gem-free-badge">FREE</span>'}</div>
+        <div class="gem-desc">${g.desc}</div>
       </div>
-      ${cat.items.map((item, i) => `
-        <div class="pack-item">
-          <div class="pack-check" onclick="toggleCheck(this)" id="check-${cat.title.replace(/\s/g,'')}-${i}"></div>
-          <div class="pack-item-label">${item.item}</div>
-          ${item.aff ? `<a class="pack-aff-btn" href="https://amazon.it/dp/${item.aff}?tag=wanderquest-21" target="_blank" onclick="showToast('🛒 Commissione Amazon per WanderQuest!')">🛒 Amazon</a>` : ''}
+    `;
+  }).join('');
+
+  // Food
+  const dishesHTML = city.food.dishes.map(d => `<div class="dish-chip">🍽️ ${d}</div>`).join('');
+  const spotsHTML  = city.food.spots.map(s  => `<div class="food-spot"><div class="food-spot-dot"></div>${s}</div>`).join('');
+
+  // Affiliates
+  const amazonItems = city.affiliates.filter(a => a.type === 'amazon');
+  const bookingItems = city.affiliates.filter(a => a.type === 'booking');
+
+  const affHTML = `
+    <div style="margin-bottom:12px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--cream-dim)">Amazon · Essenziali consigliati per ${city.name}</div>
+    <div class="aff-grid" style="margin-bottom:16px">
+      ${amazonItems.map(a => a.asin ? `
+        <div class="aff-card">
+          <div class="aff-provider aff-amazon">amazon</div>
+          <div class="aff-item">${a.item}</div>
+          <div class="aff-why">${a.why}</div>
+          <a class="aff-btn" href="https://amazon.it/dp/${a.asin}?tag=wanderquest-21" target="_blank" onclick="showToast('🛒 Commissione 3-8% a WanderQuest, stesso prezzo per te!')">🛒 Vedi su Amazon</a>
+        </div>
+      ` : '').join('')}
+    </div>
+    <div style="margin-bottom:12px;font-size:11px;font-weight:700;letter-spacing:0.06em;text-transform:uppercase;color:var(--cream-dim)">Booking.com · Dove dormire davvero</div>
+    <div class="aff-grid">
+      ${bookingItems.map(b => `
+        <div class="aff-card">
+          <div class="aff-provider aff-booking">booking</div>
+          <div class="aff-item">${b.item}</div>
+          <div class="aff-why">${b.why}</div>
+          <a class="aff-btn" href="https://booking.com/searchresults.html?ss=${encodeURIComponent(city.name)}" target="_blank" onclick="showToast('🏨 ~4% commissione a WanderQuest sulla tua prenotazione!')">🏨 Cerca su Booking</a>
         </div>
       `).join('')}
     </div>
-  `).join('');
-
-  const result = document.getElementById('packing-result');
-  result.innerHTML = `
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px;">
-      <div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700">Lista Valigia: ${cityName}</div>
-        <div style="font-size:13px;color:var(--cream-dim);margin-top:4px">📅 ${season} · 🎯 ${tripType} · ${totalItems} oggetti totali</div>
-      </div>
-      <button onclick="printPacking()" style="background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:10px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🖨️ Stampa / Salva PDF</button>
-    </div>
-    <div class="packing-categories">${catHTML}</div>
-    <div class="affiliate-disclaimer" style="margin-top:16px">🔗 I pulsanti 🛒 Amazon aprono link affiliati: stesso prezzo per te, piccola commissione per WanderQuest. Grazie!</div>
+    <div class="aff-disclaimer">🔗 Link affiliati: WanderQuest riceve una commissione se acquisti/prenoti tramite questi link. Il prezzo per te rimane identico. Grazie per supportare il progetto.</div>
   `;
-  result.className = 'show';
-  result.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+  wrap.innerHTML = `
+    <div style="margin-top:40px">
+      <!-- HERO -->
+      <div class="detail-hero" style="background:${city.bg}">
+        <div class="detail-hero-overlay"></div>
+        <div class="detail-hero-emoji">${city.emoji}</div>
+        <div class="detail-breadcrumb">${DB[city.continent].emoji} ${DB[city.continent].name} › ${DB[city.continent].countries[city.country].emoji} ${DB[city.continent].countries[city.country].name}</div>
+        <div class="detail-title">${city.emoji} ${city.name}</div>
+        <div class="detail-meta-row">${weatherHTML}</div>
+      </div>
+
+      <!-- DETAIL GRID -->
+      <div class="detail-grid">
+        <!-- GEMS -->
+        <div class="det-card">
+          <div class="det-card-head">
+            <div class="det-card-icon ic-gem">💎</div>
+            <div>
+              <div class="det-card-title">Gemme Nascoste</div>
+              <div style="font-size:11px;color:var(--cream-dim)">${isPro ? '3/3 sbloccate · Pro' : '1/3 · Upgrade per le altre'}</div>
+            </div>
+          </div>
+          ${gemsHTML}
+          ${!isPro ? `
+            <button onclick="openProModal('gem')" style="margin-top:14px;width:100%;background:rgba(232,162,40,0.08);border:1px solid rgba(232,162,40,0.2);color:var(--amber);padding:9px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;transition:all 0.2s" onmouseover="this.style.background='rgba(232,162,40,0.15)'" onmouseout="this.style.background='rgba(232,162,40,0.08)'">
+              🔐 Sblocca tutte le gemme — Explorer Plus
+            </button>
+          ` : ''}
+        </div>
+
+        <!-- FOOD -->
+        <div class="det-card">
+          <div class="det-card-head">
+            <div class="det-card-icon ic-food">🍽️</div>
+            <div class="det-card-title">Cibo & Ristoranti</div>
+          </div>
+          <div class="dish-chips">${dishesHTML}</div>
+          ${spotsHTML}
+        </div>
+
+        <!-- CULTURE -->
+        <div class="det-card">
+          <div class="det-card-head">
+            <div class="det-card-icon ic-cult">🌐</div>
+            <div class="det-card-title">Pillola Culturale</div>
+          </div>
+          <div class="culture-pill">${city.culture_pill}</div>
+          <div class="culture-char-count">${city.culture_pill.length} / 200 caratteri</div>
+        </div>
+
+        <!-- AFFILIATES -->
+        <div class="det-card" style="grid-column: 1 / -1">
+          <div class="det-card-head">
+            <div class="det-card-icon ic-aff">🛒</div>
+            <div class="det-card-title">Essenziali & Hotel — Link Affiliati</div>
+          </div>
+          ${affHTML}
+        </div>
+      </div>
+    </div>
+  `;
 }
 
-function toggleCheck(el) {
-  el.classList.toggle('checked');
+function setLevel(active) {
+  ['continents','countries','cities'].forEach(l => {
+    document.getElementById('level-' + l).style.display = l === active ? 'block' : 'none';
+  });
+  if (active !== 'cities') {
+    document.getElementById('city-detail-wrap').innerHTML = '';
+    document.getElementById('city-detail-wrap').className = '';
+  }
 }
 
-function printPacking() {
-  showToast('🖨️ Funzione stampa PDF — disponibile nella versione Pro con layout ottimizzato!');
+/* ════════════════════════════════════════════════════════════════════
+   SWIPE ENGINE
+════════════════════════════════════════════════════════════════════ */
+function buildSwipeCards() {
+  const stack = document.getElementById('swipeStack');
+  // Remove old cards (keep swipe-done)
+  stack.querySelectorAll('.swipe-card').forEach(c => c.remove());
+  document.getElementById('swipeDone').classList.remove('show');
+  document.getElementById('swipeButtons').style.display = 'flex';
+
+  // Build in reverse so first is on top
+  [...SWIPE_PHOTOS].reverse().forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'swipe-card';
+    card.style.transform = `translateY(${(SWIPE_PHOTOS.length - 1 - i) * 6}px) scale(${1 - (SWIPE_PHOTOS.length - 1 - i) * 0.025})`;
+    card.style.zIndex = i + 1;
+    card.dataset.idx = SWIPE_PHOTOS.length - 1 - i;
+    card.innerHTML = `
+      <div class="vote-hint vote-hint-yes">❤️ LIKE</div>
+      <div class="vote-hint vote-hint-no">✕ SKIP</div>
+      <div class="swipe-card-photo" style="background:${p.bg}">
+        <span style="position:relative;z-index:1">${p.photo}</span>
+      </div>
+      <div class="swipe-card-info">
+        <div class="swipe-card-user">
+          <div class="swipe-avatar">${p.photo}</div>
+          <div>
+            <div class="swipe-username">${p.user} ${p.pro ? '<span class="swipe-user-pro">✅ Pro</span>' : ''}</div>
+            <div class="swipe-dest">📍 ${p.dest}</div>
+          </div>
+        </div>
+        <div class="swipe-votes-row">
+          <span class="swipe-current-votes">♥ ${p.votes.toLocaleString('it-IT')} voti</span>
+          <span style="font-size:11px;color:var(--cream-dim)">Conta per la classifica</span>
+        </div>
+      </div>
+    `;
+    // Drag support
+    setupDrag(card);
+    stack.insertBefore(card, document.getElementById('swipeDone'));
+  });
+  swipeIdx = 0;
+  updateSwipeCounter();
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// PREMIUM TABLE
-// ═══════════════════════════════════════════════════════════════════════
-const FEATURES = [
-  { name: 'Destinazioni disponibili', free: '12 paesi', pro: { label: 'Tutti i paesi', highlight: true } },
-  { name: 'Gemme Nascoste per città', free: '1 su 3 visibile', pro: { label: 'Tutte e 3', highlight: true } },
-  { name: 'Lista Valigia automatica', free: true, pro: { label: true } },
-  { name: 'Link affiliati Amazon/Booking', free: '3 link/mese', pro: { label: 'Illimitati', highlight: true } },
-  { name: 'Contest Foto — moltiplicatore voti', free: '×1 (base)', pro: { label: '×2 voti ricevuti', highlight: true } },
-  { name: 'Annunci pubblicitari', free: 'Presenti', pro: { label: 'Zero pubblicità', highlight: true } },
-  { name: 'Notifiche volo in tempo reale', free: '3 notifiche/mese', pro: { label: 'Illimitate', highlight: true } },
-  { name: 'Download PDF itinerari', free: false, pro: { label: true } },
-  { name: 'Classifica foto — Badge Verified', free: false, pro: { label: true } },
-  { name: 'Pillola Culturale completa', free: '50 caratteri', pro: { label: '200 caratteri', highlight: true } },
-  { name: 'Supporto prioritario', free: false, pro: { label: true } },
-  { name: 'Early access nuove destinazioni', free: false, pro: { label: true } },
-];
+function setupDrag(card) {
+  let startX = 0, currentX = 0, isDragging = false;
 
-function renderPremiumTable() {
-  document.getElementById('compareTableBody').innerHTML = FEATURES.map(f => {
-    const freeVal = f.free === true ? '<span class="feature-icon yes">✓</span>' :
-                    f.free === false ? '<span class="feature-icon no">—</span>' :
-                    `<span style="font-size:13px;color:var(--cream-dim)">${f.free}</span>`;
-    const proVal = f.pro.label === true ? '<span class="feature-icon yes">✓</span>' :
-                   f.pro.highlight ? `<span class="pro-highlight">${f.pro.label}</span>` :
-                   `<span style="font-size:13px;color:var(--cream)">${f.pro.label}</span>`;
+  const onStart = (e) => {
+    isDragging = true;
+    startX = (e.touches ? e.touches[0].clientX : e.clientX);
+    card.classList.add('dragging');
+  };
+  const onMove = (e) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    currentX = (e.touches ? e.touches[0].clientX : e.clientX) - startX;
+    const rotate = currentX * 0.08;
+    card.style.transform = `translateX(${currentX}px) rotate(${rotate}deg)`;
+    const pct = Math.abs(currentX) / 100;
+    const yesHint = card.querySelector('.vote-hint-yes');
+    const noHint  = card.querySelector('.vote-hint-no');
+    if (currentX > 0) { yesHint.style.opacity = Math.min(pct, 1); noHint.style.opacity = 0; }
+    else               { noHint.style.opacity  = Math.min(pct, 1); yesHint.style.opacity = 0; }
+    card.classList.toggle('vote-yes', currentX > 60);
+    card.classList.toggle('vote-no',  currentX < -60);
+  };
+  const onEnd = () => {
+    if (!isDragging) return;
+    isDragging = false;
+    card.classList.remove('dragging');
+    if (Math.abs(currentX) > 80) {
+      vote(currentX > 0);
+    } else {
+      card.style.transform = '';
+      card.classList.remove('vote-yes','vote-no');
+    }
+    currentX = 0;
+  };
+  card.addEventListener('mousedown', onStart);
+  card.addEventListener('touchstart', onStart, { passive: true });
+  document.addEventListener('mousemove', onMove);
+  document.addEventListener('touchmove', onMove, { passive: false });
+  document.addEventListener('mouseup', onEnd);
+  document.addEventListener('touchend', onEnd);
+}
+
+function vote(isLike) {
+  const cards = document.querySelectorAll('#swipeStack .swipe-card');
+  if (cards.length === 0) return;
+  const topCard = [...cards].sort((a,b) => parseInt(b.style.zIndex||0) - parseInt(a.style.zIndex||0))[0];
+
+  topCard.classList.add(isLike ? 'fly-right' : 'fly-left');
+  if (isLike) {
+    const pts = isPro ? 4 : 2;
+    swipePoints += pts;
+    document.getElementById('swipePoints').textContent = swipePoints;
+    showToast(`❤️ +${pts} punti${isPro ? ' (Pro ×2)' : ''} — voto conteggiato!`);
+  } else {
+    showToast('✕ Saltato — nessun punto');
+  }
+
+  setTimeout(() => {
+    topCard.remove();
+    swipeIdx++;
+    updateSwipeCounter();
+    updateStackPositions();
+    if (document.querySelectorAll('#swipeStack .swipe-card').length === 0) {
+      document.getElementById('swipeDone').classList.add('show');
+      document.getElementById('swipeButtons').style.display = 'none';
+      setTimeout(() => triggerSuperpassedNotif(), 3000);
+    }
+  }, 450);
+}
+
+function voteSuper() {
+  if (!isPro) { openProModal('super'); return; }
+  const cards = document.querySelectorAll('#swipeStack .swipe-card');
+  if (cards.length === 0) return;
+  swipePoints += 6;
+  document.getElementById('swipePoints').textContent = swipePoints;
+  showToast('⭐ Super-like! +6 punti — vale ×3 in classifica!');
+  vote(true);
+}
+
+function updateStackPositions() {
+  const cards = [...document.querySelectorAll('#swipeStack .swipe-card')];
+  cards.reverse().forEach((c, i) => {
+    c.style.transition = 'transform 0.3s ease';
+    c.style.transform = `translateY(${i * 6}px) scale(${1 - i * 0.025})`;
+    c.style.zIndex = cards.length - i;
+  });
+}
+
+function updateSwipeCounter() {
+  const total = SWIPE_PHOTOS.length;
+  const remaining = document.querySelectorAll('#swipeStack .swipe-card').length;
+  const done = total - remaining;
+  document.getElementById('swipeCounter').textContent = `${done + 1 > total ? total : done + 1} / ${total}`;
+}
+
+function resetSwipe() {
+  swipeIdx = 0;
+  buildSwipeCards();
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   LEADERBOARD
+════════════════════════════════════════════════════════════════════ */
+function renderLeaderboard(filter) {
+  const rows = LEADERBOARDS[filter] || LEADERBOARDS.global;
+  const list = document.getElementById('lbList');
+  list.innerHTML = rows.map(r => {
+    const rankClass = r.rank === 1 ? 'r1' : r.rank === 2 ? 'r2' : r.rank === 3 ? 'r3' : '';
+    const rankEmoji = r.rank === 1 ? '🥇' : r.rank === 2 ? '🥈' : r.rank === 3 ? '🥉' : r.rank;
+    const deltaSign = r.delta >= 0 ? '+' : '';
     return `
-      <tr>
-        <td>${f.name}</td>
-        <td class="plan-free">${freeVal}</td>
-        <td class="plan-pro">${proVal}</td>
-      </tr>
+      <div class="lb-row ${r.isMe ? 'my-row' : ''}">
+        <div class="lb-rank-badge ${rankClass}">${rankEmoji}</div>
+        <div class="lb-photo-thumb">${r.photo}</div>
+        <div class="lb-info">
+          <div class="lb-user">${r.user} ${r.pro ? '<span class="lb-verified">✅ Pro</span>' : ''} ${r.isMe ? '<span style="font-size:9px;background:rgba(24,197,168,0.12);border:1px solid rgba(24,197,168,0.2);color:var(--teal);border-radius:3px;padding:1px 5px;font-weight:700">TU</span>' : ''}</div>
+          <div class="lb-dest">${r.dest}</div>
+        </div>
+        <div class="lb-vote-col">
+          <div class="lb-vote-count">${r.votes.toLocaleString('it-IT')}</div>
+          <div class="lb-delta ${r.delta < 0 ? 'neg' : ''}">${deltaSign}${r.delta} oggi</div>
+        </div>
+      </div>
     `;
   }).join('');
-}
 
-const INCOME_STREAMS = [
-  { val: '€6.99', label: 'per utente Pro/mese — abbonamento ricorrente' },
-  { val: '3-8%', label: 'commissione Amazon su ogni acquisto affiliato' },
-  { val: '4%', label: 'commissione Booking.com per notte prenotata' },
-  { val: '€0.5-2', label: 'CPM pubblicità contestuale (utenti Free)' },
-];
-
-function renderIncomeStreams() {
-  document.getElementById('incomeStreams').innerHTML = INCOME_STREAMS.map(s => `
-    <div class="income-stream">
-      <div class="income-stream-val">${s.val}</div>
-      <div class="income-stream-label">${s.label}</div>
-    </div>
-  `).join('');
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// PHOTO CONTEST LEADERBOARDS
-// ═══════════════════════════════════════════════════════════════════════
-const LEADERBOARD_DATA = {
-  IT: [
-    { user: '@marco_scatta', dest: 'Venezia — Cannaregio', photo: '🏛️', votes: 1247, rank: 1 },
-    { user: '@lucia_lens', dest: 'Roma — Pigneto', photo: '🏟️', votes: 1089, rank: 2 },
-    { user: '@giovanna_ph', dest: 'Firenze — Oltrarno', photo: '🌉', votes: 891, rank: 3 },
-    { user: '@andrea_snap', dest: 'Roma — Aventino', photo: '🌅', votes: 744, rank: 4 },
-    { user: '@federica_click', dest: 'Venezia — Torcello', photo: '🚤', votes: 612, rank: 5 },
-  ],
-  ES: [
-    { user: '@carlos_photo', dest: 'Barcellona — Gràcia', photo: '🎨', votes: 2103, rank: 1 },
-    { user: '@ana_cataluña', dest: 'Siviglia — Triana', photo: '💃', votes: 1876, rank: 2 },
-    { user: '@pablo_shots', dest: 'Madrid — Lavapiés', photo: '🎭', votes: 1540, rank: 3 },
-    { user: '@isabella_es', dest: 'Barcellona — Bunkers', photo: '🌆', votes: 1201, rank: 4 },
-    { user: '@rafaela_foto', dest: 'Siviglia — Setas', photo: '🏗️', votes: 987, rank: 5 },
-  ],
-  JP: [
-    { user: '@yuki_tabi', dest: 'Kyoto — Fushimi (alba)', photo: '⛩️', votes: 3421, rank: 1 },
-    { user: '@hiroshi_photo', dest: 'Tokyo — Yanaka', photo: '🏘️', votes: 2987, rank: 2 },
-    { user: '@sakura_lens', dest: 'Osaka — Shinsekai', photo: '🌃', votes: 2654, rank: 3 },
-    { user: '@kenji_snap', dest: 'Kyoto — Bamboo alba', photo: '🎋', votes: 2103, rank: 4 },
-    { user: '@mika_frame', dest: 'Tokyo — Koenji', photo: '🎵', votes: 1876, rank: 5 },
-  ],
-};
-
-const GLOBAL_LB = [
-  { user: '@yuki_tabi', dest: '🇯🇵 Kyoto — Fushimi Inari', photo: '⛩️', votes: 8921, rank: 1 },
-  { user: '@carlos_photo', dest: '🇪🇸 Barcellona — Bunkers del Carmel', photo: '🌆', votes: 7645, rank: 2 },
-  { user: '@hiroshi_photo', dest: '🇯🇵 Tokyo — Yanaka Ginza', photo: '🏘️', votes: 6543, rank: 3 },
-  { user: '@marco_scatta', dest: '🇮🇹 Venezia — Cannaregio alba', photo: '🏛️', votes: 5211, rank: 4 },
-  { user: '@ana_cataluña', dest: '🇪🇸 Siviglia — Triana mattina', photo: '💃', votes: 4891, rank: 5 },
-  { user: '@sakura_lens', dest: '🇯🇵 Osaka — Shinsekai', photo: '🌃', votes: 4102, rank: 6 },
-  { user: '@lucia_lens', dest: '🇮🇹 Roma — Pigneto', photo: '🏟️', votes: 3876, rank: 7 },
-];
-
-function renderLBRow(row) {
-  const rankClass = row.rank === 1 ? 'gold' : row.rank === 2 ? 'silver' : row.rank === 3 ? 'bronze' : '';
-  return `
-    <div class="lb-row">
-      <div class="lb-rank ${rankClass}">${row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : row.rank}</div>
-      <div class="lb-photo" style="background:rgba(255,255,255,0.05)">${row.photo}</div>
-      <div class="lb-info">
-        <div class="lb-user">${row.user}</div>
-        <div class="lb-dest">${row.dest}</div>
-      </div>
-      <div class="lb-votes">
-        <div class="lb-vote-count">${row.votes.toLocaleString('it-IT')}</div>
-        <div class="lb-vote-label">voti</div>
-      </div>
-    </div>
-  `;
-}
-
-function renderCountryLeaderboard(country) {
-  const rows = LEADERBOARD_DATA[country] || [];
-  document.getElementById('countryLeaderboard').innerHTML = rows.map(renderLBRow).join('');
-}
-
-function renderGlobalLeaderboard() {
-  document.getElementById('globalLeaderboard').innerHTML = GLOBAL_LB.map(renderLBRow).join('');
-}
-
-// ═══════════════════════════════════════════════════════════════════════
-// JSON SCHEMA VIEWER
-// ═══════════════════════════════════════════════════════════════════════
-const SCHEMA_EXAMPLE = {
-  "// WanderQuest Database Schema v2.0": "Struttura gerarchica: Continent > Country > City",
-  "continents": {
-    "EU": {
-      "name": "Europa",
-      "emoji": "🌍",
-      "countryCount": 45,
-      "countries": {
-        "IT": {
-          "name": "Italia",
-          "emoji": "🇮🇹",
-          "cities": {
-            "ROM": {
-              "name": "Roma",
-              "emoji": "🏛️",
-              "hidden_gems": [
-                { "name": "Quartiere Pigneto", "desc": "Il Brooklyn romano..." },
-                { "name": "Centrale Montemartini", "desc": "Sculture tra macchinari industriali..." },
-                { "name": "Giardino degli Aranci", "desc": "Vista segreta su Roma..." }
-              ],
-              "food": {
-                "dishes": ["Cacio e Pepe", "Supplì al Telefono", "Maritozzo"],
-                "spots": ["Osteria da Fortunata", "Forno Campo de' Fiori"]
-              },
-              "cultural_pill": "A Roma non si cammina veloci. Il dolce far niente è filosofia.",
-              "weather": { "estate": "☀️ 30-35°C", "inverno": "🌧️ 8-12°C" },
-              "weather_tags": ["hot_summer", "mild_spring"],
-              "affiliates_amazon": [
-                { "item": "Scarpe comode walking", "asin": "B07XQM3VFF", "why": "Sampietrini ovunque" }
-              ],
-              "affiliates_booking": [
-                { "name": "Hotel Trastevere", "why": "Zona autentica" }
-              ]
-            },
-            "FLR": { "name": "Firenze", "...": "same structure" },
-            "VCE": { "name": "Venezia", "...": "same structure" }
-          }
-        },
-        "ES": {
-          "name": "Spagna",
-          "emoji": "🇪🇸",
-          "cities": {
-            "BCN": { "name": "Barcellona", "...": "same structure" },
-            "MAD": { "name": "Madrid", "...": "same structure" },
-            "SVQ": { "name": "Siviglia", "...": "same structure" }
-          }
-        }
-      }
-    },
-    "AS": {
-      "name": "Asia",
-      "emoji": "🌏",
-      "countries": {
-        "JP": {
-          "name": "Giappone",
-          "emoji": "🇯🇵",
-          "cities": {
-            "TYO": { "name": "Tokyo", "...": "same structure" },
-            "KIX": { "name": "Osaka", "...": "same structure" },
-            "UKY": { "name": "Kyoto", "...": "same structure" }
-          }
-        }
-      }
-    }
+  // My position
+  const myRow = rows.find(r => r.isMe);
+  if (myRow) {
+    document.getElementById('myRankDisp').textContent = '#' + myRow.rank;
+    document.getElementById('myPosInfo').innerHTML = `${myRow.votes.toLocaleString('it-IT')} voti ricevuti<br><span style="color:var(--amber)">+${myRow.delta} oggi</span>`;
   }
+}
+
+function setLbFilter(filter, btn) {
+  lbFilter = filter;
+  document.querySelectorAll('.lb-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderLeaderboard(filter);
+  animateLbRows();
+}
+
+function animateLbRows() {
+  document.querySelectorAll('.lb-row').forEach((row, i) => {
+    row.style.opacity = '0';
+    row.style.transform = 'translateX(-10px)';
+    setTimeout(() => {
+      row.style.transition = 'all 0.25s ease';
+      row.style.opacity = '1';
+      row.style.transform = '';
+    }, i * 40);
+  });
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   COUNTDOWN
+════════════════════════════════════════════════════════════════════ */
+function startCountdown() {
+  function update() {
+    const now = new Date();
+    const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    const diff = endOfMonth - now;
+    const days  = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    const mins  = Math.floor((diff % 3600000) / 60000);
+    const secs  = Math.floor((diff % 60000) / 1000);
+
+    document.getElementById('lbCountdown').innerHTML = `
+      <div class="countdown-unit"><div class="countdown-val">${String(days).padStart(2,'0')}</div><div class="countdown-lbl">giorni</div></div>
+      <div class="countdown-unit"><div class="countdown-val">${String(hours).padStart(2,'0')}</div><div class="countdown-lbl">ore</div></div>
+      <div class="countdown-unit"><div class="countdown-val">${String(mins).padStart(2,'0')}</div><div class="countdown-lbl">min</div></div>
+      <div class="countdown-unit"><div class="countdown-val">${String(secs).padStart(2,'0')}</div><div class="countdown-lbl">sec</div></div>
+    `;
+  }
+  update();
+  countdownInterval = setInterval(update, 1000);
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   PRO MODAL & STATUS
+════════════════════════════════════════════════════════════════════ */
+const MODAL_CONTEXTS = {
+  gem:   'Stai cercando di accedere a una Gemma Nascosta esclusiva. Sblocca tutte e 3 le gemme per ogni città con Explorer Plus.',
+  super: 'Il Super-like vale ×3 voti ed è riservato agli utenti Pro. Scala la classifica più velocemente.',
+  nav:   'Sblocca le gemme nascoste, elimina la pubblicità e moltiplica i tuoi punti contest.',
+  plan:  'Inizia la tua prova gratuita di 7 giorni. Nessun addebito fino alla scadenza.'
 };
 
-function syntaxHighlight(json) {
-  return JSON.stringify(json, null, 2)
-    .replace(/("\/\/ [^"]*":\s*"[^"]*")/g, '<span class="json-comment">$1</span>')
-    .replace(/"([^"]+)":/g, '<span class="json-key">"$1"</span>:')
-    .replace(/: "([^"]*)"/g, ': <span class="json-str">"$1"</span>')
-    .replace(/: (\d+)/g, ': <span class="json-num">$1</span>')
-    .replace(/: (true|false)/g, ': <span class="json-bool">$1</span>')
-    .replace(/: (null)/g, ': <span class="json-null">$1</span>');
+function openProModal(context) {
+  document.getElementById('modalSub').textContent = MODAL_CONTEXTS[context] || MODAL_CONTEXTS.nav;
+  document.getElementById('proModal').classList.add('show');
 }
 
-function copySchema() {
-  navigator.clipboard.writeText(JSON.stringify(SCHEMA_EXAMPLE, null, 2)).then(() => showToast('📋 Schema JSON copiato negli appunti!')).catch(() => showToast('⚠️ Copia manuale: seleziona il testo nel box'));
+function closeProModal(e) {
+  if (!e || e.target === document.getElementById('proModal')) {
+    document.getElementById('proModal').classList.remove('show');
+  }
 }
 
-// ═══════════════════════════════════════════════════════════════════════
-// TOAST
-// ═══════════════════════════════════════════════════════════════════════
+function activatePro() {
+  isPro = true;
+  closeProModal();
+  document.getElementById('navUserBadge').textContent = '⭐ Pro';
+  document.getElementById('navUserBadge').className = 'nav-user-badge pro';
+  showToast('🎉 Benvenuto in Explorer Plus! Tutte le gemme sbloccate.');
+  // Refresh city detail if open
+  const wrap = document.getElementById('city-detail-wrap');
+  if (wrap.className === 'show') {
+    const currentCity = bcState.find(s => s.level === 'city');
+    if (currentCity) renderCityDetail(currentCity.id);
+  }
+}
+
+function toggleProStatus() {
+  if (isPro) {
+    isPro = false;
+    document.getElementById('navUserBadge').textContent = '👤 Free';
+    document.getElementById('navUserBadge').className = 'nav-user-badge';
+    showToast('👤 Tornato al piano Free (demo)');
+    const wrap = document.getElementById('city-detail-wrap');
+    if (wrap.className === 'show') {
+      const currentCity = bcState.find(s => s.level === 'city');
+      if (currentCity) renderCityDetail(currentCity.id);
+    }
+  } else {
+    openProModal('nav');
+  }
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   NOTIFICATIONS
+════════════════════════════════════════════════════════════════════ */
+function showNotif(icon, title, body) {
+  const nb = document.getElementById('notifBanner');
+  document.getElementById('notifIcon').textContent = icon;
+  document.getElementById('notifTitle').textContent = title;
+  document.getElementById('notifBody').textContent = body;
+  nb.classList.add('show');
+  clearTimeout(notifTimeout);
+  notifTimeout = setTimeout(() => nb.classList.remove('show'), 7000);
+}
+
+function closeNotif() {
+  document.getElementById('notifBanner').classList.remove('show');
+}
+
+function triggerSuperpassedNotif() {
+  showNotif('⚠️', 'Sei stato superato!', '@carlos_photo ti ha superato in classifica. Condividi la tua foto per recuperare i voti!');
+}
+
+function triggerShareNotif() {
+  showNotif('📲', 'Link copiato!', 'Condividi "wanderquest.app/mia-foto" — ogni click condiviso conta come +1 voto nella classifica del mese.');
+  showToast('📋 Link foto copiato — condividilo per recuperare voti!');
+}
+
+function triggerShareFlow() {
+  closeNotif();
+  showToast('📲 In una vera app: share sheet nativa con link tracking per voti bonus!');
+}
+
+/* ════════════════════════════════════════════════════════════════════
+   TOAST
+════════════════════════════════════════════════════════════════════ */
 function showToast(msg) {
   const existing = document.querySelector('.toast');
   if (existing) existing.remove();
@@ -1474,22 +1698,28 @@ function showToast(msg) {
   t.className = 'toast';
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(() => { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(()=>t.remove(),300); }, 3500);
+  setTimeout(() => { t.style.opacity = '0'; t.style.transition = 'opacity .3s'; setTimeout(() => t.remove(), 300); }, 3500);
 }
 
-function openUpgrade() {
-  showToast('🚀 Checkout Explorer Plus — €6.99/mese · annulla quando vuoi!');
-}
+/* ════════════════════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════════════════════ */
+showContinents();
+renderBreadcrumb();
+buildSwipeCards();
+renderLeaderboard('global');
+startCountdown();
 
-// ═══════════════════════════════════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════════════════════════════════
-renderContinents();
-renderPremiumTable();
-renderIncomeStreams();
-renderCountryLeaderboard('IT');
-renderGlobalLeaderboard();
-document.getElementById('schemaCode').innerHTML = syntaxHighlight(SCHEMA_EXAMPLE);
+// Simulate live leaderboard updates
+setInterval(() => {
+  const rows = LEADERBOARDS.global;
+  const randomRow = rows[Math.floor(Math.random() * Math.min(5, rows.length))];
+  if (randomRow && !randomRow.isMe) {
+    randomRow.votes += Math.floor(Math.random() * 15) + 1;
+    randomRow.delta = Math.floor(Math.random() * 50) + 5;
+    if (lbFilter === 'global') renderLeaderboard('global');
+  }
+}, 4500);
 </script>
 </body>
 </html>
