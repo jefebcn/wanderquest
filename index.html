@@ -104,7 +104,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 .flight-city-hint { font-size: 11px; color: var(--teal); margin-top: 1px; }
 
 /* ── DRILL-DOWN EXPLORER ── */
-#explorer { background: var(--navy); border-radius: 0; padding: 80px 0; padding-top: calc(80px + 57px); }
+#explorer { background: var(--navy); border-radius: 0; padding: 80px 0; }
 #explorer .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
 .drill-steps { display: flex; align-items: center; gap: 8px; margin-bottom: 40px; flex-wrap: wrap; }
 .drill-step {
@@ -392,6 +392,210 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   section, #packing .inner, #premium .inner, #contest .inner, #explorer .inner { padding-left: 20px; padding-right: 20px; }
   .flight-banner-inner { padding: 14px 20px; }
   .detail-grid { grid-template-columns: 1fr; }
+  #hero { padding: 120px 24px 72px; }
+  .hero-title { letter-spacing: -1.5px; }
+  .mockup-preview { grid-template-columns: repeat(3,1fr); gap: 6px; }
+  .hiw-grid { grid-template-columns: 1fr; }
+  #how-it-works .inner, #social-proof .inner { padding-left: 20px; padding-right: 20px; }
+  .metrics-banner { grid-template-columns: repeat(2,1fr); }
+  .testimonials-grid { grid-template-columns: 1fr; }
+  .footer-top { grid-template-columns: 1fr 1fr; gap: 32px; }
+  #footer { padding: 48px 20px 28px; }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
+}
+
+/* ── HERO SECTION ── */
+#hero {
+  min-height: 100vh;
+  background: var(--hero-grad);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  text-align: center;
+  padding: 140px 48px 100px;
+  position: relative; overflow: hidden;
+}
+#hero::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(232,162,40,0.07) 0%, transparent 70%),
+              radial-gradient(ellipse 40% 40% at 80% 80%, rgba(24,197,168,0.05) 0%, transparent 60%);
+  pointer-events: none;
+}
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: rgba(232,162,40,0.1); border: 1px solid rgba(232,162,40,0.25);
+  color: var(--amber); padding: 5px 16px; border-radius: 100px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase;
+  margin-bottom: 28px; position: relative; z-index: 1;
+}
+.hero-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(36px, 6vw, 72px);
+  font-weight: 900; line-height: 1.0; letter-spacing: -2.5px;
+  color: var(--cream); max-width: 860px; margin: 0 auto 24px;
+  position: relative; z-index: 1;
+}
+.hero-title em { font-style: italic; color: var(--amber); }
+.hero-sub {
+  font-size: clamp(15px, 2vw, 19px); font-weight: 300; line-height: 1.7;
+  color: var(--cream-dim); max-width: 560px; margin: 0 auto 44px;
+  position: relative; z-index: 1;
+}
+.hero-ctas { display: flex; align-items: center; justify-content: center; gap: 14px; flex-wrap: wrap; position: relative; z-index: 1; }
+.hero-cta-primary {
+  background: var(--amber); color: var(--ink);
+  border: none; padding: 16px 32px; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-weight: 800; font-size: 15px;
+  cursor: pointer; transition: all 0.25s;
+  box-shadow: 0 8px 32px rgba(232,162,40,0.35);
+}
+.hero-cta-primary:hover { background: var(--amber-bright); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(232,162,40,0.45); }
+.hero-cta-secondary {
+  background: rgba(255,255,255,0.07); color: var(--cream);
+  border: 1px solid var(--glass-border); padding: 15px 28px; border-radius: 12px;
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 15px;
+  cursor: pointer; transition: all 0.25s; text-decoration: none; display: inline-block;
+}
+.hero-cta-secondary:hover { background: rgba(255,255,255,0.12); border-color: rgba(255,255,255,0.22); transform: translateY(-2px); }
+.hero-mockup {
+  position: relative; z-index: 1;
+  margin-top: 64px; max-width: 680px; width: 100%;
+}
+.mockup-frame {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 20px; padding: 20px;
+  box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,162,40,0.05);
+  backdrop-filter: blur(10px);
+}
+.mockup-bar {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 16px; padding-bottom: 14px;
+  border-bottom: 1px solid var(--glass-border);
+}
+.mockup-dot { width: 10px; height: 10px; border-radius: 50%; }
+.mockup-dot-r { background: #FF5F56; } .mockup-dot-y { background: #FFBD2E; } .mockup-dot-g { background: #27C93F; }
+.mockup-url { flex: 1; background: rgba(255,255,255,0.05); border-radius: 5px; padding: 5px 12px; font-family: 'DM Mono', monospace; font-size: 11px; color: var(--cream-dim); }
+.mockup-preview {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px;
+}
+.mockup-card {
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+  border-radius: 12px; padding: 16px 12px; text-align: center; transition: all 0.2s;
+}
+.mockup-card:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); }
+.mockup-card-emoji { font-size: 28px; margin-bottom: 6px; }
+.mockup-card-label { font-size: 11px; font-weight: 600; color: var(--cream); }
+.mockup-card-sub { font-size: 9px; color: var(--teal); margin-top: 3px; font-weight: 500; }
+
+/* ── HOW IT WORKS ── */
+#how-it-works { padding: 100px 0; background: var(--ink); }
+#how-it-works .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+.hiw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+.hiw-card {
+  background: #0C1122;
+  border: 1px solid var(--glass-border);
+  border-radius: 20px; padding: 36px 28px;
+  position: relative; overflow: hidden;
+  transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.hiw-card:hover { transform: translateY(-5px); border-color: rgba(232,162,40,0.25); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
+.hiw-card::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0; height: 3px;
+  border-radius: 20px 20px 0 0;
+}
+.hiw-card.card-explore::before  { background: linear-gradient(90deg, var(--teal), var(--teal-dark)); }
+.hiw-card.card-organize::before { background: linear-gradient(90deg, var(--amber), var(--amber-dim)); }
+.hiw-card.card-earn::before     { background: linear-gradient(90deg, var(--purple), #6D28D9); }
+.hiw-num {
+  font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 700;
+  letter-spacing: 0.1em; margin-bottom: 20px;
+}
+.hiw-card.card-explore  .hiw-num { color: var(--teal); }
+.hiw-card.card-organize .hiw-num { color: var(--amber); }
+.hiw-card.card-earn     .hiw-num { color: var(--purple); }
+.hiw-icon { font-size: 44px; margin-bottom: 20px; line-height: 1; }
+.hiw-title { font-family: 'Playfair Display', serif; font-size: 24px; font-weight: 700; margin-bottom: 12px; color: var(--cream); }
+.hiw-text { font-size: 14px; color: var(--cream-dim); line-height: 1.75; }
+.hiw-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  margin-top: 20px; padding: 4px 12px; border-radius: 100px;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+}
+.hiw-card.card-explore  .hiw-tag { background: rgba(24,197,168,0.1);  border: 1px solid rgba(24,197,168,0.2);  color: var(--teal); }
+.hiw-card.card-organize .hiw-tag { background: rgba(232,162,40,0.1);  border: 1px solid rgba(232,162,40,0.2);  color: var(--amber); }
+.hiw-card.card-earn     .hiw-tag { background: rgba(139,92,246,0.1);  border: 1px solid rgba(139,92,246,0.2);  color: var(--purple); }
+
+/* ── SOCIAL PROOF ── */
+#social-proof { padding: 100px 0; background: var(--navy); }
+#social-proof .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+.metrics-banner {
+  display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
+  background: var(--glass-border); border: 1px solid var(--glass-border);
+  border-radius: 18px; overflow: hidden; margin-bottom: 64px;
+}
+.metric-item {
+  background: #0C1122;
+  padding: 32px 24px; text-align: center;
+  transition: background 0.2s;
+}
+.metric-item:hover { background: rgba(232,162,40,0.04); }
+.metric-value {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 4vw, 42px); font-weight: 900;
+  color: var(--amber); line-height: 1; margin-bottom: 6px;
+}
+.metric-label { font-size: 12px; color: var(--cream-dim); font-weight: 500; line-height: 1.4; }
+.testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.testimonial-card {
+  background: #0C1122;
+  border: 1px solid var(--glass-border);
+  border-radius: 18px; padding: 28px;
+  display: flex; flex-direction: column; gap: 16px;
+  transition: transform 0.2s, border-color 0.2s;
+}
+.testimonial-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.18); }
+.testimonial-stars { color: var(--amber); font-size: 14px; letter-spacing: 2px; }
+.testimonial-text { font-size: 14px; color: var(--cream); line-height: 1.7; font-style: italic; flex: 1; }
+.testimonial-text::before { content: '"'; font-family: 'Playfair Display', serif; font-size: 40px; color: rgba(232,162,40,0.3); line-height: 0; vertical-align: -16px; margin-right: 4px; }
+.testimonial-author { display: flex; align-items: center; gap: 12px; padding-top: 14px; border-top: 1px solid var(--glass-border); }
+.testimonial-avatar { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
+.testimonial-name { font-size: 13px; font-weight: 700; color: var(--cream); }
+.testimonial-meta { font-size: 11px; color: var(--cream-dim); margin-top: 1px; }
+.testimonial-dest { display: inline-flex; align-items: center; gap: 4px; background: rgba(24,197,168,0.08); border: 1px solid rgba(24,197,168,0.15); color: var(--teal); padding: 2px 9px; border-radius: 4px; font-size: 10px; font-weight: 600; margin-top: 4px; }
+
+/* ── FOOTER ── */
+#footer {
+  background: #04070E;
+  border-top: 1px solid var(--glass-border);
+  padding: 64px 48px 32px;
+}
+.footer-inner { max-width: 1200px; margin: 0 auto; }
+.footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--glass-border); }
+.footer-brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--amber); margin-bottom: 12px; }
+.footer-brand-logo span { color: var(--cream); }
+.footer-brand-desc { font-size: 13px; color: var(--cream-dim); line-height: 1.7; max-width: 280px; margin-bottom: 20px; }
+.footer-socials { display: flex; gap: 10px; }
+.footer-social-btn {
+  width: 36px; height: 36px; border-radius: 8px;
+  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; cursor: pointer; transition: all 0.2s; text-decoration: none;
+  color: var(--cream-dim);
+}
+.footer-social-btn:hover { background: rgba(232,162,40,0.1); border-color: rgba(232,162,40,0.2); color: var(--amber); transform: translateY(-2px); }
+.footer-col-title { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--amber); margin-bottom: 16px; }
+.footer-links { display: flex; flex-direction: column; gap: 10px; }
+.footer-links a { font-size: 13px; color: var(--cream-dim); text-decoration: none; transition: color 0.15s; }
+.footer-links a:hover { color: var(--cream); }
+.footer-bottom { display: flex; align-items: center; justify-content: space-between; padding-top: 28px; flex-wrap: wrap; gap: 12px; }
+.footer-copy { font-size: 11px; color: var(--cream-dim); opacity: 0.6; }
+.footer-badges { display: flex; gap: 8px; flex-wrap: wrap; }
+.footer-badge {
+  display: inline-flex; align-items: center; gap: 5px;
+  background: rgba(255,255,255,0.04); border: 1px solid var(--glass-border);
+  padding: 4px 10px; border-radius: 5px; font-size: 10px; color: var(--cream-dim);
 }
 
 /* ── PREDICTIVE SEARCH ── */
@@ -635,6 +839,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   <div class="nav-logo">Wander<span>Quest</span> <span style="font-size:11px;background:rgba(24,197,168,0.15);border:1px solid rgba(24,197,168,0.2);color:var(--teal);padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;vertical-align:middle;">v2.0</span></div>
   <div class="nav-links">
     <a href="#explorer">🌍 Explorer</a>
+    <a href="#how-it-works">⚙️ Come Funziona</a>
     <a href="#packing">🧳 Valigia</a>
     <a href="#premium">⭐ Premium</a>
     <a href="#contest">📸 Contest</a>
@@ -664,6 +869,70 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
     <button class="nav-cta" onclick="openUpgrade()">Diventa Pro →</button>
   </div>
 </nav>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- HERO — VALUE PROPOSITION -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="hero">
+  <div class="hero-eyebrow">✦ Benvenuto nell'ecosistema del viaggiatore autentico</div>
+  <h1 class="hero-title">
+    Il primo ecosistema per chi<br>
+    <em>odia fare il turista</em>
+  </h1>
+  <p class="hero-sub">
+    Gemme nascoste, valigie generate dall'AI, voli tracciati in tempo reale e una community che premia chi viaggia davvero. Tutto in un posto.
+  </p>
+  <div class="hero-ctas">
+    <button class="hero-cta-primary" onclick="document.getElementById('explorer').scrollIntoView({behavior:'smooth'})">
+      🌍 Inizia a esplorare
+    </button>
+    <a class="hero-cta-secondary" href="#premium">Scopri il Premium →</a>
+  </div>
+
+  <!-- Finto mockup app glassmorphism -->
+  <div class="hero-mockup">
+    <div class="mockup-frame">
+      <div class="mockup-bar">
+        <div class="mockup-dot mockup-dot-r"></div>
+        <div class="mockup-dot mockup-dot-y"></div>
+        <div class="mockup-dot mockup-dot-g"></div>
+        <div class="mockup-url">wanderquest.app — Esplora il Mondo</div>
+      </div>
+      <div class="mockup-preview">
+        <div class="mockup-card">
+          <div class="mockup-card-emoji">🏛️</div>
+          <div class="mockup-card-label">Roma</div>
+          <div class="mockup-card-sub">3 gemme</div>
+        </div>
+        <div class="mockup-card">
+          <div class="mockup-card-emoji">⛩️</div>
+          <div class="mockup-card-label">Kyoto</div>
+          <div class="mockup-card-sub">alba esclusiva</div>
+        </div>
+        <div class="mockup-card">
+          <div class="mockup-card-emoji">🎨</div>
+          <div class="mockup-card-label">Barcellona</div>
+          <div class="mockup-card-sub">zero folla</div>
+        </div>
+        <div class="mockup-card">
+          <div class="mockup-card-emoji">🧳</div>
+          <div class="mockup-card-label">Valigia AI</div>
+          <div class="mockup-card-sub">generata ora</div>
+        </div>
+        <div class="mockup-card">
+          <div class="mockup-card-emoji">✈️</div>
+          <div class="mockup-card-label">Volo FR1234</div>
+          <div class="mockup-card-sub">live tracking</div>
+        </div>
+        <div class="mockup-card">
+          <div class="mockup-card-emoji">🏆</div>
+          <div class="mockup-card-label">Contest</div>
+          <div class="mockup-card-sub">€150 premio</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- SECTION 1 — DRILL-DOWN EXPLORER -->
@@ -739,6 +1008,40 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 </div>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- COME FUNZIONA -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="how-it-works">
+  <div class="inner">
+    <div class="section-label">⚙️ Come Funziona</div>
+    <h2 class="section-title">Tre passi.<br><em style="font-style:italic;color:var(--amber)">Un'esperienza diversa.</em></h2>
+    <p class="section-sub">WanderQuest non è una guida turistica. È un loop che ti porta a esplorare meglio, viaggiare preparato e guadagnare mentre lo fai.</p>
+    <div class="hiw-grid">
+      <div class="hiw-card card-explore">
+        <div class="hiw-num">01 / Esplora</div>
+        <div class="hiw-icon">🗺️</div>
+        <div class="hiw-title">Trova le gemme che le guide non pubblicano</div>
+        <p class="hiw-text">Il nostro database curato svela i posti frequentati solo dai residenti: bar senza insegna, musei vuoti, mercati all'alba. Selezionati da chi ci vive, non da algoritmi SEO.</p>
+        <div class="hiw-tag">🔍 Drill-down Explorer</div>
+      </div>
+      <div class="hiw-card card-organize">
+        <div class="hiw-num">02 / Organizza</div>
+        <div class="hiw-icon">🧳</div>
+        <div class="hiw-title">La valigia perfetta generata in 10 secondi</div>
+        <p class="hiw-text">L'algoritmo combina destinazione, stagione e stile di viaggio per creare una checklist personalizzata — con link diretti ai prodotti Amazon, già filtrati per qualità.</p>
+        <div class="hiw-tag">⚡ Packing Planner AI</div>
+      </div>
+      <div class="hiw-card card-earn">
+        <div class="hiw-num">03 / Guadagna</div>
+        <div class="hiw-icon">📸</div>
+        <div class="hiw-title">Vinci premi viaggiando e condividendo</div>
+        <p class="hiw-text">Ogni mese il contest fotografico premia chi racconta meglio la sua città. Voti swipe, classifica globale, €150 al vincitore. Più esplori, più punti accumuli.</p>
+        <div class="hiw-tag">🏆 Contest &amp; Community</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- SECTION 2 — PACKING PLANNER -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <div id="packing">
@@ -788,6 +1091,77 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
     </div>
 
     <div id="packing-result"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SOCIAL PROOF -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="social-proof">
+  <div class="inner">
+    <div class="section-label">💬 Social Proof</div>
+    <h2 class="section-title">I numeri parlano.<br><em style="font-style:italic;color:var(--amber)">Le persone confermano.</em></h2>
+    <p class="section-sub">WanderQuest è cresciuto grazie a chi ha scelto di viaggiare diversamente. Questi sono i loro risultati.</p>
+
+    <!-- Metrics banner -->
+    <div class="metrics-banner">
+      <div class="metric-item">
+        <div class="metric-value">5.200+</div>
+        <div class="metric-label">Gemme nascoste<br>nel database</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-value">12.400</div>
+        <div class="metric-label">Valigie generate<br>dall'algoritmo</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-value">38</div>
+        <div class="metric-label">Paesi coperti<br>e in crescita</div>
+      </div>
+      <div class="metric-item">
+        <div class="metric-value">€4.800</div>
+        <div class="metric-label">Premi distribuiti<br>ai fotografi</div>
+      </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="testimonials-grid">
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Grazie a WanderQuest ho trovato un bacaro a Venezia dove c'erano solo residenti. Niente turisti, cicchetti a 1€, conversazioni vere. Impossibile trovarlo su Google.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:rgba(24,197,168,0.15)">🧑</div>
+          <div>
+            <div class="testimonial-name">Marco R.</div>
+            <div class="testimonial-meta">Venezia, Ottobre 2024</div>
+            <div class="testimonial-dest">🚤 Venezia — Cannaregio</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Il Packing Planner mi ha salvato. Stavo andando a Kyoto in primavera senza impermeabile. L'algoritmo mi ha suggerito l'ombrello ultraleggero — ha piovuto 4 giorni su 7.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:rgba(232,162,40,0.12)">👩</div>
+          <div>
+            <div class="testimonial-name">Giulia F.</div>
+            <div class="testimonial-meta">Kyoto, Aprile 2024</div>
+            <div class="testimonial-dest">⛩️ Kyoto — Arashiyama</div>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card">
+        <div class="testimonial-stars">★★★★★</div>
+        <p class="testimonial-text">Ho vinto il contest di marzo con la foto di Fushimi Inari alle 5:30. €150 in tasca e il mio profilo Instagram è cresciuto di 800 follower in una settimana. Assurdo.</p>
+        <div class="testimonial-author">
+          <div class="testimonial-avatar" style="background:rgba(139,92,246,0.15)">🧑‍🎨</div>
+          <div>
+            <div class="testimonial-name">Luca B.</div>
+            <div class="testimonial-meta">Tokyo, Febbraio 2025</div>
+            <div class="testimonial-dest">🥇 Vincitore Contest Febbraio</div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -883,6 +1257,63 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 </div>
 
 
+<!-- ═══ FOOTER ═══ -->
+<footer id="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <!-- Brand -->
+      <div>
+        <div class="footer-brand-logo">Wander<span>Quest</span></div>
+        <p class="footer-brand-desc">Il primo ecosistema per viaggiatori che odiano fare i turisti. Gemme nascoste, valigie intelligenti, community autentica.</p>
+        <div class="footer-socials">
+          <a class="footer-social-btn" href="#" aria-label="Instagram">📸</a>
+          <a class="footer-social-btn" href="#" aria-label="TikTok">🎵</a>
+          <a class="footer-social-btn" href="#" aria-label="Twitter/X">✖</a>
+          <a class="footer-social-btn" href="#" aria-label="YouTube">▶️</a>
+        </div>
+      </div>
+      <!-- Prodotto -->
+      <div>
+        <div class="footer-col-title">Prodotto</div>
+        <div class="footer-links">
+          <a href="#explorer">🌍 Explorer</a>
+          <a href="#packing">🧳 Packing Planner</a>
+          <a href="#premium">⭐ Explorer Plus</a>
+          <a href="#contest">📸 Photo Contest</a>
+        </div>
+      </div>
+      <!-- Azienda -->
+      <div>
+        <div class="footer-col-title">Azienda</div>
+        <div class="footer-links">
+          <a href="#" onclick="showToast('📖 Chi siamo — pagina in arrivo!')">Chi siamo</a>
+          <a href="#" onclick="showToast('🤝 Diventa Partner — scrivici!')">Diventa Partner</a>
+          <a href="#" onclick="showToast('✍️ Blog — in arrivo!')">Blog di viaggio</a>
+          <a href="#" onclick="showToast('📧 Press kit disponibile su richiesta')">Press & Media</a>
+        </div>
+      </div>
+      <!-- Legale -->
+      <div>
+        <div class="footer-col-title">Legale & Privacy</div>
+        <div class="footer-links">
+          <a href="#" onclick="showToast('📄 Termini e Condizioni — in redazione')">Termini e Condizioni</a>
+          <a href="#" onclick="showToast('🔒 Privacy Policy (GDPR + Firebase Auth)')">Privacy Policy</a>
+          <a href="#" onclick="showToast('🍪 Gestione Cookie — in arrivo')">Cookie Policy</a>
+          <a href="#" onclick="showToast('⚖️ Note legali affiliazioni Amazon & Booking')">Affiliazioni</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2025 WanderQuest — Tutti i diritti riservati. Costruito con ☕ e tanta nostalgia di viaggio.</div>
+      <div class="footer-badges">
+        <span class="footer-badge">🔒 Firebase Auth</span>
+        <span class="footer-badge">☁️ Firestore</span>
+        <span class="footer-badge">🇪🇺 GDPR Compliant</span>
+      </div>
+    </div>
+  </div>
+</footer>
+
 <!-- ═══ AUTH MODAL ═══ -->
 <div class="modal-overlay hidden" id="authOverlay" onclick="handleOverlayClick(event)">
   <div class="auth-modal">
@@ -943,7 +1374,7 @@ import { getAuth, createUserWithEmailAndPassword,
          signInWithEmailAndPassword, signOut,
          onAuthStateChanged }                               from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 import { getFirestore, collection, getDocs,
-         doc, setDoc }                                      from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+         doc, setDoc, updateDoc, arrayUnion }               from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
 
 const firebaseConfig = {
   apiKey:            "AIzaSyCX-TpXeBbJ2zo4iaxQWlLrmncI0_Bn0_8",
@@ -2060,7 +2491,19 @@ async function registerUser() {
   if (password !== confirm)  { showAuthError('reg', 'Le password non coincidono.'); return; }
   setAuthLoading('reg', true);
   try {
-    await createUserWithEmailAndPassword(firebaseAuth, email, password);
+    // 1. Crea l'account su Firebase Auth
+    const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+    const uid = credential.user.uid;
+
+    // 2. Crea il documento profilo in Firestore: users/{uid}
+    await setDoc(doc(firestoreDb, 'users', uid), {
+      email,
+      plan:       'free',           // 'free' | 'pro'
+      createdAt:  new Date().toISOString(),
+      valigie:    [],               // array di oggetti { nome, città, stagione, items[] }
+      votedMete:  [],               // destinazioni votate tramite "Vota questa meta"
+    });
+
     closeAuthModal();
     showToast('🎉 Account creato! Benvenuto in WanderQuest.');
   } catch (err) {
