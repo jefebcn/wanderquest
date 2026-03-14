@@ -522,10 +522,13 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   #flight-result { min-width: 0; }
 
   /* ── How it works ── */
-  .hiw-grid { grid-template-columns: 1fr; gap: 14px; }
-  .hiw-card { padding: 24px 20px; }
-  .hiw-icon { font-size: 34px; }
-  .hiw-title { font-size: 18px; }
+  #how-it-works { padding: 60px 0; }
+  .hiw-grid { grid-template-columns: 1fr !important; gap: 12px; margin-top: 28px; }
+  .hiw-card { padding: 22px 18px; border-radius: 16px; }
+  .hiw-icon { font-size: 32px; margin-bottom: 14px; }
+  .hiw-title { font-size: 17px; line-height: 1.3; }
+  .hiw-text { font-size: 13px; }
+  .hiw-num { font-size: 10px; margin-bottom: 14px; }
 
   /* ── Packing planner ── */
   .planner-controls { grid-template-columns: 1fr; gap: 12px; }
@@ -534,9 +537,19 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   .packing-save-btn, #packing-result button { width: 100%; justify-content: center; }
 
   /* ── Social proof ── */
-  .metrics-banner { grid-template-columns: repeat(2,1fr); }
-  .metric-value { font-size: 26px; }
-  .testimonials-grid { grid-template-columns: 1fr; gap: 14px; }
+  #social-proof { padding: 60px 0; }
+  .metrics-banner { grid-template-columns: repeat(2,1fr); gap: 0; }
+  .metric-item { padding: 20px 12px; }
+  .metric-value { font-size: 24px; }
+  .metric-label { font-size: 11px; }
+  .testimonials-grid { grid-template-columns: 1fr !important; gap: 12px; }
+  .testimonial-card { padding: 20px 16px; border-radius: 14px; gap: 12px; }
+  .testimonial-text { font-size: 13px; line-height: 1.65; }
+  .testimonial-text::before { font-size: 30px; vertical-align: -12px; }
+  .testimonial-author { gap: 10px; padding-top: 12px; }
+  .testimonial-name { font-size: 12px; }
+  .testimonial-meta { font-size: 10px; }
+  .testimonial-dest { font-size: 9px; padding: 2px 7px; }
 
   /* ── Premium table ── */
   .compare-table thead th { padding: 14px 12px; }
@@ -775,15 +788,16 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 .mockup-card-sub { font-size: 9px; color: var(--teal); margin-top: 3px; font-weight: 500; }
 
 /* ── HOW IT WORKS ── */
-#how-it-works { padding: 100px 0; background: var(--ink); }
-#how-it-works .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
-.hiw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+#how-it-works { padding: 100px 0; background: var(--ink); overflow: hidden; }
+#how-it-works .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; overflow: hidden; }
+.hiw-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; overflow: hidden; }
 .hiw-card {
   background: #0C1122;
   border: 1px solid var(--glass-border);
   border-radius: 20px; padding: 36px 28px;
   position: relative; overflow: hidden;
   transition: transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+  min-width: 0; /* prevent grid blowout */
 }
 .hiw-card:hover { transform: translateY(-5px); border-color: rgba(232,162,40,0.25); box-shadow: 0 20px 60px rgba(0,0,0,0.4); }
 .hiw-card::before {
@@ -814,8 +828,8 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 .hiw-card.card-earn     .hiw-tag { background: rgba(139,92,246,0.1);  border: 1px solid rgba(139,92,246,0.2);  color: var(--purple); }
 
 /* ── SOCIAL PROOF ── */
-#social-proof { padding: 100px 0; background: var(--navy); }
-#social-proof .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; }
+#social-proof { padding: 100px 0; background: var(--navy); overflow: hidden; }
+#social-proof .inner { max-width: 1200px; margin: 0 auto; padding: 0 48px; overflow: hidden; }
 .metrics-banner {
   display: grid; grid-template-columns: repeat(4,1fr); gap: 1px;
   background: var(--glass-border); border: 1px solid var(--glass-border);
@@ -833,13 +847,15 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   color: var(--amber); line-height: 1; margin-bottom: 6px;
 }
 .metric-label { font-size: 12px; color: var(--cream-dim); font-weight: 500; line-height: 1.4; }
-.testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+.testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; overflow: hidden; }
 .testimonial-card {
   background: #0C1122;
   border: 1px solid var(--glass-border);
   border-radius: 18px; padding: 28px;
   display: flex; flex-direction: column; gap: 16px;
   transition: transform 0.2s, border-color 0.2s;
+  min-width: 0; /* prevent grid blowout */
+  word-break: break-word;
 }
 .testimonial-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.18); }
 .testimonial-stars { color: var(--amber); font-size: 14px; letter-spacing: 2px; }
@@ -1312,6 +1328,71 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   .section-label { background: none !important; border: 1px solid #ccc !important; color: #555 !important; }
 }
 
+/* ── BUDGET CALCULATOR ── */
+.budget-strip {
+  background: linear-gradient(135deg, rgba(24,197,168,0.08) 0%, rgba(24,197,168,0.03) 100%);
+  border: 1px solid rgba(24,197,168,0.18);
+  border-radius: 16px; padding: 20px 24px;
+  margin-top: 28px; display: flex; align-items: center;
+  gap: 16px; flex-wrap: wrap;
+}
+.budget-strip-label { font-size: 12px; font-weight: 700; color: var(--teal); letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
+.budget-inputs { display: flex; gap: 8px; flex: 1; flex-wrap: wrap; min-width: 0; }
+.budget-input-wrap { display: flex; flex-direction: column; gap: 4px; min-width: 100px; flex: 1; }
+.budget-input-wrap label { font-size: 9px; font-weight: 700; color: var(--cream-dim); letter-spacing: 0.08em; text-transform: uppercase; }
+.budget-input-wrap select, .budget-input-wrap input {
+  background: rgba(255,255,255,0.06); border: 1px solid var(--glass-border);
+  color: var(--cream); padding: 8px 10px; border-radius: 8px;
+  font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
+  transition: border-color 0.2s; width: 100%;
+}
+.budget-input-wrap select:focus, .budget-input-wrap input:focus { border-color: var(--teal); }
+.budget-result {
+  background: rgba(24,197,168,0.12); border: 1px solid rgba(24,197,168,0.25);
+  border-radius: 10px; padding: 10px 16px; text-align: center;
+  min-width: 120px; flex-shrink: 0;
+}
+.budget-result-val { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; color: var(--teal); }
+.budget-result-lbl { font-size: 10px; color: var(--cream-dim); margin-top: 2px; }
+
+/* ── SHARE BUTTON ── */
+.share-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(139,92,246,0.1); border: 1px solid rgba(139,92,246,0.2);
+  color: var(--purple); padding: 8px 14px; border-radius: 8px;
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  transition: all 0.2s; font-family: 'DM Sans', sans-serif;
+}
+.share-btn:hover { background: rgba(139,92,246,0.18); border-color: rgba(139,92,246,0.35); transform: translateY(-1px); }
+
+/* ── RECENTLY VIEWED ── */
+.recently-viewed {
+  margin-top: 24px; padding-top: 24px;
+  border-top: 1px solid var(--glass-border);
+}
+.recently-viewed-label {
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--cream-dim); margin-bottom: 10px;
+}
+.recently-viewed-chips { display: flex; gap: 8px; flex-wrap: wrap; }
+.rv-chip {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+  border-radius: 100px; padding: 5px 12px;
+  font-size: 12px; font-weight: 500; color: var(--cream-dim);
+  cursor: pointer; transition: all 0.2s;
+}
+.rv-chip:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); color: var(--amber); }
+.rv-chip-emoji { font-size: 14px; }
+
+/* ── BUDGET CALCULATOR MOBILE ── */
+@media(max-width:768px) {
+  .budget-strip { flex-direction: column; align-items: stretch; gap: 12px; padding: 16px; }
+  .budget-inputs { gap: 8px; }
+  .budget-input-wrap { min-width: 0; }
+  .budget-result { width: 100%; }
+}
+
 /* ── UTIL ── */
 .hidden { display: none !important; }
 </style>
@@ -1471,6 +1552,12 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
       <div class="drill-step" id="step-country">2 · Paese</div>
       <div class="drill-arrow">›</div>
       <div class="drill-step" id="step-city">3 · Città</div>
+    </div>
+
+    <!-- Recently Viewed -->
+    <div class="recently-viewed hidden" id="recentlyViewedWrap">
+      <div class="recently-viewed-label">🕐 Viste di recente</div>
+      <div class="recently-viewed-chips" id="recentlyViewedChips"></div>
     </div>
 
     <!-- Level 1: Continents -->
@@ -2599,6 +2686,10 @@ function selectCity(code) {
   const countryData = DB.continents[selectedContinent].countries[selectedCountry];
   document.getElementById('step-city').className = 'drill-step done';
   renderCityDetail(code, city, countryData);
+  // Track recently viewed
+  addToRecentlyViewed(code, city, selectedCountry);
+  // Trigger initial budget calculation after render
+  setTimeout(() => calcBudget(code), 50);
   document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -2695,10 +2786,42 @@ function renderCityDetail(code, city, country) {
         <div class="affiliate-disclaimer">🔗 Link affiliati: WanderQuest riceve una commissione se acquisti o prenoti tramite questi link. Il prezzo per te rimane identico. Grazie per supportare il progetto.</div>
       </div>
 
-      <div style="margin-top:30px;text-align:center">
+      <div style="margin-top:30px;display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap">
         <button class="generate-btn" onclick="precompilePacking('${code}');document.getElementById('packing').scrollIntoView({behavior:'smooth'})">
           🧳 Genera Lista Valigia per ${city.name} →
         </button>
+        <button class="share-btn" onclick="shareCity('${code}','${city.name}','${city.emoji}')">
+          🔗 Condividi
+        </button>
+      </div>
+
+      <!-- Budget Calculator -->
+      <div class="budget-strip" id="budget-${code}">
+        <div class="budget-strip-label">💰 Budget Stimato</div>
+        <div class="budget-inputs">
+          <div class="budget-input-wrap">
+            <label>Giorni</label>
+            <input type="number" id="budget-days-${code}" value="5" min="1" max="60"
+              oninput="calcBudget('${code}')" style="appearance:none;-webkit-appearance:none">
+          </div>
+          <div class="budget-input-wrap">
+            <label>Stile</label>
+            <select id="budget-style-${code}" onchange="calcBudget('${code}')">
+              <option value="budget">🎒 Budget</option>
+              <option value="mid" selected>🏨 Comfort</option>
+              <option value="luxury">✨ Luxury</option>
+            </select>
+          </div>
+          <div class="budget-input-wrap">
+            <label>Persone</label>
+            <input type="number" id="budget-pax-${code}" value="2" min="1" max="10"
+              oninput="calcBudget('${code}')" style="appearance:none;-webkit-appearance:none">
+          </div>
+        </div>
+        <div class="budget-result" id="budget-result-${code}">
+          <div class="budget-result-val">—</div>
+          <div class="budget-result-lbl">totale stimato</div>
+        </div>
       </div>
     </div>
   `;
@@ -3760,6 +3883,117 @@ document.addEventListener('keydown', e => {
 });
 
 // ═══════════════════════════════════════════════════════════════════════
+// BUDGET CALCULATOR
+// ═══════════════════════════════════════════════════════════════════════
+const BUDGET_COSTS = {
+  // [budget, mid, luxury] — costo giornaliero medio per persona (€)
+  ROM: [65,  130, 280], FLR: [60, 120, 250], VCE: [75, 160, 340],
+  BCN: [70,  140, 300], MAD: [60, 120, 260], SVQ: [50, 100, 220],
+  TYO: [80,  160, 350], KIX: [70, 140, 310], UKY: [65, 130, 280],
+  _default: [60, 130, 280],
+};
+
+function calcBudget(cityCode) {
+  const days  = parseInt(document.getElementById(`budget-days-${cityCode}`)?.value)  || 5;
+  const style = document.getElementById(`budget-style-${cityCode}`)?.value || 'mid';
+  const pax   = parseInt(document.getElementById(`budget-pax-${cityCode}`)?.value)   || 2;
+  const costs = BUDGET_COSTS[cityCode] || BUDGET_COSTS._default;
+  const styleIdx = { budget: 0, mid: 1, luxury: 2 }[style] ?? 1;
+  const daily = costs[styleIdx];
+  const total = daily * days * pax;
+  const el = document.getElementById(`budget-result-${cityCode}`);
+  if (!el) return;
+  el.innerHTML = `
+    <div class="budget-result-val">€${total.toLocaleString('it-IT')}</div>
+    <div class="budget-result-lbl">${days}g · ${pax} ${pax === 1 ? 'persona' : 'persone'} · ~€${daily}/g</div>
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SHARE CITY
+// ═══════════════════════════════════════════════════════════════════════
+async function shareCity(code, name, emoji) {
+  const url  = `${location.origin}${location.pathname}?city=${code}`;
+  const text = `${emoji} Scopri ${name} su WanderQuest — gemme nascoste, cibo autentico e niente folla.`;
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: `${emoji} ${name} — WanderQuest`, text, url });
+      return;
+    } catch { /* user cancelled */ }
+  }
+  // Fallback: copy to clipboard
+  try {
+    await navigator.clipboard.writeText(`${text}\n${url}`);
+    showToast(`📋 Link per ${name} copiato negli appunti!`);
+  } catch {
+    showToast(`🔗 ${url}`);
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// RECENTLY VIEWED CITIES
+// ═══════════════════════════════════════════════════════════════════════
+const RV_KEY = 'wq_recently_viewed';
+const RV_MAX = 5;
+
+function getRecentlyViewed() {
+  try { return JSON.parse(localStorage.getItem(RV_KEY) || '[]'); }
+  catch { return []; }
+}
+
+function addToRecentlyViewed(code, city, countryCode) {
+  const entry = {
+    code,
+    cityCode: code,
+    countryCode,
+    continentCode: selectedContinent,
+    name:  city.name,
+    emoji: city.emoji,
+  };
+  let rv = getRecentlyViewed().filter(r => r.code !== code);
+  rv.unshift(entry);
+  rv = rv.slice(0, RV_MAX);
+  try { localStorage.setItem(RV_KEY, JSON.stringify(rv)); } catch {}
+  renderRecentlyViewed();
+}
+
+function renderRecentlyViewed() {
+  const rv   = getRecentlyViewed();
+  const wrap = document.getElementById('recentlyViewedWrap');
+  const container = document.getElementById('recentlyViewedChips');
+  if (!wrap || !container) return;
+  if (rv.length === 0) { wrap.classList.add('hidden'); return; }
+  wrap.classList.remove('hidden');
+  container.innerHTML = rv.map(r => `
+    <div class="rv-chip" onclick="jumpToRecentCity('${r.continentCode}','${r.countryCode}','${r.code}')">
+      <span class="rv-chip-emoji">${r.emoji}</span>
+      <span>${r.name}</span>
+    </div>
+  `).join('');
+}
+
+async function jumpToRecentCity(continentCode, countryCode, cityCode) {
+  selectedContinent = continentCode;
+  selectedCountry   = countryCode;
+  selectedCity      = cityCode;
+  // Update breadcrumbs
+  document.getElementById('step-continent').className = 'drill-step done';
+  document.getElementById('step-country').className   = 'drill-step done';
+  document.getElementById('step-city').className      = 'drill-step done';
+  // Hydrate grids silently for back-navigation
+  renderContinents();
+  await renderCountries(continentCode);
+  await renderCities(continentCode, countryCode);
+  goToLevel('city');
+  const city    = DB.continents[continentCode]?.countries[countryCode]?.cities[cityCode];
+  const country = DB.continents[continentCode]?.countries[countryCode];
+  if (city && country) {
+    renderCityDetail(cityCode, city, country);
+    document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
 // WINDOW EXPORTS — necessari per onclick="" con type="module"
 // ═══════════════════════════════════════════════════════════════════════
 window.openAuthModal        = openAuthModal;
@@ -3804,6 +4038,9 @@ window.handleUpgradeCheckout = handleUpgradeCheckout;
 window.openInfoModal        = openInfoModal;
 window.closeInfoModal       = closeInfoModal;
 window.handleInfoOverlayClick = handleInfoOverlayClick;
+window.calcBudget           = calcBudget;
+window.shareCity            = shareCity;
+window.jumpToRecentCity     = jumpToRecentCity;
 window.showToast            = showToast;
 window.migrateDB            = migrateDB;
 
@@ -3815,6 +4052,7 @@ renderPremiumTable();
 renderIncomeStreams();
 renderCountryLeaderboard('IT');
 renderGlobalLeaderboard();
+renderRecentlyViewed();
 </script>
 </body>
 </html>
