@@ -4135,7 +4135,34 @@ const signOut = (auth) => auth.signOut();
 // CLAUDE HAIKU — Proxy Cloudflare Worker (nessuna API key nel frontend)
 // ═══════════════════════════════════════════════════════════════════════
 const CLAUDE_MODEL    = 'claude-haiku-4-5-20251001';
-const CLAUDE_ENDPOINT = 'https://claude-proxy.conti9708.workers.dev';
+const ANTHROPIC_API   = 'https://api.anthropic.com/v1/messages';
+
+// ── API KEY — caricata da Firestore, mai esposta al client ──
+// Solo l'admin può scriverla (Firestore rules). Tutti gli utenti la leggono.
+let ANTHROPIC_API_KEY = '';
+let _aiKeyLoaded = false;
+let _aiKeyLoading = null; // Promise in corso
+
+async function _loadAIKey() {
+  if (_aiKeyLoaded) return ANTHROPIC_API_KEY;
+  if (_aiKeyLoading) return _aiKeyLoading; // evita doppie richieste
+  _aiKeyLoading = (async () => {
+    try {
+      const snap = await getDoc(doc(firestoreDb, 'config', 'ai'));
+      if (snap.exists && snap.data && snap.data().key) {
+        ANTHROPIC_API_KEY = snap.data().key;
+      }
+    } catch (e) { /* Firestore non disponibile */ }
+    _aiKeyLoaded = true;
+    _aiKeyLoading = null;
+    return ANTHROPIC_API_KEY;
+  })();
+  return _aiKeyLoading;
+}
+
+// UID dell'admin — imposta il tuo UID Firebase qui
+// Lo trovi su Firebase Console → Authentication → Users
+const ADMIN_UID = 'kfkkxTolOBQEgMKZbBa7OjOki2T2';
 // ═══════════════════════════════════════════════════════════════════════
 // DATABASE GERARCHICO COMPLETO
 // ═══════════════════════════════════════════════════════════════════════
@@ -6329,21 +6356,40 @@ async function jumpToRecentCity(continentCode, countryCode, cityCode) {
 // CLAUDE AI — Core helper
 // ═══════════════════════════════════════════════════════════════════════
 async function claudeAsk(systemPrompt, userMessage, maxTokens = 600) {
+  // Carica la chiave da Firestore (una volta sola, poi cached)
+  const key = await _loadAIKey();
+
+  if (!key) {
+    throw new Error('Funzione AI non disponibile al momento. Riprova tra poco.');
+  }
+
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
+  const timeout = setTimeout(() => controller.abort(), 25000);
+
   try {
-    const res = await fetch(CLAUDE_ENDPOINT, {
+    const res = await fetch(ANTHROPIC_API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type':                       'application/json',
+        'x-api-key':                          key,
+        'anthropic-version':                  '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
       signal: controller.signal,
       body: JSON.stringify({
-        model: CLAUDE_MODEL,
+        model:      CLAUDE_MODEL,
         max_tokens: maxTokens,
-        system: systemPrompt,
-        messages: [{ role: 'user', content: userMessage }],
+        system:     systemPrompt,
+        messages:   [{ role: 'user', content: userMessage }],
       }),
     });
     clearTimeout(timeout);
+    if (res.status === 401) {
+      // Chiave scaduta/invalida — reset cache e segnala admin
+      ANTHROPIC_API_KEY = '';
+      _aiKeyLoaded = false;
+      throw new Error('API key non valida — contatta l\'amministratore');
+    }
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
       throw new Error(err?.error?.message || `HTTP ${res.status}`);
@@ -6352,7 +6398,7 @@ async function claudeAsk(systemPrompt, userMessage, maxTokens = 600) {
     return data.content?.[0]?.text || '';
   } catch (e) {
     clearTimeout(timeout);
-    if (e.name === 'AbortError') throw new Error('Timeout — riprova con connessione migliore');
+    if (e.name === 'AbortError') throw new Error('Timeout — connessione troppo lenta');
     throw e;
   }
 }
@@ -6419,20 +6465,11 @@ Rispondi sempre in italiano. Sii conciso (max 3 paragrafi), pratico e specifico 
 Usa occasionalmente emoji per rendere il testo più leggibile. Tono: amichevole ma esperto.`;
 
   try {
-    // Multi-turn: send full history
-    const res = await fetch(CLAUDE_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: CLAUDE_MODEL,
-        max_tokens: 500,
-        system: systemPrompt,
-        messages: chatHistories[cityCode],
-      }),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    const data = await res.json();
-    const answer = data.content?.[0]?.text || '…';
+    // Multi-turn: usa claudeAsk che gestisce API key e headers
+    const history = chatHistories[cityCode];
+    // Prendi l'ultimo messaggio utente
+    const lastMsg = history[history.length - 1];
+    const answer = await claudeAsk(systemPrompt, lastMsg.content, 500);
     chatHistories[cityCode].push({ role: 'assistant', content: answer });
     removeTyping(cityCode);
     appendChatMessage(cityCode, 'ai', answer);
@@ -7193,6 +7230,7 @@ window.showUserMenu         = showUserMenu;
 window.toggleMobileDrawer   = toggleMobileDrawer;
 window.closeMobileDrawer    = closeMobileDrawer;
 window.openMyProfile        = openMyProfile;
+window.manageAIKey          = manageAIKey;
 window.closeProfileModal    = closeProfileModal;
 window.handleProfileOverlayClick = handleProfileOverlayClick;
 window.openMyValigie        = openMyValigie;
@@ -7250,6 +7288,46 @@ window.initTransit          = initTransit;
 window.useMyLocation        = useMyLocation;
 window.openTransitRoute     = openTransitRoute;
 window.showSeason           = showSeason;
+
+
+// ── Gestione API Key — SOLO ADMIN ──
+async function manageAIKey() {
+  const user = firebaseAuth.currentUser;
+  if (!user || user.uid !== ADMIN_UID) {
+    showToast("⛔ Solo l'amministratore può gestire la chiave AI");
+    return;
+  }
+  let currentKey = '';
+  try {
+    const snap = await getDoc(doc(firestoreDb, 'config', 'ai'));
+    if (snap.exists() && snap.data) currentKey = snap.data().key || '';
+  } catch(e) {}
+  const masked = currentKey
+    ? currentKey.slice(0,12) + '••••••••' + currentKey.slice(-4)
+    : '(non impostata)';
+  const newKey = prompt(
+    '🔑 PANNELLO ADMIN — API Key Anthropic\n\n' +
+    'Chiave attuale: ' + masked + '\n\n' +
+    'Inserisci la nuova chiave (annulla per non modificare):\n' +
+    'Ottienila su: https://console.anthropic.com'
+  );
+  if (newKey === null || !newKey.trim()) { showToast('Annullato'); return; }
+  try {
+    await setDoc(doc(firestoreDb, 'config', 'ai'), {
+      key: newKey.trim(),
+      updatedAt: new Date().toISOString(),
+      updatedBy: user.email
+    });
+    ANTHROPIC_API_KEY = newKey.trim();
+    _aiKeyLoaded = true;
+    showToast('✅ API Key salvata per tutti gli utenti!');
+  } catch (err) {
+    showToast('❌ Errore: ' + err.message);
+  }
+}
+
+// Precarica la chiave AI all'avvio (silenzioso)
+_loadAIKey();
 
 // ═══════════════════════════════════════════════════════════════════════
 // INIT
@@ -7408,6 +7486,12 @@ async function renderProfilePage() {
           <div class="pp-card-illus">⚙️</div>
           <div class="pp-card-label">Impostazioni</div>
         </div>
+
+        ${user.uid === ADMIN_UID ? `
+        <div class="pp-card" onclick="manageAIKey()" style="border-color:rgba(232,162,40,0.3);background:rgba(232,162,40,0.06)">
+          <div class="pp-card-illus">🔑</div>
+          <div class="pp-card-label" style="color:var(--amber)">API Key AI<br><span style="font-size:10px;font-weight:400;opacity:0.7">Solo admin</span></div>
+        </div>` : ''}
 
         <div class="pp-card" onclick="openInfoModal('about')">
           <div class="pp-card-illus">📘</div>
