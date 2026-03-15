@@ -3,7 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WanderQuest v3.0 — Ecosistema Globale</title>
+<title>WanderQuest — Viaggia come un locale</title>
+<meta name="description" content="Gemme nascoste, valigie smart, contest fotografico e trasporti locali. Il primo ecosistema per chi odia fare il turista.">
+<meta name="theme-color" content="#080C1A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="WanderQuest">
+<!-- Favicon SVG inline -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%0A%20%20%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230D1530%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C58%20L14%2C32%20L14%2C16%20L32%2C6%20L50%2C16%20L50%2C32%20Z%22%20fill%3D%22%231E3A6E%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C58%20L14%2C32%20L14%2C16%20L32%2C6%20L50%2C16%20L50%2C32%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23C4A35A%22%20stroke-width%3D%221.5%22%20opacity%3D%220.7%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C6%20L14%2C16%20L22%2C32%20L32%2C22%20Z%22%20fill%3D%22%230f172a%22%20opacity%3D%220.45%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C6%20L50%2C16%20L42%2C32%20L32%2C22%20Z%22%20fill%3D%22%232563EB%22%20opacity%3D%220.35%22/%3E%0A%20%20%3Cpath%20d%3D%22M14%2C32%20L22%2C32%20L32%2C58%20Z%22%20fill%3D%22%23C4A35A%22%20opacity%3D%220.9%22/%3E%0A%20%20%3Cpath%20d%3D%22M50%2C32%20L42%2C32%20L32%2C58%20Z%22%20fill%3D%22%23a07840%22%20opacity%3D%220.75%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C18%20C32%2C24%2036%2C28%2042%2C28%20C36%2C28%2032%2C32%2032%2C38%20C32%2C32%2028%2C28%2022%2C28%20C28%2C28%2032%2C24%2032%2C18%20Z%22%20fill%3D%22%23E8A228%22/%3E%0A%3C/svg%3E">
+<!-- PWA Manifest inline -->
+<link rel="manifest" href="data:application/manifest+json,%7B%0A%20%20%22name%22%3A%20%22WanderQuest%22%2C%0A%20%20%22short_name%22%3A%20%22WanderQuest%22%2C%0A%20%20%22description%22%3A%20%22Il%20primo%20ecosistema%20per%20chi%20odia%20fare%20il%20turista%22%2C%0A%20%20%22start_url%22%3A%20%22/%22%2C%0A%20%20%22display%22%3A%20%22standalone%22%2C%0A%20%20%22background_color%22%3A%20%22%23080C1A%22%2C%0A%20%20%22theme_color%22%3A%20%22%23080C1A%22%2C%0A%20%20%22orientation%22%3A%20%22portrait%22%2C%0A%20%20%22icons%22%3A%20%5B%0A%20%20%20%20%7B%22src%22%3A%20%22data%3Aimage/svg%2Bxml%2C%253Csvg%2520xmlns%253D%2522http%253A//www.w3.org/2000/svg%2522%2520viewBox%253D%25220%25200%252064%252064%2522%253E%250A%2520%2520%253Crect%2520width%253D%252264%2522%2520height%253D%252264%2522%2520rx%253D%252214%2522%2520fill%253D%2522%25230D1530%2522/%253E%250A%2520%2520%253Cpath%2520d%253D%2522M32%252C58%2520L14%252C32%2520L14%252C16%2520L32%252C6%2520L50%252C16%2520L50%252C32%2520Z%2522%2520fill%253D%2522%25231E3A6E%2522/%253E%250A%2520%2520%253Cpath%2520d%253D%2522M32%252C58%2520L14%252C32%2520L14%252C16%2520L32%252C6%2520L50%252C16%2520L50%252C32%2520Z%2522%2520fill%253D%2522none%2522%2520stroke%253D%2522%2523C4A35A%2522%2520stroke-width%253D%25221.5%2522%2520opacity%253D%25220.7%2522/%253E%250A%2520%2520%253Cpath%2520d%253D%2522M32%252C6%2520L14%252C16%2520L22%252C32%2520L32%252C22%2520Z%2522%2520fill%253D%2522%25230f172a%2522%2520opacity%253D%25220.45%2522/%253E%250A%2520%2520%253Cpath%2520d%253D%2522M32%252C6%2520L50%252C16%2520L42%252C32%2520L32%252C22%2520Z%2522%2520fill%253D%2522%25232563EB%2522%2520opacity%253D%25220.35%2522/%253E%250A%2520%2520%253Cpath%2520d%253D%2522M14%252C32%2520L22%252C32%2520L32%252C58%2520Z%2522%2520fill%253D%2522%2523C4A35A%2522%2520opacity%253D%25220.9%2522/%253E%250A%2520%2520%253Cpath%2520d%253D%2522M50%252C32%2520L42%252C32%2520L32%252C58%2520Z%2522%2520fill%253D%2522%2523a07840%2522%2520opacity%253D%25220.75%2522/%253E%250A%2520%2520%253Cpath%2520d%253D%2522M32%252C18%2520C32%252C24%252036%252C28%252042%252C28%2520C36%252C28%252032%252C32%252032%252C38%2520C32%252C32%252028%252C28%252022%252C28%2520C28%252C28%252032%252C24%252032%252C18%2520Z%2522%2520fill%253D%2522%2523E8A228%2522/%253E%250A%253C/svg%253E%22%2C%20%22sizes%22%3A%20%22any%22%2C%20%22type%22%3A%20%22image/svg%2Bxml%22%2C%20%22purpose%22%3A%20%22any%20maskable%22%7D%0A%20%20%5D%0A%7D">
+<!-- Apple Touch Icon (180x180) — inline SVG via canvas not possible, use favicon -->
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%0A%20%20%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%230D1530%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C58%20L14%2C32%20L14%2C16%20L32%2C6%20L50%2C16%20L50%2C32%20Z%22%20fill%3D%22%231E3A6E%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C58%20L14%2C32%20L14%2C16%20L32%2C6%20L50%2C16%20L50%2C32%20Z%22%20fill%3D%22none%22%20stroke%3D%22%23C4A35A%22%20stroke-width%3D%221.5%22%20opacity%3D%220.7%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C6%20L14%2C16%20L22%2C32%20L32%2C22%20Z%22%20fill%3D%22%230f172a%22%20opacity%3D%220.45%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C6%20L50%2C16%20L42%2C32%20L32%2C22%20Z%22%20fill%3D%22%232563EB%22%20opacity%3D%220.35%22/%3E%0A%20%20%3Cpath%20d%3D%22M14%2C32%20L22%2C32%20L32%2C58%20Z%22%20fill%3D%22%23C4A35A%22%20opacity%3D%220.9%22/%3E%0A%20%20%3Cpath%20d%3D%22M50%2C32%20L42%2C32%20L32%2C58%20Z%22%20fill%3D%22%23a07840%22%20opacity%3D%220.75%22/%3E%0A%20%20%3Cpath%20d%3D%22M32%2C18%20C32%2C24%2036%2C28%2042%2C28%20C36%2C28%2032%2C32%2032%2C38%20C32%2C32%2028%2C28%2022%2C28%20C28%2C28%2032%2C24%2032%2C18%20Z%22%20fill%3D%22%23E8A228%22/%3E%0A%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -47,8 +58,12 @@ nav {
   backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--glass-border);
 }
-.nav-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--amber); }
-.nav-logo span { color: var(--cream); }
+.nav-logo {
+  display: flex; align-items: center;
+  text-decoration: none; flex-shrink: 0;
+  height: 34px;
+}
+.nav-logo svg { height: 34px; width: auto; display: block; }
 .nav-links { display: flex; gap: 4px; }
 .nav-links a { color: var(--cream-dim); text-decoration: none; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-weight: 500; transition: all 0.2s; }
 .nav-links a:hover { color: var(--amber); background: rgba(232,162,40,0.08); }
@@ -768,7 +783,7 @@ button, a, select, input[type="checkbox"] {
   .nav-links { display: none; }
   .nav-cta   { display: none; }
   .nav-hamburger { display: flex; }
-  .nav-logo  { font-size: 17px; }
+  .nav-logo svg { height: 28px; }
   .nav-user-pill  { padding: 6px 10px 6px 8px; font-size: 12px; }
   .nav-user-avatar { width: 22px; height: 22px; font-size: 10px; }
   .nav-wish-desktop { display: none !important; }
@@ -1042,7 +1057,7 @@ button, a, select, input[type="checkbox"] {
   :root { --px-mobile: 14px; }
 
   /* Nav */
-  .nav-logo { font-size: 15px; }
+  .nav-logo svg { height: 26px; }
   .nav-auth-area { gap: 3px; }
   .nav-wish-btn { padding: 4px 4px; font-size: 16px; }
 
@@ -1335,8 +1350,8 @@ button, a, select, input[type="checkbox"] {
 }
 .footer-inner { max-width: 1200px; margin: 0 auto; }
 .footer-top { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid var(--glass-border); }
-.footer-brand-logo { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 900; color: var(--amber); margin-bottom: 12px; }
-.footer-brand-logo span { color: var(--cream); }
+.footer-brand-logo { margin-bottom: 12px; display:flex; align-items:center; }
+.footer-brand-logo svg { height:28px; width:auto; }
 .footer-brand-desc { font-size: 13px; color: var(--cream-dim); line-height: 1.7; max-width: 280px; margin-bottom: 20px; }
 .footer-socials { display: flex; gap: 10px; }
 .footer-social-btn {
@@ -2794,7 +2809,23 @@ button, a, select, input[type="checkbox"] {
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">Wander<span>Quest</span> <span style="font-size:11px;background:rgba(24,197,168,0.15);border:1px solid rgba(24,197,168,0.2);color:var(--teal);padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;vertical-align:middle;">v3.0</span></div>
+  <div class="nav-logo">
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" height="34" aria-label="WanderQuest">
+  <!-- Gemma icona -->
+  <path d="M20,37 L8,20 L8,9 L20,3 L32,9 L32,20 Z" fill="#1E3A6E"/>
+  <path d="M20,37 L8,20 L8,9 L20,3 L32,9 L32,20 Z" fill="none" stroke="#C4A35A" stroke-width="1" opacity="0.6"/>
+  <!-- Facce gemma -->
+  <path d="M20,3 L8,9 L14,20 L20,13 Z" fill="#0f172a" opacity="0.4"/>
+  <path d="M20,3 L32,9 L26,20 L20,13 Z" fill="#2563EB" opacity="0.3"/>
+  <path d="M8,20 L14,20 L20,37 Z" fill="#C4A35A" opacity="0.85"/>
+  <path d="M32,20 L26,20 L20,37 Z" fill="#a07840" opacity="0.7"/>
+  <!-- Stella 4 punte dorata -->
+  <path d="M20,12 C20,16 22.5,18.5 26.5,18.5 C22.5,18.5 20,21 20,25 C20,21 17.5,18.5 13.5,18.5 C17.5,18.5 20,16 20,12 Z" fill="#E8A228"/>
+  <!-- Testo WANDERQUEST -->
+  <text x="40" y="27" font-family="'DM Sans', system-ui, sans-serif" font-weight="800" font-size="16" fill="#F2EDE4" letter-spacing="1.2">WANDER</text>
+  <text x="109" y="27" font-family="'DM Sans', system-ui, sans-serif" font-weight="800" font-size="16" fill="#E8A228" letter-spacing="1.2">QUEST</text>
+</svg>
+  </div>
   <div class="nav-links">
     <a href="#explorer">🌍 Explorer</a>
     <a href="#guide">📖 Guide</a>
@@ -3702,7 +3733,15 @@ button, a, select, input[type="checkbox"] {
     <div class="footer-top">
       <!-- Brand -->
       <div>
-        <div class="footer-brand-logo">Wander<span>Quest</span></div>
+        <div class="footer-brand-logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 42" height="32" aria-label="WanderQuest">
+  <path d="M21,38 L9,21 L9,10 L21,4 L33,10 L33,21 Z" fill="#1E3A6E"/>
+  <path d="M21,38 L9,21 L9,10 L21,4 L33,10 L33,21 Z" fill="none" stroke="#C4A35A" stroke-width="1.2" opacity="0.6"/>
+  <path d="M9,21 L15,21 L21,38 Z" fill="#C4A35A" opacity="0.85"/>
+  <path d="M33,21 L27,21 L21,38 Z" fill="#a07840" opacity="0.7"/>
+  <path d="M21,13 C21,17 23.5,19.5 27.5,19.5 C23.5,19.5 21,22 21,26 C21,22 18.5,19.5 14.5,19.5 C18.5,19.5 21,17 21,13 Z" fill="#E8A228"/>
+  <text x="42" y="27" font-family="'DM Sans', system-ui, sans-serif" font-weight="800" font-size="15" fill="#F2EDE4" letter-spacing="1.2">WANDER</text>
+  <text x="108" y="27" font-family="'DM Sans', system-ui, sans-serif" font-weight="800" font-size="15" fill="#E8A228" letter-spacing="1.2">QUEST</text>
+</svg></div>
         <p class="footer-brand-desc">Il primo ecosistema per viaggiatori che odiano fare i turisti. Gemme nascoste, valigie intelligenti, community autentica.</p>
         <div class="footer-socials">
           <a class="footer-social-btn" href="#" aria-label="Instagram">📸</a>
@@ -3859,7 +3898,17 @@ button, a, select, input[type="checkbox"] {
 <div class="modal-overlay hidden" id="authOverlay" onclick="handleOverlayClick(event)">
   <div class="auth-modal">
     <button class="modal-close" onclick="closeAuthModal()">✕</button>
-    <div class="modal-logo">🌍 WanderQuest</div>
+    <div class="modal-logo" style="display:flex;justify-content:center;padding-bottom:4px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 42" height="36" aria-label="WanderQuest">
+  <path d="M21,38 L9,21 L9,10 L21,4 L33,10 L33,21 Z" fill="#1E3A6E"/>
+  <path d="M21,38 L9,21 L9,10 L21,4 L33,10 L33,21 Z" fill="none" stroke="#C4A35A" stroke-width="1.2" opacity="0.6"/>
+  <path d="M21,4 L9,10 L15,21 L21,14 Z" fill="#0f172a" opacity="0.4"/>
+  <path d="M21,4 L33,10 L27,21 L21,14 Z" fill="#2563EB" opacity="0.3"/>
+  <path d="M9,21 L15,21 L21,38 Z" fill="#C4A35A" opacity="0.85"/>
+  <path d="M33,21 L27,21 L21,38 Z" fill="#a07840" opacity="0.7"/>
+  <path d="M21,13 C21,17 23.5,19.5 27.5,19.5 C23.5,19.5 21,22 21,26 C21,22 18.5,19.5 14.5,19.5 C18.5,19.5 21,17 21,13 Z" fill="#E8A228"/>
+  <text x="42" y="27" font-family="'DM Sans', system-ui, sans-serif" font-weight="800" font-size="15" fill="#F2EDE4" letter-spacing="1.2">WANDER</text>
+  <text x="108" y="27" font-family="'DM Sans', system-ui, sans-serif" font-weight="800" font-size="15" fill="#E8A228" letter-spacing="1.2">QUEST</text>
+</svg></div>
 
     <!-- Tabs -->
     <div class="auth-tabs">
