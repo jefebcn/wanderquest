@@ -2357,10 +2357,18 @@ button, a, select, input[type="checkbox"] {
    BOTTOM NAV — Mobile App-like
    ══════════════════════════════════════════════════════════════ */
 
+/* ═══ BOTTOM NAV — solo mobile ═══ */
+
 /* Hidden on desktop */
 #bottom-nav { display: none; }
+
 /* profile-page: nascosto da desktop, gestito dal sistema tab mobile */
-@media(min-width: 769px) { #profile-page { display: none !important; } }
+@media(min-width: 769px) { 
+  #profile-page { display: none !important; }
+  /* Su desktop rimuovi il sistema tab - tutto visibile */
+  [data-active-tab] [data-tab] { display: block !important; }
+  [data-active-tab] #hero { display: flex !important; }
+}
 
 @media(max-width: 768px) {
 
@@ -2368,23 +2376,21 @@ button, a, select, input[type="checkbox"] {
   #bottom-nav {
     display: flex;
     position: fixed;
-    bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-    left: 16px;
-    right: 16px;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: 12px;
     top: auto;
     transform: none;
     z-index: 9999;
-    background: rgba(10,14,28,0.97);
-    backdrop-filter: blur(24px) saturate(1.8);
-    -webkit-backdrop-filter: blur(24px) saturate(1.8);
-    border: 1px solid rgba(255,255,255,0.12);
-    border-radius: 100px;
-    padding: 5px 6px;
+    background: rgba(8,12,26,0.98);
+    backdrop-filter: blur(20px) saturate(1.8);
+    -webkit-backdrop-filter: blur(20px) saturate(1.8);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px;
+    padding: 4px 4px;
     gap: 2px;
-    box-shadow: 0 -2px 0 rgba(255,255,255,0.04),
-                0 12px 48px rgba(0,0,0,0.7),
-                0 1px 0 rgba(255,255,255,0.06) inset;
-    max-width: 440px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.6), 0 1px 0 rgba(255,255,255,0.06) inset;
+    max-width: 500px;
     margin: 0 auto;
   }
 
@@ -2394,45 +2400,54 @@ button, a, select, input[type="checkbox"] {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 3px;
-    padding: 8px 4px;
-    border-radius: 90px;
+    gap: 2px;
+    padding: 10px 4px;
+    border-radius: 16px;
     border: none;
     background: none;
-    color: rgba(255,255,255,0.4);
+    color: rgba(255,255,255,0.45);
     cursor: pointer;
     transition: all 0.2s ease;
-    min-height: 52px;
+    min-height: 56px;
     font-family: 'DM Sans', sans-serif;
     -webkit-tap-highlight-color: transparent;
     position: relative;
     z-index: 1;
+    /* Importante: garantisce click su iOS Safari */
+    touch-action: manipulation;
+    user-select: none;
+    -webkit-user-select: none;
   }
 
-  .bnav-tab:active { transform: scale(0.93); }
+  .bnav-tab:active { transform: scale(0.92); }
 
   .bnav-tab.active {
     background: rgba(255,255,255,0.1);
     color: #fff;
-  }
-  /* Vota tab active: pink/love */
-  #bnav-vota.active {
-    background: rgba(231,70,100,0.2);
-    color: #FF4D6D;
   }
   /* Home tab active: teal */
   #bnav-esplora.active {
     background: rgba(24,197,168,0.18);
     color: var(--teal);
   }
-  /* Profilo tab active: amber */
+  /* Vota tab active: pink */
+  #bnav-vota.active {
+    background: rgba(231,70,100,0.2);
+    color: #FF4D6D;
+  }
+  /* Valigia tab active: amber */
+  #bnav-scopri.active {
+    background: rgba(232,162,40,0.18);
+    color: var(--amber);
+  }
+  /* Profilo tab active: amber solid */
   .bnav-tab.active.bnav-profile {
     background: var(--amber);
     color: var(--ink);
   }
 
   .bnav-icon {
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1;
     transition: transform 0.2s;
   }
@@ -2447,7 +2462,7 @@ button, a, select, input[type="checkbox"] {
   }
 
   /* ── Body padding for bottom nav ── */
-  body { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+  body { padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px)); }
 
   /* ── TAB SYSTEM ──
      body.setAttribute('data-active-tab', tab) set by JS on mobile only.
@@ -2476,6 +2491,19 @@ button, a, select, input[type="checkbox"] {
   /* Compact top nav on mobile */
   #top-nav { padding: 0 16px; height: 52px; }
   .mobile-drawer { top: 52px; }
+
+  /* Accedi / user pill sempre visibili e cliccabili su mobile */
+  #navLoggedOut .nav-btn-accedi { 
+    font-size: 12px; padding: 7px 14px; 
+    min-height: 36px; height: 36px;
+    touch-action: manipulation; 
+    position: relative; z-index: 210;
+  }
+  #navLoggedIn .nav-user-pill {
+    font-size: 12px; padding: 5px 10px 5px 8px;
+    touch-action: manipulation;
+    position: relative; z-index: 210;
+  }
 
   /* ══════════════════════════════════════
      PROFILE PAGE — nuovo design
@@ -3024,7 +3052,7 @@ button, a, select, input[type="checkbox"] {
 <!-- SPIN THE GLOBE -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- page: SCOPRI -->
-<div id="spin-globe" data-tab="scopri">
+<div id="spin-globe" data-tab="esplora">
   <div class="inner">
     <div class="section-label" style="background:rgba(24,197,168,0.1);border-color:rgba(24,197,168,0.2);color:var(--teal)">
       🎲 Scoperta Casuale</div>
@@ -3062,7 +3090,7 @@ button, a, select, input[type="checkbox"] {
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- AI BUDGET ESTIMATOR -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
-<div id="budget-ai" data-tab="scopri">
+<div id="budget-ai" data-tab="esplora">
   <div class="inner">
     <div class="section-label" style="background:rgba(46,197,122,0.1);border-color:rgba(46,197,122,0.2);color:var(--green)">
       💰 Stima di Spesa</div>
@@ -3121,7 +3149,7 @@ button, a, select, input[type="checkbox"] {
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- GUIDA RAPIDA — Accordion section -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
-<div id="guide" data-tab="scopri">
+<div id="guide" data-tab="esplora">
   <div class="inner">
     <div class="section-label">📖 Guida Pratica</div>
     <h2 class="section-title">Tutto quello che devi<br><em style="font-style:italic;color:var(--amber)">sapere prima di partire</em></h2>
@@ -3815,21 +3843,17 @@ function switchTab(tab) {
   var btn = document.getElementById('bnav-' + tab);
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
-  // Profilo: usa il renderer del modulo se disponibile, altrimenti mostra guest
   if (tab === 'profilo') {
     if (window._renderProfilePage) {
       window._renderProfilePage();
     } else {
       var pp = document.getElementById('profile-page');
-      if (pp && !pp.innerHTML.trim()) {
-        pp.innerHTML = '<div class="pp-guest">' +
-          '<div class="pp-guest-icon">✈️</div>' +
+      if (pp && (!pp.innerHTML.trim() || pp.querySelector('#pp-guest-default'))) {
+        pp.innerHTML = '<div class="pp-guest"><div class="pp-guest-icon">✈️</div>' +
           '<div class="pp-guest-title">Benvenuto su WanderQuest</div>' +
-          '<div class="pp-guest-sub">Accedi per salvare i tuoi viaggi e le valigie smart.</div>' +
-          '<button class="pp-guest-btn" onclick="openAuthModal(\'login\')">Accedi o Registrati →</button>' +
-          '</div>';
+          '<div class="pp-guest-sub">Accedi per salvare i tuoi viaggi.</div>' +
+          '<button class="pp-guest-btn" onclick="openAuthModal(\'login\')">Accedi o Registrati →</button></div>';
       }
-      // Riprova ogni 200ms per max 5s se il modulo sta ancora caricando
       var att = 0;
       var t2 = setInterval(function() {
         att++;
@@ -3839,6 +3863,7 @@ function switchTab(tab) {
     }
   }
 }
+window.switchTab = switchTab;
 
 // ── Accordion e stagioni (usati da onclick nell HTML) ──
 function toggleAcc(id) {
@@ -4162,7 +4187,7 @@ async function _loadAIKey() {
 
 // UID dell'admin — imposta il tuo UID Firebase qui
 // Lo trovi su Firebase Console → Authentication → Users
-const ADMIN_UID = 'kfkkxTolOBQEgMKZbBa7OjOki2T2';
+const ADMIN_UID = 'INSERISCI_QUI_IL_TUO_UID';
 // ═══════════════════════════════════════════════════════════════════════
 // DATABASE GERARCHICO COMPLETO
 // ═══════════════════════════════════════════════════════════════════════
@@ -7351,10 +7376,10 @@ if (typeof window !== 'undefined' && window.innerWidth > 768) {
 }
 
 const TAB_SECTIONS = {
-  vota:     ['swipe-vote'],
-  esplora:  ['hero','explorer','city-detail','flight-banner','how-it-works','social-proof'],
-  scopri:   ['spin-globe','budget-ai','ai-itinerary','guide','packing','premium'],
-  profilo:  [],
+  vota:    ['swipe-vote'],
+  esplora: ['hero','explorer','city-detail','flight-banner','spin-globe','budget-ai','guide','how-it-works','social-proof'],
+  scopri:  ['packing','ai-itinerary','premium'],
+  profilo: [],
 };
 
 let _activeTab = 'esplora';
@@ -7363,30 +7388,26 @@ let _bottomNavEnabled = false;
 function isMobile() { return window.innerWidth <= 768; }
 
 function initBottomNav() {
-  if (!isMobile()) return;
   _bottomNavEnabled = true;
-  // Sincronizza _activeTab dal DOM (potrebbe essere stato cambiato dallo script inline)
+  // Sincronizza _activeTab dal DOM
   const domTab = document.body.getAttribute('data-active-tab') || 'esplora';
-  _activeTab = domTab;
-  // Se non è ancora impostato, forza esplora
-  if (!['vota','esplora','scopri','profilo'].includes(_activeTab)) {
-    _activeTab = 'esplora';
-    document.body.setAttribute('data-active-tab', 'esplora');
-  }
+  _activeTab = ['vota','esplora','scopri','profilo'].includes(domTab) ? domTab : 'esplora';
+  document.body.setAttribute('data-active-tab', _activeTab);
+
   document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
   const btn = document.getElementById('bnav-' + _activeTab);
   if (btn) btn.classList.add('active');
   updateBnavProfileIcon();
-  // Pre-costruisce deck
+
   buildSwipeQueue();
   renderSwipeDeck();
-  // Se l'utente era già su profilo prima del caricamento modulo
   if (_activeTab === 'profilo') renderProfilePage();
 }
 
 function switchTab(tab, silent) {
-  if (!isMobile()) return;
+  // Funziona su mobile E desktop (isMobile check rimosso — causa bug su viewport borderline)
   _activeTab = tab;
+  _bottomNavEnabled = true;
 
   document.body.setAttribute('data-active-tab', tab);
 
@@ -7394,7 +7415,7 @@ function switchTab(tab, silent) {
   const btn = document.getElementById('bnav-' + tab);
   if (btn) btn.classList.add('active');
 
-  // Swipe deck: (ri)costruisce se vuoto o al primo accesso
+  // Swipe deck: (ri)costruisce al primo accesso
   if (tab === 'vota') {
     if (swipeQueue.length === 0) buildSwipeQueue();
     renderSwipeDeck();
@@ -7554,13 +7575,7 @@ if (document.readyState === 'loading') {
 
 // Re-init on resize
 window.addEventListener('resize', () => {
-  if (isMobile() && !_bottomNavEnabled) {
-    initBottomNav();
-  } else if (!isMobile() && _bottomNavEnabled) {
-    _bottomNavEnabled = false;
-    document.body.removeAttribute('data-active-tab');
-    if (swipeQueue.length === 0) { buildSwipeQueue(); renderSwipeDeck(); }
-  }
+  if (!_bottomNavEnabled) initBottomNav();
 });
 
 </script>
