@@ -2294,219 +2294,59 @@ button, a, select, input[type="checkbox"] {
 
 
 /* ══════════════════════════════════════════════════════════════
-   SWIPE VOTING — Tinder-style photo contest
+   SEZIONE VOTA — redesign mobile-first
    ══════════════════════════════════════════════════════════════ */
-
-#swipe-vote { padding:80px 0; background:linear-gradient(180deg,var(--ink) 0%,#07041A 100%); }
-#swipe-vote .inner { max-width:1200px;margin:0 auto;padding:0 48px; }
-
-.swipe-arena {
-  display:flex; gap:48px; align-items:flex-start; justify-content:center;
-  flex-wrap:wrap;
-}
-
-/* Card deck */
-.swipe-deck-wrap {
-  position:relative; width:340px; height:480px; flex-shrink:0;
-  margin:0 auto;
-}
-.swipe-card {
-  position:absolute; inset:0;
-  background:var(--navy-mid);
-  border:1px solid var(--glass-border);
-  border-radius:24px; overflow:hidden;
-  box-shadow:0 20px 60px rgba(0,0,0,0.6);
-  cursor:grab; user-select:none;
-  transition:box-shadow 0.2s;
-  will-change:transform;
-  touch-action:none;
-}
+#swipe-vote { background: #07041A; }
+.vota-wrap { display:flex; flex-direction:column; padding-top:64px; padding-bottom:100px; min-height:100vh; }
+.vota-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px 10px; }
+.vota-title { font-size:22px; font-weight:900; color:var(--cream); line-height:1; }
+.vota-subtitle { font-size:12px; color:var(--cream-dim); margin-top:3px; }
+.vota-prize-pill { background:rgba(232,162,40,0.15); border:1px solid rgba(232,162,40,0.3); color:var(--amber); padding:6px 14px; border-radius:100px; font-size:13px; font-weight:800; white-space:nowrap; }
+.vota-filters { display:flex; gap:8px; padding:0 20px 14px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+.vota-filters::-webkit-scrollbar { display:none; }
+.vota-filter { flex-shrink:0; padding:7px 16px; border-radius:100px; background:rgba(255,255,255,0.06); border:1px solid rgba(255,255,255,0.1); color:rgba(255,255,255,0.5); font-size:13px; font-weight:600; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all 0.2s; -webkit-tap-highlight-color:transparent; }
+.vota-filter.active { background:rgba(139,92,246,0.18); border-color:rgba(139,92,246,0.4); color:#C4B5FD; }
+.vota-deck-area { flex:1; display:flex; flex-direction:column; align-items:center; padding:0 16px; gap:16px; }
+.swipe-deck-wrap { width:100%; max-width:420px; height:min(55vh,460px); position:relative; }
+.vota-hint { display:flex; align-items:center; justify-content:space-between; width:100%; max-width:280px; font-size:12px; color:rgba(255,255,255,0.35); font-weight:600; }
+.vota-actions { display:flex; gap:20px; align-items:center; justify-content:center; padding-bottom:8px; }
+.vota-btn { border:none; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:22px; transition:all 0.18s; font-family:inherit; -webkit-tap-highlight-color:transparent; }
+.vota-btn:active { transform:scale(0.88); }
+.vota-skip  { width:60px; height:60px; background:rgba(232,64,64,0.18); border:2px solid rgba(232,64,64,0.5); color:#FF6B6B; }
+.vota-super { width:52px; height:52px; background:rgba(232,162,40,0.18); border:2px solid rgba(232,162,40,0.5); color:var(--amber); font-size:18px; }
+.vota-like  { width:68px; height:68px; background:rgba(46,197,122,0.18); border:2.5px solid rgba(46,197,122,0.5); color:#2EC57A; font-size:26px; box-shadow:0 6px 24px rgba(46,197,122,0.3); }
+.vota-stats { display:flex; border-top:1px solid rgba(255,255,255,0.07); border-bottom:1px solid rgba(255,255,255,0.07); background:rgba(255,255,255,0.02); margin:0; padding:0 16px; }
+.vota-stat { flex:1; display:flex; flex-direction:column; align-items:center; padding:14px 8px; gap:3px; }
+.vota-stat:not(:last-child) { border-right:1px solid rgba(255,255,255,0.07); }
+.vota-stat-val { font-family:'DM Mono',monospace; font-size:20px; font-weight:500; color:var(--amber); }
+.vota-stat-lbl { font-size:11px; color:var(--cream-dim); }
+.vota-info-strip { padding:14px 20px; font-size:12px; color:var(--cream-dim); line-height:1.6; text-align:center; }
+/* Swipe card */
+.swipe-card { position:absolute; inset:0; background:#0E1628; border:1px solid rgba(255,255,255,0.1); border-radius:22px; overflow:hidden; cursor:grab; user-select:none; box-shadow:0 16px 48px rgba(0,0,0,0.6); will-change:transform; touch-action:none; }
 .swipe-card:active { cursor:grabbing; }
-.swipe-card.behind {
-  transform:scale(0.94) translateY(14px);
-  z-index:0; pointer-events:none;
-  filter:brightness(0.8);
-}
-.swipe-card.front { z-index:2; }
-
-/* Photo area */
-.swipe-photo {
-  width:100%; height:320px;
-  object-fit:cover; display:flex;
-  align-items:center; justify-content:center;
-  font-size:100px; position:relative;
-  flex-shrink:0;
-  background:var(--navy);
-}
-.swipe-photo-inner {
-  width:100%; height:100%;
-  display:flex; align-items:center; justify-content:center;
-  font-size:90px;
-  position:relative;
-}
-.swipe-photo-bg {
-  position:absolute; inset:0;
-  background-size:cover; background-position:center;
-  opacity:0.9;
-}
-
-/* Like / nope stamps */
-.swipe-stamp {
-  position:absolute; top:36px;
-  border:4px solid; border-radius:10px;
-  padding:8px 16px; font-size:28px; font-weight:900;
-  letter-spacing:0.05em; text-transform:uppercase;
-  opacity:0; transition:opacity 0.1s;
-  pointer-events:none; z-index:10;
-  transform:rotate(-20deg);
-}
-.swipe-stamp.like  { left:24px;  color:#2EC57A; border-color:#2EC57A; transform:rotate(-20deg); }
-.swipe-stamp.nope  { right:24px; color:#E84040; border-color:#E84040; transform:rotate(20deg);  }
-
-/* Card info */
-.swipe-card-info { padding:18px 20px; }
-.swipe-card-city { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:var(--teal);margin-bottom:4px; }
-.swipe-card-user { font-size:15px;font-weight:700;color:var(--cream); }
-.swipe-card-caption { font-size:12px;color:var(--cream-dim);margin-top:4px;line-height:1.5; }
-.swipe-card-votes { display:flex;align-items:center;gap:6px;margin-top:8px; }
-.swipe-card-vote-count { font-family:'DM Mono',monospace;font-size:13px;color:var(--amber); }
-.swipe-card-vote-label { font-size:10px;color:var(--cream-dim); }
-
-/* Swipe hint */
-.swipe-hint {
-  position:absolute; bottom:-48px; left:50%;
-  transform:translateX(-50%);
-  display:flex;gap:16px;align-items:center;
-  font-size:11px;color:var(--cream-dim);
-  white-space:nowrap;
-}
-.swipe-hint-arrow { font-size:18px; }
-
-/* Action buttons */
-.swipe-actions {
-  display:flex; gap:16px; justify-content:center;
-  margin-top:64px;
-}
-.swipe-action {
-  width:60px;height:60px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;border:none;cursor:pointer;
-  transition:all 0.2s; box-shadow:0 4px 20px rgba(0,0,0,0.35);
-}
-.swipe-action.skip  { background:rgba(232,64,64,0.15);  border:2px solid rgba(232,64,64,0.4);  color:#E84040;  }
-.swipe-action.super { background:rgba(232,162,40,0.15); border:2px solid rgba(232,162,40,0.4); color:var(--amber); }
-.swipe-action.like  { background:rgba(46,197,122,0.15); border:2px solid rgba(46,197,122,0.4); color:#2EC57A;  }
-.swipe-action:hover { transform:scale(1.12); box-shadow:0 8px 28px rgba(0,0,0,0.5); }
-.swipe-action:active { transform:scale(0.95); }
-
-/* Empty state */
-.swipe-empty {
-  display:none; flex-direction:column; align-items:center;
-  justify-content:center; height:100%;
-  text-align:center; padding:32px;
-  color:var(--cream-dim);
-}
+.swipe-card.behind { transform:scale(0.95) translateY(12px); z-index:0; pointer-events:none; filter:brightness(0.75); }
+.swipe-card.front  { z-index:2; }
+.swipe-photo { width:100%; height:65%; background:var(--navy); display:flex; align-items:center; justify-content:center; font-size:90px; position:relative; flex-shrink:0; }
+.swipe-photo-inner { width:100%; height:100%; display:flex; align-items:center; justify-content:center; font-size:80px; position:relative; }
+.swipe-photo-bg { position:absolute; inset:0; background-size:cover; background-position:center; opacity:0.9; }
+.swipe-card-info { padding:16px 18px; }
+.swipe-card-city { font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:var(--teal); margin-bottom:4px; }
+.swipe-card-user { font-size:16px; font-weight:700; color:var(--cream); }
+.swipe-card-caption { font-size:13px; color:var(--cream-dim); margin-top:4px; line-height:1.5; }
+.swipe-card-votes { display:flex; align-items:center; gap:6px; margin-top:8px; }
+.swipe-card-vote-count { font-family:'DM Mono',monospace; font-size:14px; color:var(--amber); font-weight:500; }
+.swipe-card-vote-label { font-size:11px; color:var(--cream-dim); }
+.swipe-stamp { position:absolute; top:28px; border:4px solid; border-radius:10px; padding:7px 14px; font-size:24px; font-weight:900; letter-spacing:0.05em; text-transform:uppercase; opacity:0; transition:opacity 0.1s; pointer-events:none; z-index:10; }
+.swipe-stamp.like  { left:20px; color:#2EC57A; border-color:#2EC57A; transform:rotate(-20deg); }
+.swipe-stamp.nope  { right:20px; color:#E84040; border-color:#E84040; transform:rotate(20deg); }
+.swipe-empty { display:none; flex-direction:column; align-items:center; justify-content:center; height:100%; text-align:center; padding:32px; color:var(--cream-dim); }
 .swipe-empty.show { display:flex; }
-.swipe-empty-icon { font-size:64px;margin-bottom:16px;animation:pulse 2s infinite; }
-@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.08)} }
-.swipe-empty-title { font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--cream);margin-bottom:8px; }
-.swipe-restart-btn { background:var(--amber);color:var(--ink);border:none;padding:11px 24px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:700;font-size:14px;cursor:pointer;margin-top:16px;transition:all 0.2s; }
-.swipe-restart-btn:hover { background:var(--amber-bright);transform:translateY(-2px); }
-
-/* Sidebar stats */
-.swipe-sidebar { flex:1; min-width:240px; max-width:320px; display:flex; flex-direction:column; gap:16px; }
-.swipe-stat-box {
-  background:rgba(255,255,255,0.04); border:1px solid var(--glass-border);
-  border-radius:16px; padding:20px;
-}
-.swipe-stat-box-title { font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--cream-dim);margin-bottom:12px; }
-.swipe-session { display:flex;gap:16px; }
-.swipe-session-item { flex:1;text-align:center; }
-.swipe-session-val { font-family:'DM Mono',monospace;font-size:26px;font-weight:500;color:var(--amber); }
-.swipe-session-lbl { font-size:10px;color:var(--cream-dim);margin-top:2px; }
-.swipe-vote-log { display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto; }
-.swipe-vote-log::-webkit-scrollbar { width:3px; }
-.swipe-vote-log::-webkit-scrollbar-thumb { background:var(--amber-dim); border-radius:2px; }
-.swipe-log-row {
-  display:flex;align-items:center;gap:8px;
-  font-size:12px;padding:6px 8px;border-radius:7px;
-  animation:fadeIn 0.25s ease;
-}
-.swipe-log-row.liked  { background:rgba(46,197,122,0.08); color:#2EC57A; }
-.swipe-log-row.skipped { background:rgba(232,64,64,0.06); color:#E84040; }
-.swipe-log-row.starred { background:rgba(232,162,40,0.1); color:var(--amber); }
-.swipe-log-emoji { font-size:14px;flex-shrink:0; }
-.swipe-log-city { flex:1;color:var(--cream-dim);font-size:11px; }
-
-/* Filter pills */
-.swipe-filters { display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px; }
-.swipe-filter-pill {
-  background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);
-  color:var(--cream-dim);padding:6px 14px;border-radius:100px;
-  font-size:11px;font-weight:600;cursor:pointer;transition:all 0.2s;
-}
-.swipe-filter-pill.active { background:rgba(232,162,40,0.12);border-color:rgba(232,162,40,0.3);color:var(--amber); }
-.swipe-filter-pill:hover { background:rgba(255,255,255,0.08);color:var(--cream); }
-
-@media(max-width:768px){
-  #swipe-vote { padding: 0 0 24px; }
-  #swipe-vote .inner { padding-left: 0; padding-right: 0; }
-  /* Section header still padded */
-  #swipe-vote .inner > .section-label,
-  #swipe-vote .inner > .section-title,
-  #swipe-vote .inner > .section-sub,
-  #swipe-vote .inner > .swipe-filters { padding-left: 16px; padding-right: 16px; }
-  .section-sub { margin-bottom: 16px; }
-  .swipe-filters { margin-bottom: 14px; gap: 6px; }
-  .swipe-filter-pill { padding: 5px 12px; font-size: 11px; }
-
-  /* Arena: single column, no sidebar */
-  .swipe-arena {
-    flex-direction: column;
-    gap: 0;
-    align-items: center;
-  }
-  /* Card fills screen width */
-  .swipe-deck-wrap {
-    width: calc(100vw - 32px);
-    max-width: 400px;
-    height: 460px;
-    margin: 0 16px;
-  }
-  .swipe-card { border-radius: 20px; }
-  .swipe-photo { height: 300px; }
-  .swipe-card-info { padding: 14px 16px; }
-  .swipe-card-user { font-size: 14px; }
-
-  /* Action buttons: fixed at bottom above nav */
-  .swipe-actions {
-    position: fixed;
-    bottom: calc(82px + env(safe-area-inset-bottom, 0px));
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 300;
-    margin-top: 0;
-    gap: 20px;
-    background: rgba(8,12,26,0.0);
-    padding: 0;
-  }
-  .swipe-action {
-    width: 58px; height: 58px; font-size: 22px;
-    box-shadow: 0 6px 24px rgba(0,0,0,0.5);
-  }
-  .swipe-action.skip  { background: rgba(232,64,64,0.85);  border-color: rgba(232,64,64,0.9);  color: #fff; }
-  .swipe-action.super { background: rgba(232,162,40,0.85); border-color: rgba(232,162,40,0.9); color: var(--ink); }
-  .swipe-action.like  { background: rgba(46,197,122,0.85); border-color: rgba(46,197,122,0.9); color: #fff; }
-
-  /* Swipe hint */
-  .swipe-hint { bottom: -36px; font-size: 11px; }
-
-  /* Hide sidebar on mobile — show as collapsed section below */
-  .swipe-sidebar { display: none; }
-
-  /* Extra space for fixed buttons */
-  .swipe-arena { padding-bottom: 80px; }
-}
+.swipe-empty-icon { font-size:60px; margin-bottom:14px; animation:pulse 2s infinite; }
+.swipe-empty-title { font-size:20px; font-weight:700; color:var(--cream); margin-bottom:6px; }
+.swipe-restart-btn { margin-top:14px; background:var(--amber); color:var(--ink); border:none; padding:11px 24px; border-radius:10px; font-family:'DM Sans',sans-serif; font-weight:700; font-size:14px; cursor:pointer; }
+/* Nasconde classi vecchie non più usate */
+.swipe-arena,.swipe-sidebar,.swipe-filters,.swipe-actions,.swipe-hint,.swipe-action,
+.swipe-session,.swipe-vote-log,.swipe-stat-box,.swipe-filter-pill { display:none !important; }
 
 
 .safety-grid { display:grid;grid-template-columns:1fr 1fr;gap:16px; }
@@ -2629,17 +2469,7 @@ button, a, select, input[type="checkbox"] {
   /* Profile page */
   body[data-active-tab] #profile-page            { display: none !important; }
   body[data-active-tab="profilo"] #profile-page  { display: block !important; }
-  /* Swipe actions: fixed, only on vota tab */
-  body[data-active-tab] .swipe-actions           { display: none !important; }
-  body[data-active-tab="vota"] .swipe-actions {
-    display: flex !important;
-    position: fixed;
-    bottom: calc(82px + env(safe-area-inset-bottom, 0px));
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 300;
-    gap: 20px;
-  }
+  /* Swipe actions: nuovo layout usa .vota-actions, non più .swipe-actions */
 
   /* Hide nav hamburger when bottom nav is active */
   .nav-hamburger { display: none !important; }
@@ -3619,96 +3449,72 @@ button, a, select, input[type="checkbox"] {
 <!-- SWIPE VOTING -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <div id="swipe-vote" data-tab="vota">
-  <div class="inner">
-    <div class="section-label" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.25);color:#C4B5FD">
-      📸 Contest Fotografico</div>
-    <h2 class="section-title">Vota le Foto<br><em style="font-style:italic;color:#A78BFA">Come su Tinder</em></h2>
-    <p class="section-sub">Swipe a destra ❤️ per votare, sinistra ✗ per passare. Ogni voto conta nella classifica mensile. Il vincitore riceve €150 + badge Verified Explorer.</p>
+  <div class="vota-wrap">
+
+    <!-- Header fisso -->
+    <div class="vota-header">
+      <div class="vota-header-left">
+        <div class="vota-title">📸 Contest</div>
+        <div class="vota-subtitle">Vota le migliori foto di viaggio</div>
+      </div>
+      <div class="vota-prize-pill">🏆 €150</div>
+    </div>
 
     <!-- Filter pills -->
-    <div class="swipe-filters" id="swipeFilters">
-      <div class="swipe-filter-pill active" onclick="setSwipeFilter('all',this)">🌍 Tutti</div>
-      <div class="swipe-filter-pill" onclick="setSwipeFilter('IT',this)">🇮🇹 Italia</div>
-      <div class="swipe-filter-pill" onclick="setSwipeFilter('ES',this)">🇪🇸 Spagna</div>
-      <div class="swipe-filter-pill" onclick="setSwipeFilter('JP',this)">🇯🇵 Giappone</div>
+    <div class="vota-filters" id="swipeFilters">
+      <button class="vota-filter active" onclick="setSwipeFilter('all',this)">🌍 Tutti</button>
+      <button class="vota-filter" onclick="setSwipeFilter('IT',this)">🇮🇹 Italia</button>
+      <button class="vota-filter" onclick="setSwipeFilter('ES',this)">🇪🇸 Spagna</button>
+      <button class="vota-filter" onclick="setSwipeFilter('JP',this)">🇯🇵 Giappone</button>
     </div>
 
-    <div class="swipe-arena">
-
-      <!-- Card deck -->
-      <div style="display:flex;flex-direction:column;align-items:center;gap:0">
-        <div class="swipe-deck-wrap" id="swipeDeck">
-          <!-- cards injected by JS -->
-          <div class="swipe-empty" id="swipeEmpty">
-            <div class="swipe-empty-icon">🎉</div>
-            <div class="swipe-empty-title">Hai votato tutto!</div>
-            <div style="font-size:13px;margin-top:4px">Torna domani per nuove foto o riavvia la sessione.</div>
-            <button class="swipe-restart-btn" onclick="restartSwipe()">🔄 Riavvia sessione</button>
-          </div>
-        </div>
-        <!-- Buttons -->
-        <div class="swipe-actions" id="swipeActions">
-          <button class="swipe-action skip"  onclick="doSwipe('skip')"  title="Salta — ✗">✕</button>
-          <button class="swipe-action super" onclick="doSwipe('super')" title="Super voto — ⭐">⭐</button>
-          <button class="swipe-action like"  onclick="doSwipe('like')"  title="Vota — ❤️">❤</button>
-        </div>
-        <div class="swipe-hint" id="swipeHint">
-          <span class="swipe-hint-arrow">←</span>
-          <span>swipe o clicca</span>
-          <span class="swipe-hint-arrow">→</span>
+    <!-- Card deck -->
+    <div class="vota-deck-area">
+      <div class="swipe-deck-wrap" id="swipeDeck">
+        <div class="swipe-empty" id="swipeEmpty">
+          <div class="swipe-empty-icon">🎉</div>
+          <div class="swipe-empty-title">Hai votato tutto!</div>
+          <div style="font-size:13px;margin-top:6px;color:var(--cream-dim)">Torna domani per nuove foto.</div>
+          <button class="swipe-restart-btn" onclick="restartSwipe()">🔄 Riavvia</button>
         </div>
       </div>
 
-      <!-- Sidebar -->
-      <div class="swipe-sidebar">
+      <!-- Swipe hint -->
+      <div class="vota-hint" id="swipeHint">
+        <span>← salta</span>
+        <span style="font-size:10px;color:var(--cream-dim)">swipe o premi</span>
+        <span>vota →</span>
+      </div>
 
-        <div class="swipe-stat-box">
-          <div class="swipe-stat-box-title">📊 Sessione di oggi</div>
-          <div class="swipe-session">
-            <div class="swipe-session-item">
-              <div class="swipe-session-val" id="swipeCountLiked">0</div>
-              <div class="swipe-session-lbl">❤️ Votate</div>
-            </div>
-            <div class="swipe-session-item">
-              <div class="swipe-session-val" id="swipeCountSkipped">0</div>
-              <div class="swipe-session-lbl">✕ Saltate</div>
-            </div>
-            <div class="swipe-session-item">
-              <div class="swipe-session-val" id="swipeCountSuper">0</div>
-              <div class="swipe-session-lbl">⭐ Super</div>
-            </div>
-          </div>
-        </div>
-
-        <div class="swipe-stat-box">
-          <div class="swipe-stat-box-title">🕐 Ultimi voti</div>
-          <div class="swipe-vote-log" id="swipeLog">
-            <div style="font-size:12px;color:var(--cream-dim);text-align:center;padding:12px 0">Inizia a votare per vedere il log →</div>
-          </div>
-        </div>
-
-        <div class="swipe-stat-box">
-          <div class="swipe-stat-box-title">🏆 Classifica Paese</div>
-          <select class="leaderboard-filter" onchange="renderCountryLeaderboard(this.value)" style="margin-bottom:12px;width:100%">
-            <option value="IT">🇮🇹 Italia</option>
-            <option value="ES">🇪🇸 Spagna</option>
-            <option value="JP">🇯🇵 Giappone</option>
-          </select>
-          <div id="countryLeaderboard"></div>
-        </div>
-
-        <div class="swipe-stat-box">
-          <div class="swipe-stat-box-title">🌍 Classifica Globale <span style="font-size:9px;color:var(--teal);font-weight:700;margin-left:4px">LIVE</span></div>
-          <div id="globalLeaderboard"></div>
-        </div>
-
-        <div style="background:rgba(232,162,40,0.08);border:1px solid rgba(232,162,40,0.15);border-radius:14px;padding:16px">
-          <div style="font-size:12px;font-weight:700;color:var(--amber);margin-bottom:8px">🏆 Premio Mensile</div>
-          <div style="font-size:13px;color:var(--cream-dim);line-height:1.6">La foto più votata entro il <strong style="color:var(--cream)">28 del mese</strong> vince <strong style="color:var(--amber)">€150 + badge Verified Explorer</strong>. Gli utenti Pro hanno moltiplicatore ×2.</div>
-        </div>
-
+      <!-- Action buttons -->
+      <div class="vota-actions" id="swipeActions">
+        <button class="vota-btn vota-skip"  onclick="doSwipe('skip')"  aria-label="Salta">✕</button>
+        <button class="vota-btn vota-super" onclick="doSwipe('super')" aria-label="Super voto">⭐</button>
+        <button class="vota-btn vota-like"  onclick="doSwipe('like')"  aria-label="Vota">❤️</button>
       </div>
     </div>
+
+    <!-- Stats compatti sotto -->
+    <div class="vota-stats">
+      <div class="vota-stat">
+        <span class="vota-stat-val" id="swipeCountLiked">0</span>
+        <span class="vota-stat-lbl">❤️ Votate</span>
+      </div>
+      <div class="vota-stat">
+        <span class="vota-stat-val" id="swipeCountSuper">0</span>
+        <span class="vota-stat-lbl">⭐ Super</span>
+      </div>
+      <div class="vota-stat">
+        <span class="vota-stat-val" id="swipeCountSkipped">0</span>
+        <span class="vota-stat-lbl">✕ Saltate</span>
+      </div>
+    </div>
+
+    <!-- Premio info -->
+    <div class="vota-info-strip">
+      🏆 La foto più votata entro il <strong>28 del mese</strong> vince <strong style="color:var(--amber)">€150 + badge Verified Explorer</strong>. Gli utenti Pro hanno moltiplicatore <strong style="color:var(--amber)">×2</strong>.
+    </div>
+
   </div>
 </div>
 
@@ -4186,6 +3992,15 @@ function logoutUser() {
 }
 
 // Ascolta cambi auth per aggiornare la UI
+// ── showToast fallback (disponibile subito, sovrascritto dal terzo script) ──
+window.showToast = function(msg) {
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(function() { t.style.opacity='0'; t.style.transition='opacity .3s'; setTimeout(function(){t.remove();},300); }, 3500);
+};
+
 _fbAuth.onAuthStateChanged(function(user) {
   var navOut  = document.getElementById('navLoggedOut');
   var navIn   = document.getElementById('navLoggedIn');
@@ -4200,16 +4015,64 @@ _fbAuth.onAuthStateChanged(function(user) {
     if (avatar) avatar.textContent = init;
     if (label)  label.textContent  = init;
     if (bnavIco) { bnavIco.textContent = init; bnavIco.style.cssText = 'font-size:16px;font-weight:900'; }
-    // Se siamo sul tab profilo, aggiorna
-    if (document.body.getAttribute('data-active-tab') === 'profilo') {
-      if (window._renderProfilePage) window._renderProfilePage();
+
+    // Aggiorna il tab profilo se attivo
+    var currentTab = document.body.getAttribute('data-active-tab');
+    if (currentTab === 'profilo') {
+      // Prova subito con il renderer del terzo script, altrimenti renderizza inline
+      if (window._renderProfilePage) {
+        window._renderProfilePage();
+      } else {
+        _renderProfileInline(user);
+      }
+    }
+    // In ogni caso aggiorna il contenuto del profile-page se ha ancora il guest default
+    var pp = document.getElementById('profile-page');
+    if (pp && document.getElementById('pp-guest-default')) {
+      if (window._renderProfilePage) {
+        window._renderProfilePage();
+      } else {
+        _renderProfileInline(user);
+      }
     }
   } else {
     if (navOut) navOut.classList.remove('hidden');
     if (navIn)  navIn.classList.add('hidden');
     if (bnavIco) { bnavIco.textContent = '👤'; bnavIco.style.cssText = 'font-size:20px'; }
+    // Ripristina profilo guest
+    var pp = document.getElementById('profile-page');
+    if (pp) {
+      pp.innerHTML = '<div class="pp-guest" id="pp-guest-default">' +
+        '<div class="pp-guest-icon">✈️</div>' +
+        '<div class="pp-guest-title">Benvenuto su WanderQuest</div>' +
+        '<div class="pp-guest-sub">Accedi per salvare i tuoi viaggi, le valigie smart e partecipare al contest.</div>' +
+        '<button class="pp-guest-btn" onclick="openAuthModal(\'login\')">Accedi o Registrati →</button>' +
+        '</div>';
+    }
   }
 });
+
+// Renderer profilo inline (fallback se il terzo script non ha ancora girato)
+function _renderProfileInline(user) {
+  var pp = document.getElementById('profile-page');
+  if (!pp) return;
+  var initials = (user.email || '??').slice(0,2).toUpperCase();
+  pp.innerHTML =
+    '<div class="pp-header">' +
+      '<div class="pp-title">Profilo</div>' +
+      '<div class="pp-avatar">' + initials + '</div>' +
+    '</div>' +
+    '<div class="pp-email">' + (user.email || '') + '</div>' +
+    '<div class="pp-plan-badge free">🆓 Piano Free</div>' +
+    '<div class="pp-section-title">Gestisci il tuo account</div>' +
+    '<div class="pp-grid">' +
+      '<div class="pp-card" onclick="openMyProfile()"><div class="pp-card-illus">🔍</div><div class="pp-card-label">I tuoi dati</div></div>' +
+      '<div class="pp-card" onclick="switchTab(\'esplora\')"><div class="pp-card-illus">🌍</div><div class="pp-card-label">I tuoi viaggi</div></div>' +
+      '<div class="pp-card" onclick="openMyValigie()"><div class="pp-card-illus">⚙️</div><div class="pp-card-label">Impostazioni</div></div>' +
+      '<div class="pp-card" onclick="openInfoModal(\'about\')"><div class="pp-card-illus">📘</div><div class="pp-card-label">Assistenza</div></div>' +
+    '</div>' +
+    '<button class="pp-logout-btn" onclick="logoutUser()">← Esci dall\'account</button>';
+}
 </script>
 <script>
 // WanderQuest v3.0 — App Logic (ex modulo ES, ora script normale con compat SDK)
