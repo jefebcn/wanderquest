@@ -2519,6 +2519,8 @@ button, a, select, input[type="checkbox"] {
 
 /* Hidden on desktop */
 #bottom-nav { display: none; }
+/* Profile page: hidden by default everywhere, CSS mobile tab rules reveal it */
+#profile-page { display: none; }
 
 @media(max-width: 768px) {
 
@@ -2622,6 +2624,7 @@ button, a, select, input[type="checkbox"] {
   /* Profile page */
   body[data-active-tab] #profile-page            { display: none !important; }
   body[data-active-tab="profilo"] #profile-page  { display: block !important; }
+  /* On desktop (no data-active-tab): hide profile-page always */
   /* Swipe actions: fixed, only on vota tab */
   body[data-active-tab] .swipe-actions           { display: none !important; }
   body[data-active-tab="vota"] .swipe-actions {
@@ -2792,7 +2795,7 @@ button, a, select, input[type="checkbox"] {
 
 </style>
 </head>
-<body data-active-tab="vota">
+<body data-active-tab="esplora">
 
 <!-- NAV -->
 <nav id="top-nav">
@@ -3944,18 +3947,26 @@ button, a, select, input[type="checkbox"] {
 
 <!-- Critical UI — inline, non-module, always works -->
 <script>
+// Stub per openAuthModal — il modulo lo sovrascriverà con la versione completa.
+// Se l'utente clicca "Accedi" prima che il modulo carichi, lo stub ritenta ogni 100ms.
+function openAuthModal(type) {
+  if (window._openAuthModal) { window._openAuthModal(type); return; }
+  var attempts = 0;
+  var wait = setInterval(function() {
+    attempts++;
+    if (window._openAuthModal) { clearInterval(wait); window._openAuthModal(type); }
+    else if (attempts > 50) { clearInterval(wait); } // max 5 sec
+  }, 100);
+}
+
 function switchTab(tab) {
-  // Works without module loaded
   document.body.setAttribute('data-active-tab', tab);
   document.querySelectorAll('.bnav-tab').forEach(function(el){ el.classList.remove('active'); });
   var btn = document.getElementById('bnav-' + tab);
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
-  // Profile needs module — defer
   if (tab === 'profilo') {
-    setTimeout(function(){
-      if (window._renderProfilePage) window._renderProfilePage();
-    }, 50);
+    setTimeout(function(){ if (window._renderProfilePage) window._renderProfilePage(); }, 50);
   }
 }
 function showSeason(name) {
@@ -7119,6 +7130,7 @@ async function loadLiveWeather(cityName, code) {
 // WINDOW EXPORTS — necessari per onclick="" con type="module"
 // ═══════════════════════════════════════════════════════════════════════
 window.openAuthModal        = openAuthModal;
+window._openAuthModal       = openAuthModal;  // alias per lo stub inline
 window.closeAuthModal       = closeAuthModal;
 window.handleOverlayClick   = handleOverlayClick;
 window.switchAuthTab        = switchAuthTab;
@@ -7202,6 +7214,11 @@ renderCountryLeaderboard('IT');
 renderGlobalLeaderboard();
 renderRecentlyViewed();
 updateWishBadge();
+// Swipe deck desktop (mobile usa initBottomNav)
+if (typeof window !== 'undefined' && window.innerWidth > 768) {
+  buildSwipeQueue();
+  renderSwipeDeck();
+}
 
 const TAB_SECTIONS = {
   vota:     ['swipe-vote'],
@@ -7210,7 +7227,7 @@ const TAB_SECTIONS = {
   profilo:  [],
 };
 
-let _activeTab = 'vota';
+let _activeTab = 'esplora';
 let _bottomNavEnabled = false;
 
 function isMobile() { return window.innerWidth <= 768; }
@@ -7218,30 +7235,31 @@ function isMobile() { return window.innerWidth <= 768; }
 function initBottomNav() {
   if (!isMobile()) return;
   _bottomNavEnabled = true;
-  // Activate mobile tab system via CSS attribute
-  document.body.setAttribute('data-active-tab', 'vota');
+  document.body.setAttribute('data-active-tab', 'esplora');
   document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
-  const btn = document.getElementById('bnav-vota');
+  const btn = document.getElementById('bnav-esplora');
   if (btn) btn.classList.add('active');
   updateBnavProfileIcon();
-  // Init swipe deck now that module is fully loaded
-  if (typeof buildSwipeQueue === 'function') {
-    buildSwipeQueue();
-    renderSwipeDeck();
-  }
+  // Pre-costruisce il deck così è pronto quando si va su Vota
+  buildSwipeQueue();
+  renderSwipeDeck();
 }
 
 function switchTab(tab, silent) {
   if (!isMobile()) return;
   _activeTab = tab;
 
-  // Set body attribute — CSS handles showing/hiding via [data-tab]
   document.body.setAttribute('data-active-tab', tab);
 
-  // Update nav buttons
   document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
   const btn = document.getElementById('bnav-' + tab);
   if (btn) btn.classList.add('active');
+
+  // Swipe deck: (ri)costruisce se vuoto o al primo accesso
+  if (tab === 'vota') {
+    if (swipeQueue.length === 0) buildSwipeQueue();
+    renderSwipeDeck();
+  }
 
   // Profile page
   if (tab === 'profilo') {
@@ -7409,11 +7427,11 @@ window.addEventListener('resize', () => {
 
 <!-- ═══ BOTTOM NAV — Mobile Only ═══ -->
 <nav id="bottom-nav" role="navigation" aria-label="Navigazione principale">
-  <button class="bnav-tab active" id="bnav-vota" onclick="switchTab('vota')" aria-label="Vota">
+  <button class="bnav-tab" id="bnav-vota" onclick="switchTab('vota')" aria-label="Vota">
     <span class="bnav-icon">❤️</span>
     <span class="bnav-label">Vota</span>
   </button>
-  <button class="bnav-tab" id="bnav-esplora" onclick="switchTab('esplora')" aria-label="Esplora">
+  <button class="bnav-tab active" id="bnav-esplora" onclick="switchTab('esplora')" aria-label="Esplora">
     <span class="bnav-icon">🔍</span>
     <span class="bnav-label">Esplora</span>
   </button>
@@ -7428,7 +7446,7 @@ window.addEventListener('resize', () => {
 </nav>
 
 <!-- ═══ PROFILE PAGE (mobile tab) ═══ -->
-<div id="profile-page" style="display:none">
+<div id="profile-page">
   <!-- filled by renderProfilePage() -->
 </div>
 
