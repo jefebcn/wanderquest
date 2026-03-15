@@ -2488,6 +2488,9 @@ a {
     min-height: 56px; min-width: 56px;
     font-family: 'DM Sans', sans-serif;
     -webkit-tap-highlight-color: rgba(255,255,255,0.1);
+    touch-action: manipulation; /* elimina delay 300ms su iOS */
+    -webkit-user-select: none;
+    user-select: none;
     position: relative;
     z-index: 10;
   }
@@ -3544,59 +3547,111 @@ a {
       <div class="vota-prize-pill">🏆 €150</div>
     </div>
 
-    <!-- Filter pills -->
-    <div class="vota-filters" id="swipeFilters">
-      <button class="vota-filter active" onclick="setSwipeFilter('all',this)">🌍 Tutti</button>
-      <button class="vota-filter" onclick="setSwipeFilter('IT',this)">🇮🇹 Italia</button>
-      <button class="vota-filter" onclick="setSwipeFilter('ES',this)">🇪🇸 Spagna</button>
-      <button class="vota-filter" onclick="setSwipeFilter('JP',this)">🇯🇵 Giappone</button>
+    <!-- TABS -->
+    <div class="vota-tabs">
+      <button class="vota-tab active" id="ctab-gioca" onclick="switchContestTab('gioca')"><span style="font-size:16px">🃏</span> Gioca</button>
+      <button class="vota-tab" id="ctab-partecipa" onclick="switchContestTab('partecipa')"><span style="font-size:16px">📤</span> Partecipa</button>
+      <button class="vota-tab" id="ctab-regole" onclick="switchContestTab('regole')"><span style="font-size:16px">📖</span> Regole</button>
     </div>
 
-    <!-- Card deck -->
-    <div class="vota-deck-area">
-      <div class="swipe-deck-wrap" id="swipeDeck">
-        <div class="swipe-empty" id="swipeEmpty">
-          <div class="swipe-empty-icon">🎉</div>
-          <div class="swipe-empty-title">Hai votato tutto!</div>
-          <div style="font-size:13px;margin-top:6px;color:var(--cream-dim)">Torna domani per nuove foto.</div>
-          <button class="swipe-restart-btn" onclick="restartSwipe()">🔄 Riavvia</button>
+    <!-- SEZIONE 1: GIOCA -->
+    <div class="vota-sub-section active" id="csec-gioca">
+      <!-- Filter pills -->
+      <div class="vota-filters" id="swipeFilters" style="padding:0 20px 14px; display:flex; gap:8px; overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+        <button class="vota-filter active" onclick="setSwipeFilter('all',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🌍 Tutti</button>
+        <button class="vota-filter" onclick="setSwipeFilter('IT',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🇮🇹 Italia</button>
+        <button class="vota-filter" onclick="setSwipeFilter('ES',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🇪🇸 Spagna</button>
+        <button class="vota-filter" onclick="setSwipeFilter('JP',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🇯🇵 Giappone</button>
+      </div>
+
+      <!-- Card deck -->
+      <div class="vota-deck-area">
+        <div class="swipe-deck-wrap" id="swipeDeck">
+          <div class="swipe-empty" id="swipeEmpty">
+            <div class="swipe-empty-icon">🎉</div>
+            <div class="swipe-empty-title">Hai votato tutto!</div>
+            <div style="font-size:13px;margin-top:6px;color:var(--cream-dim)">Torna domani per nuove foto.</div>
+            <button class="swipe-restart-btn" onclick="restartSwipe()">🔄 Riavvia</button>
+          </div>
+        </div>
+
+        <!-- Swipe hint -->
+        <div class="vota-hint" id="swipeHint">
+          <span>← salta</span>
+          <span style="font-size:10px;color:var(--cream-dim)">swipe o premi</span>
+          <span>vota →</span>
+        </div>
+
+        <!-- Action buttons -->
+        <div class="vota-actions" id="swipeActions">
+          <button class="vota-btn vota-skip"  onclick="doSwipe('skip')"  aria-label="Salta">✕</button>
+          <button class="vota-btn vota-super" onclick="doSwipe('super')" aria-label="Super voto">⭐</button>
+          <button class="vota-btn vota-like"  onclick="doSwipe('like')"  aria-label="Vota">❤️</button>
         </div>
       </div>
 
-      <!-- Swipe hint -->
-      <div class="vota-hint" id="swipeHint">
-        <span>← salta</span>
-        <span style="font-size:10px;color:var(--cream-dim)">swipe o premi</span>
-        <span>vota →</span>
+      <!-- Stats compatti sotto -->
+      <div class="vota-stats">
+        <div class="vota-stat">
+          <span class="vota-stat-val" id="swipeCountLiked">0</span>
+          <span class="vota-stat-lbl">❤️ Votate</span>
+        </div>
+        <div class="vota-stat">
+          <span class="vota-stat-val" id="swipeCountSuper">0</span>
+          <span class="vota-stat-lbl">⭐ Super</span>
+        </div>
+        <div class="vota-stat">
+          <span class="vota-stat-val" id="swipeCountSkipped">0</span>
+          <span class="vota-stat-lbl">✕ Saltate</span>
+        </div>
       </div>
 
-      <!-- Action buttons -->
-      <div class="vota-actions" id="swipeActions">
-        <button class="vota-btn vota-skip"  onclick="doSwipe('skip')"  aria-label="Salta">✕</button>
-        <button class="vota-btn vota-super" onclick="doSwipe('super')" aria-label="Super voto">⭐</button>
-        <button class="vota-btn vota-like"  onclick="doSwipe('like')"  aria-label="Vota">❤️</button>
+      <!-- Premio info -->
+      <div class="vota-info-strip">
+        🏆 La foto più votata entro il <strong>28 del mese</strong> vince <strong style="color:var(--amber)">€150 + badge Verified Explorer</strong>. Gli utenti Pro hanno moltiplicatore <strong style="color:var(--amber)">×2</strong>.
       </div>
     </div>
 
-    <!-- Stats compatti sotto -->
-    <div class="vota-stats">
-      <div class="vota-stat">
-        <span class="vota-stat-val" id="swipeCountLiked">0</span>
-        <span class="vota-stat-lbl">❤️ Votate</span>
-      </div>
-      <div class="vota-stat">
-        <span class="vota-stat-val" id="swipeCountSuper">0</span>
-        <span class="vota-stat-lbl">⭐ Super</span>
-      </div>
-      <div class="vota-stat">
-        <span class="vota-stat-val" id="swipeCountSkipped">0</span>
-        <span class="vota-stat-lbl">✕ Saltate</span>
+    <!-- SEZIONE 2: PARTECIPA (Upload) -->
+    <div class="vota-sub-section" id="csec-partecipa">
+      <div class="contest-rules-wrap">
+        <h3 style="color:var(--cream);font-size:18px">Carica la tua foto</h3>
+        <p style="color:var(--cream-dim);font-size:13px;line-height:1.5;margin-bottom:8px">Seleziona una foto dal tuo rullino. Verrà inserita nel mazzo delle votazioni in locale.</p>
+        
+        <div id="uploadDropArea" class="upload-area" onclick="document.getElementById('contestFileInput').click()">
+          <div class="upload-icon">📥</div>
+          <div class="upload-title">Tocca per scegliere una foto</div>
+          <div class="upload-sub">JPG o PNG max 5MB</div>
+          <button class="upload-cta">Seleziona dal Rullino</button>
+          <input type="file" id="contestFileInput" class="upload-input-file" accept="image/*" onchange="handleContestPhotoSelect(event)">
+        </div>
+
+        <div id="uploadPreviewWrap" class="upload-preview-wrap">
+          <img id="uploadPreviewImg" src="" alt="Anteprima" class="upload-preview-img">
+          <textarea id="uploadCaption" class="upload-meta-input" placeholder="Aggiungi una didascalia (es. 'L\'alba su Kyoto senza turisti...')" maxlength="150" rows="2"></textarea>
+          <div class="upload-actions-row">
+            <button class="upload-btn-cancel" onclick="cancelContestUpload()">Annulla</button>
+            <button class="upload-btn-submit" onclick="submitContestUpload()">🚀 Invia Foto</button>
+          </div>
+        </div>
       </div>
     </div>
 
-    <!-- Premio info -->
-    <div class="vota-info-strip">
-      🏆 La foto più votata entro il <strong>28 del mese</strong> vince <strong style="color:var(--amber)">€150 + badge Verified Explorer</strong>. Gli utenti Pro hanno moltiplicatore <strong style="color:var(--amber)">×2</strong>.
+    <!-- SEZIONE 3: REGOLE -->
+    <div class="vota-sub-section" id="csec-regole">
+      <div class="contest-rules-wrap">
+        <div class="rules-box">
+          <h3><span style="font-size:20px">📖</span> Come funziona il Contest?</h3>
+          <ul class="rules-list" style="list-style:none;padding:0;margin:0">
+            <li><strong>📸 Carica:</strong> Invia una foto di una "gemma nascosta" (luoghi non turistici, orari particolari, prospettive inedite).</li>
+            <li><strong>🃏 Vota:</strong> La community esprime il proprio voto facendo swipe. Un cuore (❤️) vale +1 punto. Un super voto (⭐) vale +3 punti (solo utenti Premium).</li>
+            <li><strong>🏆 Vinci:</strong> Alla mezzanotte del giorno 28 di ogni mese, l'autore della foto con più punti vincerà <strong>150€</strong> in buoni viaggio e otterrà il badge speciale sul profilo.</li>
+          </ul>
+        </div>
+        <div style="background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);padding:14px;border-radius:12px;font-size:12px;color:var(--cream-dim);text-align:center">
+          <em>Nota: Il caricamento simulato in locale ti permette di vedere la foto e interagire col sistema in tempo reale senza dover attivare Firebase Storage sul server.</em>
+        </div>
+      </div>
     </div>
 
   </div>
@@ -7493,13 +7548,18 @@ window.toggleWishlist       = toggleWishlist;
 window.openWishlistModal    = openWishlistModal;
 window.closeWishlistModal   = closeWishlistModal;
 window.toggleAcc            = toggleAcc;
-window.setSwipeFilter       = setSwipeFilter;
-window.doSwipe              = doSwipe;
-window.restartSwipe         = restartSwipe;
-window.initTransit          = initTransit;
-window.useMyLocation        = useMyLocation;
-window.openTransitRoute     = openTransitRoute;
-window.showSeason           = showSeason;
+window.setSwipeFilter           = setSwipeFilter;
+window.doSwipe                  = doSwipe;
+window.restartSwipe             = restartSwipe;
+window.initTransit              = initTransit;
+window.useMyLocation            = useMyLocation;
+window.openTransitRoute         = openTransitRoute;
+window.showSeason               = showSeason;
+// ── Contest tabs ──
+window.switchContestTab         = switchContestTab;
+window.handleContestPhotoSelect = handleContestPhotoSelect;
+window.cancelContestUpload      = cancelContestUpload;
+window.submitContestUpload      = submitContestUpload;
 
 
 // ── Gestione API Key — SOLO ADMIN ──
@@ -7753,11 +7813,21 @@ async function renderProfilePage() {
   } catch(_) { /* Firestore non disponibile — il profilo è già visibile */ }
 }
 
+
 // ── Avvio bottom nav (dopo tutte le definizioni di variabili e funzioni) ──
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', initBottomNav);
-} else {
+// Usa DOMContentLoaded per garantire che il <nav> esista già nel DOM
+function _doInitBottomNav() {
   initBottomNav();
+  // Aggiorna icona profilo quando Firebase auth è pronto
+  if (firebaseAuth && firebaseAuth.currentUser !== undefined) {
+    updateBnavProfileIcon();
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', _doInitBottomNav);
+} else {
+  // Esegui al prossimo macrotask per dare tempo al browser di finire il parse dell'HTML successivo allo script
+  setTimeout(_doInitBottomNav, 0);
 }
 
 // Re-init on resize
