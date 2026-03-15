@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>WanderQuest v2.0 — Ecosistema Globale</title>
+<title>WanderQuest v3.0 — Ecosistema Globale</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -1635,6 +1635,92 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   .ai-suggestion-chip { flex-shrink: 0; }
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   ACCORDION + NUOVE SEZIONI
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── ACCORDION GENERIC ── */
+.accordion { display:flex;flex-direction:column;gap:10px; }
+.acc-item {
+  background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);
+  border-radius:14px;overflow:hidden;transition:border-color 0.2s;
+}
+.acc-item.open { border-color:rgba(232,162,40,0.3); }
+.acc-trigger {
+  width:100%;display:flex;align-items:center;gap:14px;
+  padding:18px 22px;background:none;border:none;cursor:pointer;
+  text-align:left;transition:background 0.2s;
+}
+.acc-trigger:hover { background:rgba(255,255,255,0.03); }
+.acc-icon { font-size:22px;flex-shrink:0;width:28px;text-align:center; }
+.acc-label { font-size:15px;font-weight:700;color:var(--cream);flex:1; }
+.acc-tag { font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;padding:3px 9px;border-radius:5px;background:rgba(24,197,168,0.1);border:1px solid rgba(24,197,168,0.15);color:var(--teal);flex-shrink:0; }
+.acc-arrow { font-size:13px;color:var(--cream-dim);transition:transform 0.3s;flex-shrink:0; }
+.acc-item.open .acc-arrow { transform:rotate(180deg); }
+.acc-body {
+  max-height:0;overflow:hidden;
+  transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1),padding 0.3s;
+  padding:0 22px;
+}
+.acc-item.open .acc-body { max-height:2000px;padding:0 22px 22px; }
+
+/* ── GUIDE RAPIDE — accordion content styles ── */
+.guide-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;padding-top:4px; }
+.guide-card { background:rgba(255,255,255,0.03);border:1px solid var(--glass-border);border-radius:12px;padding:16px; }
+.guide-card-icon { font-size:20px;margin-bottom:8px; }
+.guide-card-title { font-size:13px;font-weight:700;color:var(--cream);margin-bottom:5px; }
+.guide-card-text { font-size:12px;color:var(--cream-dim);line-height:1.6; }
+.tip-list { display:flex;flex-direction:column;gap:8px;padding-top:4px; }
+.tip-row { display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--cream-dim);line-height:1.55; }
+.tip-dot { width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:7px; }
+.season-tabs { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:4px; }
+.season-tab { background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s; }
+.season-tab:hover,.season-tab.active { background:rgba(232,162,40,0.1);border-color:rgba(232,162,40,0.3); }
+.season-tab-icon { font-size:24px;margin-bottom:6px; }
+.season-tab-name { font-size:11px;font-weight:700;color:var(--cream); }
+.season-tab-sub { font-size:10px;color:var(--cream-dim);margin-top:3px; }
+.season-content { margin-top:14px;display:none;animation:fadeIn 0.25s ease; }
+.season-content.show { display:block; }
+.month-pills { display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px; }
+.month-pill { background:rgba(232,162,40,0.08);border:1px solid rgba(232,162,40,0.15);color:var(--amber);padding:4px 10px;border-radius:100px;font-size:11px;font-weight:600; }
+.checklist-row { display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;color:var(--cream-dim); }
+.checklist-row:last-child { border-bottom:none; }
+.checklist-icon { font-size:15px;flex-shrink:0;width:22px;text-align:center; }
+.doc-grid { display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;padding-top:4px; }
+.doc-card { background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px;text-align:center; }
+.doc-card-icon { font-size:24px;margin-bottom:6px; }
+.doc-card-name { font-size:12px;font-weight:700;color:var(--cream);margin-bottom:4px; }
+.doc-card-desc { font-size:11px;color:var(--cream-dim);line-height:1.5; }
+.doc-card.required { border-color:rgba(46,197,122,0.25);background:rgba(46,197,122,0.05); }
+.doc-card.optional { border-color:rgba(232,162,40,0.15);background:rgba(232,162,40,0.04); }
+.doc-badge { display:inline-block;font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.07em;padding:2px 6px;border-radius:4px;margin-bottom:6px; }
+.doc-badge.req { background:rgba(46,197,122,0.15);color:var(--green); }
+.doc-badge.opt { background:rgba(232,162,40,0.15);color:var(--amber); }
+.cost-compare { display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding-top:4px; }
+.cost-col { background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:12px;overflow:hidden; }
+.cost-col-head { padding:12px 14px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:0.06em;text-align:center; }
+.cost-col-head.budget-h { background:rgba(46,197,122,0.1);color:var(--green); }
+.cost-col-head.mid-h { background:rgba(232,162,40,0.1);color:var(--amber); }
+.cost-col-head.lux-h { background:rgba(139,92,246,0.12);color:var(--purple); }
+.cost-row { padding:9px 14px;font-size:12px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--cream-dim); }
+.cost-row:last-child { border-bottom:none; }
+.cost-val { font-family:'DM Mono',monospace;font-weight:500;color:var(--cream); }
+
+/* ── GUIDE section ── */
+#guide { padding:80px 0;background:linear-gradient(180deg,var(--navy) 0%,var(--ink) 100%); }
+#guide .inner { max-width:1200px;margin:0 auto;padding:0 48px; }
+
+/* ── CITY DETAIL — inline accordions ── */
+.city-acc { margin-top:20px; }
+
+@media(max-width:768px){
+  #guide .inner { padding-left:16px;padding-right:16px; }
+  .season-tabs { grid-template-columns:repeat(2,1fr); }
+  .cost-compare { grid-template-columns:1fr; }
+  .guide-grid { grid-template-columns:1fr; }
+}
+
 /* ── UTIL ── */
 .hidden { display: none !important; }
 </style>
@@ -1643,12 +1729,15 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 
 <!-- NAV -->
 <nav>
-  <div class="nav-logo">Wander<span>Quest</span> <span style="font-size:11px;background:rgba(24,197,168,0.15);border:1px solid rgba(24,197,168,0.2);color:var(--teal);padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;vertical-align:middle;">v2.0</span></div>
+  <div class="nav-logo">Wander<span>Quest</span> <span style="font-size:11px;background:rgba(24,197,168,0.15);border:1px solid rgba(24,197,168,0.2);color:var(--teal);padding:2px 8px;border-radius:4px;font-family:'DM Mono',monospace;vertical-align:middle;">v3.0</span></div>
   <div class="nav-links">
     <a href="#explorer">🌍 Explorer</a>
+    <a href="#guide">📖 Guide</a>
     <a href="#how-it-works">⚙️ Come Funziona</a>
     <a href="#packing">🧳 Valigia</a>
     <a href="#premium">⭐ Premium</a>
+    <a href="#spin-globe">🎲 Spin Globe</a>
+    <a href="#budget-ai">💰 Stima Spesa</a>
     <a href="#contest">📸 Contest</a>
   </div>
   <div class="nav-auth-area">
@@ -1673,6 +1762,9 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
         <button class="nav-menu-item danger" onclick="logoutUser()">← Esci</button>
       </div>
     </div>
+    <button class="nav-wish-btn" id="navWishBtn" onclick="openWishlistModal()" title="I miei desideri">
+      🤍<span class="nav-wish-count" id="wishNavCount">0</span>
+    </button>
     <button class="nav-cta" onclick="openUpgrade()">Diventa Pro →</button>
     <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileDrawer()" aria-label="Menu">
       <span></span><span></span><span></span>
@@ -1685,7 +1777,10 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   <a href="#explorer"      onclick="closeMobileDrawer()">🌍 Explorer</a>
   <a href="#how-it-works"  onclick="closeMobileDrawer()">⚙️ Come Funziona</a>
   <a href="#packing"       onclick="closeMobileDrawer()">🧳 Packing Planner</a>
-  <a href="#ai-itinerary"  onclick="closeMobileDrawer()">🤖 Itinerario AI</a>
+  <a href="#guide"         onclick="closeMobileDrawer()">📖 Guide Pratiche</a>
+  <a href="#spin-globe"    onclick="closeMobileDrawer()">🎲 Spin the Globe</a>
+  <a href="#budget-ai"     onclick="closeMobileDrawer()">💰 Stima Spesa</a>
+  <a href="#ai-itinerary"  onclick="closeMobileDrawer()">🗺️ Itinerario</a>
   <a href="#premium"       onclick="closeMobileDrawer()">⭐ Premium</a>
   <a href="#contest"       onclick="closeMobileDrawer()">📸 Contest</a>
   <div class="mobile-drawer-divider"></div>
@@ -1708,7 +1803,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
     <em>odia fare il turista</em>
   </h1>
   <p class="hero-sub">
-    Gemme nascoste, valigie generate dall'AI, voli tracciati in tempo reale e una community che premia chi viaggia davvero. Tutto in un posto.
+    Gemme nascoste, valigie generate su misura, voli tracciati in tempo reale e una community che premia chi viaggia davvero. Tutto in un posto.
   </p>
   <div class="hero-ctas">
     <button class="hero-cta-primary" onclick="document.getElementById('explorer').scrollIntoView({behavior:'smooth'})">
@@ -1751,7 +1846,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
         <div class="mockup-card mockup-card-img" onclick="document.getElementById('packing').scrollIntoView({behavior:'smooth'})">
           <div class="mockup-card-photo" style="background-image:url('https://images.unsplash.com/photo-1553531384-411a247ccd73?w=300&q=80&auto=format&fit=crop')"></div>
           <div class="mockup-card-overlay">
-            <div class="mockup-card-label">Valigia AI</div>
+            <div class="mockup-card-label">Valigia Smart</div>
             <div class="mockup-card-sub">generata ora</div>
           </div>
         </div>
@@ -1874,7 +1969,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
         <div class="hiw-icon">🧳</div>
         <div class="hiw-title">La valigia perfetta generata in 10 secondi</div>
         <p class="hiw-text">L'algoritmo combina destinazione, stagione e stile di viaggio per creare una checklist personalizzata — con link diretti ai prodotti Amazon, già filtrati per qualità.</p>
-        <div class="hiw-tag">⚡ Packing Planner AI</div>
+        <div class="hiw-tag">⚡ Packing Planner</div>
       </div>
       <div class="hiw-card card-earn">
         <div class="hiw-num">03 / Guadagna</div>
@@ -1946,10 +2041,10 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 <div id="ai-itinerary">
   <div class="inner">
     <div class="section-label" style="background:rgba(124,58,237,0.12);border-color:rgba(124,58,237,0.25);color:#C4B5FD">
-      🤖 Powered by Claude AI
+      ✦ Pianificatore di Viaggi
     </div>
-    <h2 class="section-title">Il tuo Itinerario<br><em style="font-style:italic;color:#A78BFA">Generato dall'AI</em></h2>
-    <p class="section-sub">Descrivi il tuo viaggio ideale e Claude Haiku crea un programma giorno per giorno su misura — gemme nascoste incluse.</p>
+    <h2 class="section-title">Il tuo Itinerario<br><em style="font-style:italic;color:#A78BFA">Su Misura</em></h2>
+    <p class="section-sub">Descrivi il tuo viaggio ideale il motore genera un programma giorno per giorno su misura — gemme nascoste incluse.</p>
 
     <div class="itinerary-form">
       <div class="itinerary-field">
@@ -1988,16 +2083,326 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
       </div>
       <div class="itinerary-field" style="display:flex;align-items:flex-end;">
         <button class="itinerary-generate-btn" id="itinBtn" onclick="generateItinerary()">
-          ✨ Genera Itinerario AI
+          ✨ Genera Itinerario
         </button>
       </div>
     </div>
 
     <div class="itinerary-spinner" id="itinSpinner">
       <div class="spinner"></div>
-      <span>Claude sta pianificando il tuo viaggio…</span>
+      <span>Pianificazione in corso…</span>
     </div>
     <div class="itinerary-output" id="itinOutput"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- SPIN THE GLOBE -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="spin-globe">
+  <div class="inner">
+    <div class="section-label" style="background:rgba(24,197,168,0.1);border-color:rgba(24,197,168,0.2);color:var(--teal)">
+      🎲 Scoperta Casuale
+    </div>
+    <h2 class="section-title">Non sai dove andare?<br><em style="font-style:italic;color:var(--teal)">Lascia decidere il globo.</em></h2>
+    <p class="section-sub">Premi il pulsante. L'algoritmo estrae una destinazione random dal database e genera un pitch in 3 frasi per farti venire voglia di prenotare subito.</p>
+
+    <div class="globe-arena">
+      <div class="globe-visual">
+        <div class="globe-ring-2"></div>
+        <div class="globe-ring"></div>
+        <div class="globe-orb" id="globeOrb">🌍</div>
+      </div>
+      <button class="spin-btn" id="spinBtn" onclick="spinTheGlobe()">🎲 Gira il Globo</button>
+    </div>
+
+    <div class="spin-result" id="spinResult" style="margin:0 auto">
+      <div class="spin-result-card">
+        <div class="spin-result-header">
+          <div class="spin-city-emoji" id="spinCityEmoji">🏛️</div>
+          <div>
+            <div class="spin-city-name" id="spinCityName">—</div>
+            <div class="spin-city-country" id="spinCityCountry">—</div>
+          </div>
+        </div>
+        <div class="spin-ai-pitch" id="spinAIPitch"></div>
+        <div class="spin-ctas">
+          <button class="spin-go-btn" id="spinGoBtn">🌍 Esplora questa città →</button>
+          <button class="spin-again-btn" onclick="spinTheGlobe()">🔄 Un'altra destinazione</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- AI BUDGET ESTIMATOR -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="budget-ai">
+  <div class="inner">
+    <div class="section-label" style="background:rgba(46,197,122,0.1);border-color:rgba(46,197,122,0.2);color:var(--green)">
+      💰 Stima di Spesa
+    </div>
+    <h2 class="section-title">Quanto spenderai<br><em style="font-style:italic;color:var(--green)">davvero</em> in quel viaggio?</h2>
+    <p class="section-sub">Inserisci la destinazione e i dettagli. Il motore analizza i costi reali locali e genera un budget dettagliato categoria per categoria — senza stime gonfiate da turista.</p>
+
+    <div class="budget-ai-form">
+      <div class="budget-ai-field">
+        <label>Destinazione</label>
+        <input type="text" id="bai-dest" placeholder="Es. Kyoto, Barcellona, Lisbona…" />
+      </div>
+      <div class="budget-ai-field">
+        <label>Giorni</label>
+        <select id="bai-days">
+          <option value="3">3 giorni</option>
+          <option value="5" selected>5 giorni</option>
+          <option value="7">7 giorni</option>
+          <option value="10">10 giorni</option>
+          <option value="14">2 settimane</option>
+        </select>
+      </div>
+      <div class="budget-ai-field">
+        <label>Persone</label>
+        <select id="bai-pax">
+          <option value="1">1 persona</option>
+          <option value="2" selected>2 persone</option>
+          <option value="3">3 persone</option>
+          <option value="4">4 persone</option>
+        </select>
+      </div>
+      <div class="budget-ai-field">
+        <label>Stile viaggio</label>
+        <select id="bai-style">
+          <option value="backpacker">🎒 Backpacker</option>
+          <option value="comfort" selected>🏨 Comfort</option>
+          <option value="luxury">✨ Luxury</option>
+        </select>
+      </div>
+      <div class="budget-ai-field" style="display:flex;align-items:flex-end;">
+        <button class="generate-btn" id="baiBtn" onclick="generateBudgetAI()"
+          style="background:linear-gradient(135deg,#2EC57A,#1A9A5C);box-shadow:0 6px 24px rgba(46,197,122,0.3);border:none">
+          💰 Calcola Ora
+        </button>
+      </div>
+    </div>
+
+    <div class="budget-ai-spinner" id="baiSpinner">
+      <div class="spinner"></div>
+      <span>Analisi costi locali in corso…</span>
+    </div>
+    <div class="budget-ai-result" id="baiResult"></div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- GUIDA RAPIDA — Accordion section -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="guide">
+  <div class="inner">
+    <div class="section-label">📖 Guida Pratica</div>
+    <h2 class="section-title">Tutto quello che devi<br><em style="font-style:italic;color:var(--amber)">sapere prima di partire</em></h2>
+    <p class="section-sub">Clicca su ogni sezione per espanderla. Documenti, stagioni, costi, trasporti — tutto in un posto.</p>
+
+    <div class="accordion" id="guideAccordion">
+
+      <!-- Documenti & Visti -->
+      <div class="acc-item" id="acc-docs">
+        <button class="acc-trigger" onclick="toggleAcc('acc-docs')">
+          <span class="acc-icon">📋</span>
+          <span class="acc-label">Documenti & Visti</span>
+          <span class="acc-tag">Essenziale</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-body">
+          <p style="font-size:13px;color:var(--cream-dim);margin-bottom:14px;line-height:1.65">I documenti che non puoi dimenticare, divisi per tipologia di viaggio.</p>
+          <div class="doc-grid">
+            <div class="doc-card required"><div class="doc-badge req">Sempre</div><div class="doc-card-icon">🛂</div><div class="doc-card-name">Passaporto</div><div class="doc-card-desc">Valido almeno 6 mesi dalla data di rientro. Fai fotocopia e tienila separata.</div></div>
+            <div class="doc-card required"><div class="doc-badge req">EU</div><div class="doc-card-icon">🪪</div><div class="doc-card-name">Carta d'Identità</div><div class="doc-card-desc">Valida per viaggi UE + alcuni paesi extra-EU con accordi bilaterali.</div></div>
+            <div class="doc-card optional"><div class="doc-badge opt">Consigliato</div><div class="doc-card-icon">🛡️</div><div class="doc-card-name">Assicurazione</div><div class="doc-card-desc">Medica e bagaglio. Indispensabile fuori UE. Costa ~€2-5/giorno.</div></div>
+            <div class="doc-card optional"><div class="doc-badge opt">Auto</div><div class="doc-card-icon">🚗</div><div class="doc-card-name">Patente Int.</div><div class="doc-card-desc">Necessaria in Giappone, USA, Australia. Rilasciata in Prefettura in 24h.</div></div>
+            <div class="doc-card optional"><div class="doc-badge opt">Salute</div><div class="doc-card-icon">💊</div><div class="doc-card-name">TEAM / Tessera</div><div class="doc-card-desc">Tessera Europea Assistenza Malattia — gratuita, fondamentale in UE.</div></div>
+            <div class="doc-card optional"><div class="doc-badge opt">Digitale</div><div class="doc-card-icon">📱</div><div class="doc-card-name">Backup digitale</div><div class="doc-card-desc">Foto di tutti i documenti su cloud privato. Salva anche i numeri di emergenza locali.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stagioni di Viaggio -->
+      <div class="acc-item" id="acc-seasons">
+        <button class="acc-trigger" onclick="toggleAcc('acc-seasons')">
+          <span class="acc-icon">🌡️</span>
+          <span class="acc-label">Quando Partire — Guida alle Stagioni</span>
+          <span class="acc-tag">Stagionalità</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-body">
+          <div class="season-tabs" id="seasonTabs">
+            <div class="season-tab active" onclick="showSeason('estate')" id="st-estate"><div class="season-tab-icon">☀️</div><div class="season-tab-name">Estate</div><div class="season-tab-sub">Giu — Ago</div></div>
+            <div class="season-tab" onclick="showSeason('autunno')" id="st-autunno"><div class="season-tab-icon">🍂</div><div class="season-tab-name">Autunno</div><div class="season-tab-sub">Set — Nov</div></div>
+            <div class="season-tab" onclick="showSeason('inverno')" id="st-inverno"><div class="season-tab-icon">❄️</div><div class="season-tab-name">Inverno</div><div class="season-tab-sub">Dic — Feb</div></div>
+            <div class="season-tab" onclick="showSeason('primavera')" id="st-primavera"><div class="season-tab-icon">🌸</div><div class="season-tab-name">Primavera</div><div class="season-tab-sub">Mar — Mag</div></div>
+          </div>
+          <div id="season-panel-estate" class="season-content show">
+            <div class="month-pills"><span class="month-pill">Giugno</span><span class="month-pill">Luglio</span><span class="month-pill">Agosto</span></div>
+            <div class="tip-list">
+              <div class="tip-row"><div class="tip-dot"></div>Evita i siti top (Colosseo, Sagrada Familia, Fushimi Inari) tra le 10 e le 17. Visita all'alba o dopo le 18.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Prenota voli e hotel con almeno 3 mesi di anticipo. Luglio-agosto è alta stagione globale.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Per il Giappone, l'estate è calda e umida (35°C+). Considera Hokkaido come alternativa fresca.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Europa meridionale: le città costiere si svuotano, quelle interne diventano meno caotiche.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Zaino essenziale: crema solare alta protezione, borraccia filtrante, abbigliamento traspirante.</div>
+            </div>
+          </div>
+          <div id="season-panel-autunno" class="season-content">
+            <div class="month-pills"><span class="month-pill">Settembre</span><span class="month-pill">Ottobre</span><span class="month-pill">Novembre</span></div>
+            <div class="tip-list">
+              <div class="tip-row"><div class="tip-dot"></div>La stagione d'oro dei viaggiatori esperti. Prezzi -20/40% rispetto all'estate, folla dimezzata.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Settembre è ideale per Giappone, Spagna, Grecia — ancora caldo ma senza affollamento.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Ottobre: foglie colorate in Giappone (koyo), vendemmia in Italia e Francia.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Porta sempre uno strato impermeabile leggero — le piogge brevi autunnali sono imprevedibili.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Novembre ideale per tour culturali: musei senza fila, orari estesi, tariffe bassa stagione.</div>
+            </div>
+          </div>
+          <div id="season-panel-inverno" class="season-content">
+            <div class="month-pills"><span class="month-pill">Dicembre</span><span class="month-pill">Gennaio</span><span class="month-pill">Febbraio</span></div>
+            <div class="tip-list">
+              <div class="tip-row"><div class="tip-dot"></div>Dicembre: mercatini natalizi in Europa centrale (Vienna, Praga, Strasburgo) — tra le esperienze più autentiche del continente.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Gennaio è il mese più economico dell'anno per volare verso quasi tutte le destinazioni.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Asia tropicale (Tailandia, Bali, Vietnam): inverno europeo = estate perfetta laggiù.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Giappone invernale: onsen con neve, festival di ghiaccio a Sapporo, niente folle.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Febbraio: Carnevale a Venezia e Rio, ma anche i prezzi risalgono. Prenota in anticipo.</div>
+            </div>
+          </div>
+          <div id="season-panel-primavera" class="season-content">
+            <div class="month-pills"><span class="month-pill">Marzo</span><span class="month-pill">Aprile</span><span class="month-pill">Maggio</span></div>
+            <div class="tip-list">
+              <div class="tip-row"><div class="tip-dot"></div>Aprile in Giappone = sakura. Prenota voli e hotel con 6+ mesi di anticipo — sold out garantito.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Maggio è il mese perfetto per l'Europa: caldo piacevole, giornate lunghe, prima che arrivi l'orda estiva.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Marzo ideale per il Medio Oriente e il Nord Africa: temperatura perfetta, Ramadan da considerare nel calendario.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Fioritura dei campi in Provenza e Olanda: spettacolo gratuito e fotograficamente sensazionale.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Primavera = piogge improvvise ovunque. Ombrello ultraleggero sempre nello zaino.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Costi & Confronto -->
+      <div class="acc-item" id="acc-costs">
+        <button class="acc-trigger" onclick="toggleAcc('acc-costs')">
+          <span class="acc-icon">💶</span>
+          <span class="acc-label">Costi Reali per Tipologia di Viaggio</span>
+          <span class="acc-tag">Budget</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-body">
+          <p style="font-size:13px;color:var(--cream-dim);margin-bottom:14px;line-height:1.65">Cifre medie giornaliere per persona in Europa/Giappone/Asia. Escluso volo.</p>
+          <div class="cost-compare">
+            <div class="cost-col">
+              <div class="cost-col-head budget-h">🎒 Backpacker</div>
+              <div class="cost-row">Alloggio<br><span class="cost-val">€15-30</span></div>
+              <div class="cost-row">Cibo<br><span class="cost-val">€10-20</span></div>
+              <div class="cost-row">Trasporti<br><span class="cost-val">€5-10</span></div>
+              <div class="cost-row">Attività<br><span class="cost-val">€5-15</span></div>
+              <div class="cost-row" style="font-weight:700;color:var(--green)">Totale/giorno<br><span class="cost-val">~€35-75</span></div>
+            </div>
+            <div class="cost-col">
+              <div class="cost-col-head mid-h">🏨 Comfort</div>
+              <div class="cost-row">Alloggio<br><span class="cost-val">€60-120</span></div>
+              <div class="cost-row">Cibo<br><span class="cost-val">€30-50</span></div>
+              <div class="cost-row">Trasporti<br><span class="cost-val">€10-20</span></div>
+              <div class="cost-row">Attività<br><span class="cost-val">€20-40</span></div>
+              <div class="cost-row" style="font-weight:700;color:var(--amber)">Totale/giorno<br><span class="cost-val">~€120-230</span></div>
+            </div>
+            <div class="cost-col">
+              <div class="cost-col-head lux-h">✨ Luxury</div>
+              <div class="cost-row">Alloggio<br><span class="cost-val">€200-600</span></div>
+              <div class="cost-row">Cibo<br><span class="cost-val">€80-200</span></div>
+              <div class="cost-row">Trasporti<br><span class="cost-val">€30-80</span></div>
+              <div class="cost-row">Attività<br><span class="cost-val">€50-150</span></div>
+              <div class="cost-row" style="font-weight:700;color:var(--purple)">Totale/giorno<br><span class="cost-val">~€360-1.030</span></div>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding:14px;background:rgba(46,197,122,0.06);border:1px solid rgba(46,197,122,0.1);border-radius:10px;font-size:12px;color:var(--cream-dim);line-height:1.65">
+            💡 <strong style="color:var(--green)">Regola del 20%:</strong> aggiungi sempre il 20% al budget pianificato. Le spese impreviste (farmaci, bagagli in ritardo, taxi d'emergenza, cambio meteo) si materializzano nel 80% dei viaggi.
+          </div>
+        </div>
+      </div>
+
+      <!-- Trasporti & Connettività -->
+      <div class="acc-item" id="acc-transport">
+        <button class="acc-trigger" onclick="toggleAcc('acc-transport')">
+          <span class="acc-icon">🚇</span>
+          <span class="acc-label">Trasporti, SIM & Connettività</span>
+          <span class="acc-tag">Logistica</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-body">
+          <div class="guide-grid">
+            <div class="guide-card"><div class="guide-card-icon">✈️</div><div class="guide-card-title">Voli low cost</div><div class="guide-card-text">Cerca Tue/Wed/Thu. Metti in allerta Google Flights. I prezzi calano 6-8 settimane prima. Evita venerdì e domenica sera.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">🚂</div><div class="guide-card-title">Treni in Europa</div><div class="guide-card-text">Interrail vale la pena per >3 paesi. Prenota Railjet/Thalys/Eurostar con 60+ giorni di anticipo per tariffe Early Bird.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">📡</div><div class="guide-card-title">SIM locale vs eSIM</div><div class="guide-card-text">eSIM (Airalo, Holafly) attivabile prima della partenza. SIM locale all'aeroporto costa in media €10-15 per 10GB. Con iPhone 14+ nessun problema.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">🗺️</div><div class="guide-card-title">Mappe offline</div><div class="guide-card-text">Scarica Maps.me o la zona su Google Maps PRIMA di partire. Funziona senza dati. Indispensabile in zone rurali o con SIM scarica.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">🚌</div><div class="guide-card-title">Bus & Metro locali</div><div class="guide-card-text">Compra biglietti giornalieri/settimanali appena arrivi. Quasi sempre più economici dei biglietti singoli e ti evitano code.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">🚕</div><div class="guide-card-title">Taxi & Ride-sharing</div><div class="guide-card-text">Uber funziona in 70+ paesi. In Giappone usa JapanTaxi. A Tokyo e Bangkok evita taxi dalla strada — usa app per evitare truffe.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sicurezza & Emergenze -->
+      <div class="acc-item" id="acc-safety">
+        <button class="acc-trigger" onclick="toggleAcc('acc-safety')">
+          <span class="acc-icon">🛡️</span>
+          <span class="acc-label">Sicurezza, Salute & Numeri di Emergenza</span>
+          <span class="acc-tag">Importante</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-body">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+            <div>
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--teal);margin-bottom:10px">📞 Numeri Globali</div>
+              <div class="tip-list">
+                <div class="tip-row"><div class="tip-dot" style="background:var(--red)"></div><strong>Italia:</strong> 112 (emergenze), 118 (ambulanza), 113 (polizia)</div>
+                <div class="tip-row"><div class="tip-dot" style="background:var(--red)"></div><strong>EU:</strong> 112 funziona in tutti i 27 paesi dell'Unione</div>
+                <div class="tip-row"><div class="tip-dot" style="background:var(--red)"></div><strong>USA/Canada:</strong> 911</div>
+                <div class="tip-row"><div class="tip-dot" style="background:var(--red)"></div><strong>Giappone:</strong> 110 (polizia), 119 (ambulanza)</div>
+                <div class="tip-row"><div class="tip-dot" style="background:var(--red)"></div><strong>Ambasciata IT:</strong> cerca "ambasciata italiana in [paese]" prima di partire e salva il numero.</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;color:var(--amber);margin-bottom:10px">⚠️ Checklist Pre-Partenza</div>
+              <div class="tip-list">
+                <div class="tip-row"><div class="tip-dot"></div>Fotocopia passaporto conservata separata dai documenti originali</div>
+                <div class="tip-row"><div class="tip-dot"></div>App Farnesina scaricata (Ministero degli Esteri italiano) — allerte viaggio in tempo reale</div>
+                <div class="tip-row"><div class="tip-dot"></div>Assicurazione medica attivata e numero di emergenza salvato</div>
+                <div class="tip-row"><div class="tip-dot"></div>Carta di credito con zero commissioni estero (Revolut, N26, Wise)</div>
+                <div class="tip-row"><div class="tip-dot"></div>Contanti locali per le prime 24h — non dipendere solo dal bancomat all'arrivo</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Fotografia di Viaggio -->
+      <div class="acc-item" id="acc-photo">
+        <button class="acc-trigger" onclick="toggleAcc('acc-photo')">
+          <span class="acc-icon">📸</span>
+          <span class="acc-label">Fotografia di Viaggio — Tecniche & Etica</span>
+          <span class="acc-tag">Creatività</span>
+          <span class="acc-arrow">▾</span>
+        </button>
+        <div class="acc-body">
+          <div class="guide-grid">
+            <div class="guide-card"><div class="guide-card-icon">🌅</div><div class="guide-card-title">Ora d'Oro & Ora Blu</div><div class="guide-card-text">Le 40 minuti dopo l'alba e prima del tramonto danno luce soffusa impossibile da imitare in post-produzione. Svegliati prima degli altri.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">📐</div><div class="guide-card-title">Regola dei Terzi</div><div class="guide-card-text">Attiva la griglia sulla fotocamera. Posiziona l'orizzonte su una delle linee orizzontali, i soggetti all'incrocio. Funziona sempre.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">🤝</div><div class="guide-card-title">Etica del Ritratto</div><div class="guide-card-text">Chiedi sempre il permesso prima di fotografare persone. In molte culture è un obbligo morale, non solo di galateo. Un sorriso apre tutto.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">💾</div><div class="guide-card-title">Backup Automatico</div><div class="guide-card-text">Attiva Google Foto o iCloud su rete WiFi ogni sera. Ricorda che SD card e telefoni si perdono, ma il cloud no.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">🚫</div><div class="guide-card-title">Zone Vietate</div><div class="guide-card-text">Templi in Giappone, cerimonie religiose, aree militari, bambini senza consenso dei genitori. Informati prima: le sanzioni locali possono essere severe.</div></div>
+            <div class="guide-card"><div class="guide-card-icon">🎨</div><div class="guide-card-title">Post-Produzione</div><div class="guide-card-text">Lightroom Mobile è gratuito e potente. Impara a regolare ombre e alti lumi prima di toccare la saturazione. Meno è più.</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /accordion -->
   </div>
 </div>
 
@@ -2184,6 +2589,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
         <div class="footer-col-title">Prodotto</div>
         <div class="footer-links">
           <a href="#explorer">🌍 Explorer</a>
+    <a href="#guide">📖 Guide</a>
           <a href="#packing">🧳 Packing Planner</a>
           <a href="#premium">⭐ Explorer Plus</a>
           <a href="#contest">📸 Photo Contest</a>
@@ -2250,6 +2656,21 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
     <div class="modal-body" id="valigieBody">
       <div class="grid-spinner"><div class="spinner"></div><span>Caricamento valigie…</span></div>
     </div>
+  </div>
+</div>
+
+
+<!-- ═══ WISHLIST MODAL ═══ -->
+<div class="modal-overlay hidden" id="wishlistOverlay" onclick="if(event.target===this)closeWishlistModal()">
+  <div class="modal-lg">
+    <div class="modal-header">
+      <div>
+        <div class="modal-header-title">🤍 Le mie Mete Desiderate</div>
+        <div class="modal-header-sub">Città che vuoi visitare — salvate localmente</div>
+      </div>
+      <button class="modal-close" onclick="closeWishlistModal()">✕</button>
+    </div>
+    <div class="modal-body" id="wishlistBody"></div>
   </div>
 </div>
 
@@ -2383,12 +2804,10 @@ const firebaseAuth = getAuth(firebaseApp);
 const firestoreDb  = getFirestore(firebaseApp);
 
 // ═══════════════════════════════════════════════════════════════════════
-// CLAUDE HAIKU — API KEY
-// ▶ INSERISCI QUI LA TUA CHIAVE: sostituisci la stringa vuota con sk-ant-...
+// CLAUDE HAIKU — Proxy Cloudflare Worker (nessuna API key nel frontend)
 // ═══════════════════════════════════════════════════════════════════════
-const CLAUDE_API_KEY = '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';        
-const CLAUDE_MODEL   = 'claude-haiku-4-5-20251001';
-const CLAUDE_ENDPOINT = 'https://api.anthropic.com/v1/messages';
+const CLAUDE_MODEL    = 'claude-haiku-4-5-20251001';
+const CLAUDE_ENDPOINT = 'https://claude-proxy.conti9708.workers.dev';
 // ═══════════════════════════════════════════════════════════════════════
 // DATABASE GERARCHICO COMPLETO
 // ═══════════════════════════════════════════════════════════════════════
@@ -2726,7 +3145,8 @@ function handleSearch(query) {
 
   if (results.length === 0) {
     // Se API key disponibile: mostra messaggio leggero e avvia auto-generazione dopo 600ms
-    if (CLAUDE_API_KEY) {
+    // Proxy sempre disponibile: avvia sempre AI generation
+    if (true) {
       dropdown.innerHTML = `
         <div class="search-ai-loading" style="padding:16px 20px">
           <div class="spinner"></div>
@@ -2965,7 +3385,7 @@ function _injectAndOpenAICity(cityObj, cityName) {
   // Inject into a virtual AI continent in DB so all existing functions work
   if (!DB.continents._AI) {
     DB.continents._AI = {
-      name: 'AI Generated', emoji: '🤖', countryCount: 0,
+      name: 'Scoperte', emoji: '🤖', countryCount: 0,
       countries: { _AI: { name: cityObj._country || 'AI', emoji: '🌐', cities: {} } }
     };
   }
@@ -2987,7 +3407,7 @@ function _injectAndOpenAICity(cityObj, cityName) {
   document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
 
   setTimeout(() => calcBudget(cityCode), 80);
-  showToast(`✨ "${cityObj.name}" generata da Claude AI`);
+  showToast(`✨ "${cityObj.name}" aggiunta all'esploratore`);
 }
 
 // Close dropdown on outside click
@@ -3131,8 +3551,12 @@ async function renderCities(continentCode, countryCode) {
   const cities = DB.continents[continentCode].countries[countryCode].cities;
   grid.innerHTML = Object.entries(cities).map(([code, city]) => `
     <div class="city-card ${selectedCity === code ? 'selected' : ''}" onclick="selectCity('${code}')">
-      <div class="city-thumb" style="background:${city.bg}">
+      <div class="city-thumb" style="background:${city.bg};position:relative">
         <span style="position:relative;z-index:1;font-size:52px">${city.emoji}</span>
+        <button class="city-wish-btn ${isWishlisted(code) ? 'wished' : ''}"
+          data-wishcode="${code}"
+          onclick="event.stopPropagation();toggleWishlist('${code}','${city.name}','${city.emoji}')"
+          title="Aggiungi ai desideri">${isWishlisted(code) ? '❤️' : '🤍'}</button>
       </div>
       <div class="city-body">
         <div class="city-name">${city.name}</div>
@@ -3154,6 +3578,7 @@ function selectCity(code) {
   addToRecentlyViewed(code, city, selectedCountry);
   // Trigger initial budget calculation after render
   setTimeout(() => calcBudget(code), 50);
+  setTimeout(() => loadLiveWeather(city.name, code), 400);
   document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -3213,13 +3638,19 @@ function renderCityDetail(code, city, country) {
   detail.innerHTML = `
     <div class="city-detail-inner">
       <div class="detail-header">
-        <div>
-          <div class="detail-title">
-            <span class="dest-country">${country.emoji} ${country.name}</span>
-            ${city.emoji} ${city.name}
+        <div style="display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap">
+          <div style="flex:1;min-width:0">
+            <div class="detail-title">
+              <span class="dest-country">${country.emoji} ${country.name}</span>
+              ${city.emoji} ${city.name}
+            </div>
           </div>
+          <button class="wish-btn-detail ${isWishlisted(code) ? 'wished' : ''}"
+            id="wish-detail-${code}"
+            onclick="toggleWishlist('${code}','${city.name}','${city.emoji}')">${isWishlisted(code) ? '❤️ Nei Desideri' : '🤍 Aggiungi ai Desideri'}</button>
         </div>
-        <div class="detail-climate">${climateHTML}</div>
+        <div class="detail-climate" style="margin-top:12px">${climateHTML}</div>
+        <div id="liveweather-${code}"></div>
       </div>
 
       <div class="detail-grid">
@@ -3291,9 +3722,18 @@ function renderCityDetail(code, city, country) {
       <!-- Weather AI Analysis -->
       <div style="margin-top:16px">
         <button class="weather-ai-btn" onclick="askWeatherAI('${code}','${city.name}')">
-          🌤️ Analisi meteo AI — Quando andare?
+          🌤️ Quando è il momento giusto?
         </button>
         <div class="weather-ai-result" id="weather-ai-${code}"></div>
+      </div>
+
+      <!-- Frasebook AI -->
+      <div style="margin-top:4px">
+        <button class="frasebook-btn" id="frase-btn-${code}"
+          onclick="generateFrasebook('${code}','${city.name}','${country.name}')">
+          🗣️ Frasi Essenziali per ${country.name}
+        </button>
+        <div class="frasebook-result" id="frase-result-${code}"></div>
       </div>
 
       <!-- AI City Chat -->
@@ -3301,9 +3741,9 @@ function renderCityDetail(code, city, country) {
         <div class="ai-chat-header">
           <div class="ai-chat-avatar">🤖</div>
           <div>
-            <div class="ai-chat-title">Chiedi all'AI su ${city.name}</div>
+            <div class="ai-chat-title">Chiedi all'esperto su ${city.name}</div>
             <div class="ai-chat-subtitle">
-              <span class="ai-badge">✦ Claude Haiku</span>
+              <span class="ai-badge">✦ Esperto Locale</span>
               &nbsp;Esperto locale virtuale
             </div>
           </div>
@@ -3331,8 +3771,65 @@ function renderCityDetail(code, city, country) {
           <button class="ai-chat-send" id="chat-send-${code}" onclick="sendCityChat('${code}','${city.name}')">➤</button>
         </div>
       </div>
+
+      <!-- City inline accordions -->
+      <div class="city-acc accordion">
+
+        <div class="acc-item" id="acc-q-${code}">
+          <button class="acc-trigger" onclick="toggleAcc('acc-q-${code}')">
+            <span class="acc-icon">🏘️</span>
+            <span class="acc-label">Quartieri di ${city.name} — Dove stare</span>
+            <span class="acc-tag">Alloggio</span>
+            <span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body" id="accbody-q-${code}">
+            <div class="tip-list" style="padding-top:4px">
+              <div class="tip-row"><div class="tip-dot"></div><strong>Centro storico</strong> — massima accessibilità, massimo rumore notturno e prezzi alti. Consigliato per soggiorni brevi (1-2 notti).</div>
+              <div class="tip-row"><div class="tip-dot"></div><strong>Quartieri residenziali</strong> — dove vivono i locali. Metro + 2 fermate dal centro. Prezzi -30%, autenticità +100%.</div>
+              <div class="tip-row"><div class="tip-dot"></div><strong>Periferica collegata</strong> — ideale per famiglie o soggiorni lunghi. Cerca "neighbourhood guide ${city.name}" per mappe specifiche.</div>
+              <div class="tip-row"><div class="tip-dot"></div>Controlla sempre la distanza in minuti di cammino dai trasporti pubblici, non solo in km. Una fermata metro vale più di 10 km di distanza dal centro.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item" id="acc-t-${code}">
+          <button class="acc-trigger" onclick="toggleAcc('acc-t-${code}')">
+            <span class="acc-icon">🚇</span>
+            <span class="acc-label">Come Muoversi a ${city.name}</span>
+            <span class="acc-tag">Trasporti</span>
+            <span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body" id="accbody-t-${code}">
+            <div class="guide-grid" style="padding-top:4px">
+              <div class="guide-card"><div class="guide-card-icon">🎫</div><div class="guide-card-title">Biglietti</div><div class="guide-card-text">Compra un abbonamento giornaliero o settimanale appena arrivi. Costa meno di 3 biglietti singoli e non si finisce mai di averne abbastanza.</div></div>
+              <div class="guide-card"><div class="guide-card-icon">🚶</div><div class="guide-card-title">A Piedi</div><div class="guide-card-text">Il centro storico di molte città europee è percorribile a piedi. Google Maps mostra i percorsi a piedi con orari precisi.</div></div>
+              <div class="guide-card"><div class="guide-card-icon">🚲</div><div class="guide-card-title">Bike Sharing</div><div class="guide-card-text">Quasi tutte le grandi città hanno sistemi di bici condivise (BiciMIA, Mobike, Citi Bike). €1-3 per 30 minuti. Perfetto per brevi spostamenti.</div></div>
+              <div class="guide-card"><div class="guide-card-icon">🚖</div><div class="guide-card-title">Taxi Smart</div><div class="guide-card-text">Usa app locali (FREE NOW, Bolt, Grab) invece dei taxi in strada. Prezzo fisso mostrato prima della corsa. Zero discussioni.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item" id="acc-food-${code}">
+          <button class="acc-trigger" onclick="toggleAcc('acc-food-${code}')">
+            <span class="acc-icon">🍷</span>
+            <span class="acc-label">Mangiare come un locale a ${city.name}</span>
+            <span class="acc-tag">Gastronomia</span>
+            <span class="acc-arrow">▾</span>
+          </button>
+          <div class="acc-body" id="accbody-food-${code}">
+            <div class="tip-list" style="padding-top:4px">
+              <div class="tip-row"><div class="tip-dot"></div><strong>Orari reali:</strong> i ristoranti aperti alle 12 esatte sono una trappola turistica. I locali mangiano tra le 13:30 e le 15, poi cena dalle 20:30.</div>
+              <div class="tip-row"><div class="tip-dot"></div><strong>Mercati coperti:</strong> sono la versione locale dei food court. Freschi, economici, e frequentati da chi vive lì. Cerca "Mercado Central" o "Mercato Centrale" nella città.</div>
+              <div class="tip-row"><div class="tip-dot"></div><strong>Menù del giorno:</strong> il pranzo è quasi sempre la pasto più conveniente. In Spagna il "menú del día" offre 3 portate + bevanda a €10-14.</div>
+              <div class="tip-row"><div class="tip-dot"></div><strong>Segnale di qualità:</strong> se il menù ha foto plastificate e 6 lingue, gira i tacchi. Se c'è solo un foglio manoscritto in lingua locale, siediti.</div>
+              <div class="tip-row"><div class="tip-dot"></div><strong>Colazione:</strong> mai farla in hotel se non inclusa. Un bar locale costa 1/3 del prezzo e il caffè è sempre migliore.</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /city-acc -->
     </div>
-  `;
+  \`;
 }
 
 function goToLevel(level) {
@@ -4463,6 +4960,7 @@ function addToRecentlyViewed(code, city, countryCode) {
   rv = rv.slice(0, RV_MAX);
   try { localStorage.setItem(RV_KEY, JSON.stringify(rv)); } catch {}
   renderRecentlyViewed();
+updateWishBadge();
 }
 
 function renderRecentlyViewed() {
@@ -4505,16 +5003,9 @@ async function jumpToRecentCity(continentCode, countryCode, cityCode) {
 // CLAUDE AI — Core helper
 // ═══════════════════════════════════════════════════════════════════════
 async function claudeAsk(systemPrompt, userMessage, maxTokens = 600) {
-  if (!CLAUDE_API_KEY) {
-    return '⚠️ Inserisci la tua API key Claude nel file HTML per abilitare questa funzione (cerca CLAUDE_API_KEY).';
-  }
   const res = await fetch(CLAUDE_ENDPOINT, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': CLAUDE_API_KEY,
-      'anthropic-version': '2023-06-01',
-    },
+    headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       model: CLAUDE_MODEL,
       max_tokens: maxTokens,
@@ -4595,11 +5086,7 @@ Usa occasionalmente emoji per rendere il testo più leggibile. Tono: amichevole 
     // Multi-turn: send full history
     const res = await fetch(CLAUDE_ENDPOINT, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': CLAUDE_API_KEY,
-        'anthropic-version': '2023-06-01',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: CLAUDE_MODEL,
         max_tokens: 500,
@@ -4615,10 +5102,7 @@ Usa occasionalmente emoji per rendere il testo più leggibile. Tono: amichevole 
     appendChatMessage(cityCode, 'ai', answer);
   } catch (err) {
     removeTyping(cityCode);
-    const msg = CLAUDE_API_KEY
-      ? `❌ Errore: ${err.message}`
-      : '⚠️ API key non configurata. Inserisci la chiave in CLAUDE_API_KEY nell\'HTML.';
-    appendChatMessage(cityCode, 'ai', msg);
+    appendChatMessage(cityCode, 'ai', `❌ Errore: ${err.message}`);
   }
   sendBtn.disabled = false;
   inputEl.focus();
@@ -4658,7 +5142,7 @@ Dammi 3 consigli: 1) Il mese/stagione MIGLIORE per visitarla e perché. 2) Il pe
     resultEl.textContent = `❌ ${err.message}`;
     resultEl.classList.add('show');
   }
-  if (btn) { btn.disabled = false; btn.textContent = '🌤️ Analisi meteo AI — Quando andare?'; }
+  if (btn) { btn.disabled = false; btn.textContent = '🌤️ Quando è il momento giusto?'; }
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -4720,12 +5204,259 @@ Includi SOLO luoghi specifici con nome, non generici. Privilegia esperienze loca
       } catch { /* non bloccante */ }
     }
   } catch (err) {
-    output.innerHTML = `<p style="color:var(--red)">❌ Errore: ${err.message}${!CLAUDE_API_KEY ? '<br><br>⚠️ Ricorda di inserire la tua API key in CLAUDE_API_KEY.' : ''}</p>`;
+    output.innerHTML = `<p style="color:var(--red)">❌ Errore: ${err.message}</p>`;
     output.classList.add('show');
   }
   btn.disabled = false;
-  btn.textContent = '✨ Genera Itinerario AI';
+  btn.textContent = '✨ Genera Itinerario';
   spinner.classList.remove('show');
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════
+// ACCORDION
+// ═══════════════════════════════════════════════════════════════════════
+function toggleAcc(id) {
+  const item = document.getElementById(id);
+  if (!item) return;
+  item.classList.toggle('open');
+}
+
+function showSeason(name) {
+  ['estate','autunno','inverno','primavera'].forEach(s => {
+    const tab   = document.getElementById('st-' + s);
+    const panel = document.getElementById('season-panel-' + s);
+    if (tab)   tab.classList.toggle('active', s === name);
+    if (panel) panel.classList.toggle('show',  s === name);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// WISHLIST — localStorage
+// ═══════════════════════════════════════════════════════════════════════
+function getWishlist() {
+  try { return JSON.parse(localStorage.getItem('wq_wishlist') || '[]'); }
+  catch { return []; }
+}
+function saveWishlist(list) {
+  localStorage.setItem('wq_wishlist', JSON.stringify(list));
+  updateWishBadge();
+}
+function isWishlisted(code) {
+  return getWishlist().some(w => w.code === code);
+}
+function toggleWishlist(code, name, emoji) {
+  let list = getWishlist();
+  const idx = list.findIndex(w => w.code === code);
+  if (idx === -1) {
+    list.push({ code, name, emoji });
+    showToast('❤️ ' + name + ' aggiunta ai desideri!');
+  } else {
+    list.splice(idx, 1);
+    showToast('💔 ' + name + ' rimossa dai desideri');
+  }
+  saveWishlist(list);
+  document.querySelectorAll('[data-wishcode="' + code + '"]').forEach(btn => {
+    const w = isWishlisted(code);
+    btn.textContent = w ? '❤️' : '🤍';
+    btn.classList.toggle('wished', w);
+  });
+  const db = document.getElementById('wish-detail-' + code);
+  if (db) {
+    const w = isWishlisted(code);
+    db.textContent = w ? '❤️ Nei Desideri' : '🤍 Aggiungi ai Desideri';
+    db.classList.toggle('wished', w);
+  }
+}
+function updateWishBadge() {
+  const count = getWishlist().length;
+  const badge = document.getElementById('wishNavCount');
+  if (badge) {
+    badge.textContent = count;
+    badge.style.display = count > 0 ? 'flex' : 'none';
+  }
+}
+function openWishlistModal() {
+  const overlay = document.getElementById('wishlistOverlay');
+  const body    = document.getElementById('wishlistBody');
+  if (!overlay) return;
+  const list = getWishlist();
+  if (list.length === 0) {
+    body.innerHTML = '<div class="wishlist-empty"><div class="wishlist-empty-icon">🤍</div><div>Ancora nessuna destinazione salvata.</div><div style="margin-top:8px;font-size:13px">Premi il cuore ❤️ sulle schede città per aggiungerle qui.</div></div>';
+  } else {
+    body.innerHTML = list.map(w =>
+      '<div class="wish-city-card"><div class="wish-city-emoji">' + w.emoji + '</div>' +
+      '<div class="wish-city-name">' + w.name + '</div>' +
+      '<button class="wish-city-remove" onclick="toggleWishlist(\'' + w.code + '\',\'' + w.name + '\',\'' + w.emoji + '\');openWishlistModal()" title="Rimuovi">✕</button></div>'
+    ).join('');
+  }
+  overlay.classList.remove('hidden');
+}
+function closeWishlistModal() {
+  document.getElementById('wishlistOverlay')?.classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// SPIN THE GLOBE
+// ═══════════════════════════════════════════════════════════════════════
+async function spinTheGlobe() {
+  const btn    = document.getElementById('spinBtn');
+  const orb    = document.getElementById('globeOrb');
+  const result = document.getElementById('spinResult');
+  btn.disabled = true;
+  orb.classList.remove('spinning');
+  void orb.offsetWidth;
+  orb.classList.add('spinning');
+  setTimeout(() => orb.classList.remove('spinning'), 700);
+  const all = [];
+  for (const [contCode, cont] of Object.entries(DB.continents)) {
+    for (const [countryCode, country] of Object.entries(cont.countries)) {
+      if (!country.cities) continue;
+      for (const [cityCode, city] of Object.entries(country.cities)) {
+        all.push({ contCode, countryCode, country, cityCode, city });
+      }
+    }
+  }
+  if (!all.length) { btn.disabled = false; return; }
+  const pick = all[Math.floor(Math.random() * all.length)];
+  const { contCode, countryCode, country, cityCode, city } = pick;
+  document.getElementById('spinCityEmoji').textContent   = city.emoji;
+  document.getElementById('spinCityName').textContent    = city.name;
+  document.getElementById('spinCityCountry').textContent = country.emoji + ' ' + country.name;
+  const pitch = document.getElementById('spinAIPitch');
+  pitch.innerHTML = '<span style="color:rgba(196,181,253,0.6);font-size:13px">✨ Pitch in preparazione…</span>';
+  result.classList.add('show');
+  document.getElementById('spinGoBtn').onclick = () => {
+    selectContinent(contCode);
+    setTimeout(async () => {
+      await renderCountries(contCode);
+      goToLevel('country');
+      setTimeout(async () => {
+        selectedCountry = countryCode;
+        await renderCities(contCode, countryCode);
+        goToLevel('city');
+        setTimeout(() => {
+          selectCity(cityCode);
+          document.getElementById('city-detail').scrollIntoView({ behavior:'smooth' });
+        }, 300);
+      }, 300);
+    }, 300);
+    document.getElementById('explorer').scrollIntoView({ behavior:'smooth' });
+  };
+  try {
+    const answer = await claudeAsk(
+      'Sei un copywriter di viaggio brillante. Scrivi in italiano, massimo 3 frasi brevi e vivide. Niente frasi banali. Usa dettagli sensoriali specifici. Tono: amico entusiasta appena tornato.',
+      'Convinci in 3 frasi a visitare ' + city.name + ', ' + country.name + '. Includi: un dettaglio sensoriale preciso, una cosa inaspettata non sulle guide, e un motivo urgente per andarci.',
+      180
+    );
+    pitch.textContent = answer;
+  } catch {
+    pitch.textContent = '✈️ ' + city.name + ' è una di quelle destinazioni che cambiano il modo in cui guardi il mondo. Vai.';
+  }
+  btn.disabled = false;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// AI BUDGET ESTIMATOR
+// ═══════════════════════════════════════════════════════════════════════
+async function generateBudgetAI() {
+  const dest  = document.getElementById('bai-dest')?.value?.trim();
+  const days  = document.getElementById('bai-days')?.value || '5';
+  const pax   = document.getElementById('bai-pax')?.value  || '2';
+  const style = document.getElementById('bai-style')?.value || 'comfort';
+  if (!dest) { showToast('✍️ Inserisci una destinazione!'); document.getElementById('bai-dest').focus(); return; }
+  const btn     = document.getElementById('baiBtn');
+  const spinner = document.getElementById('baiSpinner');
+  const result  = document.getElementById('baiResult');
+  btn.disabled = true;
+  spinner.classList.add('show');
+  result.classList.remove('show');
+  const sys = 'Sei un esperto di budget di viaggio con dati precisi sui costi locali reali. Rispondi SOLO con JSON valido, senza testo fuori dal JSON, senza backtick. Formato: {"categories":[{"icon":"🏨","name":"Alloggio","daily":50,"total":250,"tip":"consiglio specifico"},{"icon":"🍽️","name":"Cibo & Drink","daily":35,"total":175,"tip":"..."},{"icon":"🚇","name":"Trasporti locali","daily":10,"total":50,"tip":"..."},{"icon":"🎭","name":"Attività & Ingressi","daily":20,"total":100,"tip":"..."},{"icon":"🛍️","name":"Shopping & Extra","daily":15,"total":75,"tip":"..."}],"grandTotal":650,"savingTip":"modo pratico per risparmiare il 15-20%","bestValue":"la spesa che vale ogni euro"} — tutti EUR per persona stile ' + style + '.';
+  const usr = 'Budget per: ' + dest + ', ' + days + ' giorni, ' + pax + ' persone, stile ' + style + '. Il "total" di ogni categoria = daily × ' + days + '. "grandTotal" = somma di tutti i total.';
+  try {
+    const raw   = await claudeAsk(sys, usr, 700);
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const data  = JSON.parse(clean);
+    const catsHTML = data.categories.map(c =>
+      '<div class="budget-ai-card">' +
+      '<div class="budget-ai-card-icon">' + c.icon + '</div>' +
+      '<div class="budget-ai-card-cat">' + c.name + '</div>' +
+      '<div class="budget-ai-card-val">€' + c.daily + '<span style="font-size:12px;color:var(--cream-dim)">/giorno</span></div>' +
+      '<div class="budget-ai-card-sub">Totale ' + days + 'gg: ~€' + c.total + '</div>' +
+      '<div style="margin-top:9px;font-size:11px;color:var(--cream-dim);line-height:1.55">' + c.tip + '</div></div>'
+    ).join('');
+    result.innerHTML =
+      '<div class="budget-ai-cards">' + catsHTML + '</div>' +
+      '<div class="budget-ai-total"><div><div class="budget-ai-total-label">' + dest + ' · ' + days + ' giorni · ' + pax + ' ' + (parseInt(pax)===1?'persona':'persone') + ' · stile ' + style + '</div><div style="font-size:11px;color:var(--cream-dim);margin-top:3px">stima per persona</div></div>' +
+      '<div><div class="budget-ai-total-val">€' + Math.round(data.grandTotal / parseInt(pax)) + '</div><div style="font-size:10px;color:var(--green);margin-top:2px">totale ' + days + ' giorni</div></div></div>' +
+      '<div class="budget-ai-tips">💡 <strong>Come risparmiare:</strong> ' + data.savingTip + '<br><br>✨ <strong>Vale ogni euro:</strong> ' + data.bestValue + '</div>';
+    result.classList.add('show');
+    result.scrollIntoView({ behavior:'smooth', block:'nearest' });
+  } catch(err) {
+    result.innerHTML = '<div style="color:var(--red);padding:20px;font-size:13px">❌ Errore: ' + err.message + '. Riprova con una destinazione più specifica.</div>';
+    result.classList.add('show');
+  }
+  btn.disabled = false;
+  spinner.classList.remove('show');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// FRASEBOOK AI
+// ═══════════════════════════════════════════════════════════════════════
+async function generateFrasebook(cityCode, cityName, countryName) {
+  const btn    = document.getElementById('frase-btn-' + cityCode);
+  const result = document.getElementById('frase-result-' + cityCode);
+  if (!btn || !result) return;
+  btn.disabled = true;
+  btn.textContent = '⏳ Generando…';
+  result.innerHTML = '<div style="color:var(--amber);font-size:12px;padding:8px 0">🗣️ Frasi in elaborazione…</div>';
+  result.classList.add('show');
+  const sys = 'Sei un esperto linguistico. Rispondi SOLO con JSON valido, senza testo fuori dal JSON, senza backtick. Formato: {"phrases":[{"it":"testo italiano","local":"testo in lingua locale","pronounce":"pronuncia fonetica semplice","tip":"nota culturale breve"}]} — esattamente 10 frasi.';
+  const usr = 'Genera 10 frasi essenziali per un turista italiano a ' + cityName + ', ' + countryName + '. Includi: saluto informale, grazie, scusi, vorrei ordinare X, il conto per favore, dove si trova X, quanto costa, parla inglese, aiuto, e una frase da vero locale. Usa la lingua locale esatta parlata a ' + cityName + '.';
+  try {
+    const raw   = await claudeAsk(sys, usr, 800);
+    const clean = raw.replace(/```json|```/g,'').trim();
+    const data  = JSON.parse(clean);
+    result.innerHTML = '<div class="frasebook-grid">' +
+      data.phrases.map(p =>
+        '<div class="phrase-card">' +
+        '<div class="phrase-it">🇮🇹 ' + p.it + '</div>' +
+        '<div class="phrase-local">💬 ' + p.local + '</div>' +
+        '<div class="phrase-tip">🔊 ' + p.pronounce + (p.tip ? ' · ' + p.tip : '') + '</div></div>'
+      ).join('') + '</div>';
+  } catch(err) {
+    result.innerHTML = '<div style="color:var(--red);font-size:12px;padding:8px 0">❌ ' + err.message + '</div>';
+  }
+  btn.disabled = false;
+  btn.textContent = '🗣️ Frasi Essenziali';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// LIVE WEATHER — wttr.in
+// ═══════════════════════════════════════════════════════════════════════
+async function loadLiveWeather(cityName, code) {
+  const container = document.getElementById('liveweather-' + code);
+  if (!container) return;
+  const WI = {'Sunny':'☀️','Clear':'🌙','Partly cloudy':'⛅','Overcast':'☁️','Mist':'🌫️','Fog':'🌫️','Light rain':'🌦️','Moderate rain':'🌧️','Heavy rain':'🌧️','Rain':'🌧️','Drizzle':'🌦️','Snow':'❄️','Thunder':'⛈️','Cloudy':'☁️'};
+  try {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 5000);
+    const res = await fetch('https://wttr.in/' + encodeURIComponent(cityName) + '?format=j1', { signal: ctrl.signal });
+    if (!res.ok) return;
+    const data = await res.json();
+    const cur  = data.current_condition[0];
+    const temp = cur.temp_C;
+    const feels = cur.FeelsLikeC;
+    const desc  = cur.weatherDesc[0].value;
+    let icon = '🌡️';
+    for (const [k,v] of Object.entries(WI)) { if (desc.toLowerCase().includes(k.toLowerCase())) { icon=v; break; } }
+    container.innerHTML =
+      '<div class="live-weather-card">' +
+      '<div class="lw-icon">' + icon + '</div>' +
+      '<div><div class="lw-temp">' + temp + '°C</div><div class="lw-desc">' + desc + '</div><div class="lw-feels">Percepita: ' + feels + '°C</div></div>' +
+      '<div style="margin-left:auto;text-align:right"><div style="font-size:9px;color:var(--cream-dim);text-transform:uppercase;letter-spacing:0.08em">Meteo Ora</div><div style="font-size:10px;color:var(--teal);margin-top:2px">🔴 live</div></div>' +
+      '</div>';
+  } catch { /* silent fail */ }
 }
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -4783,6 +5514,16 @@ window.askWeatherAI         = askWeatherAI;
 window.generateItinerary    = generateItinerary;
 window.showToast            = showToast;
 window.migrateDB            = migrateDB;
+window.spinTheGlobe         = spinTheGlobe;
+window.generateBudgetAI     = generateBudgetAI;
+window.generateFrasebook    = generateFrasebook;
+window.loadLiveWeather      = loadLiveWeather;
+window.isWishlisted         = isWishlisted;
+window.toggleWishlist       = toggleWishlist;
+window.openWishlistModal    = openWishlistModal;
+window.closeWishlistModal   = closeWishlistModal;
+window.toggleAcc            = toggleAcc;
+window.showSeason           = showSeason;
 
 // ═══════════════════════════════════════════════════════════════════════
 // INIT
@@ -4793,6 +5534,7 @@ renderIncomeStreams();
 renderCountryLeaderboard('IT');
 renderGlobalLeaderboard();
 renderRecentlyViewed();
+updateWishBadge();
 </script>
 </body>
 </html>
