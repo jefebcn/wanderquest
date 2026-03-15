@@ -2602,32 +2602,28 @@ button, a, select, input[type="checkbox"] {
   /* ── Body padding for bottom nav ── */
   body { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
 
-  /* ── TAB SYSTEM: hide all data-tab sections on mobile ── */
-  /* Default: hide everything */
-  [data-tab] { display: none !important; }
-  /* Active tab shows its sections */
+  /* ── TAB SYSTEM ──
+     body.setAttribute('data-active-tab', tab) set by JS on mobile only.
+     Without the attribute (desktop), all sections display normally. */
+
+  /* When mobile nav active: hide all tab-sections by default */
+  body[data-active-tab] [data-tab]            { display: none !important; }
+  /* Show sections for the active tab */
   body[data-active-tab="vota"]    [data-tab="vota"]    { display: block !important; }
   body[data-active-tab="esplora"] [data-tab="esplora"] { display: block !important; }
   body[data-active-tab="scopri"]  [data-tab="scopri"]  { display: block !important; }
-  /* valigia tab no longer exists - packing/premium now in scopri */
-  /* Footer shows on all tabs except profilo */
-  body[data-active-tab="vota"]    #footer { display: block !important; }
-  body[data-active-tab="esplora"] #footer { display: block !important; }
-  body[data-active-tab="scopri"]  #footer { display: block !important; }
-
-  body[data-active-tab="profilo"] #footer { display: none !important; }
-  /* Hero must be flex */
+  /* Hero is flex, not block */
   body[data-active-tab="esplora"] #hero { display: flex !important; }
-  /* city-detail only if .show */
-  body[data-active-tab="esplora"] #city-detail { display: none !important; }
-  body[data-active-tab="esplora"] #city-detail.show { display: block !important; }
+  /* city-detail: only when .show class present */
+  body[data-active-tab="esplora"] #city-detail:not(.show) { display: none !important; }
+  /* Footer: hide only on profilo */
+  body[data-active-tab] #footer   { display: block !important; }
+  body[data-active-tab="profilo"] #footer { display: none !important; }
   /* Profile page */
-  #profile-page { display: none; }
-  body[data-active-tab="profilo"] #profile-page { display: block; }
-  /* Swipe action buttons: only show on vota tab */
-  .swipe-actions {
-    display: none !important;
-  }
+  body[data-active-tab] #profile-page            { display: none !important; }
+  body[data-active-tab="profilo"] #profile-page  { display: block !important; }
+  /* Swipe actions: fixed, only on vota tab */
+  body[data-active-tab] .swipe-actions           { display: none !important; }
   body[data-active-tab="vota"] .swipe-actions {
     display: flex !important;
     position: fixed;
@@ -2637,14 +2633,6 @@ button, a, select, input[type="checkbox"] {
     z-index: 300;
     gap: 20px;
   }
-  /* Default active tab on load = vota */
-
-  /* ── Page views ── */
-  .page-view { display: none !important; }
-  .page-view.active { display: block !important; }
-  /* Always show hero on Esplora tab */
-  #hero        { display: none; }
-  #hero.active { display: flex; }
 
   /* Hide nav hamburger when bottom nav is active */
   .nav-hamburger { display: none !important; }
@@ -2805,7 +2793,7 @@ button, a, select, input[type="checkbox"] {
 
 </style>
 </head>
-<body data-active-tab="vota">
+<body>
 
 <!-- NAV -->
 <nav>
@@ -3955,6 +3943,35 @@ button, a, select, input[type="checkbox"] {
 <!-- TOAST -->
 <div id="toastContainer"></div>
 
+<!-- Critical UI — inline, non-module, always works -->
+<script>
+function switchTab(tab) {
+  // Works without module loaded
+  document.body.setAttribute('data-active-tab', tab);
+  document.querySelectorAll('.bnav-tab').forEach(function(el){ el.classList.remove('active'); });
+  var btn = document.getElementById('bnav-' + tab);
+  if (btn) btn.classList.add('active');
+  window.scrollTo(0, 0);
+  // Profile needs module — defer
+  if (tab === 'profilo') {
+    setTimeout(function(){
+      if (window._renderProfilePage) window._renderProfilePage();
+    }, 50);
+  }
+}
+function showSeason(name) {
+  ['estate','autunno','inverno','primavera'].forEach(function(s){
+    var tab = document.getElementById('st-'+s);
+    var panel = document.getElementById('season-panel-'+s);
+    if(tab){ tab.classList.toggle('active', s===name); }
+    if(panel){ panel.classList.toggle('show', s===name); }
+  });
+}
+function toggleAcc(id) {
+  var el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+</script>
 <script type="module">
 // WanderQuest v3.0 — App Logic
 
@@ -7181,8 +7198,7 @@ renderCountryLeaderboard('IT');
 renderGlobalLeaderboard();
 renderRecentlyViewed();
 updateWishBadge();
-buildSwipeQueue();
-renderSwipeDeck();
+// swipe queue initialized by initBottomNav() on mobile, or directly on desktop
 // ═══════════════════════════════════════════════════════════════════════
 // BOTTOM NAV — Tab switching system
 // ═══════════════════════════════════════════════════════════════════════
@@ -7202,12 +7218,17 @@ function isMobile() { return window.innerWidth <= 768; }
 function initBottomNav() {
   if (!isMobile()) return;
   _bottomNavEnabled = true;
-  // body already has data-active-tab="vota" from HTML
-  // just update UI
+  // Activate mobile tab system via CSS attribute
+  document.body.setAttribute('data-active-tab', 'vota');
   document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
   const btn = document.getElementById('bnav-vota');
   if (btn) btn.classList.add('active');
   updateBnavProfileIcon();
+  // Init swipe deck now that module is fully loaded
+  if (typeof buildSwipeQueue === 'function') {
+    buildSwipeQueue();
+    renderSwipeDeck();
+  }
 }
 
 function switchTab(tab, silent) {
@@ -7376,15 +7397,19 @@ if (document.readyState === 'loading') {
 // Re-init on resize (switching between mobile/desktop)
 window.addEventListener('resize', () => {
   if (isMobile() && !_bottomNavEnabled) initBottomNav();
-  if (!isMobile() && _bottomNavEnabled) {
+  if (isMobile() && !_bottomNavEnabled) {
+    initBottomNav();
+  } else if (!isMobile() && _bottomNavEnabled) {
     _bottomNavEnabled = false;
-    // Remove mobile attribute — CSS media query handles the rest
     document.body.removeAttribute('data-active-tab');
+    // On desktop: ensure swipe deck is loaded
+    if (swipeQueue.length === 0) { buildSwipeQueue(); renderSwipeDeck(); }
   }
 });
 
 window.switchTab         = switchTab;
 window.renderProfilePage = renderProfilePage;
+window._renderProfilePage = renderProfilePage; // alias for inline script
 
 </script>
 
