@@ -2460,8 +2460,7 @@ a {
     left: 12px;
     right: 12px;
     top: auto;
-    z-index: 9999;
-    /* NO backdrop-filter: causa bug tap su iOS Safari */
+    z-index: 999999; /* Z-index altissimo per evitare sovrapposizioni */
     background: #0A0E1C;
     border: 1px solid rgba(255,255,255,0.18);
     border-radius: 20px;
@@ -2470,9 +2469,6 @@ a {
     box-shadow: 0 4px 24px rgba(0,0,0,0.7);
     max-width: 500px;
     margin: 0 auto;
-    /* iOS fix */
-    -webkit-transform: translateZ(0);
-    transform: translateZ(0);
   }
 
   .bnav-tab {
@@ -2491,13 +2487,9 @@ a {
     transition: background 0.15s, color 0.15s;
     min-height: 56px; min-width: 56px;
     font-family: 'DM Sans', sans-serif;
-    /* iOS tap fixes CRITICI */
     -webkit-tap-highlight-color: rgba(255,255,255,0.1);
-    touch-action: manipulation;
-    -webkit-appearance: none;
-    appearance: none;
     position: relative;
-    z-index: 1;
+    z-index: 10;
   }
 
   .bnav-tab:active {
@@ -2511,8 +2503,8 @@ a {
   #bnav-scopri.active  { background: rgba(232,162,40,0.2); color: var(--amber); }
   .bnav-tab.active.bnav-profile { background: var(--amber); color: var(--ink); }
 
-  .bnav-icon  { font-size: 22px; line-height: 1; }
-  .bnav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.01em; line-height: 1; }
+  .bnav-icon  { font-size: 22px; line-height: 1; pointer-events: none; }
+  .bnav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.01em; line-height: 1; pointer-events: none; }
 
   /* ── Body: su mobile NON scorre (fix iOS Safari fixed nav) ── */
   html {
@@ -2524,20 +2516,6 @@ a {
     height: 100%;
     overflow: visible;
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
-  }
-  #bottom-nav {
-    /* Forza compositing layer separato — fix definitivo iOS */
-    -webkit-transform: translate3d(0,0,0);
-    transform: translate3d(0,0,0);
-    will-change: transform;
-    /* Assicura che riceva i touch */
-    pointer-events: auto !important;
-    touch-action: manipulation;
-    /* Niente backdrop-filter già rimosso */
-    isolation: isolate;
-  }
-  #bottom-nav * {
-    pointer-events: auto !important;
   }
 
   /* ── TAB SYSTEM ──
