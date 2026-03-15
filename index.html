@@ -2580,6 +2580,11 @@ button, a, select, input[type="checkbox"] {
     background: rgba(231,70,100,0.2);
     color: #FF4D6D;
   }
+  /* Home tab active: teal */
+  #bnav-esplora.active {
+    background: rgba(24,197,168,0.18);
+    color: var(--teal);
+  }
   /* Profilo tab active: amber */
   .bnav-tab.active.bnav-profile {
     background: var(--amber);
@@ -3948,14 +3953,13 @@ button, a, select, input[type="checkbox"] {
 <!-- Critical UI — inline, non-module, always works -->
 <script>
 // Stub per openAuthModal — il modulo lo sovrascriverà con la versione completa.
-// Se l'utente clicca "Accedi" prima che il modulo carichi, lo stub ritenta ogni 100ms.
 function openAuthModal(type) {
   if (window._openAuthModal) { window._openAuthModal(type); return; }
   var attempts = 0;
   var wait = setInterval(function() {
     attempts++;
     if (window._openAuthModal) { clearInterval(wait); window._openAuthModal(type); }
-    else if (attempts > 50) { clearInterval(wait); } // max 5 sec
+    else if (attempts > 50) clearInterval(wait);
   }, 100);
 }
 
@@ -3966,7 +3970,14 @@ function switchTab(tab) {
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
   if (tab === 'profilo') {
-    setTimeout(function(){ if (window._renderProfilePage) window._renderProfilePage(); }, 50);
+    // Prova subito, poi riprova se il modulo non è ancora pronto
+    if (window._renderProfilePage) { window._renderProfilePage(); return; }
+    var att = 0;
+    var t = setInterval(function() {
+      att++;
+      if (window._renderProfilePage) { clearInterval(t); window._renderProfilePage(); }
+      else if (att > 50) clearInterval(t);
+    }, 100);
   }
 }
 function showSeason(name) {
@@ -5546,6 +5557,9 @@ function openAuthModal(tab = 'login') {
     document.getElementById(id)?.focus();
   }, 80);
 }
+// Esposto subito — non aspetta il blocco window exports in fondo
+window.openAuthModal  = openAuthModal;
+window._openAuthModal = openAuthModal;
 
 function closeAuthModal() {
   document.getElementById('authOverlay').classList.add('hidden');
@@ -5712,7 +5726,9 @@ document.addEventListener('click', e => {
 onAuthStateChanged(firebaseAuth, user => {
   updateNavAuth(user);
   updateBnavProfileIcon();
-  if (typeof _activeTab !== 'undefined' && _activeTab === 'profilo') renderProfilePage();
+  // Legge il tab corrente direttamente dal DOM per evitare sfasature con _activeTab
+  const currentTab = document.body.getAttribute('data-active-tab');
+  if (currentTab === 'profilo') renderProfilePage();
 });
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -7235,14 +7251,23 @@ function isMobile() { return window.innerWidth <= 768; }
 function initBottomNav() {
   if (!isMobile()) return;
   _bottomNavEnabled = true;
-  document.body.setAttribute('data-active-tab', 'esplora');
+  // Sincronizza _activeTab dal DOM (potrebbe essere stato cambiato dallo script inline)
+  const domTab = document.body.getAttribute('data-active-tab') || 'esplora';
+  _activeTab = domTab;
+  // Se non è ancora impostato, forza esplora
+  if (!['vota','esplora','scopri','profilo'].includes(_activeTab)) {
+    _activeTab = 'esplora';
+    document.body.setAttribute('data-active-tab', 'esplora');
+  }
   document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
-  const btn = document.getElementById('bnav-esplora');
+  const btn = document.getElementById('bnav-' + _activeTab);
   if (btn) btn.classList.add('active');
   updateBnavProfileIcon();
-  // Pre-costruisce il deck così è pronto quando si va su Vota
+  // Pre-costruisce deck
   buildSwipeQueue();
   renderSwipeDeck();
+  // Se l'utente era già su profilo prima del caricamento modulo
+  if (_activeTab === 'profilo') renderProfilePage();
 }
 
 function switchTab(tab, silent) {
@@ -7427,13 +7452,13 @@ window.addEventListener('resize', () => {
 
 <!-- ═══ BOTTOM NAV — Mobile Only ═══ -->
 <nav id="bottom-nav" role="navigation" aria-label="Navigazione principale">
+  <button class="bnav-tab active" id="bnav-esplora" onclick="switchTab('esplora')" aria-label="Home">
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-label">Home</span>
+  </button>
   <button class="bnav-tab" id="bnav-vota" onclick="switchTab('vota')" aria-label="Vota">
     <span class="bnav-icon">❤️</span>
     <span class="bnav-label">Vota</span>
-  </button>
-  <button class="bnav-tab active" id="bnav-esplora" onclick="switchTab('esplora')" aria-label="Esplora">
-    <span class="bnav-icon">🔍</span>
-    <span class="bnav-label">Esplora</span>
   </button>
   <button class="bnav-tab" id="bnav-scopri" onclick="switchTab('scopri')" aria-label="Valigia">
     <span class="bnav-icon">🧳</span>
