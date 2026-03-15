@@ -43,8 +43,8 @@
   --hero-grad: linear-gradient(160deg, #080C1A 0%, #0D1530 40%, #162040 100%);
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; overflow-x: hidden; }
-body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow-x: hidden; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow-x: clip; -webkit-text-size-adjust: 100%; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--ink); }
 ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
@@ -792,6 +792,9 @@ a {
    ≤ 768px — TABLETS & PHONES
 ─────────────────────────────────────────────────────────────*/
 @media(max-width:768px) {
+
+  /* Garantisce scroll verticale senza bloccare i tap su iOS */
+  html, body { touch-action: pan-y; }
 
   /* ── GLOBAL SPACING ── */
   section,
@@ -2532,15 +2535,16 @@ a {
   .bnav-icon  { font-size: 22px; line-height: 1; pointer-events: none; }
   .bnav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.01em; line-height: 1; pointer-events: none; }
 
-  /* ── Body: su mobile NON scorre (fix iOS Safari fixed nav) ── */
+  /* ── Body mobile: NON impostare overflow su html/body ──
+     Su iOS Safari, overflow-y:scroll su html intercetta TUTTI i touch
+     impedendo ai bottoni di ricevere il tap. Si lascia il body scorrere
+     normalmente; il padding-bottom spinge il contenuto sopra la bottom nav. */
   html {
-    height: 100%;
-    overflow-y: scroll;
-    -webkit-overflow-scrolling: touch;
+    height: auto;
   }
   body {
-    height: 100%;
-    overflow: visible;
+    min-height: 100%;
+    overflow-x: clip;
     padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
