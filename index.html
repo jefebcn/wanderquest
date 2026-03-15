@@ -149,6 +149,15 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   transform: translateY(10px);
   backdrop-filter: blur(10px);
 }
+/* Su mobile sposta il bottone sopra la bottom nav */
+@media (max-width: 768px) {
+  .back-to-top {
+    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
+    right: 16px;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
 .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .back-to-top:hover { background: rgba(232,162,40,0.15); border-color: rgba(232,162,40,0.3); color: var(--amber); }
 
@@ -771,7 +780,8 @@ a {
 /* Override for purely decorative / inline elements */
 .acc-tag, .transit-line, .food-dish, .city-tag,
 .month-pill, .footer-badge, .aff-badge,
-.badge-new, .plan-badge, .valigia-meta-tag { min-height: unset; }
+.badge-new, .plan-badge, .valigia-meta-tag,
+.city-wish-btn { min-height: unset; }
 
 /* ────────────────────────────────────────────────────────────
    ≤ 768px — TABLETS & PHONES
@@ -2707,6 +2717,43 @@ a {
   }
   .pp-plan-badge.free { background: rgba(255,255,255,0.07); border: 1px solid var(--glass-border); color: var(--cream-dim); }
   .pp-plan-badge.pro  { background: rgba(232,162,40,0.15); border: 1px solid rgba(232,162,40,0.3); color: var(--amber); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FIX MOBILE: Bottoni vota fissi sopra la bottom nav
+   Su schermi piccoli (< 750px) i bottoni skip/super/like
+   risultano sotto il fold a causa dell'altezza del deck.
+   Li fissiamo sopra la bottom nav come in tutte le swipe app.
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* Pulsanti azione swipe: fissi sopra la bottom nav */
+  .vota-actions {
+    position: fixed;
+    bottom: calc(82px + env(safe-area-inset-bottom, 0px));
+    left: 0;
+    right: 0;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    padding: 8px 20px 12px;
+    z-index: 600;
+    background: linear-gradient(to top, rgba(8,12,26,0.95) 0%, rgba(8,12,26,0) 100%);
+    pointer-events: none; /* lascia passare i click al di fuori dei bottoni */
+  }
+  .vota-actions .vota-btn {
+    pointer-events: auto; /* i singoli bottoni rimangono cliccabili */
+  }
+
+  /* Riduce altezza deck su mobile per lasciare spazio visivo ai bottoni fissi */
+  .swipe-deck-wrap {
+    height: min(48vh, 400px);
+  }
+
+  /* Aggiunge padding al fondo del vota-wrap per non nascondere contenuto
+     sotto i bottoni fissi e la bottom nav */
+  .vota-wrap {
+    padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 </style>
