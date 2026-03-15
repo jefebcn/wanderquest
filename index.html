@@ -102,8 +102,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   display: flex; flex-direction: column; gap: 4px;
   transform: translateY(-110%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none; /* chiuso: non intercetta touch */
 }
-.mobile-drawer.open { transform: translateY(0); }
+.mobile-drawer.open { transform: translateY(0); pointer-events: auto; }
 .mobile-drawer a {
   display: flex; align-items: center; gap: 10px;
   color: var(--cream-dim); text-decoration: none;
@@ -251,7 +252,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   color: var(--cream-dim); transition: all 0.2s;
 }
 .drill-step.active { background: rgba(232,162,40,0.12); border-color: rgba(232,162,40,0.3); color: var(--amber); }
-.drill-step.done { background: rgba(24,197,168,0.08); border-color: rgba(24,197,168,0.2); color: var(--teal); cursor: pointer; }
+.drill-step.done { background: rgba(24,197,168,0.08); border-color: rgba(24,197,168,0.2); color: var(--teal); cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: rgba(24,197,168,0.2); }
 .drill-arrow { color: var(--cream-dim); opacity: 0.4; font-size: 12px; }
 
 .continent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
@@ -259,6 +260,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   background: var(--glass); border: 1px solid var(--glass-border);
   border-radius: 14px; padding: 24px 20px;
   cursor: pointer; transition: all 0.25s; text-align: center;
+  touch-action: manipulation; -webkit-tap-highlight-color: rgba(255,255,255,0.1);
 }
 .continent-card:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); transform: translateY(-3px); }
 .continent-card.selected { background: rgba(232,162,40,0.12); border-color: var(--amber); }
@@ -271,6 +273,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   background: var(--glass); border: 1px solid var(--glass-border);
   border-radius: 12px; padding: 18px 16px;
   cursor: pointer; transition: all 0.2s; text-align: center;
+  touch-action: manipulation; -webkit-tap-highlight-color: rgba(255,255,255,0.1);
 }
 .country-card:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); transform: translateY(-2px); }
 .country-card.selected { background: rgba(232,162,40,0.12); border-color: var(--amber); }
@@ -288,6 +291,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   background: var(--glass); border: 1px solid var(--glass-border);
   border-radius: 14px; overflow: hidden;
   cursor: pointer; transition: all 0.25s;
+  touch-action: manipulation; -webkit-tap-highlight-color: rgba(255,255,255,0.1);
 }
 .city-card:hover { border-color: rgba(232,162,40,0.3); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
 .city-card.selected { border-color: var(--amber); box-shadow: 0 0 0 1px var(--amber); }
@@ -566,14 +570,15 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 }
 .globe-orb::before {
   content: ''; position: absolute; inset: 0; border-radius: 50%;
+  pointer-events: none;
   background:
     repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(24,197,168,0.06) 18px,rgba(24,197,168,0.06) 19px),
     repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(24,197,168,0.04) 28px,rgba(24,197,168,0.04) 29px);
 }
 @keyframes globeSpin { 0%{transform:rotate(0) scale(1)} 30%{transform:rotate(180deg) scale(1.08)} 100%{transform:rotate(360deg) scale(1)} }
 .globe-orb.spinning { animation: globeSpin 0.7s cubic-bezier(0.4,0,0.2,1); }
-.globe-ring  { position:absolute;inset:-14px;border:1.5px dashed rgba(24,197,168,0.22);border-radius:50%;animation:rotateSlow 12s linear infinite; }
-.globe-ring-2{ position:absolute;inset:-26px;border:1px dashed rgba(232,162,40,0.1);border-radius:50%;animation:rotateSlow 20s linear infinite reverse; }
+.globe-ring  { position:absolute;inset:-14px;border:1.5px dashed rgba(24,197,168,0.22);border-radius:50%;animation:rotateSlow 12s linear infinite;pointer-events:none; }
+.globe-ring-2{ position:absolute;inset:-26px;border:1px dashed rgba(232,162,40,0.1);border-radius:50%;animation:rotateSlow 20s linear infinite reverse;pointer-events:none; }
 @keyframes rotateSlow { to{transform:rotate(360deg)} }
 .spin-btn {
   background: linear-gradient(135deg,#18C5A8 0%,#0E8F7C 100%);
@@ -1289,6 +1294,13 @@ a {
   box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,162,40,0.05);
   backdrop-filter: blur(10px);
 }
+/* Bug iOS Safari: backdrop-filter blocca i touch sui figli — rimosso su mobile */
+@media (max-width: 768px) {
+  .mockup-frame {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
 .mockup-bar {
   display: flex; align-items: center; gap: 8px;
   margin-bottom: 16px; padding-bottom: 14px;
@@ -1318,6 +1330,7 @@ a {
   background: linear-gradient(to top, rgba(4,7,18,0.92) 0%, rgba(4,7,18,0.4) 70%, transparent 100%);
   padding: 12px 10px 10px;
   text-align: left;
+  pointer-events: none; /* lascia passare i click al .mockup-card padre */
 }
 .mockup-card-label { font-size: 11px; font-weight: 700; color: var(--cream); line-height: 1.2; }
 .mockup-card-sub { font-size: 9px; color: var(--teal); margin-top: 2px; font-weight: 600; }
@@ -2181,7 +2194,7 @@ a {
 .tip-row { display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--cream-dim);line-height:1.55; }
 .tip-dot { width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:7px; }
 .season-tabs { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:4px; }
-.season-tab { background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s; }
+.season-tab { background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;touch-action:manipulation;-webkit-tap-highlight-color:rgba(255,255,255,0.1); }
 .season-tab:hover,.season-tab.active { background:rgba(232,162,40,0.1);border-color:rgba(232,162,40,0.3); }
 .season-tab-icon { font-size:24px;margin-bottom:6px; }
 .season-tab-name { font-size:11px;font-weight:700;color:var(--cream); }
@@ -2623,6 +2636,7 @@ a {
     min-height: 160px; position: relative;
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
   .pp-card:active { transform: scale(0.96); background: #131d33; }
   .pp-card-illus {
@@ -2645,6 +2659,7 @@ a {
     display: flex; align-items: center; gap: 0;
     cursor: pointer; transition: background 0.18s;
     position: relative; overflow: hidden; min-height: 140px;
+    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   }
   .pp-read-card:active { background: #131d33; }
   /* card con testo a sx, illustrazione a dx */
