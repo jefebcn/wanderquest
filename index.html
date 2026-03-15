@@ -42,14 +42,16 @@
         </div>
         <button class="nav-menu-item" onclick="openMyProfile()">👤 Il mio Profilo</button>
         <button class="nav-menu-item" onclick="openMyValigie()">🧳 Le mie Valigie <span class="nav-valigie-badge hidden" id="navValigieBadge">0</span></button>
+        <button class="nav-menu-item" onclick="openWishlistModal()">🤍 Desideri</button>
         <div class="nav-menu-divider"></div>
         <button class="nav-menu-item danger" onclick="logoutUser()">← Esci</button>
       </div>
     </div>
-    <button class="nav-wish-btn" id="navWishBtn" onclick="openWishlistModal()" title="I miei desideri">
+    <!-- Cuore wishlist: solo desktop, nascosto su mobile (c'è nel menu) -->
+    <button class="nav-wish-btn nav-wish-desktop" id="navWishBtn" onclick="openWishlistModal()" title="Destinazioni desiderate">
       🤍<span class="nav-wish-count" id="wishNavCount">0</span>
     </button>
-    <button class="nav-cta" onclick="openUpgrade()">Diventa Pro →</button>
+    <button class="nav-cta" onclick="openUpgrade()">Pro →</button>
     <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileDrawer()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
@@ -80,6 +82,7 @@
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- HERO — VALUE PROPOSITION -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- page: ESPLORA -->
 <div id="hero">
   <div class="hero-eyebrow">✦ Benvenuto nell'ecosistema del viaggiatore autentico</div>
   <h1 class="hero-title">
@@ -223,10 +226,15 @@
 <!-- FLIGHT BANNER -->
 <div id="flight-banner">
   <div class="flight-banner-inner">
-    <div class="flight-banner-label">✈️ Traccia Volo</div>
+    <div class="flight-banner-left">
+      <div class="flight-banner-label">✈️ Traccia Volo in Tempo Reale</div>
+      <div class="flight-banner-title">Cerca il tuo volo</div>
+      <div class="flight-banner-sub">Inserisci il numero e scopri la destinazione</div>
+    </div>
     <div class="flight-input-wrap">
-      <input type="text" id="flightInput" placeholder="es. FR1234, IB3456, AZ610…" maxlength="8">
-      <button class="flight-btn" onclick="searchFlight()">Cerca</button>
+      <input type="text" id="flightInput" placeholder="es. FR1234, AZ610, IB3456…" maxlength="8"
+        onkeydown="if(event.key==='Enter')searchFlight()">
+      <button class="flight-btn" onclick="searchFlight()">Cerca ✈️</button>
     </div>
     <div id="flight-result"></div>
   </div>
@@ -269,6 +277,7 @@
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- SECTION 2 — PACKING PLANNER -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- page: VALIGIA -->
 <div id="packing">
   <div class="inner">
     <div class="section-label">🧳 Algoritmo Valigia</div>
@@ -383,6 +392,7 @@
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- SPIN THE GLOBE -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- page: SCOPRI -->
 <div id="spin-globe">
   <div class="inner">
     <div class="section-label" style="background:rgba(24,197,168,0.1);border-color:rgba(24,197,168,0.2);color:var(--teal)">
@@ -1115,6 +1125,49 @@
 <!-- TOAST -->
 <div id="toastContainer"></div>
 
+<!-- Stub bridge: expone le funzioni al scope globale prima che il modulo carichi -->
+<script>
+// Queste funzioni vengono sostituite dal modulo app.js appena caricato.
+// Servono come ponte per gli onclick="" inline dell'HTML statico.
+function toggleAcc(id) {
+  const item = document.getElementById(id);
+  if (item) item.classList.toggle('open');
+}
+function showSeason(name) {
+  ['estate','autunno','inverno','primavera'].forEach(function(s) {
+    var tab   = document.getElementById('st-' + s);
+    var panel = document.getElementById('season-panel-' + s);
+    if (tab)   tab.classList.toggle('active', s === name);
+    if (panel) { panel.classList.remove('show'); if (s === name) panel.classList.add('show'); }
+  });
+}
+</script>
 <script type="module" src="app.js"></script>
+
+<!-- ═══ BOTTOM NAV — Mobile Only ═══ -->
+<nav id="bottom-nav" role="navigation" aria-label="Navigazione principale">
+  <button class="bnav-tab active" id="bnav-esplora" onclick="switchTab('esplora')" aria-label="Esplora">
+    <span class="bnav-icon">🔍</span>
+    <span class="bnav-label">Esplora</span>
+  </button>
+  <button class="bnav-tab" id="bnav-scopri" onclick="switchTab('scopri')" aria-label="Scopri">
+    <span class="bnav-icon">✨</span>
+    <span class="bnav-label">Scopri</span>
+  </button>
+  <button class="bnav-tab" id="bnav-valigia" onclick="switchTab('valigia')" aria-label="Valigia">
+    <span class="bnav-icon">🧳</span>
+    <span class="bnav-label">Valigia</span>
+  </button>
+  <button class="bnav-tab bnav-profile" id="bnav-profilo" onclick="switchTab('profilo')" aria-label="Profilo">
+    <span class="bnav-icon" id="bnavProfileIcon">👤</span>
+    <span class="bnav-label">Profilo</span>
+  </button>
+</nav>
+
+<!-- ═══ PROFILE PAGE (mobile tab) ═══ -->
+<div id="profile-page" style="display:none">
+  <!-- filled by renderProfilePage() -->
+</div>
+
 </body>
 </html>

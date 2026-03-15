@@ -1723,7 +1723,11 @@ document.addEventListener('click', e => {
 });
 
 // Auth state observer
-onAuthStateChanged(firebaseAuth, user => updateNavAuth(user));
+onAuthStateChanged(firebaseAuth, user => {
+  updateNavAuth(user);
+  updateBnavProfileIcon();
+  if (typeof _activeTab !== 'undefined' && _activeTab === 'profilo') renderProfilePage();
+});
 
 // ═══════════════════════════════════════════════════════════════════════
 // FIRESTORE MIGRATION SCRIPT
@@ -2896,6 +2900,7 @@ function toggleAcc(id) {
   if (!item) return;
   item.classList.toggle('open');
 }
+window.toggleAcc = toggleAcc;
 
 function showSeason(name) {
   ['estate','autunno','inverno','primavera'].forEach(s => {
@@ -2905,6 +2910,7 @@ function showSeason(name) {
     if (panel) panel.classList.toggle('show',  s === name);
   });
 }
+window.showSeason = showSeason;
 
 // ═══════════════════════════════════════════════════════════════════════
 // WISHLIST — localStorage
@@ -3218,3 +3224,233 @@ renderRecentlyViewed();
 updateWishBadge();
 buildSwipeQueue();
 renderSwipeDeck();
+// ═══════════════════════════════════════════════════════════════════════
+// BOTTOM NAV — Tab switching system
+// ═══════════════════════════════════════════════════════════════════════
+
+const TAB_SECTIONS = {
+  esplora:  ['hero','explorer','city-detail','flight-banner','how-it-works','social-proof'],
+  scopri:   ['spin-globe','budget-ai','ai-itinerary','guide'],
+  valigia:  ['packing','premium'],
+  profilo:  [],
+};
+
+let _activeTab = 'esplora';
+let _bottomNavEnabled = false;
+
+function isMobile() { return window.innerWidth <= 768; }
+
+function initBottomNav() {
+  if (!isMobile()) return;
+  _bottomNavEnabled = true;
+  switchTab('esplora', true);
+  updateBnavProfileIcon();
+}
+
+function switchTab(tab, silent) {
+  if (!isMobile()) return;
+  _activeTab = tab;
+
+  // Update tab buttons
+  document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
+  const activeBtn = document.getElementById('bnav-' + tab);
+  if (activeBtn) activeBtn.classList.add('active');
+
+  // Profile page toggle
+  const profilePage = document.getElementById('profile-page');
+
+  if (tab === 'profilo') {
+    // Hide all content sections
+    Object.values(TAB_SECTIONS).flat().forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    if (profilePage) { profilePage.style.display = 'block'; renderProfilePage(); }
+    window.scrollTo(0, 0);
+  } else {
+    if (profilePage) profilePage.style.display = 'none';
+    // Hide all sections first
+    Object.values(TAB_SECTIONS).flat().forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = 'none';
+    });
+    // Show sections for this tab
+    const sections = TAB_SECTIONS[tab] || [];
+    sections.forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        // Restore correct display type
+        if (id === 'hero')        el.style.display = 'flex';
+        else if (id === 'city-detail') el.style.display = el.classList.contains('show') ? 'block' : 'none';
+        else                      el.style.display = 'block';
+      }
+    });
+    if (!silent) window.scrollTo(0, 0);
+  }
+
+  // Update footer display
+  const footer = document.getElementById('footer');
+  if (footer) footer.style.display = (tab === 'valigia' || tab === 'profilo') ? 'none' : 'block';
+}
+
+function updateBnavProfileIcon() {
+  const user = firebaseAuth.currentUser;
+  const icon = document.getElementById('bnavProfileIcon');
+  if (!icon) return;
+  if (user) {
+    const initial = (user.displayName || user.email || '?')[0].toUpperCase();
+    icon.textContent = initial;
+    icon.style.cssText = 'font-size:16px;font-weight:900;line-height:1';
+  } else {
+    icon.textContent = '👤';
+    icon.style.cssText = 'font-size:20px';
+  }
+}
+
+// ── PROFILE PAGE RENDERER ──
+async function renderProfilePage() {
+  const container = document.getElementById('profile-page');
+  if (!container) return;
+
+  const user = firebaseAuth.currentUser;
+
+  if (!user) {
+    container.innerHTML = `
+      <div class="pp-guest">
+        <div class="pp-guest-icon">🌍</div>
+        <div class="pp-guest-title">Benvenuto su WanderQuest</div>
+        <div class="pp-guest-sub">Accedi per salvare le tue valigie, i tuoi viaggi preferiti e partecipare al contest fotografico.</div>
+        <button class="pp-guest-btn" onclick="openAuthModal('login')">Accedi o Registrati →</button>
+      </div>`;
+    return;
+  }
+
+  const initial  = (user.displayName || user.email || '?')[0].toUpperCase();
+  const initials = user.email ? user.email.slice(0,2).toUpperCase() : '??';
+  container.innerHTML = `<div class="grid-spinner" style="padding:60px 20px"><div class="spinner"></div><span>Caricamento…</span></div>`;
+
+  try {
+    const snap   = await getDoc(doc(firestoreDb, 'users', user.uid));
+    const data   = snap.exists() ? snap.data() : {};
+    const plan   = data.plan || 'free';
+    const valigie   = (data.valigie   || []).length;
+    const wishlist  = getWishlist().length;
+    const joinDate  = data.createdAt
+      ? new Date(data.createdAt).toLocaleDateString('it-IT', { month:'long', year:'numeric' })
+      : 'Recente';
+
+    container.innerHTML = `
+      <!-- Header -->
+      <div class="pp-header">
+        <div>
+          <div class="pp-title">Profilo</div>
+          <div style="font-size:12px;color:var(--cream-dim);margin-top:6px">Membro da ${joinDate}</div>
+        </div>
+        <div class="pp-avatar">${initials}</div>
+      </div>
+      <div class="pp-email">${user.email}</div>
+      <div class="pp-plan-badge ${plan}">${plan === 'pro' ? '⭐ Explorer Plus' : '🆓 Piano Free'}</div>
+
+      <!-- Stats -->
+      <div class="pp-stats">
+        <div class="pp-stat">
+          <div class="pp-stat-val">${valigie}</div>
+          <div class="pp-stat-lbl">Valigie<br>salvate</div>
+        </div>
+        <div class="pp-stat">
+          <div class="pp-stat-val">${wishlist}</div>
+          <div class="pp-stat-lbl">Mete<br>desiderate</div>
+        </div>
+        <div class="pp-stat">
+          <div class="pp-stat-val">${plan === 'pro' ? '∞' : '3'}</div>
+          <div class="pp-stat-lbl">Link affiliati<br>attivi</div>
+        </div>
+      </div>
+
+      <!-- Gestisci account -->
+      <div class="pp-section-title">Gestisci il tuo account</div>
+      <div class="pp-grid">
+        <div class="pp-card" onclick="switchTab('esplora');setTimeout(()=>document.getElementById('explorer').scrollIntoView({behavior:'smooth'}),100)">
+          <span class="pp-card-emoji">🌍</span>
+          <span class="pp-card-label">I tuoi viaggi</span>
+        </div>
+        <div class="pp-card" onclick="openMyValigie()">
+          <span class="pp-card-emoji">🧳</span>
+          <span class="pp-card-label">Le tue valigie</span>
+        </div>
+        <div class="pp-card" onclick="openWishlistModal()">
+          <span class="pp-card-emoji">🤍</span>
+          <span class="pp-card-label">Mete desiderate</span>
+        </div>
+        <div class="pp-card" onclick="openUpgrade()">
+          <span class="pp-card-emoji">⭐</span>
+          <span class="pp-card-label">Piano & Upgrade</span>
+        </div>
+      </div>
+
+      ${plan === 'free' ? `
+      <div class="pp-upgrade">
+        <div class="pp-upgrade-text">Passa a <strong>Explorer Plus</strong> — zero pub, valigie illimitate e ×2 ai voti contest.</div>
+        <button class="pp-upgrade-btn" onclick="openUpgrade()">€6,99/mese</button>
+      </div>` : ''}
+
+      <!-- Letture consigliate -->
+      <div class="pp-section-title" style="margin-top:28px">Letture consigliate</div>
+      <div class="pp-reads">
+        <div class="pp-read-card" onclick="switchTab('scopri');setTimeout(()=>document.getElementById('guide').scrollIntoView({behavior:'smooth'}),100)">
+          <div class="pp-read-emoji">📖</div>
+          <div>
+            <div class="pp-read-title">Guida Pratica al Viaggio</div>
+            <div class="pp-read-sub">Documenti, stagioni, budget e trasporti — tutto quello che serve prima di partire.</div>
+          </div>
+        </div>
+        <div class="pp-read-card" onclick="switchTab('scopri');setTimeout(()=>document.getElementById('budget-ai').scrollIntoView({behavior:'smooth'}),100)">
+          <div class="pp-read-emoji">💰</div>
+          <div>
+            <div class="pp-read-title">Calcola il Budget Reale</div>
+            <div class="pp-read-sub">Stime accurate per destinazione, stile e numero di persone.</div>
+          </div>
+        </div>
+        <div class="pp-read-card" onclick="switchTab('scopri');setTimeout(()=>document.getElementById('spin-globe').scrollIntoView({behavior:'smooth'}),100)">
+          <div class="pp-read-emoji">🌐</div>
+          <div>
+            <div class="pp-read-title">Non sai dove andare?</div>
+            <div class="pp-read-sub">Lascia decidere il globo — destinazione casuale con pitch motivazionale.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Logout -->
+      <button class="pp-logout-btn" onclick="logoutUser();switchTab('esplora')">← Esci dall'account</button>
+    `;
+  } catch(err) {
+    container.innerHTML = `<div style="padding:40px 20px;text-align:center;color:var(--cream-dim)">⚠️ Errore nel caricamento profilo.</div>`;
+  }
+}
+
+// ── INIT on load ──
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initBottomNav);
+} else {
+  initBottomNav();
+}
+
+// Re-init on resize (switching between mobile/desktop)
+window.addEventListener('resize', () => {
+  if (isMobile() && !_bottomNavEnabled) initBottomNav();
+  if (!isMobile() && _bottomNavEnabled) {
+    _bottomNavEnabled = false;
+    // Restore all sections on desktop
+    Object.values(TAB_SECTIONS).flat().forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.style.display = '';
+    });
+    const pp = document.getElementById('profile-page');
+    if (pp) pp.style.display = 'none';
+    const footer = document.getElementById('footer');
+    if (footer) footer.style.display = '';
+  }
+});
+
+window.switchTab         = switchTab;
+window.renderProfilePage = renderProfilePage;
