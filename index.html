@@ -2787,6 +2787,41 @@ a {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   MOBILE NUCLEAR FIX — applicato DOPO tutto il resto
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  /* 1. Rimuove TUTTI i backdrop-filter: su iOS Safari bloccano i touch sui figli */
+  *, *::before, *::after {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. html/body: nessun overflow che crei UIScrollView nativa su iOS */
+  html {
+    height: auto !important;
+    overflow: visible !important;
+    overflow-y: visible !important;
+  }
+  body {
+    overflow-x: hidden !important;
+    overflow-y: visible !important;
+  }
+
+  /* 3. Tutti i button e link: garantisce tappabilità iOS */
+  button, a, [onclick], [ontouchstart] {
+    cursor: pointer !important;
+    touch-action: manipulation !important;
+    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
+    -webkit-user-select: none !important;
+  }
+
+  /* 4. Nessun elemento con pointer-events bloccante sopra il contenuto */
+  .globe-orb::before, .globe-ring, .globe-ring-2,
+  .mockup-card-overlay, .city-thumb-bg,
+  .swipe-stamp, .upload-cta { pointer-events: none !important; }
+}
+
 </style>
 </head>
 <body data-active-tab="esplora" ontouchstart="">
@@ -3635,7 +3670,7 @@ a {
     <!-- SEZIONE 1: GIOCA -->
     <div class="vota-sub-section active" id="csec-gioca">
       <!-- Filter pills -->
-      <div class="vota-filters" id="swipeFilters" style="padding:0 20px 14px; display:flex; gap:8px; overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+      <div class="vota-filters" id="swipeFilters" style="padding:0 20px 14px; display:flex; gap:8px; overflow-x:auto;scrollbar-width:none;">
         <button class="vota-filter active" onclick="setSwipeFilter('all',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🌍 Tutti</button>
         <button class="vota-filter" onclick="setSwipeFilter('IT',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🇮🇹 Italia</button>
         <button class="vota-filter" onclick="setSwipeFilter('ES',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🇪🇸 Spagna</button>
@@ -3966,6 +4001,57 @@ a {
 
 <!-- TOAST -->
 <div id="toastContainer"></div>
+
+<!-- ═══ TOUCH POLYFILL — deve girare PRIMA di tutto il resto ═══ -->
+<!-- Risolve il blocco tap su iOS Safari convertendo touchend in click immediato -->
+<script>
+(function(){
+  if (!('ontouchstart' in window)) return; // solo touch device
+
+  // 1. Registra un listener passivo su body per attivare il riconoscimento tap iOS
+  document.addEventListener('touchstart', function(){}, {passive: true});
+
+  var _sx = 0, _sy = 0;
+
+  document.addEventListener('touchstart', function(e){
+    if (e.touches && e.touches.length) {
+      _sx = e.touches[0].clientX;
+      _sy = e.touches[0].clientY;
+    }
+  }, {passive: true, capture: true});
+
+  document.addEventListener('touchend', function(e){
+    var ch = e.changedTouches;
+    if (!ch || !ch.length) return;
+
+    var dx = Math.abs(ch[0].clientX - _sx);
+    var dy = Math.abs(ch[0].clientY - _sy);
+    if (dx > 12 || dy > 12) return; // era uno scroll, non un tap
+
+    // Trova l'elemento interattivo più vicino nel DOM
+    var el = e.target;
+    while (el && el !== document.documentElement) {
+      if (el.tagName === 'BUTTON' || el.tagName === 'A' ||
+          el.tagName === 'INPUT' || el.tagName === 'SELECT' ||
+          el.getAttribute('onclick') !== null) {
+        break;
+      }
+      el = el.parentElement;
+    }
+    if (!el || el === document.documentElement) return;
+
+    // Evita doppio fire
+    if (el._wqTapped) return;
+    el._wqTapped = true;
+    setTimeout(function(){ el._wqTapped = false; }, 600);
+
+    // Previene il click ritardato (300ms) nativo iOS e spara subito
+    e.preventDefault();
+    el.click();
+
+  }, {capture: true, passive: false});
+})();
+</script>
 
 <!-- ═══ UI CRITICO INLINE — funziona SEMPRE, anche senza modulo Firebase ═══ -->
 <script>
