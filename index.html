@@ -50,7 +50,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
 
 /* ── NAV ── */
-nav {
+#top-nav {
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 48px;
@@ -779,7 +779,7 @@ button, a, select, input[type="checkbox"] {
   .section-title { letter-spacing: -1px; }
 
   /* ── NAV ── */
-  nav { padding: 0 var(--px-mobile); height: 56px; }
+  #top-nav { padding: 0 var(--px-mobile); height: 56px; }
   .nav-links { display: none; }
   .nav-cta   { display: none; }
   .nav-hamburger { display: flex; }
@@ -1798,7 +1798,7 @@ button, a, select, input[type="checkbox"] {
 
 /* ── PRINT STYLES ── */
 @media print {
-  nav, .mobile-drawer, #hero, #how-it-works, #social-proof,
+  #top-nav, .mobile-drawer, #hero, #how-it-works, #social-proof,
   #premium, #contest, #footer, #flight-banner,
   .back-to-top, .modal-overlay, .packing-save-btn,
   button[onclick*="printPacking"], .affiliate-section,
@@ -2637,9 +2637,8 @@ button, a, select, input[type="checkbox"] {
   /* Hide nav hamburger when bottom nav is active */
   .nav-hamburger { display: none !important; }
   /* Compact top nav on mobile */
-  nav { padding: 0 16px; height: 52px; }
+  #top-nav { padding: 0 16px; height: 52px; }
   .mobile-drawer { top: 52px; }
-
   /* ── PROFILE PAGE ── */
   #profile-page {
     min-height: 100vh;
@@ -2793,10 +2792,10 @@ button, a, select, input[type="checkbox"] {
 
 </style>
 </head>
-<body>
+<body data-active-tab="vota">
 
 <!-- NAV -->
-<nav>
+<nav id="top-nav">
   <div class="nav-logo">
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 40" height="34" aria-label="WanderQuest">
   <!-- Gemma icona -->
@@ -7191,6 +7190,11 @@ window.showSeason           = showSeason;
 // ═══════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════
+// ── INIT on load ── (deve stare PRIMA delle chiamate di rendering)
+window.switchTab         = switchTab;
+window.renderProfilePage = renderProfilePage;
+window._renderProfilePage = renderProfilePage;
+
 renderContinents();
 renderPremiumTable();
 renderIncomeStreams();
@@ -7198,10 +7202,6 @@ renderCountryLeaderboard('IT');
 renderGlobalLeaderboard();
 renderRecentlyViewed();
 updateWishBadge();
-// swipe queue initialized by initBottomNav() on mobile, or directly on desktop
-// ═══════════════════════════════════════════════════════════════════════
-// BOTTOM NAV — Tab switching system
-// ═══════════════════════════════════════════════════════════════════════
 
 const TAB_SECTIONS = {
   vota:     ['swipe-vote'],
@@ -7387,29 +7387,23 @@ async function renderProfilePage() {
   }
 }
 
-// ── INIT on load ──
+// ── Avvio bottom nav (dopo tutte le definizioni di variabili e funzioni) ──
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initBottomNav);
 } else {
   initBottomNav();
 }
 
-// Re-init on resize (switching between mobile/desktop)
+// Re-init on resize
 window.addEventListener('resize', () => {
-  if (isMobile() && !_bottomNavEnabled) initBottomNav();
   if (isMobile() && !_bottomNavEnabled) {
     initBottomNav();
   } else if (!isMobile() && _bottomNavEnabled) {
     _bottomNavEnabled = false;
     document.body.removeAttribute('data-active-tab');
-    // On desktop: ensure swipe deck is loaded
     if (swipeQueue.length === 0) { buildSwipeQueue(); renderSwipeDeck(); }
   }
 });
-
-window.switchTab         = switchTab;
-window.renderProfilePage = renderProfilePage;
-window._renderProfilePage = renderProfilePage; // alias for inline script
 
 </script>
 
