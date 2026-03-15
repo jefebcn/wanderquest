@@ -4038,6 +4038,45 @@ function showSeason(name) {
   });
 }
 
+// ── Stubs per loginUser / registerUser / logoutUser ──
+// Il modulo li sovrascrive appena carica; questi garantiscono feedback immediato
+function loginUser() {
+  if (window._mod_loginUser) { window._mod_loginUser(); return; }
+  // Mostra caricamento sul bottone
+  var btn = document.getElementById('loginSubmit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Connessione…'; }
+  var att = 0;
+  var t = setInterval(function() {
+    att++;
+    if (window._mod_loginUser) { clearInterval(t); window._mod_loginUser(); }
+    else if (att > 30) {
+      clearInterval(t);
+      if (btn) { btn.disabled = false; btn.textContent = 'Accedi →'; }
+      var errEl = document.getElementById('loginError');
+      if (errEl) { errEl.textContent = 'App non ancora carica. Attendi e riprova.'; errEl.classList.add('show'); }
+    }
+  }, 100);
+}
+function registerUser() {
+  if (window._mod_registerUser) { window._mod_registerUser(); return; }
+  var btn = document.getElementById('regSubmit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Connessione…'; }
+  var att = 0;
+  var t = setInterval(function() {
+    att++;
+    if (window._mod_registerUser) { clearInterval(t); window._mod_registerUser(); }
+    else if (att > 30) {
+      clearInterval(t);
+      if (btn) { btn.disabled = false; btn.textContent = 'Crea Account →'; }
+      var errEl = document.getElementById('regError');
+      if (errEl) { errEl.textContent = 'App non ancora carica. Attendi e riprova.'; errEl.classList.add('show'); }
+    }
+  }, 100);
+}
+function logoutUser() {
+  if (window._mod_logoutUser) { window._mod_logoutUser(); return; }
+}
+
 // ── Imposta stato iniziale appena il DOM è pronto ──
 document.addEventListener('DOMContentLoaded', function() {
   // Forza body su esplora se non già settato (mobile)
@@ -5657,6 +5696,8 @@ async function loginUser() {
     setAuthLoading('login', false);
   }
 }
+window.loginUser = loginUser;
+window._mod_loginUser = loginUser;
 
 async function registerUser() {
   const email    = document.getElementById('regEmail').value.trim();
@@ -5668,19 +5709,15 @@ async function registerUser() {
   if (password !== confirm)  { showAuthError('reg', 'Le password non coincidono.'); return; }
   setAuthLoading('reg', true);
   try {
-    // 1. Crea l'account su Firebase Auth
     const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
     const uid = credential.user.uid;
-
-    // 2. Crea il documento profilo in Firestore: users/{uid}
     await setDoc(doc(firestoreDb, 'users', uid), {
       email,
-      plan:       'free',           // 'free' | 'pro'
+      plan:       'free',
       createdAt:  new Date().toISOString(),
-      valigie:    [],               // array di oggetti { nome, città, stagione, items[] }
-      votedMete:  [],               // destinazioni votate tramite "Vota questa meta"
+      valigie:    [],
+      votedMete:  [],
     });
-
     closeAuthModalEnhanced();
     showToast('🎉 Account creato! Benvenuto in WanderQuest.');
   } catch (err) {
@@ -5694,12 +5731,16 @@ async function registerUser() {
     setAuthLoading('reg', false);
   }
 }
+window.registerUser = registerUser;
+window._mod_registerUser = registerUser;
 
 async function logoutUser() {
   hideUserMenu();
   await signOut(firebaseAuth);
   showToast('👋 Hai effettuato il logout.');
 }
+window.logoutUser = logoutUser;
+window._mod_logoutUser = logoutUser;
 
 async function updateNavAuth(user) {
   const loggedOut = document.getElementById('navLoggedOut');
