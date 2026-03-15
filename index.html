@@ -4038,45 +4038,6 @@ function showSeason(name) {
   });
 }
 
-// ── Stubs per loginUser / registerUser / logoutUser ──
-// Il modulo li sovrascrive appena carica; questi garantiscono feedback immediato
-function loginUser() {
-  if (window._mod_loginUser) { window._mod_loginUser(); return; }
-  // Mostra caricamento sul bottone
-  var btn = document.getElementById('loginSubmit');
-  if (btn) { btn.disabled = true; btn.textContent = 'Connessione…'; }
-  var att = 0;
-  var t = setInterval(function() {
-    att++;
-    if (window._mod_loginUser) { clearInterval(t); window._mod_loginUser(); }
-    else if (att > 30) {
-      clearInterval(t);
-      if (btn) { btn.disabled = false; btn.textContent = 'Accedi →'; }
-      var errEl = document.getElementById('loginError');
-      if (errEl) { errEl.textContent = 'App non ancora carica. Attendi e riprova.'; errEl.classList.add('show'); }
-    }
-  }, 100);
-}
-function registerUser() {
-  if (window._mod_registerUser) { window._mod_registerUser(); return; }
-  var btn = document.getElementById('regSubmit');
-  if (btn) { btn.disabled = true; btn.textContent = 'Connessione…'; }
-  var att = 0;
-  var t = setInterval(function() {
-    att++;
-    if (window._mod_registerUser) { clearInterval(t); window._mod_registerUser(); }
-    else if (att > 30) {
-      clearInterval(t);
-      if (btn) { btn.disabled = false; btn.textContent = 'Crea Account →'; }
-      var errEl = document.getElementById('regError');
-      if (errEl) { errEl.textContent = 'App non ancora carica. Attendi e riprova.'; errEl.classList.add('show'); }
-    }
-  }, 100);
-}
-function logoutUser() {
-  if (window._mod_logoutUser) { window._mod_logoutUser(); return; }
-}
-
 // ── Imposta stato iniziale appena il DOM è pronto ──
 document.addEventListener('DOMContentLoaded', function() {
   // Forza body su esplora se non già settato (mobile)
@@ -4089,20 +4050,15 @@ document.addEventListener('DOMContentLoaded', function() {
   if (btn) btn.classList.add('active');
 });
 </script>
-<script type="module">
-// WanderQuest v3.0 — App Logic
 
-// ═══════════════════════════════════════════════════════════════════════
-// FIREBASE — SDK MODULARE v10
-// ═══════════════════════════════════════════════════════════════════════
-import { initializeApp }                                    from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
-import { getAuth, createUserWithEmailAndPassword,
-         signInWithEmailAndPassword, signOut,
-         onAuthStateChanged }                               from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
-import { getFirestore, collection, getDocs, getDoc,
-         doc, setDoc, updateDoc, arrayUnion, arrayRemove } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+<!-- ═══ FIREBASE — Compat SDK (script normali, zero dipendenze da moduli) ═══ -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
 
-const firebaseConfig = {
+<script>
+// ── Inizializza Firebase subito (compat API, disponibile globalmente) ──
+var _fbConfig = {
   apiKey:            "AIzaSyCX-TpXeBbJ2zo4iaxQWlLrmncI0_Bn0_8",
   authDomain:        "wanderquest-aac22.firebaseapp.com",
   projectId:         "wanderquest-aac22",
@@ -4111,9 +4067,184 @@ const firebaseConfig = {
   appId:             "1:811873678158:web:9c816974e5b00ebb13a41f"
 };
 
-const firebaseApp  = initializeApp(firebaseConfig);
-const firebaseAuth = getAuth(firebaseApp);
-const firestoreDb  = getFirestore(firebaseApp);
+// Evita doppia inizializzazione
+if (!firebase.apps.length) { firebase.initializeApp(_fbConfig); }
+var _fbAuth = firebase.auth();
+var _fbDb   = firebase.firestore();
+
+// Espone sullo window per il modulo ES (che li usa come firebaseAuth / firestoreDb)
+window._fbAuth = _fbAuth;
+window._fbDb   = _fbDb;
+
+// ── loginUser — funziona subito, senza modulo ──
+function loginUser() {
+  var email    = (document.getElementById('loginEmail').value || '').trim();
+  var password = document.getElementById('loginPassword').value || '';
+  var errEl    = document.getElementById('loginError');
+  if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Inserisci email e password.'; errEl.classList.add('show'); }
+    return;
+  }
+  var btn = document.getElementById('loginSubmit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Accesso…'; }
+
+  _fbAuth.signInWithEmailAndPassword(email, password)
+    .then(function() {
+      closeAuthModal();
+      // showToast se disponibile
+      if (window.showToast) window.showToast('👋 Bentornato!');
+      else alert('Accesso effettuato!');
+    })
+    .catch(function(err) {
+      var msgs = {
+        'auth/user-not-found':     'Nessun account con questa email.',
+        'auth/wrong-password':     'Password errata.',
+        'auth/invalid-email':      'Email non valida.',
+        'auth/too-many-requests':  'Troppi tentativi. Attendi.',
+        'auth/invalid-credential': 'Email o password non corretti.',
+      };
+      var msg = msgs[err.code] || ('Errore: ' + err.message);
+      if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); }
+    })
+    .finally(function() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Accedi →'; }
+    });
+}
+
+// ── registerUser ──
+function registerUser() {
+  var email    = (document.getElementById('regEmail').value || '').trim();
+  var password = document.getElementById('regPassword').value || '';
+  var confirm  = document.getElementById('regPasswordConfirm').value || '';
+  var errEl    = document.getElementById('regError');
+  if (errEl) { errEl.textContent = ''; errEl.classList.remove('show'); }
+
+  if (!email || !password) {
+    if (errEl) { errEl.textContent = 'Compila tutti i campi.'; errEl.classList.add('show'); }
+    return;
+  }
+  if (password.length < 6) {
+    if (errEl) { errEl.textContent = 'Password di almeno 6 caratteri.'; errEl.classList.add('show'); }
+    return;
+  }
+  if (password !== confirm) {
+    if (errEl) { errEl.textContent = 'Le password non coincidono.'; errEl.classList.add('show'); }
+    return;
+  }
+  var btn = document.getElementById('regSubmit');
+  if (btn) { btn.disabled = true; btn.textContent = 'Creazione…'; }
+
+  _fbAuth.createUserWithEmailAndPassword(email, password)
+    .then(function(cred) {
+      return _fbDb.collection('users').doc(cred.user.uid).set({
+        email:     email,
+        plan:      'free',
+        createdAt: new Date().toISOString(),
+        valigie:   [],
+        votedMete: []
+      });
+    })
+    .then(function() {
+      closeAuthModal();
+      if (window.showToast) window.showToast('🎉 Account creato! Benvenuto.');
+      else alert('Account creato!');
+    })
+    .catch(function(err) {
+      var msgs = {
+        'auth/email-already-in-use': 'Email già registrata.',
+        'auth/invalid-email':        'Email non valida.',
+        'auth/weak-password':        'Password troppo debole.',
+      };
+      var msg = msgs[err.code] || ('Errore: ' + err.message);
+      if (errEl) { errEl.textContent = msg; errEl.classList.add('show'); }
+    })
+    .finally(function() {
+      if (btn) { btn.disabled = false; btn.textContent = 'Crea Account →'; }
+    });
+}
+
+// ── logoutUser ──
+function logoutUser() {
+  _fbAuth.signOut().then(function() {
+    if (window.showToast) window.showToast('👋 Logout effettuato.');
+    switchTab('esplora');
+    // Aggiorna icona nav
+    var navOut = document.getElementById('navLoggedOut');
+    var navIn  = document.getElementById('navLoggedIn');
+    if (navOut) navOut.classList.remove('hidden');
+    if (navIn)  navIn.classList.add('hidden');
+    // Aggiorna profilo
+    var pp = document.getElementById('profile-page');
+    if (pp) pp.innerHTML = '<div class="pp-guest">' +
+      '<div class="pp-guest-icon">✈️</div>' +
+      '<div class="pp-guest-title">Benvenuto su WanderQuest</div>' +
+      '<div class="pp-guest-sub">Accedi per salvare i tuoi viaggi.</div>' +
+      '<button class="pp-guest-btn" onclick="openAuthModal(\'login\')">Accedi o Registrati →</button>' +
+      '</div>';
+  });
+}
+
+// Ascolta cambi auth per aggiornare la UI
+_fbAuth.onAuthStateChanged(function(user) {
+  var navOut  = document.getElementById('navLoggedOut');
+  var navIn   = document.getElementById('navLoggedIn');
+  var avatar  = document.getElementById('navAvatar');
+  var label   = document.getElementById('navUserLabel');
+  var bnavIco = document.getElementById('bnavProfileIcon');
+
+  if (user) {
+    if (navOut) navOut.classList.add('hidden');
+    if (navIn)  navIn.classList.remove('hidden');
+    var init = (user.email || '?')[0].toUpperCase();
+    if (avatar) avatar.textContent = init;
+    if (label)  label.textContent  = init;
+    if (bnavIco) { bnavIco.textContent = init; bnavIco.style.cssText = 'font-size:16px;font-weight:900'; }
+    // Se siamo sul tab profilo, aggiorna
+    if (document.body.getAttribute('data-active-tab') === 'profilo') {
+      if (window._renderProfilePage) window._renderProfilePage();
+    }
+  } else {
+    if (navOut) navOut.classList.remove('hidden');
+    if (navIn)  navIn.classList.add('hidden');
+    if (bnavIco) { bnavIco.textContent = '👤'; bnavIco.style.cssText = 'font-size:20px'; }
+  }
+});
+</script>
+<script>
+// WanderQuest v3.0 — App Logic (ex modulo ES, ora script normale con compat SDK)
+
+// ═══════════════════════════════════════════════════════════════════════
+// FIREBASE — usa gli oggetti compat già inizializzati nell'inline script
+// Il modulo ne ha bisogno per Firestore queries avanzate e auth listeners
+// ═══════════════════════════════════════════════════════════════════════
+// Adattatori per far funzionare il codice modular-style con compat SDK
+const firebaseAuth = window._fbAuth;
+const firestoreDb  = window._fbDb;
+
+// Shim funzioni Firestore modular → compat
+const getDoc  = (ref)            => ref.get();
+const setDoc  = (ref, data)      => ref.set(data);
+const updateDoc = (ref, data)    => ref.update(data);
+const arrayUnion = (...v)        => firebase.firestore.FieldValue.arrayUnion(...v);
+const arrayRemove = (...v)       => firebase.firestore.FieldValue.arrayRemove(...v);
+const serverTimestamp = ()       => firebase.firestore.FieldValue.serverTimestamp();
+const doc  = (db, ...path)       => {
+  let ref = db;
+  const parts = path.join('/').split('/');
+  parts.forEach((p, i) => { ref = (i % 2 === 0) ? ref.collection(p) : ref.doc(p); });
+  return ref;
+};
+const collection = (db, ...path) => {
+  let ref = db;
+  path.join('/').split('/').forEach((p, i) => { ref = (i % 2 === 0) ? ref.collection(p) : ref.doc(p); });
+  return ref;
+};
+const getDocs = (ref) => ref.get().then(snap => { snap.forEach = (fn) => snap.docs.forEach(fn); return snap; });
+const onAuthStateChanged = (auth, cb) => auth.onAuthStateChanged(cb);
+const signInWithEmailAndPassword = (auth, e, p) => auth.signInWithEmailAndPassword(e, p);
+const createUserWithEmailAndPassword = (auth, e, p) => auth.createUserWithEmailAndPassword(e, p);
+const signOut = (auth) => auth.signOut();
 
 // ═══════════════════════════════════════════════════════════════════════
 // CLAUDE HAIKU — Proxy Cloudflare Worker (nessuna API key nel frontend)
@@ -5139,7 +5270,7 @@ function renderCityDetail(code, city, country) {
 
       </div><!-- /city-acc -->
     </div>
-  \`;
+  `;
 }
 
 function goToLevel(level) {
@@ -5672,75 +5803,8 @@ function showAuthError(formId, msg) {
   if (el) { el.textContent = msg; el.classList.add('show'); }
 }
 
-async function loginUser() {
-  const email    = document.getElementById('loginEmail').value.trim();
-  const password = document.getElementById('loginPassword').value;
-  const errEl    = document.getElementById('loginError');
-  errEl.classList.remove('show');
-  if (!email || !password) { showAuthError('login', 'Inserisci email e password.'); return; }
-  setAuthLoading('login', true);
-  try {
-    await signInWithEmailAndPassword(firebaseAuth, email, password);
-    closeAuthModalEnhanced();
-    showToast('👋 Bentornato!');
-  } catch (err) {
-    const msgs = {
-      'auth/user-not-found':  'Nessun account trovato con questa email.',
-      'auth/wrong-password':  'Password errata. Riprova.',
-      'auth/invalid-email':   'Formato email non valido.',
-      'auth/too-many-requests': 'Troppi tentativi. Attendi qualche minuto.',
-      'auth/invalid-credential': 'Email o password non corretti.',
-    };
-    showAuthError('login', msgs[err.code] || `Errore: ${err.message}`);
-  } finally {
-    setAuthLoading('login', false);
-  }
-}
-window.loginUser = loginUser;
-window._mod_loginUser = loginUser;
-
-async function registerUser() {
-  const email    = document.getElementById('regEmail').value.trim();
-  const password = document.getElementById('regPassword').value;
-  const confirm  = document.getElementById('regPasswordConfirm').value;
-  document.getElementById('regError').classList.remove('show');
-  if (!email || !password) { showAuthError('reg', 'Compila tutti i campi.'); return; }
-  if (password.length < 6)  { showAuthError('reg', 'La password deve avere almeno 6 caratteri.'); return; }
-  if (password !== confirm)  { showAuthError('reg', 'Le password non coincidono.'); return; }
-  setAuthLoading('reg', true);
-  try {
-    const credential = await createUserWithEmailAndPassword(firebaseAuth, email, password);
-    const uid = credential.user.uid;
-    await setDoc(doc(firestoreDb, 'users', uid), {
-      email,
-      plan:       'free',
-      createdAt:  new Date().toISOString(),
-      valigie:    [],
-      votedMete:  [],
-    });
-    closeAuthModalEnhanced();
-    showToast('🎉 Account creato! Benvenuto in WanderQuest.');
-  } catch (err) {
-    const msgs = {
-      'auth/email-already-in-use': 'Questa email è già registrata.',
-      'auth/invalid-email':        'Formato email non valido.',
-      'auth/weak-password':        'Password troppo debole.',
-    };
-    showAuthError('reg', msgs[err.code] || `Errore: ${err.message}`);
-  } finally {
-    setAuthLoading('reg', false);
-  }
-}
-window.registerUser = registerUser;
-window._mod_registerUser = registerUser;
-
-async function logoutUser() {
-  hideUserMenu();
-  await signOut(firebaseAuth);
-  showToast('👋 Hai effettuato il logout.');
-}
-window.logoutUser = logoutUser;
-window._mod_logoutUser = logoutUser;
+// loginUser / registerUser / logoutUser sono gestiti dall'inline compat script.
+// Il modulo li eredita automaticamente dal window.
 
 async function updateNavAuth(user) {
   const loggedOut = document.getElementById('navLoggedOut');
@@ -7234,9 +7298,7 @@ window.openAuthModal        = openAuthModal;   // ridefinisce la versione inline
 window.closeAuthModal       = closeAuthModalEnhanced;
 window.handleOverlayClick   = handleOverlayClick;
 window.switchAuthTab        = switchAuthTab;
-window.loginUser            = loginUser;
-window.registerUser         = registerUser;
-window.logoutUser           = logoutUser;
+// loginUser / registerUser / logoutUser: già su window dall'inline compat script
 window.showUserMenu         = showUserMenu;
 window.toggleMobileDrawer   = toggleMobileDrawer;
 window.closeMobileDrawer    = closeMobileDrawer;
