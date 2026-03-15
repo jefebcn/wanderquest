@@ -2519,8 +2519,8 @@ button, a, select, input[type="checkbox"] {
 
 /* Hidden on desktop */
 #bottom-nav { display: none; }
-/* Profile page: hidden by default everywhere, CSS mobile tab rules reveal it */
-#profile-page { display: none; }
+/* profile-page: nascosto da desktop, gestito dal sistema tab mobile */
+@media(min-width: 769px) { #profile-page { display: none !important; } }
 
 @media(max-width: 768px) {
 
@@ -2629,7 +2629,6 @@ button, a, select, input[type="checkbox"] {
   /* Profile page */
   body[data-active-tab] #profile-page            { display: none !important; }
   body[data-active-tab="profilo"] #profile-page  { display: block !important; }
-  /* On desktop (no data-active-tab): hide profile-page always */
   /* Swipe actions: fixed, only on vota tab */
   body[data-active-tab] .swipe-actions           { display: none !important; }
   body[data-active-tab="vota"] .swipe-actions {
@@ -5768,9 +5767,12 @@ document.addEventListener('click', e => {
 onAuthStateChanged(firebaseAuth, user => {
   updateNavAuth(user);
   updateBnavProfileIcon();
-  // Legge il tab corrente direttamente dal DOM per evitare sfasature con _activeTab
+  // Aggiorna sempre il profilo quando l'auth state cambia
   const currentTab = document.body.getAttribute('data-active-tab');
   if (currentTab === 'profilo') renderProfilePage();
+  // Se non siamo su profilo ma il profilo ha ancora il guest di default, aggiornalo
+  const pp = document.getElementById('profile-page');
+  if (pp && pp.querySelector('#pp-guest-default') && user) renderProfilePage();
 });
 
 // ═══════════════════════════════════════════════════════════════════════
@@ -7355,7 +7357,18 @@ async function renderProfilePage() {
   const container = document.getElementById('profile-page');
   if (!container) return;
 
-  const user = firebaseAuth.currentUser;
+  // Aspetta che Firebase Auth sia inizializzato (max 3 secondi)
+  const user = await new Promise(resolve => {
+    if (firebaseAuth.currentUser !== null || firebaseAuth.currentUser === null) {
+      // currentUser potrebbe essere null prima che onAuthStateChanged fuochi
+      // Usiamo un timeout di sicurezza
+    }
+    const unsub = firebaseAuth.onAuthStateChanged(u => {
+      unsub();
+      resolve(u);
+    });
+    setTimeout(() => resolve(null), 3000);
+  });
 
   // ── Guest ──
   if (!user) {
@@ -7369,14 +7382,12 @@ async function renderProfilePage() {
     return;
   }
 
+  // ── Utente loggato: mostra subito scheletro con email, poi carica Firestore ──
   const initials = (user.email || '??').slice(0,2).toUpperCase();
-  container.innerHTML = `<div class="grid-spinner" style="padding:60px 20px"><div class="spinner"></div><span>Caricamento…</span></div>`;
+  const planDefault = 'free';
 
-  try {
-    const snap = await getDoc(doc(firestoreDb, 'users', user.uid));
-    const data = snap.exists() ? snap.data() : {};
-    const plan = data.plan || 'free';
-
+  // Renderizza SUBITO senza aspettare Firestore
+  const renderFullProfile = (plan) => {
     container.innerHTML = `
       <!-- ── Header ── -->
       <div class="pp-header">
@@ -7443,9 +7454,18 @@ async function renderProfilePage() {
       <!-- ── Logout ── -->
       <button class="pp-logout-btn" onclick="logoutUser();switchTab('esplora')">← Esci dall'account</button>
     `;
-  } catch(err) {
-    container.innerHTML = `<div style="padding:40px 20px;text-align:center;color:var(--cream-dim)">⚠️ Errore nel caricamento profilo.</div>`;
-  }
+  };
+
+  // Prima passata: usa piano default (free) senza aspettare Firestore
+  renderFullProfile(planDefault);
+
+  // Seconda passata: aggiorna piano reale da Firestore in background
+  try {
+    const snap = await getDoc(doc(firestoreDb, 'users', user.uid));
+    const data = snap.exists() ? snap.data() : {};
+    const plan = data.plan || 'free';
+    if (plan !== planDefault) renderFullProfile(plan);
+  } catch(_) { /* Firestore non disponibile — il profilo è già visibile */ }
 }
 
 // ── Avvio bottom nav (dopo tutte le definizioni di variabili e funzioni) ──
@@ -7490,7 +7510,13 @@ window.addEventListener('resize', () => {
 
 <!-- ═══ PROFILE PAGE (mobile tab) ═══ -->
 <div id="profile-page">
-  <!-- filled by renderProfilePage() -->
+  <!-- Stato guest: visibile di default finché Firebase non carica -->
+  <div id="pp-guest-default" class="pp-guest">
+    <div class="pp-guest-icon">✈️</div>
+    <div class="pp-guest-title">Benvenuto su WanderQuest</div>
+    <div class="pp-guest-sub">Accedi per salvare i tuoi viaggi, le valigie smart e partecipare al contest fotografico.</div>
+    <button class="pp-guest-btn" onclick="openAuthModal('login')">Accedi o Registrati →</button>
+  </div>
 </div>
 
 </body>
