@@ -3887,7 +3887,7 @@ button, a, select, input[type="checkbox"] {
 <!-- ═══ AUTH MODAL ═══ -->
 <div class="modal-overlay hidden" id="authOverlay" onclick="handleOverlayClick(event)">
   <div class="auth-modal">
-    <button class="modal-close" onclick="closeAuthModal()">✕</button>
+    <button class="modal-close" onclick="closeAuthModalEnhanced()">✕</button>
     <div class="modal-logo" style="display:flex;justify-content:center;padding-bottom:4px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 42" height="36" aria-label="WanderQuest">
   <path d="M21,38 L9,21 L9,10 L21,4 L33,10 L33,21 Z" fill="#1E3A6E"/>
   <path d="M21,38 L9,21 L9,10 L21,4 L33,10 L33,21 Z" fill="none" stroke="#C4A35A" stroke-width="1.2" opacity="0.6"/>
@@ -3945,48 +3945,111 @@ button, a, select, input[type="checkbox"] {
 <!-- TOAST -->
 <div id="toastContainer"></div>
 
-<!-- Critical UI — inline, non-module, always works -->
+<!-- ═══ UI CRITICO INLINE — funziona SEMPRE, anche senza modulo Firebase ═══ -->
 <script>
-// Stub per openAuthModal — il modulo lo sovrascriverà con la versione completa.
+// ── openAuthModal: opera direttamente sul DOM, zero dipendenze ──
 function openAuthModal(type) {
-  if (window._openAuthModal) { window._openAuthModal(type); return; }
-  var attempts = 0;
-  var wait = setInterval(function() {
-    attempts++;
-    if (window._openAuthModal) { clearInterval(wait); window._openAuthModal(type); }
-    else if (attempts > 50) clearInterval(wait);
-  }, 100);
+  var overlay = document.getElementById('authOverlay');
+  if (!overlay) return;
+  overlay.classList.remove('hidden');
+  // switchAuthTab inline
+  var t = type || 'login';
+  var isLogin = (t === 'login');
+  var tabL = document.getElementById('tabLogin');
+  var tabR = document.getElementById('tabRegister');
+  var fL   = document.getElementById('formLogin');
+  var fR   = document.getElementById('formRegister');
+  if (tabL) tabL.classList.toggle('active', isLogin);
+  if (tabR) tabR.classList.toggle('active', !isLogin);
+  if (fL)  fL.classList.toggle('hidden', !isLogin);
+  if (fR)  fR.classList.toggle('hidden', isLogin);
+  setTimeout(function() {
+    var el = document.getElementById(isLogin ? 'loginEmail' : 'regEmail');
+    if (el) el.focus();
+  }, 80);
 }
 
+// ── closeAuthModal ──
+function closeAuthModalEnhanced() {
+  var overlay = document.getElementById('authOverlay');
+  if (overlay) overlay.classList.add('hidden');
+}
+
+// ── handleOverlayClick ──
+function handleOverlayClick(e) {
+  if (e.target === document.getElementById('authOverlay')) closeAuthModalEnhanced();
+}
+
+// ── switchAuthTab ──
+function switchAuthTab(tab) {
+  var isLogin = (tab === 'login');
+  var tabL = document.getElementById('tabLogin');
+  var tabR = document.getElementById('tabRegister');
+  var fL   = document.getElementById('formLogin');
+  var fR   = document.getElementById('formRegister');
+  if (tabL) tabL.classList.toggle('active', isLogin);
+  if (tabR) tabR.classList.toggle('active', !isLogin);
+  if (fL)  fL.classList.toggle('hidden', !isLogin);
+  if (fR)  fR.classList.toggle('hidden', isLogin);
+}
+
+// ── switchTab: naviga tra i tab mobili ──
 function switchTab(tab) {
   document.body.setAttribute('data-active-tab', tab);
-  document.querySelectorAll('.bnav-tab').forEach(function(el){ el.classList.remove('active'); });
+  document.querySelectorAll('.bnav-tab').forEach(function(el) { el.classList.remove('active'); });
   var btn = document.getElementById('bnav-' + tab);
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
+  // Profilo: usa il renderer del modulo se disponibile, altrimenti mostra guest
   if (tab === 'profilo') {
-    // Prova subito, poi riprova se il modulo non è ancora pronto
-    if (window._renderProfilePage) { window._renderProfilePage(); return; }
-    var att = 0;
-    var t = setInterval(function() {
-      att++;
-      if (window._renderProfilePage) { clearInterval(t); window._renderProfilePage(); }
-      else if (att > 50) clearInterval(t);
-    }, 100);
+    if (window._renderProfilePage) {
+      window._renderProfilePage();
+    } else {
+      var pp = document.getElementById('profile-page');
+      if (pp && !pp.innerHTML.trim()) {
+        pp.innerHTML = '<div class="pp-guest">' +
+          '<div class="pp-guest-icon">✈️</div>' +
+          '<div class="pp-guest-title">Benvenuto su WanderQuest</div>' +
+          '<div class="pp-guest-sub">Accedi per salvare i tuoi viaggi e le valigie smart.</div>' +
+          '<button class="pp-guest-btn" onclick="openAuthModal(\'login\')">Accedi o Registrati →</button>' +
+          '</div>';
+      }
+      // Riprova ogni 200ms per max 5s se il modulo sta ancora caricando
+      var att = 0;
+      var t2 = setInterval(function() {
+        att++;
+        if (window._renderProfilePage) { clearInterval(t2); window._renderProfilePage(); }
+        else if (att > 25) clearInterval(t2);
+      }, 200);
+    }
   }
 }
-function showSeason(name) {
-  ['estate','autunno','inverno','primavera'].forEach(function(s){
-    var tab = document.getElementById('st-'+s);
-    var panel = document.getElementById('season-panel-'+s);
-    if(tab){ tab.classList.toggle('active', s===name); }
-    if(panel){ panel.classList.toggle('show', s===name); }
-  });
-}
+
+// ── Accordion e stagioni (usati da onclick nell HTML) ──
 function toggleAcc(id) {
   var el = document.getElementById(id);
   if (el) el.classList.toggle('open');
 }
+function showSeason(name) {
+  ['estate','autunno','inverno','primavera'].forEach(function(s) {
+    var tab   = document.getElementById('st-' + s);
+    var panel = document.getElementById('season-panel-' + s);
+    if (tab)   tab.classList.toggle('active', s === name);
+    if (panel) panel.classList.toggle('show',   s === name);
+  });
+}
+
+// ── Imposta stato iniziale appena il DOM è pronto ──
+document.addEventListener('DOMContentLoaded', function() {
+  // Forza body su esplora se non già settato (mobile)
+  if (!document.body.getAttribute('data-active-tab')) {
+    document.body.setAttribute('data-active-tab', 'esplora');
+  }
+  var active = document.body.getAttribute('data-active-tab');
+  document.querySelectorAll('.bnav-tab').forEach(function(el) { el.classList.remove('active'); });
+  var btn = document.getElementById('bnav-' + active);
+  if (btn) btn.classList.add('active');
+});
 </script>
 <script type="module">
 // WanderQuest v3.0 — App Logic
@@ -5544,47 +5607,31 @@ async function handleUpgradeCheckout() {
 // FIREBASE AUTH — UI & LOGICA
 // ═══════════════════════════════════════════════════════════════════════
 
-function openAuthModal(tab = 'login') {
-  document.getElementById('authOverlay').classList.remove('hidden');
-  switchAuthTab(tab);
-  setTimeout(() => {
-    const id = tab === 'login' ? 'loginEmail' : 'regEmail';
-    document.getElementById(id)?.focus();
-  }, 80);
-}
-// Esposto subito — non aspetta il blocco window exports in fondo
-window.openAuthModal  = openAuthModal;
-window._openAuthModal = openAuthModal;
+// ═══════════════════════════════════════════════════════════════════════
 
-function closeAuthModal() {
-  document.getElementById('authOverlay').classList.add('hidden');
+// openAuthModal / closeAuthModal / handleOverlayClick / switchAuthTab
+// sono definite nell'inline script e funzionano senza Firebase.
+// Il modulo le arricchisce esponendole su window (già fatto dall'inline).
+
+function closeAuthModalEnhanced() {
+  var overlay = document.getElementById('authOverlay');
+  if (overlay) overlay.classList.add('hidden');
   ['loginError','regError'].forEach(id => {
     const el = document.getElementById(id);
-    el.textContent = ''; el.classList.remove('show');
+    if (el) { el.textContent = ''; el.classList.remove('show'); }
   });
-}
-
-function handleOverlayClick(e) {
-  if (e.target === document.getElementById('authOverlay')) closeAuthModal();
-}
-
-function switchAuthTab(tab) {
-  const isLogin = tab === 'login';
-  document.getElementById('tabLogin').classList.toggle('active', isLogin);
-  document.getElementById('tabRegister').classList.toggle('active', !isLogin);
-  document.getElementById('formLogin').classList.toggle('hidden', !isLogin);
-  document.getElementById('formRegister').classList.toggle('hidden', isLogin);
 }
 
 function setAuthLoading(formId, loading) {
   const btn = document.getElementById(formId === 'login' ? 'loginSubmit' : 'regSubmit');
+  if (!btn) return;
   btn.disabled = loading;
   btn.textContent = loading ? 'Caricamento…' : (formId === 'login' ? 'Accedi →' : 'Crea Account →');
 }
 
 function showAuthError(formId, msg) {
   const el = document.getElementById(formId === 'login' ? 'loginError' : 'regError');
-  el.textContent = msg; el.classList.add('show');
+  if (el) { el.textContent = msg; el.classList.add('show'); }
 }
 
 async function loginUser() {
@@ -5596,7 +5643,7 @@ async function loginUser() {
   setAuthLoading('login', true);
   try {
     await signInWithEmailAndPassword(firebaseAuth, email, password);
-    closeAuthModal();
+    closeAuthModalEnhanced();
     showToast('👋 Bentornato!');
   } catch (err) {
     const msgs = {
@@ -5635,7 +5682,7 @@ async function registerUser() {
       votedMete:  [],               // destinazioni votate tramite "Vota questa meta"
     });
 
-    closeAuthModal();
+    closeAuthModalEnhanced();
     showToast('🎉 Account creato! Benvenuto in WanderQuest.');
   } catch (err) {
     const msgs = {
@@ -7140,9 +7187,8 @@ async function loadLiveWeather(cityName, code) {
 // ═══════════════════════════════════════════════════════════════════════
 // WINDOW EXPORTS — necessari per onclick="" con type="module"
 // ═══════════════════════════════════════════════════════════════════════
-window.openAuthModal        = openAuthModal;
-window._openAuthModal       = openAuthModal;  // alias per lo stub inline
-window.closeAuthModal       = closeAuthModal;
+window.openAuthModal        = openAuthModal;   // ridefinisce la versione inline con la versione module (+ Firebase)
+window.closeAuthModal       = closeAuthModalEnhanced;
 window.handleOverlayClick   = handleOverlayClick;
 window.switchAuthTab        = switchAuthTab;
 window.loginUser            = loginUser;
