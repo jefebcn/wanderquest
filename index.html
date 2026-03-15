@@ -6990,8 +6990,8 @@ function submitContestUpload() {
 // ═══════════════════════════════════════════════════════════════════════
 const SWIPE_PHOTOS = [
   { id:'p1', city:'Roma', country:'IT', user:'@marco_scatta', emoji:'🏛️', caption:'Colosseo alle 5:30 — nessun turista, solo piccioni e me.', bg:'linear-gradient(135deg,#8B0000,#C0392B)', votes:1247 },
-  { id:'p2', city:'Barcellona', country:'ES', user:'@carlos_photo', emoji:'🎨', caption:"El Born prima dell'apertura dei bar. Luce perfetta.', bg:'linear-gradient(135deg,#2C3E50,#E74C3C)", votes:2103 },
-  { id:'p3', city:'Kyoto', country:'JP', user:'@yuki_tabi', emoji:'⛩️', caption:"Fushimi Inari all'alba — 4.000 torii e zero persone.', bg:'linear-gradient(135deg,#C0392B,#8E44AD)", votes:3421 },
+  { id:'p2', city:'Barcellona', country:'ES', user:'@carlos_photo', emoji:'🎨', caption:"El Born prima dell'apertura dei bar. Luce perfetta.", bg:'linear-gradient(135deg,#2C3E50,#E74C3C)', votes:2103 },
+  { id:'p3', city:'Kyoto', country:'JP', user:'@yuki_tabi', emoji:'⛩️', caption:"Fushimi Inari all'alba — 4.000 torii e zero persone.", bg:'linear-gradient(135deg,#C0392B,#8E44AD)', votes:3421 },
   { id:'p4', city:'Venezia', country:'IT', user:'@lucia_lens', emoji:'🚤', caption:'Cannaregio alle 7:00 — la Venezia che non esiste sulle riviste.', bg:'linear-gradient(135deg,#1A5276,#21618C)', votes:1089 },
   { id:'p5', city:'Tokyo', country:'JP', user:'@hiroshi_photo', emoji:'🏘️', caption:'Yanaka — il quartiere che Tokyo dimentica di avere.', bg:'linear-gradient(135deg,#1C1C2E,#2E4057)', votes:2987 },
   { id:'p6', city:'Siviglia', country:'ES', user:'@ana_cataluña', emoji:'💃', caption:"Triana al tramonto. L'unico posto dove il flamenco ha senso.", bg:'linear-gradient(135deg,#7D6608,#D4AC0D)', votes:1876 },
@@ -7000,7 +7000,7 @@ const SWIPE_PHOTOS = [
   { id:'p9', city:'Madrid', country:'ES', user:'@pablo_shots', emoji:'🎭', caption:"Lavapiés alle 23:00 — il Madrid che batte a Malasaña.", bg:'linear-gradient(135deg,#4A235A,#7D3C98)', votes:1540 },
   { id:'p10', city:'Roma', country:'IT', user:'@andrea_snap', emoji:'🌅', caption:"Giardino degli Aranci — la vista che i romani si tengono per sé.", bg:'linear-gradient(135deg,#1A5276,#117864)', votes:744 },
   { id:'p11', city:'Kyoto', country:'JP', user:'@kenji_snap', emoji:'🎋', caption:"Bamboo Grove alle 5:00 — silenzio assoluto.", bg:'linear-gradient(135deg,#145A32,#1E8449)', votes:2103 },
-  { id:'p12', city:'Barcellona', country:'ES', user:'@isabella_es', emoji:'🌆', caption:"Bunkers del Carmel all'alba — la vista proibita di BCN.', bg:'linear-gradient(135deg,#154360,#1A5276)", votes:1201 },
+  { id:'p12', city:'Barcellona', country:'ES', user:'@isabella_es', emoji:'🌆', caption:"Bunkers del Carmel all'alba — la vista proibita di BCN.", bg:'linear-gradient(135deg,#154360,#1A5276)', votes:1201 },
 ];
 
 let swipeQueue = [];
@@ -7604,7 +7604,19 @@ _loadAIKey();
 // ═══════════════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════════════
-// ── INIT on load ── (deve stare PRIMA delle chiamate di rendering)
+
+// ── Variabili di stato TAB — DEVONO stare PRIMA di window.switchTab ──
+const TAB_SECTIONS = {
+  vota:    ['swipe-vote'],
+  esplora: ['hero','explorer','city-detail','flight-banner','spin-globe','budget-ai','guide','how-it-works','social-proof'],
+  scopri:  ['packing','ai-itinerary','premium'],
+  profilo: [],
+};
+
+let _activeTab = 'esplora';
+let _bottomNavEnabled = false;
+
+// ── INIT on load ── (deve stare DOPO le dichiarazioni di _activeTab)
 window.switchTab         = switchTab;
 window.renderProfilePage = renderProfilePage;
 window._renderProfilePage = renderProfilePage;
@@ -7621,16 +7633,6 @@ if (typeof window !== 'undefined' && window.innerWidth > 768) {
   buildSwipeQueue();
   renderSwipeDeck();
 }
-
-const TAB_SECTIONS = {
-  vota:    ['swipe-vote'],
-  esplora: ['hero','explorer','city-detail','flight-banner','spin-globe','budget-ai','guide','how-it-works','social-proof'],
-  scopri:  ['packing','ai-itinerary','premium'],
-  profilo: [],
-};
-
-let _activeTab = 'esplora';
-let _bottomNavEnabled = false;
 
 function isMobile() { return window.innerWidth <= 768; }
 
