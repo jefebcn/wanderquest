@@ -3229,13 +3229,13 @@ renderSwipeDeck();
 // ═══════════════════════════════════════════════════════════════════════
 
 const TAB_SECTIONS = {
+  vota:     ['swipe-vote'],
   esplora:  ['hero','explorer','city-detail','flight-banner','how-it-works','social-proof'],
   scopri:   ['spin-globe','budget-ai','ai-itinerary','guide'],
-  valigia:  ['packing','premium'],
   profilo:  [],
 };
 
-let _activeTab = 'esplora';
+let _activeTab = 'vota';
 let _bottomNavEnabled = false;
 
 function isMobile() { return window.innerWidth <= 768; }
@@ -3243,7 +3243,7 @@ function isMobile() { return window.innerWidth <= 768; }
 function initBottomNav() {
   if (!isMobile()) return;
   _bottomNavEnabled = true;
-  switchTab('esplora', true);
+  switchTab('vota', true);
   updateBnavProfileIcon();
 }
 
@@ -3254,7 +3254,14 @@ function switchTab(tab, silent) {
   // Update tab buttons
   document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
   const activeBtn = document.getElementById('bnav-' + tab);
-  if (activeBtn) activeBtn.classList.add('active');
+  if (activeBtn) {
+    activeBtn.classList.add('active');
+    // Vota tab: also show/hide fixed swipe actions
+    const swipeActions = document.getElementById('swipeActions');
+    if (swipeActions) {
+      swipeActions.style.display = (tab === 'vota' && window.innerWidth <= 768) ? 'flex' : '';
+    }
+  }
 
   // Profile page toggle
   const profilePage = document.getElementById('profile-page');
@@ -3290,7 +3297,7 @@ function switchTab(tab, silent) {
 
   // Update footer display
   const footer = document.getElementById('footer');
-  if (footer) footer.style.display = (tab === 'valigia' || tab === 'profilo') ? 'none' : 'block';
+  if (footer) footer.style.display = (tab === 'profilo') ? 'none' : 'block';
 }
 
 function updateBnavProfileIcon() {
@@ -3421,7 +3428,7 @@ async function renderProfilePage() {
       </div>
 
       <!-- Logout -->
-      <button class="pp-logout-btn" onclick="logoutUser();switchTab('esplora')">← Esci dall'account</button>
+      <button class="pp-logout-btn" onclick="logoutUser();switchTab('vota')">← Esci dall'account</button>
     `;
   } catch(err) {
     container.innerHTML = `<div style="padding:40px 20px;text-align:center;color:var(--cream-dim)">⚠️ Errore nel caricamento profilo.</div>`;

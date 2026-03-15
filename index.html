@@ -248,27 +248,27 @@
     <div class="section-label">⚙️ Come Funziona</div>
     <h2 class="section-title">Tre passi.<br><em style="font-style:italic;color:var(--amber)">Un'esperienza diversa.</em></h2>
     <p class="section-sub">WanderQuest non è una guida turistica. È un loop che ti porta a esplorare meglio, viaggiare preparato e guadagnare mentre lo fai.</p>
-    <div class="hiw-grid">
+    <div class="hiw-grid hiw-scroll-mobile">
       <div class="hiw-card card-explore">
         <div class="hiw-num">01 / Esplora</div>
         <div class="hiw-icon">🗺️</div>
         <div class="hiw-title">Trova le gemme che le guide non pubblicano</div>
-        <p class="hiw-text">Il nostro database curato svela i posti frequentati solo dai residenti: bar senza insegna, musei vuoti, mercati all'alba. Selezionati da chi ci vive, non da algoritmi SEO.</p>
+        <p class="hiw-text">Bar senza insegna, musei vuoti, mercati all'alba. Selezionati da chi ci vive, non da algoritmi SEO.</p>
         <div class="hiw-tag">🔍 Drill-down Explorer</div>
       </div>
       <div class="hiw-card card-organize">
         <div class="hiw-num">02 / Organizza</div>
         <div class="hiw-icon">🧳</div>
-        <div class="hiw-title">La valigia perfetta generata in 10 secondi</div>
-        <p class="hiw-text">L'algoritmo combina destinazione, stagione e stile di viaggio per creare una checklist personalizzata — con link diretti ai prodotti Amazon, già filtrati per qualità.</p>
+        <div class="hiw-title">La valigia perfetta in 10 secondi</div>
+        <p class="hiw-text">Checklist personalizzata per destinazione, stagione e stile — con link Amazon filtrati per qualità.</p>
         <div class="hiw-tag">⚡ Packing Planner</div>
       </div>
       <div class="hiw-card card-earn">
-        <div class="hiw-num">03 / Guadagna</div>
+        <div class="hiw-num">03 / Vota &amp; Vinci</div>
         <div class="hiw-icon">📸</div>
-        <div class="hiw-title">Vinci premi viaggiando e condividendo</div>
-        <p class="hiw-text">Ogni mese il contest fotografico premia chi racconta meglio la sua città. Voti swipe, classifica globale, €150 al vincitore. Più esplori, più punti accumuli.</p>
-        <div class="hiw-tag">🏆 Contest &amp; Community</div>
+        <div class="hiw-title">€150 al mese per la foto migliore</div>
+        <p class="hiw-text">Swipe le foto come su Tinder. Ogni voto conta. Il vincitore mensile riceve €150 + badge Verified Explorer.</p>
+        <div class="hiw-tag">🏆 Contest Mensile</div>
       </div>
     </div>
   </div>
@@ -1146,17 +1146,17 @@ function showSeason(name) {
 
 <!-- ═══ BOTTOM NAV — Mobile Only ═══ -->
 <nav id="bottom-nav" role="navigation" aria-label="Navigazione principale">
-  <button class="bnav-tab active" id="bnav-esplora" onclick="switchTab('esplora')" aria-label="Esplora">
+  <button class="bnav-tab active" id="bnav-vota" onclick="switchTab('vota')" aria-label="Vota">
+    <span class="bnav-icon">❤️</span>
+    <span class="bnav-label">Vota</span>
+  </button>
+  <button class="bnav-tab" id="bnav-esplora" onclick="switchTab('esplora')" aria-label="Esplora">
     <span class="bnav-icon">🔍</span>
     <span class="bnav-label">Esplora</span>
   </button>
   <button class="bnav-tab" id="bnav-scopri" onclick="switchTab('scopri')" aria-label="Scopri">
     <span class="bnav-icon">✨</span>
     <span class="bnav-label">Scopri</span>
-  </button>
-  <button class="bnav-tab" id="bnav-valigia" onclick="switchTab('valigia')" aria-label="Valigia">
-    <span class="bnav-icon">🧳</span>
-    <span class="bnav-label">Valigia</span>
   </button>
   <button class="bnav-tab bnav-profile" id="bnav-profilo" onclick="switchTab('profilo')" aria-label="Profilo">
     <span class="bnav-icon" id="bnavProfileIcon">👤</span>
