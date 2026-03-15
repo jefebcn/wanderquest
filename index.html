@@ -5815,13 +5815,14 @@ function toggleMobileDrawer() {
   const open   = drawer.classList.toggle('open');
   btn.classList.toggle('open', open);
   // Prevent body scroll when drawer is open
-  document.documentElement.style.overflowY = open ? 'hidden' : 'scroll';
+  // NON impostare 'scroll' su html: su iOS Safari crea UIScrollView che blocca tutti i tap
+  document.documentElement.style.overflowY = open ? 'hidden' : '';
 }
 
 function closeMobileDrawer() {
   document.getElementById('mobileDrawer').classList.remove('open');
   document.getElementById('navHamburger').classList.remove('open');
-  document.documentElement.style.overflowY = 'scroll';
+  document.documentElement.style.overflowY = ''; // rimuove stile inline, non imposta 'scroll'
 }
 
 // Close drawer on outside click
