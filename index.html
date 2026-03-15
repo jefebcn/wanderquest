@@ -4710,17 +4710,15 @@ function _dismissPersistentToast(id) {
 }
 
 function _injectAndOpenAICity(cityObj, cityName) {
-  // Inject into a virtual AI continent in DB so all existing functions work
   if (!DB.continents._AI) {
     DB.continents._AI = {
-      name: 'Scoperte', emoji: '🤖', countryCount: 0,
+      name: 'Scoperte AI', emoji: '🤖', countryCount: 0,
       countries: { _AI: { name: cityObj._country || 'AI', emoji: '🌐', cities: {} } }
     };
   }
   const cityCode = '_' + cityName.replace(/\s+/g, '_').toLowerCase().slice(0, 12);
   DB.continents._AI.countries._AI.cities[cityCode] = cityObj;
 
-  // Close dropdown and navigate
   clearSearch();
   selectedContinent = '_AI';
   selectedCountry   = '_AI';
@@ -4730,12 +4728,24 @@ function _injectAndOpenAICity(cityObj, cityName) {
   document.getElementById('step-country').className   = 'drill-step done';
   document.getElementById('step-city').className      = 'drill-step done';
 
-  const fakeCountry = { name: cityObj._country, emoji: '🌐' };
-  renderCityDetail(cityCode, cityObj, fakeCountry);
-  document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  // Su mobile: assicurati che siamo sul tab esplora prima di mostrare la city-detail
+  if (window.innerWidth <= 768) {
+    document.body.setAttribute('data-active-tab', 'esplora');
+    document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
+    const bnav = document.getElementById('bnav-esplora');
+    if (bnav) bnav.classList.add('active');
+  }
 
-  setTimeout(() => calcBudget(cityCode), 80);
-  showToast(`✨ "${cityObj.name}" aggiunta all'esploratore`);
+  const fakeCountry = { name: cityObj._country || cityName, emoji: '🌐' };
+  renderCityDetail(cityCode, cityObj, fakeCountry);
+
+  setTimeout(() => {
+    document.getElementById('city-detail').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    calcBudget(cityCode);
+    loadLiveWeather(cityObj.name, cityCode);
+  }, 100);
+
+  showToast(`✨ "${cityObj.name}" generata da AI`);
 }
 
 // Close dropdown on outside click
@@ -6319,22 +6329,32 @@ async function jumpToRecentCity(continentCode, countryCode, cityCode) {
 // CLAUDE AI — Core helper
 // ═══════════════════════════════════════════════════════════════════════
 async function claudeAsk(systemPrompt, userMessage, maxTokens = 600) {
-  const res = await fetch(CLAUDE_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      model: CLAUDE_MODEL,
-      max_tokens: maxTokens,
-      system: systemPrompt,
-      messages: [{ role: 'user', content: userMessage }],
-    }),
-  });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}));
-    throw new Error(err?.error?.message || `HTTP ${res.status}`);
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 20000); // 20s timeout
+  try {
+    const res = await fetch(CLAUDE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: controller.signal,
+      body: JSON.stringify({
+        model: CLAUDE_MODEL,
+        max_tokens: maxTokens,
+        system: systemPrompt,
+        messages: [{ role: 'user', content: userMessage }],
+      }),
+    });
+    clearTimeout(timeout);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err?.error?.message || `HTTP ${res.status}`);
+    }
+    const data = await res.json();
+    return data.content?.[0]?.text || '';
+  } catch (e) {
+    clearTimeout(timeout);
+    if (e.name === 'AbortError') throw new Error('Timeout — riprova con connessione migliore');
+    throw e;
   }
-  const data = await res.json();
-  return data.content?.[0]?.text || '';
 }
 
 // ═══════════════════════════════════════════════════════════════════════
