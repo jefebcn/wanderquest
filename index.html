@@ -43,8 +43,8 @@
   --hero-grad: linear-gradient(160deg, #080C1A 0%, #0D1530 40%, #162040 100%);
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow-x: clip; -webkit-text-size-adjust: 100%; }
+html { scroll-behavior: smooth; overflow-x: hidden; }
+body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow-x: hidden; -webkit-text-size-adjust: 100%; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--ink); }
 ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
@@ -54,7 +54,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   position: fixed; top: 0; left: 0; right: 0; z-index: 200;
   display: flex; align-items: center; justify-content: space-between;
   padding: 16px 48px;
-  background: rgba(8,12,26,0.98);
+  background: rgba(8,12,26,0.95);
+  backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--glass-border);
 }
 .nav-logo {
@@ -94,15 +95,15 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
 /* ── MOBILE DRAWER ── */
 .mobile-drawer {
   position: fixed; top: 57px; left: 0; right: 0;
-  background: rgba(8,12,26,0.99);
+  background: rgba(8,12,26,0.98);
+  backdrop-filter: blur(20px);
   border-bottom: 1px solid var(--glass-border);
   z-index: 190; padding: 16px 20px 20px;
   display: flex; flex-direction: column; gap: 4px;
   transform: translateY(-110%);
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  pointer-events: none; /* chiuso: non intercetta touch */
 }
-.mobile-drawer.open { transform: translateY(0); pointer-events: auto; }
+.mobile-drawer.open { transform: translateY(0); }
 .mobile-drawer a {
   display: flex; align-items: center; gap: 10px;
   color: var(--cream-dim); text-decoration: none;
@@ -146,15 +147,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--
   cursor: pointer; opacity: 0; pointer-events: none;
   transition: opacity 0.25s, transform 0.25s, background 0.2s;
   transform: translateY(10px);
-}
-/* Su mobile sposta il bottone sopra la bottom nav */
-@media (max-width: 768px) {
-  .back-to-top {
-    bottom: calc(88px + env(safe-area-inset-bottom, 0px));
-    right: 16px;
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
+  backdrop-filter: blur(10px);
 }
 .back-to-top.visible { opacity: 1; pointer-events: auto; transform: translateY(0); }
 .back-to-top:hover { background: rgba(232,162,40,0.15); border-color: rgba(232,162,40,0.3); color: var(--amber); }
@@ -249,7 +242,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   color: var(--cream-dim); transition: all 0.2s;
 }
 .drill-step.active { background: rgba(232,162,40,0.12); border-color: rgba(232,162,40,0.3); color: var(--amber); }
-.drill-step.done { background: rgba(24,197,168,0.08); border-color: rgba(24,197,168,0.2); color: var(--teal); cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: rgba(24,197,168,0.2); }
+.drill-step.done { background: rgba(24,197,168,0.08); border-color: rgba(24,197,168,0.2); color: var(--teal); cursor: pointer; }
 .drill-arrow { color: var(--cream-dim); opacity: 0.4; font-size: 12px; }
 
 .continent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 14px; }
@@ -257,7 +250,6 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   background: var(--glass); border: 1px solid var(--glass-border);
   border-radius: 14px; padding: 24px 20px;
   cursor: pointer; transition: all 0.25s; text-align: center;
-  touch-action: manipulation; -webkit-tap-highlight-color: rgba(255,255,255,0.1);
 }
 .continent-card:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); transform: translateY(-3px); }
 .continent-card.selected { background: rgba(232,162,40,0.12); border-color: var(--amber); }
@@ -270,7 +262,6 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   background: var(--glass); border: 1px solid var(--glass-border);
   border-radius: 12px; padding: 18px 16px;
   cursor: pointer; transition: all 0.2s; text-align: center;
-  touch-action: manipulation; -webkit-tap-highlight-color: rgba(255,255,255,0.1);
 }
 .country-card:hover { background: rgba(232,162,40,0.08); border-color: rgba(232,162,40,0.2); transform: translateY(-2px); }
 .country-card.selected { background: rgba(232,162,40,0.12); border-color: var(--amber); }
@@ -288,7 +279,6 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   background: var(--glass); border: 1px solid var(--glass-border);
   border-radius: 14px; overflow: hidden;
   cursor: pointer; transition: all 0.25s;
-  touch-action: manipulation; -webkit-tap-highlight-color: rgba(255,255,255,0.1);
 }
 .city-card:hover { border-color: rgba(232,162,40,0.3); transform: translateY(-3px); box-shadow: 0 12px 40px rgba(0,0,0,0.3); }
 .city-card.selected { border-color: var(--amber); box-shadow: 0 0 0 1px var(--amber); }
@@ -567,15 +557,14 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
 }
 .globe-orb::before {
   content: ''; position: absolute; inset: 0; border-radius: 50%;
-  pointer-events: none;
   background:
     repeating-linear-gradient(0deg,transparent,transparent 18px,rgba(24,197,168,0.06) 18px,rgba(24,197,168,0.06) 19px),
     repeating-linear-gradient(90deg,transparent,transparent 28px,rgba(24,197,168,0.04) 28px,rgba(24,197,168,0.04) 29px);
 }
 @keyframes globeSpin { 0%{transform:rotate(0) scale(1)} 30%{transform:rotate(180deg) scale(1.08)} 100%{transform:rotate(360deg) scale(1)} }
 .globe-orb.spinning { animation: globeSpin 0.7s cubic-bezier(0.4,0,0.2,1); }
-.globe-ring  { position:absolute;inset:-14px;border:1.5px dashed rgba(24,197,168,0.22);border-radius:50%;animation:rotateSlow 12s linear infinite;pointer-events:none; }
-.globe-ring-2{ position:absolute;inset:-26px;border:1px dashed rgba(232,162,40,0.1);border-radius:50%;animation:rotateSlow 20s linear infinite reverse;pointer-events:none; }
+.globe-ring  { position:absolute;inset:-14px;border:1.5px dashed rgba(24,197,168,0.22);border-radius:50%;animation:rotateSlow 12s linear infinite; }
+.globe-ring-2{ position:absolute;inset:-26px;border:1px dashed rgba(232,162,40,0.1);border-radius:50%;animation:rotateSlow 20s linear infinite reverse; }
 @keyframes rotateSlow { to{transform:rotate(360deg)} }
 .spin-btn {
   background: linear-gradient(135deg,#18C5A8 0%,#0E8F7C 100%);
@@ -682,7 +671,7 @@ section { padding: 80px 48px; max-width: 1200px; margin: 0 auto; }
   background:rgba(8,12,26,0.72); border:1px solid rgba(255,255,255,0.15);
   font-size:14px; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
-  transition:all 0.2s; z-index:2;
+  transition:all 0.2s; backdrop-filter:blur(4px); z-index:2;
 }
 .city-wish-btn:hover { background:rgba(220,50,50,0.25); border-color:rgba(220,50,50,0.4); transform:scale(1.15); }
 .city-wish-btn.wished { background:rgba(220,50,50,0.2); border-color:rgba(220,50,50,0.35); }
@@ -782,16 +771,12 @@ a {
 /* Override for purely decorative / inline elements */
 .acc-tag, .transit-line, .food-dish, .city-tag,
 .month-pill, .footer-badge, .aff-badge,
-.badge-new, .plan-badge, .valigia-meta-tag,
-.city-wish-btn { min-height: unset; }
+.badge-new, .plan-badge, .valigia-meta-tag { min-height: unset; }
 
 /* ────────────────────────────────────────────────────────────
    ≤ 768px — TABLETS & PHONES
 ─────────────────────────────────────────────────────────────*/
 @media(max-width:768px) {
-
-  /* Garantisce scroll verticale senza bloccare i tap su iOS */
-  html, body { touch-action: pan-y; }
 
   /* ── GLOBAL SPACING ── */
   section,
@@ -928,6 +913,7 @@ a {
     display: flex !important;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
     gap: 14px;
     padding-bottom: 8px;
     margin-top: 20px;
@@ -1030,7 +1016,7 @@ a {
   .testimonial-author { gap: 10px; padding-top: 12px; }
 
   /* ── PREMIUM TABLE ── */
-  .compare-table-wrap { overflow-x: auto; }
+  .compare-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
   .compare-table      { min-width: 460px; }
   .compare-table thead th { padding: 14px 12px; }
   .compare-table tbody td { padding: 11px 12px; font-size: 12px; }
@@ -1291,13 +1277,7 @@ a {
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: 20px; padding: 20px;
   box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(232,162,40,0.05);
-}
-/* Bug iOS Safari: backdrop-filter blocca i touch sui figli — rimosso su mobile */
-@media (max-width: 768px) {
-  .mockup-frame {
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
-  }
+  backdrop-filter: blur(10px);
 }
 .mockup-bar {
   display: flex; align-items: center; gap: 8px;
@@ -1328,7 +1308,6 @@ a {
   background: linear-gradient(to top, rgba(4,7,18,0.92) 0%, rgba(4,7,18,0.4) 70%, transparent 100%);
   padding: 12px 10px 10px;
   text-align: left;
-  pointer-events: none; /* lascia passare i click al .mockup-card padre */
 }
 .mockup-card-label { font-size: 11px; font-weight: 700; color: var(--cream); line-height: 1.2; }
 .mockup-card-sub { font-size: 9px; color: var(--teal); margin-top: 2px; font-weight: 600; }
@@ -1710,6 +1689,7 @@ a {
 .modal-overlay {
   position: fixed; inset: 0; z-index: 1000;
   background: rgba(4,7,18,0.82);
+  backdrop-filter: blur(8px);
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
   animation: fadeIn 0.2s ease;
@@ -2191,7 +2171,7 @@ a {
 .tip-row { display:flex;align-items:flex-start;gap:10px;font-size:13px;color:var(--cream-dim);line-height:1.55; }
 .tip-dot { width:6px;height:6px;border-radius:50%;background:var(--amber);flex-shrink:0;margin-top:7px; }
 .season-tabs { display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding-top:4px; }
-.season-tab { background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s;touch-action:manipulation;-webkit-tap-highlight-color:rgba(255,255,255,0.1); }
+.season-tab { background:rgba(255,255,255,0.04);border:1px solid var(--glass-border);border-radius:10px;padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.2s; }
 .season-tab:hover,.season-tab.active { background:rgba(232,162,40,0.1);border-color:rgba(232,162,40,0.3); }
 .season-tab-icon { font-size:24px;margin-bottom:6px; }
 .season-tab-name { font-size:11px;font-weight:700;color:var(--cream); }
@@ -2375,7 +2355,7 @@ a {
 .vota-title { font-size:22px; font-weight:900; color:var(--cream); line-height:1; }
 .vota-subtitle { font-size:12px; color:var(--cream-dim); margin-top:3px; }
 .vota-prize-pill { background:rgba(232,162,40,0.15); border:1px solid rgba(232,162,40,0.3); color:var(--amber); padding:6px 14px; border-radius:100px; font-size:13px; font-weight:800; white-space:nowrap; }
-.vota-tabs { display:flex; gap:8px; padding:0 20px 14px; overflow-x:auto; scrollbar-width:none; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
+.vota-tabs { display:flex; gap:8px; padding:0 20px 14px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; border-bottom: 1px solid rgba(255,255,255,0.08); margin-bottom: 20px; }
 .vota-tabs::-webkit-scrollbar { display:none; }
 .vota-tab { flex-shrink:0; padding:10px 18px; border-radius:12px; background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08); color:rgba(255,255,255,0.5); font-size:13px; font-weight:700; font-family:'DM Sans',sans-serif; cursor:pointer; transition:all 0.2s; -webkit-tap-highlight-color:transparent; display: flex; align-items: center; gap: 6px; }
 .vota-tab.active { background:rgba(232,162,40,0.15); border-color:rgba(232,162,40,0.3); color:var(--amber); }
@@ -2472,23 +2452,23 @@ a {
 
 @media(max-width: 768px) {
 
-  /* ── Bottom nav: barra fissa stile Airbnb ── */
+  /* ── Bottom nav pill ── */
   #bottom-nav {
     display: flex;
     position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
+    bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+    left: 12px;
+    right: 12px;
     top: auto;
-    z-index: 999999;
+    z-index: 999999; /* Z-index altissimo per evitare sovrapposizioni */
     background: #0A0E1C;
-    border-top: 1px solid rgba(255,255,255,0.10);
-    border-radius: 0;
-    padding: 0 0 env(safe-area-inset-bottom, 0px);
-    gap: 0;
-    box-shadow: 0 -2px 16px rgba(0,0,0,0.5);
-    backdrop-filter: none;
-    -webkit-backdrop-filter: none;
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 20px;
+    padding: 4px;
+    gap: 2px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.7);
+    max-width: 500px;
+    margin: 0 auto;
   }
 
   .bnav-tab {
@@ -2497,61 +2477,48 @@ a {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    padding: 10px 4px 10px;
-    border-radius: 0;
+    gap: 2px;
+    padding: 10px 4px;
+    border-radius: 16px;
     border: none;
     background: none;
-    color: rgba(255,255,255,0.38);
+    color: rgba(255,255,255,0.45);
     cursor: pointer;
-    transition: color 0.18s;
-    min-height: 60px;
+    transition: background 0.15s, color 0.15s;
+    min-height: 56px; min-width: 56px;
     font-family: 'DM Sans', sans-serif;
-    -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+    -webkit-tap-highlight-color: rgba(255,255,255,0.1);
+    touch-action: manipulation; /* elimina delay 300ms su iOS */
     -webkit-user-select: none;
     user-select: none;
     position: relative;
+    z-index: 10;
   }
 
-  /* Puntino indicatore attivo sotto l'icona */
-  .bnav-tab.active::after {
-    content: '';
-    position: absolute;
-    top: 7px;
-    left: 50%; transform: translateX(-50%);
-    width: 4px; height: 4px;
-    border-radius: 50%;
-    background: currentColor;
-    pointer-events: none;
+  .bnav-tab:active {
+    transform: scale(0.92);
+    background: rgba(255,255,255,0.08);
   }
 
-  .bnav-tab:active { opacity: 0.6; }
+  .bnav-tab.active { background: rgba(255,255,255,0.1); color: #fff; }
+  #bnav-esplora.active { background: rgba(24,197,168,0.2); color: var(--teal); }
+  #bnav-vota.active    { background: rgba(231,70,100,0.22); color: #FF4D6D; }
+  #bnav-scopri.active  { background: rgba(232,162,40,0.2); color: var(--amber); }
+  .bnav-tab.active.bnav-profile { background: var(--amber); color: var(--ink); }
 
-  /* Colori tab attivi — singolo accent per tab */
-  .bnav-tab.active               { color: #fff; }
-  #bnav-esplora.active           { color: var(--teal); }
-  #bnav-vota.active              { color: #FF4D6D; }
-  #bnav-scopri.active            { color: var(--amber); }
-  .bnav-tab.active.bnav-profile  { color: var(--amber); }
+  .bnav-icon  { font-size: 22px; line-height: 1; pointer-events: none; }
+  .bnav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.01em; line-height: 1; pointer-events: none; }
 
-  .bnav-icon {
-    display: flex; align-items: center; justify-content: center;
-    width: 26px; height: 26px;
-    pointer-events: none;
-  }
-  .bnav-icon svg { width: 24px; height: 24px; display: block; }
-  .bnav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.01em; line-height: 1; pointer-events: none; }
-
-  /* ── Body mobile: nessun overflow su html/body per non bloccare i tap iOS ── */
+  /* ── Body: su mobile NON scorre (fix iOS Safari fixed nav) ── */
   html {
-    height: auto;
-    overflow: visible;
+    height: 100%;
+    overflow-y: scroll;
+    -webkit-overflow-scrolling: touch;
   }
   body {
-    min-height: 100%;
-    overflow-x: clip;
-    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+    height: 100%;
+    overflow: visible;
+    padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   }
 
   /* ── TAB SYSTEM ──
@@ -2646,7 +2613,6 @@ a {
     min-height: 160px; position: relative;
     overflow: hidden;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
   }
   .pp-card:active { transform: scale(0.96); background: #131d33; }
   .pp-card-illus {
@@ -2669,7 +2635,6 @@ a {
     display: flex; align-items: center; gap: 0;
     cursor: pointer; transition: background 0.18s;
     position: relative; overflow: hidden; min-height: 140px;
-    touch-action: manipulation; -webkit-tap-highlight-color: transparent;
   }
   .pp-read-card:active { background: #131d33; }
   /* card con testo a sx, illustrazione a dx */
@@ -2744,106 +2709,9 @@ a {
   .pp-plan-badge.pro  { background: rgba(232,162,40,0.15); border: 1px solid rgba(232,162,40,0.3); color: var(--amber); }
 }
 
-/* ══════════════════════════════════════════════════════════════
-   FIX MOBILE: Bottoni vota fissi sopra la bottom nav
-   Su schermi piccoli (< 750px) i bottoni skip/super/like
-   risultano sotto il fold a causa dell'altezza del deck.
-   Li fissiamo sopra la bottom nav come in tutte le swipe app.
-   ══════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  /* Pulsanti azione swipe: fissi sopra la bottom nav */
-  .vota-actions {
-    position: fixed;
-    bottom: calc(82px + env(safe-area-inset-bottom, 0px));
-    left: 0;
-    right: 0;
-    justify-content: center;
-    align-items: center;
-    gap: 24px;
-    padding: 8px 20px 12px;
-    z-index: 600;
-    background: linear-gradient(to top, rgba(8,12,26,0.95) 0%, rgba(8,12,26,0) 100%);
-    pointer-events: none; /* lascia passare i click al di fuori dei bottoni */
-  }
-  .vota-actions .vota-btn {
-    pointer-events: auto; /* i singoli bottoni rimangono cliccabili */
-  }
-
-  /* Riduce altezza deck su mobile per lasciare spazio visivo ai bottoni fissi */
-  .swipe-deck-wrap {
-    height: min(48vh, 400px);
-  }
-
-  /* Aggiunge padding al fondo del vota-wrap per non nascondere contenuto
-     sotto i bottoni fissi e la bottom nav */
-  .vota-wrap {
-    padding-bottom: calc(160px + env(safe-area-inset-bottom, 0px));
-  }
-}
-
-/* ══════════════════════════════════════════════════════════════
-   MOBILE NUCLEAR FIX — applicato DOPO tutto il resto
-   ══════════════════════════════════════════════════════════════ */
-@media (max-width: 768px) {
-  /* 1. Rimuove TUTTI i backdrop-filter: su iOS Safari bloccano i touch sui figli */
-  *, *::before, *::after {
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-  }
-
-  /* 2. html/body: nessun overflow che crei UIScrollView nativa su iOS */
-  html {
-    height: auto !important;
-    overflow: visible !important;
-    overflow-y: visible !important;
-  }
-  body {
-    overflow-x: hidden !important;
-    overflow-y: visible !important;
-  }
-
-  /* 3. Tutti i button e link: garantisce tappabilità iOS */
-  button, a, [onclick], [ontouchstart] {
-    cursor: pointer !important;
-    touch-action: manipulation !important;
-    -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
-    -webkit-user-select: none !important;
-  }
-
-  /* 4. Nessun elemento con pointer-events bloccante sopra il contenuto */
-  .globe-orb::before, .globe-ring, .globe-ring-2,
-  .mockup-card-overlay, .city-thumb-bg,
-  .swipe-stamp, .upload-cta { pointer-events: none !important; }
-}
-
 </style>
 </head>
-<body data-active-tab="esplora" ontouchstart="">
-<script>
-// iOS Touch Fix - must run before everything else
-(function(){
-  if(!('ontouchstart' in window)) return;
-  document.addEventListener('touchstart',function(){},{passive:true});
-  var sx=0,sy=0;
-  document.addEventListener('touchstart',function(e){
-    if(e.touches&&e.touches[0]){sx=e.touches[0].clientX;sy=e.touches[0].clientY;}
-  },{passive:true,capture:true});
-  document.addEventListener('touchend',function(e){
-    var t=e.changedTouches&&e.changedTouches[0];
-    if(!t||Math.abs(t.clientX-sx)>12||Math.abs(t.clientY-sy)>12) return;
-    var el=e.target;
-    while(el&&el!==document.documentElement){
-      if(el.tagName==='BUTTON'||el.tagName==='A'||el.getAttribute('onclick')!==null) break;
-      el=el.parentElement;
-    }
-    if(!el||el===document.documentElement) return;
-    if(el._t) return; el._t=true; setTimeout(function(){el._t=false;},500);
-    e.preventDefault();
-    el.click();
-  },{capture:true,passive:false});
-})();
-</script>
-
+<body data-active-tab="esplora">
 
 <!-- NAV -->
 <nav id="top-nav">
@@ -2877,7 +2745,7 @@ a {
   <div class="nav-auth-area">
     <!-- Logged-out state -->
     <div id="navLoggedOut">
-      <button type="button" class="nav-btn-accedi" onclick="openAuthModal('login')" ontouchstart="">Accedi</button>
+      <button class="nav-btn-accedi" onclick="openAuthModal('login')" ontouchstart="">Accedi</button>
     </div>
     <!-- Logged-in state -->
     <div id="navLoggedIn" class="nav-user-wrap hidden">
@@ -2890,19 +2758,19 @@ a {
         <div class="nav-menu-header">
           <div class="nav-menu-email" id="navUserEmail">—</div>
         </div>
-        <button type="button" class="nav-menu-item" onclick="openMyProfile()" ontouchstart="">👤 Il mio Profilo</button>
-        <button type="button" class="nav-menu-item" onclick="openMyValigie()" ontouchstart="">🧳 Le mie Valigie <span class="nav-valigie-badge hidden" id="navValigieBadge">0</span></button>
-        <button type="button" class="nav-menu-item" onclick="openWishlistModal()" ontouchstart="">🤍 Desideri</button>
+        <button class="nav-menu-item" onclick="openMyProfile()">👤 Il mio Profilo</button>
+        <button class="nav-menu-item" onclick="openMyValigie()">🧳 Le mie Valigie <span class="nav-valigie-badge hidden" id="navValigieBadge">0</span></button>
+        <button class="nav-menu-item" onclick="openWishlistModal()">🤍 Desideri</button>
         <div class="nav-menu-divider"></div>
-        <button type="button" class="nav-menu-item danger" onclick="logoutUser()" ontouchstart="">← Esci</button>
+        <button class="nav-menu-item danger" onclick="logoutUser()">← Esci</button>
       </div>
     </div>
     <!-- Cuore wishlist: solo desktop, nascosto su mobile (c'è nel menu) -->
-    <button type="button" class="nav-wish-btn nav-wish-desktop" id="navWishBtn" onclick="openWishlistModal()" title="Destinazioni desiderate" ontouchstart="">
+    <button class="nav-wish-btn nav-wish-desktop" id="navWishBtn" onclick="openWishlistModal()" title="Destinazioni desiderate">
       🤍<span class="nav-wish-count" id="wishNavCount">0</span>
     </button>
-    <button type="button" class="nav-cta" onclick="openUpgrade()" ontouchstart="">Pro →</button>
-    <button type="button" class="nav-hamburger" id="navHamburger" onclick="toggleMobileDrawer()" aria-label="Menu" ontouchstart="">
+    <button class="nav-cta" onclick="openUpgrade()">Pro →</button>
+    <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileDrawer()" aria-label="Menu">
       <span></span><span></span><span></span>
     </button>
   </div>
@@ -2921,13 +2789,13 @@ a {
   <a href="#swipe-vote"    onclick="closeMobileDrawer()">📸 Contest</a>
   <div class="mobile-drawer-divider"></div>
   <div class="mobile-drawer-auth" id="mobileDrawerAuth">
-    <button type="button" class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openAuthModal('login')" ontouchstart="">Accedi</button>
-    <button type="button" class="mobile-drawer-btn primary"   onclick="closeMobileDrawer();openAuthModal('register')" ontouchstart="">Registrati</button>
+    <button class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openAuthModal('login')">Accedi</button>
+    <button class="mobile-drawer-btn primary"   onclick="closeMobileDrawer();openAuthModal('register')">Registrati</button>
   </div>
 </div>
 
 <!-- BACK TO TOP -->
-<button type="button" class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Torna su" ontouchstart="">↑</button>
+<button class="back-to-top" id="backToTop" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Torna su">↑</button>
 
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- HERO — VALUE PROPOSITION -->
@@ -2943,7 +2811,7 @@ a {
     Gemme nascoste, valigie generate su misura, voli tracciati in tempo reale e una community che premia chi viaggia davvero. Tutto in un posto.
   </p>
   <div class="hero-ctas">
-    <button type="button" class="hero-cta-primary" onclick="document.getElementById('explorer').scrollIntoView({behavior:'smooth'})" ontouchstart="">
+    <button class="hero-cta-primary" onclick="document.getElementById('explorer').scrollIntoView({behavior:'smooth'})">
       🌍 Inizia a esplorare
     </button>
     <a class="hero-cta-secondary" href="#premium">Scopri il Premium →</a>
@@ -3027,7 +2895,7 @@ a {
           oninput="handleSearch(this.value)"
           onkeydown="handleSearchKey(event)"
         >
-        <button type="button" class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="Cancella ricerca" ontouchstart="">✕</button>
+        <button class="search-clear" id="searchClear" onclick="clearSearch()" aria-label="Cancella ricerca">✕</button>
       </div>
       <div class="search-dropdown" id="searchDropdown" style="display:none"></div>
     </div>
@@ -3055,7 +2923,7 @@ a {
     <!-- Level 2: Countries -->
     <div id="level-country" class="hidden">
       <div id="countryBack" style="margin-bottom:16px">
-        <button type="button" onclick="goToLevel('continent')" style="background:none;border:none;color:var(--amber);font-size:13px;font-weight:600;cursor:pointer;" ontouchstart="">← Tutti i continenti</button>
+        <button onclick="goToLevel('continent')" style="background:none;border:none;color:var(--amber);font-size:13px;font-weight:600;cursor:pointer;">← Tutti i continenti</button>
       </div>
       <div class="country-grid" id="countryGrid"></div>
     </div>
@@ -3063,7 +2931,7 @@ a {
     <!-- Level 3: Cities -->
     <div id="level-city" class="hidden">
       <div style="margin-bottom:16px">
-        <button type="button" onclick="goToLevel('country')" style="background:none;border:none;color:var(--amber);font-size:13px;font-weight:600;cursor:pointer;" ontouchstart="">← Tutti i paesi</button>
+        <button onclick="goToLevel('country')" style="background:none;border:none;color:var(--amber);font-size:13px;font-weight:600;cursor:pointer;">← Tutti i paesi</button>
       </div>
       <div class="city-grid" id="cityGrid"></div>
     </div>
@@ -3084,7 +2952,7 @@ a {
     <div class="flight-input-wrap">
       <input type="text" id="flightInput" placeholder="es. FR1234, AZ610, IB3456…" maxlength="8"
         onkeydown="if(event.key==='Enter')searchFlight()">
-      <button type="button" class="flight-btn" onclick="searchFlight()" ontouchstart="">Cerca ✈️</button>
+      <button class="flight-btn" onclick="searchFlight()">Cerca ✈️</button>
     </div>
     <div id="flight-result"></div>
   </div>
@@ -3170,7 +3038,7 @@ a {
         </select>
       </div>
       <div class="planner-field" style="display:flex;align-items:flex-end;">
-        <button type="button" class="generate-btn" onclick="generatePacking()" ontouchstart="">🧳 Genera Lista</button>
+        <button class="generate-btn" onclick="generatePacking()">🧳 Genera Lista</button>
       </div>
     </div>
 
@@ -3224,7 +3092,7 @@ a {
         </select>
       </div>
       <div class="itinerary-field" style="display:flex;align-items:flex-end;">
-        <button type="button" class="itinerary-generate-btn" id="itinBtn" onclick="generateItinerary()" ontouchstart="">
+        <button class="itinerary-generate-btn" id="itinBtn" onclick="generateItinerary()">
           ✨ Genera Itinerario
         </button>
       </div>
@@ -3256,7 +3124,7 @@ a {
         <div class="globe-ring"></div>
         <div class="globe-orb" id="globeOrb">🌍</div>
       </div>
-      <button type="button" class="spin-btn" id="spinBtn" onclick="spinTheGlobe()" ontouchstart="">🎲 Gira il Globo</button>
+      <button class="spin-btn" id="spinBtn" onclick="spinTheGlobe()">🎲 Gira il Globo</button>
     </div>
 
     <div class="spin-result" id="spinResult" style="margin:0 auto">
@@ -3270,8 +3138,8 @@ a {
         </div>
         <div class="spin-ai-pitch" id="spinAIPitch"></div>
         <div class="spin-ctas">
-          <button type="button" class="spin-go-btn" id="spinGoBtn" ontouchstart="">🌍 Esplora questa città →</button>
-          <button type="button" class="spin-again-btn" onclick="spinTheGlobe()" ontouchstart="">🔄 Un'altra destinazione</button>
+          <button class="spin-go-btn" id="spinGoBtn">🌍 Esplora questa città →</button>
+          <button class="spin-again-btn" onclick="spinTheGlobe()">🔄 Un'altra destinazione</button>
         </div>
       </div>
     </div>
@@ -3321,8 +3189,8 @@ a {
         </select>
       </div>
       <div class="budget-ai-field" style="display:flex;align-items:flex-end;">
-        <button type="button" class="generate-btn" id="baiBtn" onclick="generateBudgetAI()"
-          style="background:linear-gradient(135deg,#2EC57A,#1A9A5C);box-shadow:0 6px 24px rgba(46,197,122,0.3);border:none" ontouchstart="">
+        <button class="generate-btn" id="baiBtn" onclick="generateBudgetAI()"
+          style="background:linear-gradient(135deg,#2EC57A,#1A9A5C);box-shadow:0 6px 24px rgba(46,197,122,0.3);border:none">
           💰 Calcola Ora
         </button>
       </div>
@@ -3350,7 +3218,7 @@ a {
 
       <!-- Documenti & Visti -->
       <div class="acc-item" id="acc-docs">
-        <button type="button" class="acc-trigger" onclick="toggleAcc('acc-docs')" ontouchstart="">
+        <button class="acc-trigger" onclick="toggleAcc('acc-docs')">
           <span class="acc-icon">📋</span>
           <span class="acc-label">Documenti & Visti</span>
           <span class="acc-tag">Essenziale</span>
@@ -3371,7 +3239,7 @@ a {
 
       <!-- Stagioni di Viaggio -->
       <div class="acc-item" id="acc-seasons">
-        <button type="button" class="acc-trigger" onclick="toggleAcc('acc-seasons')" ontouchstart="">
+        <button class="acc-trigger" onclick="toggleAcc('acc-seasons')">
           <span class="acc-icon">🌡️</span>
           <span class="acc-label">Quando Partire — Guida alle Stagioni</span>
           <span class="acc-tag">Stagionalità</span>
@@ -3429,7 +3297,7 @@ a {
 
       <!-- Costi & Confronto -->
       <div class="acc-item" id="acc-costs">
-        <button type="button" class="acc-trigger" onclick="toggleAcc('acc-costs')" ontouchstart="">
+        <button class="acc-trigger" onclick="toggleAcc('acc-costs')">
           <span class="acc-icon">💶</span>
           <span class="acc-label">Costi Reali per Tipologia di Viaggio</span>
           <span class="acc-tag">Budget</span>
@@ -3471,7 +3339,7 @@ a {
 
       <!-- Trasporti & Connettività -->
       <div class="acc-item" id="acc-transport">
-        <button type="button" class="acc-trigger" onclick="toggleAcc('acc-transport')" ontouchstart="">
+        <button class="acc-trigger" onclick="toggleAcc('acc-transport')">
           <span class="acc-icon">🚇</span>
           <span class="acc-label">Trasporti, SIM & Connettività</span>
           <span class="acc-tag">Logistica</span>
@@ -3491,7 +3359,7 @@ a {
 
       <!-- Sicurezza & Emergenze -->
       <div class="acc-item" id="acc-safety">
-        <button type="button" class="acc-trigger" onclick="toggleAcc('acc-safety')" ontouchstart="">
+        <button class="acc-trigger" onclick="toggleAcc('acc-safety')">
           <span class="acc-icon">🛡️</span>
           <span class="acc-label">Sicurezza, Salute & Numeri di Emergenza</span>
           <span class="acc-tag">Importante</span>
@@ -3525,7 +3393,7 @@ a {
 
       <!-- Fotografia di Viaggio -->
       <div class="acc-item" id="acc-photo">
-        <button type="button" class="acc-trigger" onclick="toggleAcc('acc-photo')" ontouchstart="">
+        <button class="acc-trigger" onclick="toggleAcc('acc-photo')">
           <span class="acc-icon">📸</span>
           <span class="acc-label">Fotografia di Viaggio — Tecniche & Etica</span>
           <span class="acc-tag">Creatività</span>
@@ -3646,8 +3514,8 @@ a {
         <tfoot>
           <tr>
             <td></td>
-            <td class="plan-free"><button type="button" onclick="showToast('👋 Benvenuto nel piano Free!')" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:14px;border-radius:10px;font-family:\'DM Sans\',sans-serif;font-weight:600;font-size:14px;cursor:pointer;" ontouchstart="">Continua gratis</button></td>
-            <td class="plan-pro"><button type="button" class="upgrade-btn" onclick="openUpgrade()" ontouchstart="">Upgrade a Explorer Plus →</button></td>
+            <td class="plan-free"><button onclick="showToast('👋 Benvenuto nel piano Free!')" style="width:100%;background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:14px;border-radius:10px;font-family:\'DM Sans\',sans-serif;font-weight:600;font-size:14px;cursor:pointer;">Continua gratis</button></td>
+            <td class="plan-pro"><button class="upgrade-btn" onclick="openUpgrade()">Upgrade a Explorer Plus →</button></td>
           </tr>
         </tfoot>
       </table>
@@ -3681,19 +3549,19 @@ a {
 
     <!-- TABS -->
     <div class="vota-tabs">
-      <button type="button" class="vota-tab active" id="ctab-gioca" onclick="switchContestTab('gioca')" ontouchstart=""><span style="font-size:16px">🃏</span> Gioca</button>
-      <button type="button" class="vota-tab" id="ctab-partecipa" onclick="switchContestTab('partecipa')" ontouchstart=""><span style="font-size:16px">📤</span> Partecipa</button>
-      <button type="button" class="vota-tab" id="ctab-regole" onclick="switchContestTab('regole')" ontouchstart=""><span style="font-size:16px">📖</span> Regole</button>
+      <button class="vota-tab active" id="ctab-gioca" onclick="switchContestTab('gioca')"><span style="font-size:16px">🃏</span> Gioca</button>
+      <button class="vota-tab" id="ctab-partecipa" onclick="switchContestTab('partecipa')"><span style="font-size:16px">📤</span> Partecipa</button>
+      <button class="vota-tab" id="ctab-regole" onclick="switchContestTab('regole')"><span style="font-size:16px">📖</span> Regole</button>
     </div>
 
     <!-- SEZIONE 1: GIOCA -->
     <div class="vota-sub-section active" id="csec-gioca">
       <!-- Filter pills -->
-      <div class="vota-filters" id="swipeFilters" style="padding:0 20px 14px; display:flex; gap:8px; overflow-x:auto;scrollbar-width:none;">
-        <button type="button" class="vota-filter active" onclick="setSwipeFilter('all',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;" ontouchstart="">🌍 Tutti</button>
-        <button type="button" class="vota-filter" onclick="setSwipeFilter('IT',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;" ontouchstart="">🇮🇹 Italia</button>
-        <button type="button" class="vota-filter" onclick="setSwipeFilter('ES',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;" ontouchstart="">🇪🇸 Spagna</button>
-        <button type="button" class="vota-filter" onclick="setSwipeFilter('JP',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;" ontouchstart="">🇯🇵 Giappone</button>
+      <div class="vota-filters" id="swipeFilters" style="padding:0 20px 14px; display:flex; gap:8px; overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+        <button class="vota-filter active" onclick="setSwipeFilter('all',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🌍 Tutti</button>
+        <button class="vota-filter" onclick="setSwipeFilter('IT',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🇮🇹 Italia</button>
+        <button class="vota-filter" onclick="setSwipeFilter('ES',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🇪🇸 Spagna</button>
+        <button class="vota-filter" onclick="setSwipeFilter('JP',this)" style="padding:6px 14px; border-radius:100px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); color:var(--cream); font-size:12px; cursor:pointer; flex-shrink:0;">🇯🇵 Giappone</button>
       </div>
 
       <!-- Card deck -->
@@ -3703,7 +3571,7 @@ a {
             <div class="swipe-empty-icon">🎉</div>
             <div class="swipe-empty-title">Hai votato tutto!</div>
             <div style="font-size:13px;margin-top:6px;color:var(--cream-dim)">Torna domani per nuove foto.</div>
-            <button type="button" class="swipe-restart-btn" onclick="restartSwipe()" ontouchstart="">🔄 Riavvia</button>
+            <button class="swipe-restart-btn" onclick="restartSwipe()">🔄 Riavvia</button>
           </div>
         </div>
 
@@ -3716,9 +3584,9 @@ a {
 
         <!-- Action buttons -->
         <div class="vota-actions" id="swipeActions">
-          <button type="button" class="vota-btn vota-skip"  onclick="doSwipe('skip')"  aria-label="Salta" ontouchstart="">✕</button>
-          <button type="button" class="vota-btn vota-super" onclick="doSwipe('super')" aria-label="Super voto" ontouchstart="">⭐</button>
-          <button type="button" class="vota-btn vota-like"  onclick="doSwipe('like')"  aria-label="Vota" ontouchstart="">❤️</button>
+          <button class="vota-btn vota-skip"  onclick="doSwipe('skip')"  aria-label="Salta">✕</button>
+          <button class="vota-btn vota-super" onclick="doSwipe('super')" aria-label="Super voto">⭐</button>
+          <button class="vota-btn vota-like"  onclick="doSwipe('like')"  aria-label="Vota">❤️</button>
         </div>
       </div>
 
@@ -3754,7 +3622,7 @@ a {
           <div class="upload-icon">📥</div>
           <div class="upload-title">Tocca per scegliere una foto</div>
           <div class="upload-sub">JPG o PNG max 5MB</div>
-          <button type="button" class="upload-cta" ontouchstart="">Seleziona dal Rullino</button>
+          <button class="upload-cta">Seleziona dal Rullino</button>
           <input type="file" id="contestFileInput" class="upload-input-file" accept="image/*" onchange="handleContestPhotoSelect(event)">
         </div>
 
@@ -3762,8 +3630,8 @@ a {
           <img id="uploadPreviewImg" src="" alt="Anteprima" class="upload-preview-img">
           <textarea id="uploadCaption" class="upload-meta-input" placeholder="Aggiungi una didascalia (es. 'L\'alba su Kyoto senza turisti...')" maxlength="150" rows="2"></textarea>
           <div class="upload-actions-row">
-            <button type="button" class="upload-btn-cancel" onclick="cancelContestUpload()" ontouchstart="">Annulla</button>
-            <button type="button" class="upload-btn-submit" onclick="submitContestUpload()" ontouchstart="">🚀 Invia Foto</button>
+            <button class="upload-btn-cancel" onclick="cancelContestUpload()">Annulla</button>
+            <button class="upload-btn-submit" onclick="submitContestUpload()">🚀 Invia Foto</button>
           </div>
         </div>
       </div>
@@ -3867,7 +3735,7 @@ a {
         <div class="modal-header-title">👤 Il mio Profilo</div>
         <div class="modal-header-sub" id="profileHeaderSub">WanderQuest Account</div>
       </div>
-      <button type="button" class="modal-close" onclick="closeProfileModal()" ontouchstart="">✕</button>
+      <button class="modal-close" onclick="closeProfileModal()">✕</button>
     </div>
     <div class="modal-body" id="profileBody">
       <div class="grid-spinner"><div class="spinner"></div><span>Caricamento profilo…</span></div>
@@ -3883,7 +3751,7 @@ a {
         <div class="modal-header-title">🧳 Le mie Valigie <span class="valigie-count-badge" id="valigieCountBadge">0</span></div>
         <div class="modal-header-sub">Lista salvate su cloud · sincronizzate su tutti i dispositivi</div>
       </div>
-      <button type="button" class="modal-close" onclick="closeValigieModal()" ontouchstart="">✕</button>
+      <button class="modal-close" onclick="closeValigieModal()">✕</button>
     </div>
     <div class="modal-body" id="valigieBody">
       <div class="grid-spinner"><div class="spinner"></div><span>Caricamento valigie…</span></div>
@@ -3900,7 +3768,7 @@ a {
         <div class="modal-header-title">🤍 Le mie Mete Desiderate</div>
         <div class="modal-header-sub">Città che vuoi visitare — salvate localmente</div>
       </div>
-      <button type="button" class="modal-close" onclick="closeWishlistModal()" ontouchstart="">✕</button>
+      <button class="modal-close" onclick="closeWishlistModal()">✕</button>
     </div>
     <div class="modal-body" id="wishlistBody"></div>
   </div>
@@ -3914,7 +3782,7 @@ a {
         <div class="modal-header-title" id="infoModalTitle">Info</div>
         <div class="modal-header-sub" id="infoModalSub">WanderQuest</div>
       </div>
-      <button type="button" class="modal-close" onclick="closeInfoModal()" ontouchstart="">✕</button>
+      <button class="modal-close" onclick="closeInfoModal()">✕</button>
     </div>
     <div class="modal-body" id="infoModalBody" style="line-height:1.75;font-size:14px;color:var(--cream-dim)"></div>
   </div>
@@ -3923,7 +3791,7 @@ a {
 <!-- ═══ UPGRADE MODAL ═══ -->
 <div class="modal-overlay hidden" id="upgradeOverlay" onclick="handleUpgradeOverlayClick(event)">
   <div class="upgrade-modal">
-    <button type="button" class="modal-close" style="position:absolute;top:16px;right:18px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;z-index:1" onclick="closeUpgradeModal()" ontouchstart="">✕</button>
+    <button class="modal-close" style="position:absolute;top:16px;right:18px;background:none;border:none;color:rgba(255,255,255,0.4);font-size:20px;cursor:pointer;z-index:1" onclick="closeUpgradeModal()">✕</button>
     <div class="upgrade-modal-hero">
       <div class="upgrade-modal-badge">⭐ Explorer Plus</div>
       <div class="upgrade-modal-price"><sup>€</sup>6,99<sub>/mese</sub></div>
@@ -3952,7 +3820,7 @@ a {
           <div class="upgrade-perk-text"><strong>Zero pubblicità</strong> in tutta l'app · esperienza pulita</div>
         </div>
       </div>
-      <button type="button" class="upgrade-modal-cta" onclick="handleUpgradeCheckout()" ontouchstart="">
+      <button class="upgrade-modal-cta" onclick="handleUpgradeCheckout()">
         Inizia ora — €6,99/mese →
       </button>
       <div class="upgrade-modal-fine">Pagamento sicuro · dati protetti · annullabile in 1 click</div>
@@ -3963,7 +3831,7 @@ a {
 <!-- ═══ AUTH MODAL ═══ -->
 <div class="modal-overlay hidden" id="authOverlay" onclick="handleOverlayClick(event)">
   <div class="auth-modal">
-    <button type="button" class="modal-close" onclick="closeAuthModalEnhanced()" ontouchstart="">✕</button>
+    <button class="modal-close" onclick="closeAuthModalEnhanced()">✕</button>
     <div class="modal-logo" style="display:flex;justify-content:center;padding-bottom:4px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 42" height="36" aria-label="WanderQuest">
   <path d="M21,38 L9,21 L9,10 L21,4 L33,10 L33,21 Z" fill="#1E3A6E"/>
   <path d="M21,38 L9,21 L9,10 L21,4 L33,10 L33,21 Z" fill="none" stroke="#C4A35A" stroke-width="1.2" opacity="0.6"/>
@@ -3978,8 +3846,8 @@ a {
 
     <!-- Tabs -->
     <div class="auth-tabs">
-      <button type="button" class="auth-tab active" id="tabLogin"  onclick="switchAuthTab('login')" ontouchstart="">Accedi</button>
-      <button type="button" class="auth-tab"        id="tabRegister" onclick="switchAuthTab('register')" ontouchstart="">Registrati</button>
+      <button class="auth-tab active" id="tabLogin"  onclick="switchAuthTab('login')">Accedi</button>
+      <button class="auth-tab"        id="tabRegister" onclick="switchAuthTab('register')">Registrati</button>
     </div>
 
     <!-- Login form -->
@@ -3993,7 +3861,7 @@ a {
         <input type="password" id="loginPassword" placeholder="La tua password" autocomplete="current-password">
       </div>
       <div class="auth-error" id="loginError"></div>
-      <button type="button" class="auth-submit" id="loginSubmit" onclick="loginUser()" ontouchstart="">Accedi →</button>
+      <button class="auth-submit" id="loginSubmit" onclick="loginUser()">Accedi →</button>
       <div class="auth-divider">Non hai un account? <span style="color:var(--amber);cursor:pointer;font-weight:600" onclick="switchAuthTab('register')">Registrati gratis</span></div>
     </div>
 
@@ -4012,7 +3880,7 @@ a {
         <input type="password" id="regPasswordConfirm" placeholder="Ripeti la password" autocomplete="new-password">
       </div>
       <div class="auth-error" id="regError"></div>
-      <button type="button" class="auth-submit" id="regSubmit" onclick="registerUser()" ontouchstart="">Crea Account →</button>
+      <button class="auth-submit" id="regSubmit" onclick="registerUser()">Crea Account →</button>
       <div class="auth-divider">Hai già un account? <span style="color:var(--amber);cursor:pointer;font-weight:600" onclick="switchAuthTab('login')">Accedi</span></div>
     </div>
   </div>
@@ -4095,7 +3963,7 @@ function switchTab(tab) {
         pp.innerHTML = '<div class="pp-guest"><div class="pp-guest-icon">✈️</div>' +
           '<div class="pp-guest-title">Benvenuto su WanderQuest</div>' +
           '<div class="pp-guest-sub">Accedi per salvare i tuoi viaggi.</div>' +
-          '<button type="button" class="pp-guest-btn" onclick="openAuthModal(\'login\')" ontouchstart="">Accedi o Registrati →</button></div>';
+          '<button class="pp-guest-btn" onclick="openAuthModal(\'login\')">Accedi o Registrati →</button></div>';
       }
       var att = 0;
       var t2 = setInterval(function() {
@@ -4293,7 +4161,7 @@ function logoutUser() {
       '<div class="pp-guest-icon">✈️</div>' +
       '<div class="pp-guest-title">Benvenuto su WanderQuest</div>' +
       '<div class="pp-guest-sub">Accedi per salvare i tuoi viaggi.</div>' +
-      '<button type="button" class="pp-guest-btn" onclick="openAuthModal(\'login\')" ontouchstart="">Accedi o Registrati →</button>' +
+      '<button class="pp-guest-btn" onclick="openAuthModal(\'login\')">Accedi o Registrati →</button>' +
       '</div>';
   });
 }
@@ -4326,7 +4194,7 @@ _fbAuth.onAuthStateChanged(function(user) {
     var init = (user.email || '?')[0].toUpperCase();
     if (avatar) avatar.textContent = init;
     if (label)  label.textContent  = init;
-    if (bnavIco) { bnavIco.innerHTML = '<span style="font-size:15px;font-weight:900;line-height:1">' + init + '</span>'; }
+    if (bnavIco) { bnavIco.textContent = init; bnavIco.style.cssText = 'font-size:16px;font-weight:900'; }
 
     // Aggiorna il tab profilo se attivo
     var currentTab = document.body.getAttribute('data-active-tab');
@@ -4350,7 +4218,7 @@ _fbAuth.onAuthStateChanged(function(user) {
   } else {
     if (navOut) navOut.classList.remove('hidden');
     if (navIn)  navIn.classList.add('hidden');
-    if (bnavIco) { bnavIco.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px;display:block"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>'; }
+    if (bnavIco) { bnavIco.textContent = '👤'; bnavIco.style.cssText = 'font-size:20px'; }
     // Ripristina profilo guest
     var pp = document.getElementById('profile-page');
     if (pp) {
@@ -4358,7 +4226,7 @@ _fbAuth.onAuthStateChanged(function(user) {
         '<div class="pp-guest-icon">✈️</div>' +
         '<div class="pp-guest-title">Benvenuto su WanderQuest</div>' +
         '<div class="pp-guest-sub">Accedi per salvare i tuoi viaggi, le valigie smart e partecipare al contest.</div>' +
-        '<button type="button" class="pp-guest-btn" onclick="openAuthModal(\'login\')" ontouchstart="">Accedi o Registrati →</button>' +
+        '<button class="pp-guest-btn" onclick="openAuthModal(\'login\')">Accedi o Registrati →</button>' +
         '</div>';
     }
   }
@@ -4383,7 +4251,7 @@ function _renderProfileInline(user) {
       '<div class="pp-card" onclick="openMyValigie()"><div class="pp-card-illus">⚙️</div><div class="pp-card-label">Impostazioni</div></div>' +
       '<div class="pp-card" onclick="openInfoModal(\'about\')"><div class="pp-card-illus">📘</div><div class="pp-card-label">Assistenza</div></div>' +
     '</div>' +
-    '<button type="button" class="pp-logout-btn" onclick="logoutUser()" ontouchstart="">← Esci dall\'account</button>';
+    '<button class="pp-logout-btn" onclick="logoutUser()">← Esci dall\'account</button>';
 }
 </script>
 <script>
@@ -4813,7 +4681,7 @@ function handleSearch(query) {
           <div class="empty-state-globe">🌐</div>
           <div class="empty-state-title">Non ancora nel database</div>
           <div class="empty-state-sub"><strong>${q}</strong> non è tra le destinazioni curate.</div>
-          <button type="button" class="empty-state-cta" onclick="voteDestination('${safeQ}')" ontouchstart="">✈️ Vota questa meta</button>
+          <button class="empty-state-cta" onclick="voteDestination('${safeQ}')">✈️ Vota questa meta</button>
         </div>
       `;
     }
@@ -5208,10 +5076,10 @@ async function renderCities(continentCode, countryCode) {
     <div class="city-card ${selectedCity === code ? 'selected' : ''}" onclick="selectCity('${code}')">
       <div class="city-thumb" style="background:${city.bg};position:relative">
         <span style="position:relative;z-index:1;font-size:52px">${city.emoji}</span>
-        <button type="button" class="city-wish-btn ${isWishlisted(code) ? 'wished' : ''}"
+        <button class="city-wish-btn ${isWishlisted(code) ? 'wished' : ''}"
           data-wishcode="${code}"
           onclick="event.stopPropagation();toggleWishlist('${code}','${city.name}','${city.emoji}')"
-          title="Aggiungi ai desideri" ontouchstart="">${isWishlisted(code) ? '❤️' : '🤍'}</button>
+          title="Aggiungi ai desideri">${isWishlisted(code) ? '❤️' : '🤍'}</button>
       </div>
       <div class="city-body">
         <div class="city-name">${city.name}</div>
@@ -5301,9 +5169,9 @@ function renderCityDetail(code, city, country) {
               ${city.emoji} ${city.name}
             </div>
           </div>
-          <button type="button" class="wish-btn-detail ${isWishlisted(code) ? 'wished' : ''}"
+          <button class="wish-btn-detail ${isWishlisted(code) ? 'wished' : ''}"
             id="wish-detail-${code}"
-            onclick="toggleWishlist('${code}','${city.name}','${city.emoji}')" ontouchstart="">${isWishlisted(code) ? '❤️ Nei Desideri' : '🤍 Aggiungi ai Desideri'}</button>
+            onclick="toggleWishlist('${code}','${city.name}','${city.emoji}')">${isWishlisted(code) ? '❤️ Nei Desideri' : '🤍 Aggiungi ai Desideri'}</button>
         </div>
         <div class="detail-climate" style="margin-top:12px">${climateHTML}</div>
         <div id="liveweather-${code}"></div>
@@ -5338,10 +5206,10 @@ function renderCityDetail(code, city, country) {
       </div>
 
       <div style="margin-top:24px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;width:100%">
-        <button type="button" class="generate-btn" style="flex:1;min-width:200px" onclick="precompilePacking('${code}');document.getElementById('packing').scrollIntoView({behavior:'smooth'})" ontouchstart="">
+        <button class="generate-btn" style="flex:1;min-width:200px" onclick="precompilePacking('${code}');document.getElementById('packing').scrollIntoView({behavior:'smooth'})">
           🧳 Genera Valigia
         </button>
-        <button type="button" class="share-btn" style="flex:0 0 auto" onclick="shareCity('${code}','${city.name}','${city.emoji}')" ontouchstart="">
+        <button class="share-btn" style="flex:0 0 auto" onclick="shareCity('${code}','${city.name}','${city.emoji}')">
           🔗 Condividi
         </button>
       </div>
@@ -5377,7 +5245,7 @@ function renderCityDetail(code, city, country) {
 
       <!-- Weather AI Analysis -->
       <div style="margin-top:16px">
-        <button type="button" class="weather-ai-btn" onclick="askWeatherAI('${code}','${city.name}')" ontouchstart="">
+        <button class="weather-ai-btn" onclick="askWeatherAI('${code}','${city.name}')">
           🌤️ Quando è il momento giusto?
         </button>
         <div class="weather-ai-result" id="weather-ai-${code}"></div>
@@ -5385,8 +5253,8 @@ function renderCityDetail(code, city, country) {
 
       <!-- Frasebook AI -->
       <div style="margin-top:4px">
-        <button type="button" class="frasebook-btn" id="frase-btn-${code}"
-          onclick="generateFrasebook('${code}','${city.name}','${country.name}')" ontouchstart="">
+        <button class="frasebook-btn" id="frase-btn-${code}"
+          onclick="generateFrasebook('${code}','${city.name}','${country.name}')">
           🗣️ Frasi Essenziali per ${country.name}
         </button>
         <div class="frasebook-result" id="frase-result-${code}"></div>
@@ -5424,7 +5292,7 @@ function renderCityDetail(code, city, country) {
             placeholder="Scrivi una domanda su ${city.name}…"
             onkeydown="if(event.key==='Enter')sendCityChat('${code}','${city.name}')"
           >
-          <button type="button" class="ai-chat-send" id="chat-send-${code}" onclick="sendCityChat('${code}','${city.name}')" ontouchstart="">➤</button>
+          <button class="ai-chat-send" id="chat-send-${code}" onclick="sendCityChat('${code}','${city.name}')">➤</button>
         </div>
       </div>
 
@@ -5432,7 +5300,7 @@ function renderCityDetail(code, city, country) {
       <div class="city-acc accordion">
 
         <div class="acc-item" id="acc-q-${code}">
-          <button type="button" class="acc-trigger" onclick="toggleAcc('acc-q-${code}')" ontouchstart="">
+          <button class="acc-trigger" onclick="toggleAcc('acc-q-${code}')">
             <span class="acc-icon">🏘️</span>
             <span class="acc-label">Quartieri di ${city.name} — Dove stare</span>
             <span class="acc-tag">Alloggio</span>
@@ -5449,7 +5317,7 @@ function renderCityDetail(code, city, country) {
         </div>
 
         <div class="acc-item" id="acc-t-${code}">
-          <button type="button" class="acc-trigger" onclick="toggleAcc('acc-t-${code}');initTransit('${code}')" ontouchstart="">
+          <button class="acc-trigger" onclick="toggleAcc('acc-t-${code}');initTransit('${code}')">
             <span class="acc-icon">🚇</span>
             <span class="acc-label">Mezzi di Trasporto a ${city.name}</span>
             <span class="acc-tag">Trasporti</span>
@@ -5463,7 +5331,7 @@ function renderCityDetail(code, city, country) {
         </div>
 
         <div class="acc-item" id="acc-food-${code}">
-          <button type="button" class="acc-trigger" onclick="toggleAcc('acc-food-${code}')" ontouchstart="">
+          <button class="acc-trigger" onclick="toggleAcc('acc-food-${code}')">
             <span class="acc-icon">🍷</span>
             <span class="acc-label">Mangiare come un locale a ${city.name}</span>
             <span class="acc-tag">Gastronomia</span>
@@ -5723,8 +5591,8 @@ function generatePacking() {
         <div style="font-size:13px;color:var(--cream-dim);margin-top:4px">📅 ${season} · 🎯 ${tripType} · ${totalItems} oggetti totali</div>
       </div>
       <div style="display:flex;gap:10px;flex-wrap:wrap;">
-        <button type="button" class="packing-save-btn" id="packingSaveBtn" onclick="savePackingList()" ontouchstart="">☁️ Salva su Cloud</button>
-        <button type="button" onclick="printPacking()" style="background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:10px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;" ontouchstart="">🖨️ Stampa / Salva PDF</button>
+        <button class="packing-save-btn" id="packingSaveBtn" onclick="savePackingList()">☁️ Salva su Cloud</button>
+        <button onclick="printPacking()" style="background:rgba(255,255,255,0.06);border:1px solid var(--glass-border);color:var(--cream);padding:10px 18px;border-radius:8px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:600;cursor:pointer;">🖨️ Stampa / Salva PDF</button>
       </div>
     </div>
     <div class="packing-categories">${catHTML}</div>
@@ -5869,14 +5737,13 @@ function toggleMobileDrawer() {
   const open   = drawer.classList.toggle('open');
   btn.classList.toggle('open', open);
   // Prevent body scroll when drawer is open
-  // NON impostare 'scroll' su html: su iOS Safari crea UIScrollView che blocca tutti i tap
-  document.documentElement.style.overflowY = open ? 'hidden' : '';
+  document.documentElement.style.overflowY = open ? 'hidden' : 'scroll';
 }
 
 function closeMobileDrawer() {
   document.getElementById('mobileDrawer').classList.remove('open');
   document.getElementById('navHamburger').classList.remove('open');
-  document.documentElement.style.overflowY = ''; // rimuove stile inline, non imposta 'scroll'
+  document.documentElement.style.overflowY = 'scroll';
 }
 
 // Close drawer on outside click
@@ -6022,8 +5889,8 @@ async function updateNavAuth(user) {
     // Update mobile drawer: replace auth buttons with user info
     if (drawerAuth) {
       drawerAuth.innerHTML = `
-        <button type="button" class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openMyProfile()" style="flex:1" ontouchstart="">👤 Profilo</button>
-        <button type="button" class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openMyValigie()" style="flex:1" ontouchstart="">🧳 Valigie</button>
+        <button class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openMyProfile()" style="flex:1">👤 Profilo</button>
+        <button class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openMyValigie()" style="flex:1">🧳 Valigie</button>
       `;
     }
 
@@ -6046,8 +5913,8 @@ async function updateNavAuth(user) {
     // Restore mobile drawer auth buttons
     if (drawerAuth) {
       drawerAuth.innerHTML = `
-        <button type="button" class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openAuthModal('login')" ontouchstart="">Accedi</button>
-        <button type="button" class="mobile-drawer-btn primary"   onclick="closeMobileDrawer();openAuthModal('register')" ontouchstart="">Registrati</button>
+        <button class="mobile-drawer-btn secondary" onclick="closeMobileDrawer();openAuthModal('login')">Accedi</button>
+        <button class="mobile-drawer-btn primary"   onclick="closeMobileDrawer();openAuthModal('register')">Registrati</button>
       `;
     }
     const badge = document.getElementById('navValigieBadge');
@@ -6189,7 +6056,7 @@ async function openMyValigie() {
           <div class="valigie-empty-icon">🧳</div>
           <div style="font-size:18px;font-weight:700;color:var(--cream);margin-bottom:8px;">Nessuna valigia salvata</div>
           <div>Genera una lista dal Packing Planner e premi <strong style="color:var(--teal)">Salva su Cloud</strong> per ritrovarla qui su qualsiasi dispositivo.</div>
-          <button type="button" class="valigie-empty-cta" onclick="closeValigieModal();document.getElementById('packing').scrollIntoView({behavior:'smooth'})" ontouchstart="">
+          <button class="valigie-empty-cta" onclick="closeValigieModal();document.getElementById('packing').scrollIntoView({behavior:'smooth'})">
             🧳 Vai al Packing Planner
           </button>
         </div>
@@ -6215,8 +6082,8 @@ async function openMyValigie() {
             <div class="valigia-card-date">Salvata il ${date}</div>
           </div>
           <div class="valigia-card-actions">
-            <button type="button" class="valigia-action-btn" onclick="reloadValiglia('${v.città}','${v.stagione}','${v.tipo}')" ontouchstart="">↩ Ricarica</button>
-            <button type="button" class="valigia-action-btn delete" onclick="deleteValiglia(${realIdx})" ontouchstart="">🗑</button>
+            <button class="valigia-action-btn" onclick="reloadValiglia('${v.città}','${v.stagione}','${v.tipo}')">↩ Ricarica</button>
+            <button class="valigia-action-btn delete" onclick="deleteValiglia(${realIdx})">🗑</button>
           </div>
         </div>
       `;
@@ -6315,7 +6182,7 @@ async function openMyProfile() {
       ${plan === 'free' ? `
       <div class="profile-upgrade-banner">
         <div class="profile-upgrade-text">Passa a <strong>Explorer Plus</strong> per valigie illimitate, zero pubblicità e ×2 voti contest.</div>
-        <button type="button" class="profile-upgrade-btn" onclick="closeProfileModal();openUpgrade()" ontouchstart="">Upgrade €6,99/mese</button>
+        <button class="profile-upgrade-btn" onclick="closeProfileModal();openUpgrade()">Upgrade €6,99/mese</button>
       </div>
       ` : `
       <div style="background:rgba(46,197,122,0.08);border:1px solid rgba(46,197,122,0.15);border-radius:12px;padding:16px 20px;font-size:13px;color:var(--green);">
@@ -6958,9 +6825,9 @@ function initTransit(cityCode) {
     '<input class="transit-input" id="transit-to-custom-' + cityCode + '" placeholder="Scrivi destinazione libera…" />' +
     '</div></div>' +
     '<div class="transit-input-actions">' +
-    '<button type="button" class="transit-locate-btn" id="transit-loc-' + cityCode + '" onclick="useMyLocation(\'' + cityCode + '\')" ontouchstart="">' +
+    '<button class="transit-locate-btn" id="transit-loc-' + cityCode + '" onclick="useMyLocation(\'' + cityCode + '\')">' +
     '📡 Usa la mia posizione</button>' +
-    '<button type="button" class="transit-go-btn" onclick="openTransitRoute(\'' + cityCode + '\')" ontouchstart="">' +
+    '<button class="transit-go-btn" onclick="openTransitRoute(\'' + cityCode + '\')">' +
     '🚇 Apri percorso in Maps</button>' +
     '</div>' +
     '</div></div>' +
@@ -6970,7 +6837,7 @@ function initTransit(cityCode) {
     '<iframe src="' + mapSrc + '" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>' +
     '<div class="transit-map-overlay">' +
     '<span class="transit-map-label">Mappa trasporti ' + t.city + '</span>' +
-    '<button type="button" class="transit-fullmap-btn" onclick="window.open(\'' + mapsFullUrl + '\',\'_blank\')" ontouchstart="">' +
+    '<button class="transit-fullmap-btn" onclick="window.open(\'' + mapsFullUrl + '\',\'_blank\')">' +
     '</div></div>' +
 
     // Tips
@@ -7446,7 +7313,7 @@ function openWishlistModal() {
     body.innerHTML = list.map(w =>
       '<div class="wish-city-card"><div class="wish-city-emoji">' + w.emoji + '</div>' +
       '<div class="wish-city-name">' + w.name + '</div>' +
-      '<button type="button" class="wish-city-remove" onclick="toggleWishlist(\'' + w.code + '\',\'' + w.name + '\',\'' + w.emoji + '\');openWishlistModal()" title="Rimuovi" ontouchstart="">✕</button></div>'
+      '<button class="wish-city-remove" onclick="toggleWishlist(\'' + w.code + '\',\'' + w.name + '\',\'' + w.emoji + '\');openWishlistModal()" title="Rimuovi">✕</button></div>'
     ).join('');
   }
   overlay.classList.remove('hidden');
@@ -7818,9 +7685,11 @@ function updateBnavProfileIcon() {
   if (!icon) return;
   if (user) {
     const initial = (user.displayName || user.email || '?')[0].toUpperCase();
-    icon.innerHTML = '<span style="font-size:15px;font-weight:900;line-height:1">' + initial + '</span>';
+    icon.textContent = initial;
+    icon.style.cssText = 'font-size:16px;font-weight:900;line-height:1';
   } else {
-    icon.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:24px;height:24px;display:block"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>';
+    icon.textContent = '👤';
+    icon.style.cssText = 'font-size:20px';
   }
 }
 
@@ -7849,7 +7718,7 @@ async function renderProfilePage() {
         <div class="pp-guest-icon">✈️</div>
         <div class="pp-guest-title">Benvenuto su WanderQuest</div>
         <div class="pp-guest-sub">Accedi per salvare i tuoi viaggi, le valigie smart e partecipare al contest fotografico.</div>
-        <button type="button" class="pp-guest-btn" onclick="openAuthModal('login')" ontouchstart="">Accedi o Registrati →</button>
+        <button class="pp-guest-btn" onclick="openAuthModal('login')">Accedi o Registrati →</button>
       </div>`;
     return;
   }
@@ -7904,7 +7773,7 @@ async function renderProfilePage() {
       ${plan === 'free' ? `
       <div class="pp-upgrade">
         <div class="pp-upgrade-text">Passa a <strong>Explorer Plus</strong> — zero pub, valigie illimitate e ×2 ai voti contest.</div>
-        <button type="button" class="pp-upgrade-btn" onclick="openUpgrade()" ontouchstart="">€6,99/mese</button>
+        <button class="pp-upgrade-btn" onclick="openUpgrade()">€6,99/mese</button>
       </div>` : ''}
 
       <!-- ── Letture consigliate ── -->
@@ -7930,7 +7799,7 @@ async function renderProfilePage() {
       </div>
 
       <!-- ── Logout ── -->
-      <button type="button" class="pp-logout-btn" onclick="logoutUser();switchTab('esplora')" ontouchstart="">← Esci dall'account</button>
+      <button class="pp-logout-btn" onclick="logoutUser();switchTab('esplora')">← Esci dall'account</button>
     `;
   };
 
@@ -7972,38 +7841,22 @@ window.addEventListener('resize', () => {
 
 <!-- ═══ BOTTOM NAV — Mobile Only ═══ -->
 <nav id="bottom-nav" role="navigation" aria-label="Navigazione principale">
-  <button type="button" class="bnav-tab active" id="bnav-esplora" onclick="switchTab('esplora')" ontouchstart="" aria-label="Esplora">
-    <span class="bnav-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-      </svg>
-    </span>
-    <span class="bnav-label">Esplora</span>
-  </button>
-  <button type="button" class="bnav-tab" id="bnav-vota" onclick="switchTab('vota')" ontouchstart="" aria-label="Vota">
-    <span class="bnav-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-      </svg>
-    </span>
+  <div class="bnav-tab active" id="bnav-esplora" role="button" tabindex="0" aria-label="Home">
+    <span class="bnav-icon">🏠</span>
+    <span class="bnav-label">Home</span>
+  </div>
+  <div class="bnav-tab" id="bnav-vota" role="button" tabindex="0" aria-label="Vota">
+    <span class="bnav-icon">❤️</span>
     <span class="bnav-label">Vota</span>
-  </button>
-  <button type="button" class="bnav-tab" id="bnav-scopri" onclick="switchTab('scopri')" ontouchstart="" aria-label="Valigia">
-    <span class="bnav-icon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/><line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
-      </svg>
-    </span>
+  </div>
+  <div class="bnav-tab" id="bnav-scopri" role="button" tabindex="0" aria-label="Valigia">
+    <span class="bnav-icon">🧳</span>
     <span class="bnav-label">Valigia</span>
-  </button>
-  <button type="button" class="bnav-tab bnav-profile" id="bnav-profilo" onclick="switchTab('profilo')" ontouchstart="" aria-label="Profilo">
-    <span class="bnav-icon" id="bnavProfileIcon">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-      </svg>
-    </span>
+  </div>
+  <div class="bnav-tab bnav-profile" id="bnav-profilo" role="button" tabindex="0" aria-label="Profilo">
+    <span class="bnav-icon" id="bnavProfileIcon">👤</span>
     <span class="bnav-label">Profilo</span>
-  </button>
+  </div>
 </nav>
 
 <!-- ═══ PROFILE PAGE (mobile tab) ═══ -->
@@ -8013,9 +7866,71 @@ window.addEventListener('resize', () => {
     <div class="pp-guest-icon">✈️</div>
     <div class="pp-guest-title">Benvenuto su WanderQuest</div>
     <div class="pp-guest-sub">Accedi per salvare i tuoi viaggi, le valigie smart e partecipare al contest fotografico.</div>
-    <button type="button" class="pp-guest-btn" onclick="openAuthModal('login')" ontouchstart="">Accedi o Registrati →</button>
+    <button class="pp-guest-btn" onclick="openAuthModal('login')">Accedi o Registrati →</button>
   </div>
 </div>
 
 </body>
+<script>
+// ═══ FINAL NAV INIT — Event Delegation su #bottom-nav ═══
+// Usa event delegation: un solo listener sul container NAV.
+// Funziona indipendentemente dalla struttura DOM interna (nesting etc.)
+(function() {
+  var tabMap = {
+    'bnav-esplora': 'esplora',
+    'bnav-vota':    'vota',
+    'bnav-scopri':  'scopri',
+    'bnav-profilo': 'profilo'
+  };
+
+  function doSwitch(tab) {
+    document.body.setAttribute('data-active-tab', tab);
+    Object.keys(tabMap).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.classList.remove('active');
+    });
+    var active = document.getElementById('bnav-' + tab);
+    if (active) active.classList.add('active');
+    try {
+      if (typeof window.switchTab === 'function') window.switchTab(tab, true);
+      if (tab === 'profilo' && typeof window.renderProfilePage === 'function') window.renderProfilePage();
+    } catch(e) {}
+    window.scrollTo(0, 0);
+  }
+
+  function getTabFromEvent(e) {
+    // Cerca l'elemento cliccato o un suo antenato con id che inizia con 'bnav-'
+    var el = e.target;
+    while (el && el !== document) {
+      if (el.id && tabMap[el.id]) return tabMap[el.id];
+      el = el.parentElement;
+    }
+    return null;
+  }
+
+  function attachDelegation() {
+    var nav = document.getElementById('bottom-nav');
+    if (!nav) return;
+
+    function handler(e) {
+      var tab = getTabFromEvent(e);
+      if (!tab) return;
+      if (e.type === 'touchend') e.preventDefault();
+      e.stopPropagation();
+      doSwitch(tab);
+    }
+
+    nav.addEventListener('click',    handler, false);
+    nav.addEventListener('touchend', handler, { passive: false });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', attachDelegation);
+  } else {
+    attachDelegation();
+  }
+})();
+
+</script>
 </html>
+
