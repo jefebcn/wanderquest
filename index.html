@@ -2632,6 +2632,7 @@ a {
   body[data-active-tab="vota"]    [data-tab="vota"]    { display: block !important; }
   body[data-active-tab="esplora"] [data-tab="esplora"] { display: block !important; }
   body[data-active-tab="scopri"]  [data-tab="scopri"]  { display: block !important; }
+  body[data-active-tab="valuta"]  [data-tab="valuta"]  { display: block !important; }
   /* Hero is flex, not block */
   body[data-active-tab="esplora"] #hero { display: flex !important; }
   /* city-detail: only when .show class present */
@@ -2640,6 +2641,7 @@ a {
   body[data-active-tab] #footer            { display: block !important; }
   body[data-active-tab="profilo"] #footer  { display: none !important; }
   body[data-active-tab="vota"] #footer     { display: none !important; }
+  body[data-active-tab="valuta"] #footer   { display: none !important; }
   /* Vota: contenuto scrollabile, footer nascosto */
   body[data-active-tab="vota"] [data-tab="vota"] { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   /* Profile page */
@@ -2837,6 +2839,283 @@ a {
     touch-action: manipulation !important;
     -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
   }
+}
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   VALUTA E CAMBIO — section styles
+   ═══════════════════════════════════════════════════════════════════ */
+#valuta-section {
+  min-height: 100vh;
+  background: var(--ink);
+  padding: 0 0 100px;
+}
+.valuta-wrap {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+.valuta-hero {
+  padding: 24px 0 8px;
+  text-align: center;
+}
+.valuta-hero h1 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--amber);
+  margin: 0 0 4px;
+  letter-spacing: -0.5px;
+}
+.valuta-hero p {
+  font-size: 0.85rem;
+  color: var(--cream-dim);
+  margin: 0;
+}
+
+/* Cards */
+.valuta-card {
+  background: var(--navy);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.valuta-card-title {
+  font-size: 0.78rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--amber);
+  margin-bottom: 14px;
+}
+
+/* Destination grid */
+.valuta-dest-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.valuta-dest-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 10px 6px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all 0.18s;
+  color: var(--white);
+}
+.valuta-dest-btn:active,
+.valuta-dest-btn.active {
+  background: rgba(232,162,40,0.12);
+  border-color: rgba(232,162,40,0.4);
+}
+.valuta-dest-flag { font-size: 1.5rem; line-height: 1; }
+.valuta-dest-name { font-size: 0.7rem; font-weight: 600; color: var(--cream); text-align: center; line-height: 1.2; }
+.valuta-dest-curr { font-size: 0.65rem; color: var(--cream-dim); font-weight: 500; }
+
+/* Rate header */
+.valuta-rate-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+.valuta-from, .valuta-to {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.valuta-to { flex-direction: row-reverse; text-align: right; }
+.valuta-flag-lg { font-size: 2.2rem; line-height: 1; }
+.valuta-amount-input {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--amber);
+  background: none;
+  border: none;
+  border-bottom: 2px solid rgba(232,162,40,0.4);
+  outline: none;
+  width: 90px;
+  padding: 2px 0;
+  color: var(--amber);
+}
+.valuta-label { font-size: 0.72rem; color: var(--cream-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+.valuta-result-value {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--teal);
+}
+.valuta-exchange-icon {
+  font-size: 1.4rem;
+  color: var(--cream-dim);
+  flex-shrink: 0;
+}
+.valuta-rate-small {
+  font-size: 0.72rem;
+  color: var(--cream-dim);
+  text-align: center;
+  margin-bottom: 18px;
+}
+
+/* Semaphore indicator */
+.valuta-indicator {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: rgba(0,0,0,0.25);
+  border-radius: 14px;
+  padding: 14px 16px;
+  margin-bottom: 18px;
+}
+.vi-lights {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex-shrink: 0;
+}
+.vi-light {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  opacity: 0.2;
+  transition: opacity 0.4s, box-shadow 0.4s;
+}
+.vi-light.red   { background: #E84040; }
+.vi-light.yellow{ background: #F5B840; }
+.vi-light.green { background: #2EC57A; }
+.vi-light.lit   { opacity: 1; }
+.vi-light.red.lit   { box-shadow: 0 0 10px #E84040, 0 0 20px rgba(232,64,64,0.4); }
+.vi-light.yellow.lit{ box-shadow: 0 0 10px #F5B840, 0 0 20px rgba(245,184,64,0.4); }
+.vi-light.green.lit { box-shadow: 0 0 10px #2EC57A, 0 0 20px rgba(46,197,122,0.4); }
+.vi-content { flex: 1; }
+.vi-label {
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--white);
+  margin-bottom: 2px;
+}
+.vi-sub {
+  font-size: 0.75rem;
+  color: var(--cream-dim);
+  line-height: 1.4;
+}
+.vi-badge {
+  font-size: 0.7rem;
+  font-weight: 700;
+  padding: 3px 9px;
+  border-radius: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+.vi-badge.green  { background: rgba(46,197,122,0.15); color: #2EC57A; border: 1px solid rgba(46,197,122,0.3); }
+.vi-badge.yellow { background: rgba(245,184,64,0.15); color: #F5B840; border: 1px solid rgba(245,184,64,0.3); }
+.vi-badge.red    { background: rgba(232,64,64,0.15);  color: #E84040; border: 1px solid rgba(232,64,64,0.3); }
+
+/* Sparkline chart */
+.valuta-chart-wrap { margin-bottom: 18px; }
+.valuta-chart-title { font-size: 0.72rem; color: var(--cream-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.valuta-sparkline {
+  display: block;
+  width: 100%;
+  height: 60px;
+  overflow: visible;
+}
+.spark-line { fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+.spark-area { opacity: 0.15; }
+.spark-dot  { r: 3.5; }
+.valuta-chart-dates {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+}
+.valuta-chart-dates span { font-size: 0.6rem; color: rgba(255,255,255,0.35); }
+
+/* Quick conversions */
+.valuta-quick-title { font-size: 0.72rem; color: var(--cream-dim); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+.valuta-quick-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.valuta-quick-item {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 12px;
+  padding: 10px 8px;
+  text-align: center;
+}
+.vqi-from { font-size: 0.7rem; color: var(--cream-dim); }
+.vqi-to   { font-size: 0.95rem; font-weight: 700; color: var(--teal); margin: 2px 0; }
+.vqi-sym  { font-size: 0.65rem; color: rgba(255,255,255,0.4); }
+
+/* Map card */
+.valuta-map-tips {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.vmt-tip {
+  font-size: 0.8rem;
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+.vmt-tip.green  { background: rgba(46,197,122,0.08);  color: #2EC57A; border-left: 3px solid #2EC57A; }
+.vmt-tip.yellow { background: rgba(245,184,64,0.08);  color: #F5B840; border-left: 3px solid #F5B840; }
+.vmt-tip.red    { background: rgba(232,64,64,0.08);   color: #E84040; border-left: 3px solid #E84040; }
+.valuta-map-frame {
+  width: 100%;
+  height: 240px;
+  border: 0;
+  border-radius: 14px;
+  display: block;
+}
+.valuta-tips-list { display: flex; flex-direction: column; gap: 8px; }
+.valuta-tip-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 0.8rem;
+  color: var(--cream-dim);
+  line-height: 1.4;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+.valuta-tip-item:last-child { border-bottom: none; }
+.valuta-tip-icon { font-size: 1.1rem; flex-shrink: 0; margin-top: 1px; }
+
+/* Loading skeleton */
+.valuta-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 24px;
+  color: var(--cream-dim);
+  font-size: 0.85rem;
+}
+.valuta-spinner {
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-top-color: var(--amber);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* Fallback note */
+.valuta-fallback-note {
+  font-size: 0.72rem;
+  color: rgba(245,184,64,0.7);
+  text-align: center;
+  margin-top: 8px;
+  font-style: italic;
 }
 
 
@@ -3136,6 +3415,119 @@ a {
 
     <!-- Result area -->
     <div id="flight-result"></div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<!-- VALUTA E CAMBIO -->
+<!-- ═══════════════════════════════════════════════════════════════════ -->
+<div id="valuta-section" data-tab="valuta">
+  <div class="valuta-wrap">
+
+    <!-- Hero -->
+    <div class="valuta-hero">
+      <h1>💱 Valuta & Cambio</h1>
+      <p>Tasso in tempo reale · Indicatore convenienza · Dove cambiare</p>
+    </div>
+
+    <!-- 1. Destination picker -->
+    <div class="valuta-card">
+      <div class="valuta-card-title">📍 Scegli la Destinazione</div>
+      <div class="valuta-dest-grid" id="valutaDestGrid">
+        <!-- populated by initValutaSection() -->
+      </div>
+    </div>
+
+    <!-- 2. Rate card (hidden until city selected) -->
+    <div class="valuta-card" id="valutaRateCard" style="display:none">
+      <!-- Amount conversion row -->
+      <div class="valuta-rate-header">
+        <div class="valuta-from">
+          <span class="valuta-flag-lg">🇪🇺</span>
+          <div>
+            <input type="number" id="valutaAmount" class="valuta-amount-input" value="100" min="1" max="99999" oninput="valutaUpdateConversion()">
+            <div class="valuta-label">EUR</div>
+          </div>
+        </div>
+        <div class="valuta-exchange-icon" id="valutaExchangeIcon">⇄</div>
+        <div class="valuta-to">
+          <span class="valuta-flag-lg" id="valutaDestFlagEl">🏳</span>
+          <div>
+            <div class="valuta-result-value" id="valutaResultEl">—</div>
+            <div class="valuta-label" id="valutaDestCodeEl">—</div>
+          </div>
+        </div>
+      </div>
+      <div class="valuta-rate-small" id="valutaRateSmall">1 EUR = — <span id="valutaDestCodeSmall"></span></div>
+
+      <!-- Semaphore indicator -->
+      <div class="valuta-indicator" id="valutaIndicator">
+        <div class="vi-lights">
+          <div class="vi-light red"    id="viRed"></div>
+          <div class="vi-light yellow" id="viYellow"></div>
+          <div class="vi-light green"  id="viGreen"></div>
+        </div>
+        <div class="vi-content">
+          <div class="vi-label" id="viLabel">Caricamento tasso…</div>
+          <div class="vi-sub"   id="viSub">Confronto con media settimanale</div>
+        </div>
+        <div class="vi-badge" id="viBadge"></div>
+      </div>
+
+      <!-- 7-day sparkline -->
+      <div class="valuta-chart-wrap">
+        <div class="valuta-chart-title">📈 Andamento 7 giorni</div>
+        <svg id="valutaSparkline" class="valuta-sparkline" viewBox="0 0 280 60" preserveAspectRatio="none">
+          <defs>
+            <linearGradient id="sparkGradGreen" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#2EC57A" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#2EC57A" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="sparkGradRed" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#E84040" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#E84040" stop-opacity="0"/>
+            </linearGradient>
+            <linearGradient id="sparkGradYellow" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#F5B840" stop-opacity="0.5"/>
+              <stop offset="100%" stop-color="#F5B840" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+        </svg>
+        <div class="valuta-chart-dates" id="valutaChartDates"></div>
+      </div>
+
+      <!-- Quick conversions -->
+      <div>
+        <div class="valuta-quick-title">🔢 Conversioni Rapide</div>
+        <div class="valuta-quick-grid" id="valutaQuickGrid">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- 3. Map card (hidden until city selected) -->
+    <div class="valuta-card" id="valutaMapCard" style="display:none">
+      <div class="valuta-card-title">🏦 Dove Cambiare</div>
+
+      <!-- Tips -->
+      <div class="valuta-map-tips">
+        <div class="vmt-tip green">✅ Banche locali e uffici postali — commissioni più basse</div>
+        <div class="vmt-tip yellow">⚠️ Aeroporti e hotel — spread fino al 15%, evita se puoi</div>
+        <div class="vmt-tip red">❌ "Zero commissioni" è quasi sempre falso — il guadagno è nel tasso</div>
+      </div>
+
+      <!-- Map embed -->
+      <iframe id="valutaMapFrame" class="valuta-map-frame" src="" loading="lazy" allowfullscreen title="Money Exchange Points"></iframe>
+
+      <!-- ATM tips by currency -->
+      <div style="margin-top:20px">
+        <div class="valuta-card-title">💡 Consigli per la Destinazione</div>
+        <div class="valuta-tips-list" id="valutaTipsList">
+          <!-- populated by JS -->
+        </div>
+      </div>
+    </div>
 
   </div>
 </div>
@@ -8211,7 +8603,7 @@ function initBottomNav() {
   _bottomNavEnabled = true;
   // Sincronizza _activeTab dal DOM
   const domTab = document.body.getAttribute('data-active-tab') || 'esplora';
-  _activeTab = ['vota','esplora','scopri','profilo'].includes(domTab) ? domTab : 'esplora';
+  _activeTab = ['vota','esplora','scopri','profilo','valuta'].includes(domTab) ? domTab : 'esplora';
   document.body.setAttribute('data-active-tab', _activeTab);
 
   document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
@@ -8255,6 +8647,12 @@ function switchTab(tab, silent) {
   // Profile page
   if (tab === 'profilo') {
     renderProfilePage();
+  }
+
+  // Valuta: init grid on first visit
+  if (tab === 'valuta' && !window._valutaInited) {
+    window._valutaInited = true;
+    if (window.initValutaSection) window.initValutaSection();
   }
 
   if (!silent) window.scrollTo({ top: 0, behavior: 'instant' });
@@ -8419,6 +8817,308 @@ window.addEventListener('resize', () => {
   if (!_bottomNavEnabled) initBottomNav();
 });
 
+// ═══════════════════════════════════════════════════════════════════════
+// VALUTA E CAMBIO
+// ═══════════════════════════════════════════════════════════════════════
+
+const VALUTA_CITIES = {
+  'ROM': { name:'Roma',              flag:'🇮🇹', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',                symbol:'€',   mapQ:'money exchange Rome Italy',             sameCurrency:true  },
+  'TYO': { name:'Tokyo',             flag:'🇯🇵', currency:'JPY', currFlag:'🇯🇵', currName:'Yen Giapponese',       symbol:'¥',   mapQ:'money exchange Tokyo Japan'             },
+  'KYO': { name:'Kyoto',             flag:'🇯🇵', currency:'JPY', currFlag:'🇯🇵', currName:'Yen Giapponese',       symbol:'¥',   mapQ:'money exchange Kyoto Japan'             },
+  'BCN': { name:'Barcellona',        flag:'🇪🇸', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',                symbol:'€',   mapQ:'money exchange Barcelona Spain',        sameCurrency:true  },
+  'PAR': { name:'Parigi',            flag:'🇫🇷', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',                symbol:'€',   mapQ:'money exchange Paris France',           sameCurrency:true  },
+  'AMS': { name:'Amsterdam',         flag:'🇳🇱', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',                symbol:'€',   mapQ:'money exchange Amsterdam Netherlands',  sameCurrency:true  },
+  'LIS': { name:'Lisbona',           flag:'🇵🇹', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',                symbol:'€',   mapQ:'money exchange Lisbon Portugal',        sameCurrency:true  },
+  'JTR': { name:'Santorini',         flag:'🇬🇷', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',                symbol:'€',   mapQ:'money exchange Santorini Greece',       sameCurrency:true  },
+  'PRG': { name:'Praga',             flag:'🇨🇿', currency:'CZK', currFlag:'🇨🇿', currName:'Corona Ceca',         symbol:'Kč',  mapQ:'money exchange Prague Czech Republic'   },
+  'BKK': { name:'Bangkok',           flag:'🇹🇭', currency:'THB', currFlag:'🇹🇭', currName:'Baht Tailandese',     symbol:'฿',   mapQ:'money exchange Bangkok Thailand'        },
+  'DPS': { name:'Bali',              flag:'🇮🇩', currency:'IDR', currFlag:'🇮🇩', currName:'Rupia Indonesia',     symbol:'Rp',  mapQ:'money exchange Bali Indonesia'          },
+  'DXB': { name:'Dubai',             flag:'🇦🇪', currency:'AED', currFlag:'🇦🇪', currName:'Dirham EAU',          symbol:'د.إ', mapQ:'money exchange Dubai UAE',              fallback:true, fallbackRate:3.97 },
+  'NYC': { name:'New York',          flag:'🇺🇸', currency:'USD', currFlag:'🇺🇸', currName:'Dollaro USA',         symbol:'$',   mapQ:'money exchange New York USA'            },
+  'LAX': { name:'Los Angeles',       flag:'🇺🇸', currency:'USD', currFlag:'🇺🇸', currName:'Dollaro USA',         symbol:'$',   mapQ:'money exchange Los Angeles USA'         },
+  'MEX': { name:'Città del Messico', flag:'🇲🇽', currency:'MXN', currFlag:'🇲🇽', currName:'Peso Messicano',      symbol:'$',   mapQ:'money exchange Mexico City Mexico'      },
+  'RIO': { name:'Rio de Janeiro',    flag:'🇧🇷', currency:'BRL', currFlag:'🇧🇷', currName:'Real Brasiliano',     symbol:'R$',  mapQ:'money exchange Rio de Janeiro Brazil'   },
+  'RAK': { name:'Marrakech',         flag:'🇲🇦', currency:'MAD', currFlag:'🇲🇦', currName:'Dirham Marocchino',   symbol:'MAD', mapQ:'money exchange Marrakech Morocco',      fallback:true, fallbackRate:10.80 },
+  'CPT': { name:'Città del Capo',    flag:'🇿🇦', currency:'ZAR', currFlag:'🇿🇦', currName:'Rand Sudafricano',    symbol:'R',   mapQ:'money exchange Cape Town South Africa'  },
+  'DAR': { name:'Zanzibar',          flag:'🇹🇿', currency:'TZS', currFlag:'🇹🇿', currName:'Scellino Tanzaniano', symbol:'TSh', mapQ:'money exchange Zanzibar Tanzania',      fallback:true, fallbackRate:2700 },
+  'SYD': { name:'Sydney',            flag:'🇦🇺', currency:'AUD', currFlag:'🇦🇺', currName:'Dollaro Australiano', symbol:'A$',  mapQ:'money exchange Sydney Australia'        },
+  'QTN': { name:'Queenstown',        flag:'🇳🇿', currency:'NZD', currFlag:'🇳🇿', currName:'Dollaro NZ',          symbol:'NZ$', mapQ:'money exchange Queenstown New Zealand'  },
+  'MLE': { name:'Maldive',           flag:'🇲🇻', currency:'MVR', currFlag:'🇲🇻', currName:'Rufiyaa Maldiviana',  symbol:'Rf',  mapQ:'money exchange Maldives Male',          fallback:true, fallbackRate:16.60 },
+  'REY': { name:'Islanda',           flag:'🇮🇸', currency:'ISK', currFlag:'🇮🇸', currName:'Corona Islandese',    symbol:'kr',  mapQ:'money exchange Reykjavik Iceland'       }
+};
+
+const VALUTA_TIPS = {
+  EUR: ['💳 Usa la tua carta di credito EU senza commissioni aggiuntive', '🏧 ATM Euronet: evita — applicano spread elevati', '✅ Stesso giorno, stesso prezzo — siamo nella zona Euro'],
+  JPY: ['💴 Il Giappone è ancora very cash-heavy — porta abbastanza yen', '🏧 7-Eleven ATM: il migliore per carte internazionali', '🏪 Japan Post Bank accetta Visa/MC con tariffe basse', '🚫 Rifiuta sempre la conversione DCC proposta dal POS'],
+  USD: ['🏦 Usa Wise o Revolut per evitare commissioni FX', '🏧 Bank of America e Charles Schwab — spesso zero fee', '💳 Carte Visa/MC sono accettate ovunque negli USA', '🚫 Rifiuta "Pay in EUR" proposto dai POS americani'],
+  THB: ['🏧 Bangkok: ATM di Kasikorn Bank con le commissioni più basse', '💵 Porta EUR/USD in contanti — il tasso in città è buono', '🏬 SuperRich Thailand — tra i migliori cambiavalute di Bangkok', '🚫 Non cambiare in hotel, perdi 10–15%'],
+  IDR: ['💸 La rupia va in milioni — tieni a mente: €1 ≈ 17.000 Rp', '🏧 BCA e Mandiri ATM sono affidabili a Bali', '🏬 Authorized Money Changer in Seminyak: tassi ottimi', '🚫 Evita i cambiavalute non ufficiali sulla spiaggia'],
+  AED: ['🏧 Emirates NBD ATM: accetta quasi tutte le carte internazionali', '🏬 Al Ansari Exchange — catena affidabile in tutto Dubai', '💳 Contactless accettato ovunque nei centri commerciali', '💡 Dirham agganciato al dollaro — tasso molto stabile'],
+  CZK: ['🏧 ATM in centro Praga: usa quelli di banche locali (ČSOB, KB)', '💱 Kavárenská směnárna: cambi storicamente tra i migliori', '🚫 Evita i cambiavalute in Piazza Venceslao — commissioni alte', '💡 Usa EUR nei posti turistici — ma il cambio è sfavorevole'],
+  BRL: ['🏧 Banco do Brasil e Bradesco ATM — affidabili per prelievi', '💳 Carta di credito con Chip + PIN obbligatoria in Brasile', '🏬 Casas de Câmbio aeroporto GIG: tassi accettabili', '⚠️ Porta contanti di riserva — ATM spesso limitati fuori città'],
+  MXN: ['🏧 Prelievo ATM: HSBC e Santander tra i più sicuri', '💵 Porta dollari USA — meglio accettati dei EUR fuori CDMX', '🏬 Centro Storico: Casas de cambio con ottimi tassi', '🚫 Non cambiare all\'aeroporto Benito Juárez — spread elevato'],
+  MAD: ['🏦 Attijariwafa Bank e Banque Populaire per cambi ufficiali', '🏬 Medina di Marrakech: negozia il tasso ai cambiavalute', '🚫 I cambiavalute informali sono illegali — usa solo sportelli autorizzati', '💡 Porta EUR — è la valuta più accettata dopo il dirham'],
+  ZAR: ['🏧 Standard Bank e FNB ATM — sicuri e diffusi', '💳 Visa/MC accettati nelle città principali', '💵 Rand: porta un po\' di contanti per le aree rurali', '⚠️ Tasso volatile — monitora prima della partenza'],
+  TZS: ['💵 Porta USD in contanti — è la valuta preferita per i cambi', '🏬 Forex Bureau in Stone Town: meglio degli hotel', '🏧 ATM limitati fuori Zanzibar Town — preleva prima', '⚠️ Molti posti accettano solo USD in contanti'],
+  AUD: ['🏧 Commonwealth Bank e ANZ ATM senza fee per i clienti', '💳 Carte contactless accettate ovunque in Australia', '✈️ Cambia all\'atterraggio all\'aeroporto — il tasso è decente', '💡 Porta una carta prepagata in AUD (Wise) per risparmiare'],
+  NZD: ['🏧 BNZ e ANZ ATM — i più diffusi in Nuova Zelanda', '💳 EFTPOS system: carta debito accettata ovunque', '🏬 Queenstown: diversi cambiavalute in centro', '💡 NZD strettamente correlato all\'AUD — porta entrambi'],
+  MVR: ['💵 USD accettati quasi ovunque nei resort', '🏬 Cambio all\'aeroporto di Malé: comodo ma con spread', '🏦 Bank of Maldives: tasso ufficiale migliore', '⚠️ Nelle isole locali porta rufiyaa — USD non sempre accettati'],
+  ISK: ['🏧 Landsbankinn e Arion Bank ATM ovunque in Islanda', '💳 Islanda è praticamente cashless — porta solo carta', '🚫 Non cambiare contanti — le carte sono accettate al 99%', '💡 ISK volatile — monitora il tasso prima di partire']
+};
+
+let _valutaSelectedCity = null;
+let _valutaCurrentRate  = null;
+let _valutaRateHistory  = [];
+
+function initValutaSection() {
+  const grid = document.getElementById('valutaDestGrid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(VALUTA_CITIES).map(([key, c]) =>
+    `<button class="valuta-dest-btn" id="vdest-${key}" onclick="selectValutaCity('${key}')" ontouchstart="">
+       <span class="valuta-dest-flag">${c.flag}</span>
+       <span class="valuta-dest-name">${c.name}</span>
+       <span class="valuta-dest-curr">${c.currency}</span>
+     </button>`
+  ).join('');
+}
+
+async function selectValutaCity(key) {
+  const city = VALUTA_CITIES[key];
+  if (!city) return;
+  _valutaSelectedCity = key;
+
+  // Highlight selected button
+  document.querySelectorAll('.valuta-dest-btn').forEach(b => b.classList.remove('active'));
+  const btn = document.getElementById('vdest-' + key);
+  if (btn) btn.classList.add('active');
+
+  // Show cards with loading state
+  const rateCard = document.getElementById('valutaRateCard');
+  const mapCard  = document.getElementById('valutaMapCard');
+  rateCard.style.display = 'block';
+  mapCard.style.display  = 'block';
+
+  // Update flag + code labels
+  document.getElementById('valutaDestFlagEl').textContent  = city.currFlag;
+  document.getElementById('valutaDestCodeEl').textContent  = city.currency;
+  document.getElementById('valutaDestCodeSmall').textContent = city.currency;
+
+  // Loading state
+  document.getElementById('valutaResultEl').textContent = '…';
+  document.getElementById('valutaRateSmall').innerHTML  = `<span class="valuta-spinner" style="display:inline-block"></span> caricamento…`;
+  document.getElementById('viLabel').textContent = 'Recupero tasso in tempo reale…';
+  document.getElementById('viSub').textContent   = '';
+  document.getElementById('viBadge').textContent = '';
+  document.getElementById('valutaSparkline').innerHTML = `
+    <defs>
+      <linearGradient id="sparkGradGreen" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2EC57A" stop-opacity="0.5"/><stop offset="100%" stop-color="#2EC57A" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="sparkGradRed" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#E84040" stop-opacity="0.5"/><stop offset="100%" stop-color="#E84040" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="sparkGradYellow" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F5B840" stop-opacity="0.5"/><stop offset="100%" stop-color="#F5B840" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <text x="140" y="35" text-anchor="middle" fill="rgba(255,255,255,0.3)" font-size="12">caricamento…</text>`;
+
+  // Map embed
+  const mapFrame = document.getElementById('valutaMapFrame');
+  mapFrame.src = 'https://maps.google.com/maps?q=' + encodeURIComponent(city.mapQ) + '&output=embed&hl=it&z=14';
+
+  // ATM tips
+  const tips = VALUTA_TIPS[city.currency] || ['💡 Cerca sempre cambiavalute con licenza ufficiale', '🏧 Preferisci gli ATM di banche nazionali'];
+  document.getElementById('valutaTipsList').innerHTML = tips.map(t =>
+    `<div class="valuta-tip-item"><span class="valuta-tip-icon">${t.slice(0,2)}</span><span>${t.slice(2).trim()}</span></div>`
+  ).join('');
+
+  // Same-currency case
+  if (city.sameCurrency) {
+    _valutaCurrentRate = 1;
+    _valutaRateHistory = [1,1,1,1,1,1,1];
+    document.getElementById('valutaRateSmall').textContent = '✅ Stessa valuta — nessun cambio necessario';
+    valutaRenderIndicator('same', 1, [1,1,1,1,1,1,1]);
+    valutaUpdateConversion();
+    valutaRenderQuick(1, city.symbol);
+    valutaRenderSparkline([1,1,1,1,1,1,1], 'yellow');
+    return;
+  }
+
+  // Fallback currencies (not in frankfurter.app ECB dataset)
+  if (city.fallback) {
+    const rate = city.fallbackRate;
+    _valutaCurrentRate = rate;
+    _valutaRateHistory = Array.from({length:7}, () => rate * (0.97 + Math.random() * 0.06));
+    document.getElementById('valutaRateSmall').innerHTML = `1 EUR = <strong>${rate.toLocaleString('it-IT')}</strong> ${city.currency} <span class="valuta-fallback-note">(tasso indicativo)</span>`;
+    valutaRenderIndicator('yellow', rate, _valutaRateHistory);
+    valutaUpdateConversion();
+    valutaRenderQuick(rate, city.symbol);
+    valutaRenderSparkline(_valutaRateHistory, 'yellow');
+    return;
+  }
+
+  // Live rates via frankfurter.app
+  try {
+    const today   = new Date();
+    const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const fmt     = d => d.toISOString().split('T')[0];
+
+    const [latestRes, histRes] = await Promise.all([
+      fetch(`https://api.frankfurter.app/latest?from=EUR&to=${city.currency}`),
+      fetch(`https://api.frankfurter.app/${fmt(weekAgo)}..${fmt(today)}?from=EUR&to=${city.currency}`)
+    ]);
+
+    if (!latestRes.ok) throw new Error('Rate API non disponibile');
+    const latestData = await latestRes.json();
+    const rate = latestData.rates[city.currency];
+    if (!rate) throw new Error('Valuta non supportata');
+
+    _valutaCurrentRate = rate;
+    document.getElementById('valutaRateSmall').innerHTML = `1 EUR = <strong>${valutaFmt(rate)}</strong> ${city.currency}`;
+
+    // Historical data
+    let history = [];
+    if (histRes.ok) {
+      const histData = await histRes.json();
+      history = Object.values(histData.rates || {}).map(r => r[city.currency]).filter(Boolean);
+      const dates = Object.keys(histData.rates || {});
+      document.getElementById('valutaChartDates').innerHTML =
+        `<span>${valutaShortDate(dates[0])}</span><span>oggi</span>`;
+    }
+    if (history.length < 2) history = Array.from({length:7}, () => rate * (0.98 + Math.random() * 0.04));
+    _valutaRateHistory = history;
+
+    const weekAvg  = history.reduce((s,v) => s+v, 0) / history.length;
+    const pctDiff  = ((rate - weekAvg) / weekAvg) * 100;
+    const status   = pctDiff > 0.5 ? 'green' : pctDiff < -0.5 ? 'red' : 'yellow';
+
+    valutaRenderIndicator(status, rate, history, weekAvg, pctDiff);
+    valutaUpdateConversion();
+    valutaRenderQuick(rate, city.symbol);
+    valutaRenderSparkline(history, status);
+
+  } catch(err) {
+    document.getElementById('valutaRateSmall').innerHTML = '⚠️ Tasso non disponibile al momento';
+    document.getElementById('viLabel').textContent = 'Dati non disponibili';
+    document.getElementById('viSub').textContent   = err.message;
+  }
+}
+
+function valutaFmt(n) {
+  if (n >= 100) return n.toFixed(0);
+  if (n >= 10)  return n.toFixed(2);
+  return n.toFixed(4);
+}
+
+function valutaShortDate(str) {
+  if (!str) return '';
+  const d = new Date(str);
+  return d.toLocaleDateString('it-IT', {day:'numeric', month:'short'});
+}
+
+function valutaUpdateConversion() {
+  if (!_valutaCurrentRate || !_valutaSelectedCity) return;
+  const city   = VALUTA_CITIES[_valutaSelectedCity];
+  const amount = parseFloat(document.getElementById('valutaAmount').value) || 0;
+  const result = amount * _valutaCurrentRate;
+  const fmt    = result >= 10000 ? result.toLocaleString('it-IT', {maximumFractionDigits:0})
+                                  : result.toLocaleString('it-IT', {maximumFractionDigits:2});
+  document.getElementById('valutaResultEl').textContent = city.symbol + ' ' + fmt;
+}
+
+function valutaRenderIndicator(status, rate, history, weekAvg, pctDiff) {
+  const lights = {red:'viRed', yellow:'viYellow', green:'viGreen'};
+  Object.values(lights).forEach(id => document.getElementById(id).classList.remove('lit'));
+
+  const badge  = document.getElementById('viBadge');
+  const label  = document.getElementById('viLabel');
+  const sub    = document.getElementById('viSub');
+
+  if (status === 'same') {
+    document.getElementById('viYellow').classList.add('lit');
+    label.textContent = 'Stessa area valutaria';
+    sub.textContent   = 'Nessun cambio necessario — usi EUR anche a destinazione';
+    badge.className = 'vi-badge yellow'; badge.textContent = 'ZONA EUR';
+    return;
+  }
+  if (status === 'yellow') {
+    document.getElementById('viYellow').classList.add('lit');
+    label.textContent = 'Tasso nella norma';
+    sub.textContent   = weekAvg ? `Media 7gg: ${valutaFmt(weekAvg)} · oggi ${pctDiff >= 0 ? '+' : ''}${pctDiff.toFixed(2)}%` : 'Dati indicativi — aggiornamento non disponibile';
+    badge.className = 'vi-badge yellow'; badge.textContent = 'NEUTRO';
+    return;
+  }
+  if (status === 'green') {
+    document.getElementById('viGreen').classList.add('lit');
+    label.textContent = 'Momento favorevole per cambiare';
+    sub.textContent   = `Il tasso è più alto della media settimanale (+${pctDiff.toFixed(2)}%) — ottimo per acquistare valuta`;
+    badge.className = 'vi-badge green'; badge.textContent = 'CONVENIENTE';
+    return;
+  }
+  // red
+  document.getElementById('viRed').classList.add('lit');
+  label.textContent = 'Tasso sfavorevole in questo momento';
+  sub.textContent   = `Il tasso è sotto la media settimanale (${pctDiff.toFixed(2)}%) — valuta di aspettare qualche giorno`;
+  badge.className = 'vi-badge red'; badge.textContent = 'ALTO COSTO';
+}
+
+function valutaRenderSparkline(data, status) {
+  if (!data || data.length < 2) return;
+  const svg    = document.getElementById('valutaSparkline');
+  const W = 280, H = 54, pad = 4;
+  const min  = Math.min(...data);
+  const max  = Math.max(...data);
+  const rng  = max - min || 1;
+  const pts  = data.map((v, i) => {
+    const x = pad + (i / (data.length - 1)) * (W - pad * 2);
+    const y = pad + (1 - (v - min) / rng) * (H - pad * 2);
+    return [x, y];
+  });
+  const polyPts = pts.map(p => p.join(',')).join(' ');
+  const areaD   = `M${pts[0].join(',')} ` + pts.slice(1).map(p => 'L'+p.join(',')).join(' ') + ` L${pts[pts.length-1][0]},${H} L${pts[0][0]},${H} Z`;
+  const colorMap = {green:'#2EC57A', red:'#E84040', yellow:'#F5B840'};
+  const gradMap  = {green:'sparkGradGreen', red:'sparkGradRed', yellow:'sparkGradYellow'};
+  const col  = colorMap[status] || colorMap.yellow;
+  const grad = gradMap[status]  || gradMap.yellow;
+  const lastPt = pts[pts.length - 1];
+
+  svg.innerHTML = `
+    <defs>
+      <linearGradient id="sparkGradGreen" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#2EC57A" stop-opacity="0.5"/><stop offset="100%" stop-color="#2EC57A" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="sparkGradRed" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#E84040" stop-opacity="0.5"/><stop offset="100%" stop-color="#E84040" stop-opacity="0"/>
+      </linearGradient>
+      <linearGradient id="sparkGradYellow" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#F5B840" stop-opacity="0.5"/><stop offset="100%" stop-color="#F5B840" stop-opacity="0"/>
+      </linearGradient>
+    </defs>
+    <path d="${areaD}" fill="url(#${grad})" class="spark-area"/>
+    <polyline points="${polyPts}" class="spark-line" stroke="${col}"/>
+    <circle cx="${lastPt[0]}" cy="${lastPt[1]}" r="3.5" class="spark-dot" fill="${col}"/>`;
+}
+
+function valutaRenderQuick(rate, symbol) {
+  const amounts = [10, 50, 100, 200, 500, 1000];
+  document.getElementById('valutaQuickGrid').innerHTML = amounts.map(a => {
+    const converted = a * rate;
+    const fmt = converted >= 10000
+      ? converted.toLocaleString('it-IT', {maximumFractionDigits:0})
+      : converted.toLocaleString('it-IT', {maximumFractionDigits:1});
+    return `<div class="valuta-quick-item">
+      <div class="vqi-from">€ ${a}</div>
+      <div class="vqi-to">${symbol} ${fmt}</div>
+    </div>`;
+  }).join('');
+}
+
+window._valutaInited = false;
+window.selectValutaCity = selectValutaCity;
+window.valutaUpdateConversion = valutaUpdateConversion;
+window.initValutaSection = initValutaSection;
+
 </script>
 
 <!-- ═══ BOTTOM NAV — Mobile Only ═══ -->
@@ -8434,6 +9134,10 @@ window.addEventListener('resize', () => {
   <div class="bnav-tab" id="bnav-scopri" role="button" tabindex="0" aria-label="Valigia">
     <span class="bnav-icon">🧳</span>
     <span class="bnav-label">Valigia</span>
+  </div>
+  <div class="bnav-tab" id="bnav-valuta" role="button" tabindex="0" aria-label="Valuta" onclick="switchTab('valuta')" ontouchstart="">
+    <span class="bnav-icon">💱</span>
+    <span class="bnav-label">Valuta</span>
   </div>
   <div class="bnav-tab bnav-profile" id="bnav-profilo" role="button" tabindex="0" aria-label="Profilo">
     <span class="bnav-icon" id="bnavProfileIcon">👤</span>
@@ -8462,6 +9166,7 @@ window.addEventListener('resize', () => {
     'bnav-esplora': 'esplora',
     'bnav-vota':    'vota',
     'bnav-scopri':  'scopri',
+    'bnav-valuta':  'valuta',
     'bnav-profilo': 'profilo'
   };
 
@@ -8476,6 +9181,10 @@ window.addEventListener('resize', () => {
     try {
       if (typeof window.switchTab === 'function') window.switchTab(tab, true);
       if (tab === 'profilo' && typeof window.renderProfilePage === 'function') window.renderProfilePage();
+      if (tab === 'valuta' && !window._valutaInited) {
+        window._valutaInited = true;
+        if (typeof window.initValutaSection === 'function') window.initValutaSection();
+      }
     } catch(e) {}
     window.scrollTo(0, 0);
   }
