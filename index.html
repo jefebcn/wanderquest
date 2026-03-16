@@ -850,7 +850,7 @@ a {
   .mobile-drawer { top: 56px; }
 
   /* ── HERO ── */
-  #hero { padding: 24px var(--px-mobile) 44px; min-height: auto; }
+  #hero { padding: 24px var(--px-mobile) 44px !important; min-height: auto !important; }
   .hero-title { font-size: clamp(26px, 8vw, 38px); letter-spacing: -1px; }
   .hero-sub   { font-size: 14px; margin-bottom: 28px; }
   .hero-ctas  { flex-direction: column; gap: 10px; width: 100%; }
@@ -1179,7 +1179,7 @@ a {
   .nav-wish-btn { padding: 8px 10px; font-size: 18px; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
 
   /* Hero */
-  #hero { padding: 16px var(--px-mobile) 36px; }
+  #hero { padding: 16px var(--px-mobile) 36px !important; }
   .hero-title { font-size: clamp(22px, 9vw, 30px); }
   .hero-eyebrow { font-size: 9px; padding: 4px 10px; }
 
@@ -2663,11 +2663,11 @@ a {
   body[data-active-tab="esplora"] #hero { display: flex !important; }
   /* city-detail: only when .show class present */
   body[data-active-tab="esplora"] #city-detail:not(.show) { display: none !important; }
+  /* Social proof: sezione marketing, nascosta su mobile */
+  body[data-active-tab="esplora"] #social-proof { display: none !important; }
   /* Footer: hide on profilo and vota */
-  body[data-active-tab] #footer            { display: block !important; }
-  body[data-active-tab="profilo"] #footer  { display: none !important; }
-  body[data-active-tab="vota"] #footer     { display: none !important; }
-  body[data-active-tab="valuta"] #footer   { display: none !important; }
+  /* Footer: nascosto su tutti i tab mobile */
+  body[data-active-tab] #footer { display: none !important; }
   /* Vota: contenuto scrollabile, footer nascosto */
   body[data-active-tab="vota"]    [data-tab="vota"]    { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   body[data-active-tab="valuta"]  [data-tab="valuta"]  { overflow-y: auto; -webkit-overflow-scrolling: touch; }
@@ -2708,7 +2708,7 @@ a {
 
   /* ── Header ── */
   .pp-header {
-    padding: 72px 20px 20px;
+    padding: calc(57px + 16px) 20px 20px;
     display: flex; align-items: center; justify-content: space-between;
   }
   .pp-title {
@@ -2802,7 +2802,7 @@ a {
 
   /* ── Guest state ── */
   .pp-guest {
-    padding: 80px 20px 40px; text-align: center;
+    padding: calc(57px + 20px) 20px 40px; text-align: center;
     display: flex; flex-direction: column; align-items: center; gap: 18px;
   }
   .pp-guest-icon { font-size: 72px; }
@@ -4310,7 +4310,7 @@ a {
           <div class="upload-title">Tocca per scegliere una foto</div>
           <div class="upload-sub">JPG o PNG · max 10MB</div>
           <span class="upload-cta" style="display:inline-block;pointer-events:none">Seleziona dal Rullino</span>
-          <input type="file" id="contestFileInput" class="upload-input-file" accept="image/*" capture="environment" onchange="handleContestPhotoSelect(event)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer">
+          <input type="file" id="contestFileInput" class="upload-input-file" accept="image/*" onchange="handleContestPhotoSelect(event)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer">
         </label>
 
         <div id="uploadPreviewWrap" class="upload-preview-wrap">
