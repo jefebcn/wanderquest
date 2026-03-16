@@ -44,7 +44,7 @@
 }
 *,*::before,*::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow-x: clip; -webkit-text-size-adjust: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: var(--ink); color: var(--cream); overflow-x: hidden; -webkit-text-size-adjust: 100%; }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--ink); }
 ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 2px; }
@@ -824,7 +824,7 @@ a {
   .mobile-drawer { top: 56px; }
 
   /* ── HERO ── */
-  #hero { padding: 100px var(--px-mobile) 52px; min-height: auto; }
+  #hero { padding: 48px var(--px-mobile) 52px; min-height: auto; }
   .hero-title { font-size: clamp(26px, 8vw, 38px); letter-spacing: -1px; }
   .hero-sub   { font-size: 14px; margin-bottom: 28px; }
   .hero-ctas  { flex-direction: column; gap: 10px; width: 100%; }
@@ -1128,7 +1128,7 @@ a {
   .nav-wish-btn { padding: 8px 10px; font-size: 18px; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
 
   /* Hero */
-  #hero { padding: 90px var(--px-mobile) 44px; }
+  #hero { padding: 40px var(--px-mobile) 44px; }
   .hero-title { font-size: clamp(22px, 9vw, 30px); }
   .hero-eyebrow { font-size: 9px; padding: 4px 10px; }
 
@@ -1230,6 +1230,63 @@ a {
 
 
 /* ── HERO SECTION ── */
+/* ── Home Search Bar (mobile-first, hidden on desktop) ── */
+#home-search-bar { display: none; }
+@media (max-width: 768px) {
+  #home-search-bar {
+    display: block;
+    background: var(--ink);
+    padding: calc(52px + 12px) 16px 16px;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+  .hsb-inner { max-width: 100%; }
+  .hsb-input-btn {
+    display: flex; align-items: center; gap: 12px;
+    width: 100%;
+    background: var(--navy-mid);
+    border: 1.5px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    padding: 13px 16px;
+    cursor: pointer;
+    text-align: left;
+    color: var(--cream-dim);
+    font-size: 15px; font-family: 'DM Sans', sans-serif; font-weight: 400;
+    touch-action: manipulation;
+  }
+  .hsb-search-icon { width: 18px; height: 18px; flex-shrink: 0; color: var(--amber); }
+  .hsb-placeholder { flex: 1; color: rgba(242,237,228,0.5); font-size: 15px; }
+  .hsb-categories {
+    display: flex; gap: 16px;
+    margin-top: 18px;
+    justify-content: flex-start;
+  }
+  .hsb-cat {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    background: none; border: none; cursor: pointer;
+    color: var(--cream); font-family: 'DM Sans', sans-serif;
+    touch-action: manipulation;
+    flex: 1;
+    position: relative;
+  }
+  .hsb-cat-icon {
+    font-size: 32px;
+    display: flex; align-items: center; justify-content: center;
+    width: 64px; height: 64px;
+    background: var(--navy-mid);
+    border-radius: 16px;
+    border: 1.5px solid rgba(255,255,255,0.1);
+  }
+  .hsb-cat:first-child .hsb-cat-label { font-weight: 700; color: var(--cream); }
+  .hsb-cat-label { font-size: 12px; font-weight: 500; color: var(--cream-dim); text-align: center; }
+  .hsb-cat-badge {
+    position: absolute; top: -6px; right: calc(50% - 38px);
+    background: var(--amber); color: var(--ink);
+    font-size: 8px; font-weight: 800; letter-spacing: 0.08em;
+    padding: 2px 6px; border-radius: 100px;
+    text-transform: uppercase; white-space: nowrap;
+  }
+}
+
 #hero {
   min-height: 100vh;
   background: var(--hero-grad);
@@ -2546,11 +2603,12 @@ a {
   /* ── Body mobile: nessun overflow su html/body per non bloccare i tap iOS ── */
   html {
     height: auto;
-    overflow: visible;
+    overflow-x: hidden;
+    overflow-y: visible;
   }
   body {
     min-height: 100%;
-    overflow-x: clip;
+    overflow-x: hidden;
     padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
   }
 
@@ -2794,7 +2852,7 @@ a {
   /* 2. html/body: nessun overflow che crei UIScrollView nativa su iOS */
   html {
     height: auto !important;
-    overflow: visible !important;
+    overflow-x: hidden !important;
     overflow-y: visible !important;
   }
   body {
@@ -2933,6 +2991,31 @@ a {
 <!-- HERO — VALUE PROPOSITION -->
 <!-- ═══════════════════════════════════════════════════════════════════ -->
 <!-- page: ESPLORA -->
+<div id="home-search-bar" data-tab="esplora">
+  <div class="hsb-inner">
+    <button type="button" class="hsb-input-btn" onclick="document.getElementById('explorer').scrollIntoView({behavior:'smooth'});setTimeout(function(){var el=document.getElementById('globalSearch');if(el){el.focus();}},400);" ontouchstart="">
+      <svg class="hsb-search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <span class="hsb-placeholder">Cerca destinazioni</span>
+    </button>
+    <div class="hsb-categories">
+      <button type="button" class="hsb-cat" onclick="document.getElementById('explorer').scrollIntoView({behavior:'smooth'})" ontouchstart="">
+        <span class="hsb-cat-icon">🗺️</span>
+        <span class="hsb-cat-label">Mete</span>
+      </button>
+      <button type="button" class="hsb-cat" onclick="document.getElementById('ai-itinerary').scrollIntoView({behavior:'smooth'})" ontouchstart="">
+        <span class="hsb-cat-icon">🎒</span>
+        <span class="hsb-cat-label">Esperienze</span>
+        <span class="hsb-cat-badge">New</span>
+      </button>
+      <button type="button" class="hsb-cat" onclick="document.getElementById('packing').scrollIntoView({behavior:'smooth'})" ontouchstart="">
+        <span class="hsb-cat-icon">🛎️</span>
+        <span class="hsb-cat-label">Servizi</span>
+        <span class="hsb-cat-badge">New</span>
+      </button>
+    </div>
+  </div>
+</div>
+
 <div id="hero" data-tab="esplora">
   <div class="hero-eyebrow">✦ Benvenuto nell'ecosistema del viaggiatore autentico</div>
   <h1 class="hero-title">
@@ -7972,13 +8055,13 @@ window.addEventListener('resize', () => {
 
 <!-- ═══ BOTTOM NAV — Mobile Only ═══ -->
 <nav id="bottom-nav" role="navigation" aria-label="Navigazione principale">
-  <button type="button" class="bnav-tab active" id="bnav-esplora" onclick="switchTab('esplora')" ontouchstart="" aria-label="Esplora">
+  <button type="button" class="bnav-tab active" id="bnav-esplora" onclick="switchTab('esplora')" ontouchstart="" aria-label="Home">
     <span class="bnav-icon">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        <path d="M3 9.5L12 3l9 6.5V20a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9.5z"/><polyline points="9 21 9 12 15 12 15 21"/>
       </svg>
     </span>
-    <span class="bnav-label">Esplora</span>
+    <span class="bnav-label">Home</span>
   </button>
   <button type="button" class="bnav-tab" id="bnav-vota" onclick="switchTab('vota')" ontouchstart="" aria-label="Vota">
     <span class="bnav-icon">
