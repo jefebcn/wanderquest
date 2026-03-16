@@ -2658,8 +2658,9 @@ a {
   body[data-active-tab="esplora"] [data-tab="esplora"] { display: block !important; }
   body[data-active-tab="scopri"]  [data-tab="scopri"]  { display: block !important; }
   body[data-active-tab="valuta"]  [data-tab="valuta"]  { display: block !important; }
-  /* Hero è un elemento desktop landing — nascosto su mobile per mostrare subito l'explorer */
+  /* Hero: nascosto su mobile tranne sulla tab esplora (landing) */
   body[data-active-tab] #hero { display: none !important; }
+  body[data-active-tab="esplora"] #hero { display: flex !important; }
   /* city-detail: only when .show class present */
   body[data-active-tab="esplora"] #city-detail:not(.show) { display: none !important; }
   /* Footer: hide on profilo and vota */
@@ -4396,51 +4397,6 @@ a {
 <!-- legacy #contest anchor for nav scroll -->
 <div id="contest" style="height:0;overflow:hidden;pointer-events:none"></div>
 
-<!-- ═══ VALUTA & CAMBIO ═══ -->
-<div id="valuta-section" data-tab="valuta">
-  <div class="valuta-wrap">
-    <div class="valuta-hero">
-      <h1>💱 Valuta &amp; Cambio</h1>
-      <p>Tasso in tempo reale · Indicatore convenienza · Dove cambiare</p>
-    </div>
-
-    <!-- Card 1: scegli destinazione -->
-    <div class="valuta-card">
-      <div class="valuta-card-title">📍 Scegli la Destinazione</div>
-      <div class="valuta-dest-grid" id="valutaDestGrid"></div>
-    </div>
-
-    <!-- Card 2: tasso + semaforo + sparkline (nascosta fino a selezione) -->
-    <div class="valuta-card" id="valutaRateCard" style="display:none">
-      <div class="valuta-amount-row">
-        <label for="valutaAmount">€ EUR</label>
-        <input type="number" id="valutaAmount" value="100" min="1" max="100000" oninput="valutaUpdateConversion()">
-      </div>
-      <div class="valuta-indicator" id="valutaIndicator">
-        <div class="vi-lights">
-          <div class="vi-light red"    id="viRed"></div>
-          <div class="vi-light yellow" id="viYellow"></div>
-          <div class="vi-light green"  id="viGreen"></div>
-        </div>
-        <div class="vi-content">
-          <div class="vi-label" id="viLabel">—</div>
-          <div class="vi-sub"   id="viSub">Caricamento…</div>
-        </div>
-        <div class="vi-badge" id="viBadge">—</div>
-      </div>
-      <svg id="valutaSparkline" class="valuta-sparkline" viewBox="0 0 280 56" preserveAspectRatio="none"></svg>
-      <div class="valuta-quick-title">Conversioni rapide</div>
-      <div class="valuta-quick-grid" id="valutaQuickGrid"></div>
-    </div>
-
-    <!-- Card 3: mappa + consigli (nascosta fino a selezione) -->
-    <div class="valuta-card" id="valutaMapCard" style="display:none">
-      <div class="valuta-card-title">🗺️ Dove Cambiare</div>
-      <iframe id="valutaMapFrame" class="valuta-map-frame" src="" loading="lazy" allowfullscreen></iframe>
-      <div id="valutaTipsList"></div>
-    </div>
-  </div>
-</div>
 
 
 <!-- ═══ FOOTER ═══ -->
