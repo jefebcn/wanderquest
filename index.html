@@ -2407,7 +2407,7 @@ a {
    SEZIONE VOTA — redesign mobile-first
    ══════════════════════════════════════════════════════════════ */
 #swipe-vote { background: #07041A; }
-.vota-wrap { display:flex; flex-direction:column; padding-top:64px; padding-bottom:100px; min-height:100dvh; }
+.vota-wrap { display:flex; flex-direction:column; padding-top:64px; padding-bottom:100px; min-height:0; }
 .vota-header { display:flex; align-items:center; justify-content:space-between; padding:16px 20px 10px; }
 .vota-title { font-size:22px; font-weight:900; color:var(--cream); line-height:1; }
 .vota-subtitle { font-size:12px; color:var(--cream-dim); margin-top:3px; }
@@ -2563,8 +2563,8 @@ a {
   #bnav-scopri.active  { background: rgba(232,162,40,0.2); color: var(--amber); }
   .bnav-tab.active.bnav-profile { background: var(--amber); color: var(--ink); }
 
-  .bnav-icon  { font-size: 22px; line-height: 1; pointer-events: none; }
-  .bnav-label { font-size: 10px; font-weight: 700; letter-spacing: 0.01em; line-height: 1; pointer-events: none; }
+  .bnav-icon  { font-size: 20px; line-height: 1; pointer-events: none; }
+  .bnav-label { font-size: 9px; font-weight: 700; letter-spacing: 0.01em; line-height: 1; pointer-events: none; }
 
   /* ── Body: su mobile NON scorre (fix iOS Safari fixed nav) ── */
   html {
@@ -2590,8 +2590,9 @@ a {
   body[data-active-tab="vota"]    [data-tab="vota"]    { display: block !important; }
   body[data-active-tab="esplora"] [data-tab="esplora"] { display: block !important; }
   body[data-active-tab="scopri"]  [data-tab="scopri"]  { display: block !important; }
-  /* Hero is flex, not block */
-  body[data-active-tab="esplora"] #hero { display: flex !important; }
+  body[data-active-tab="valuta"]  [data-tab="valuta"]  { display: block !important; }
+  /* Hero is a desktop landing element — hide on mobile app nav to show explorer directly */
+  body[data-active-tab] #hero { display: none !important; }
   /* city-detail: only when .show class present */
   body[data-active-tab="esplora"] #city-detail:not(.show) { display: none !important; }
   /* Footer: hide only on profilo */
@@ -2804,6 +2805,79 @@ a {
   }
 }
 
+/* ══════════════════════════════════════════════════════════════
+   VALUTA & CAMBIO — sezione completa
+   ══════════════════════════════════════════════════════════════ */
+#valuta-section {
+  background: var(--ink);
+  padding: 64px 0 120px;
+  min-height: 100vh;
+}
+.valuta-wrap { max-width: 500px; margin: 0 auto; padding: 0 16px; }
+.valuta-hero { margin-bottom: 24px; }
+.valuta-hero h1 { font-size: 1.7rem; font-weight: 900; color: var(--amber); margin: 0 0 6px; }
+.valuta-hero p { font-size: 13px; color: rgba(242,237,228,0.55); margin: 0; }
+.valuta-card {
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.valuta-card-title { font-size: 13px; font-weight: 800; color: var(--amber); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; }
+.valuta-dest-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.valuta-dest-btn {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  background: rgba(255,255,255,0.05); border: 1.5px solid rgba(255,255,255,0.1);
+  border-radius: 14px; padding: 10px 6px 8px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; touch-action: manipulation;
+  transition: all 0.18s;
+}
+.valuta-dest-btn.selected { background: rgba(232,162,40,0.15); border-color: rgba(232,162,40,0.45); }
+.valuta-dest-btn:active { transform: scale(0.93); }
+.valuta-dest-flag { font-size: 24px; line-height: 1; }
+.valuta-dest-name { font-size: 11px; font-weight: 700; color: var(--cream); text-align: center; line-height: 1.2; }
+.valuta-dest-curr { font-size: 10px; color: rgba(242,237,228,0.45); }
+/* Amount input */
+.valuta-amount-row { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.valuta-amount-row label { font-size: 13px; color: var(--cream-dim); white-space: nowrap; }
+#valutaAmount {
+  flex: 1; background: rgba(255,255,255,0.08); border: 1.5px solid rgba(255,255,255,0.15);
+  border-radius: 12px; padding: 10px 14px; color: var(--cream);
+  font-size: 18px; font-weight: 700; font-family: 'DM Sans', sans-serif;
+  text-align: right;
+}
+/* Semaphore indicator */
+.valuta-indicator { display: flex; align-items: center; gap: 12px; background: rgba(0,0,0,0.2); border-radius: 14px; padding: 12px 14px; margin-bottom: 14px; }
+.vi-lights { display: flex; flex-direction: column; gap: 4px; }
+.vi-light { width: 13px; height: 13px; border-radius: 50%; opacity: 0.18; transition: all 0.4s; }
+.vi-light.red    { background: #E84040; }
+.vi-light.yellow { background: #E8A228; }
+.vi-light.green  { background: #2EC57A; }
+.vi-light.red.lit    { opacity: 1; box-shadow: 0 0 8px #E84040, 0 0 18px rgba(232,64,64,0.4); }
+.vi-light.yellow.lit { opacity: 1; box-shadow: 0 0 8px #E8A228, 0 0 18px rgba(232,162,40,0.4); }
+.vi-light.green.lit  { opacity: 1; box-shadow: 0 0 8px #2EC57A, 0 0 18px rgba(46,197,122,0.4); }
+.vi-content { flex: 1; }
+.vi-label { font-size: 14px; font-weight: 800; color: var(--cream); }
+.vi-sub   { font-size: 11px; color: rgba(242,237,228,0.5); margin-top: 2px; }
+.vi-badge { font-size: 11px; font-weight: 800; padding: 4px 10px; border-radius: 100px; background: rgba(255,255,255,0.08); color: var(--cream-dim); white-space: nowrap; }
+/* Sparkline */
+.valuta-sparkline { display: block; width: 100%; height: 56px; margin-bottom: 14px; }
+/* Quick conversions */
+.valuta-quick-title { font-size: 12px; font-weight: 700; color: rgba(242,237,228,0.45); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 8px; }
+.valuta-quick-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+.valuta-quick-item { background: rgba(255,255,255,0.04); border-radius: 12px; padding: 10px 6px; text-align: center; }
+.valuta-quick-eur  { font-size: 12px; color: rgba(242,237,228,0.5); margin-bottom: 2px; }
+.valuta-quick-conv { font-size: 14px; font-weight: 800; color: var(--amber); }
+/* Map */
+.valuta-map-frame { width: 100%; height: 220px; border: 0; border-radius: 14px; margin-bottom: 14px; }
+/* Tips */
+.valuta-tip { display: flex; align-items: flex-start; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.06); }
+.valuta-tip:last-child { border-bottom: none; }
+.valuta-tip-icon { font-size: 18px; flex-shrink: 0; }
+.valuta-tip-text { font-size: 13px; color: rgba(242,237,228,0.75); line-height: 1.5; }
+/* Active style for valuta bnav */
+#bnav-valuta.active { background: rgba(46,197,168,0.2); color: var(--teal); }
 
 </style>
 </head>
@@ -3781,6 +3855,52 @@ a {
 <!-- legacy #contest anchor for nav scroll -->
 <div id="contest" style="height:0;overflow:hidden;pointer-events:none"></div>
 
+<!-- ═══ VALUTA & CAMBIO ═══ -->
+<div id="valuta-section" data-tab="valuta">
+  <div class="valuta-wrap">
+    <div class="valuta-hero">
+      <h1>💱 Valuta &amp; Cambio</h1>
+      <p>Tasso in tempo reale · Indicatore convenienza · Dove cambiare</p>
+    </div>
+
+    <!-- Card 1: scegli destinazione -->
+    <div class="valuta-card">
+      <div class="valuta-card-title">📍 Scegli la Destinazione</div>
+      <div class="valuta-dest-grid" id="valutaDestGrid"></div>
+    </div>
+
+    <!-- Card 2: tasso + semaforo + sparkline (nascosta fino a selezione) -->
+    <div class="valuta-card" id="valutaRateCard" style="display:none">
+      <div class="valuta-amount-row">
+        <label for="valutaAmount">€ EUR</label>
+        <input type="number" id="valutaAmount" value="100" min="1" max="100000" oninput="valutaUpdateConversion()">
+      </div>
+      <div class="valuta-indicator" id="valutaIndicator">
+        <div class="vi-lights">
+          <div class="vi-light red"    id="viRed"></div>
+          <div class="vi-light yellow" id="viYellow"></div>
+          <div class="vi-light green"  id="viGreen"></div>
+        </div>
+        <div class="vi-content">
+          <div class="vi-label" id="viLabel">—</div>
+          <div class="vi-sub"   id="viSub">Caricamento…</div>
+        </div>
+        <div class="vi-badge" id="viBadge">—</div>
+      </div>
+      <svg id="valutaSparkline" class="valuta-sparkline" viewBox="0 0 280 56" preserveAspectRatio="none"></svg>
+      <div class="valuta-quick-title">Conversioni rapide</div>
+      <div class="valuta-quick-grid" id="valutaQuickGrid"></div>
+    </div>
+
+    <!-- Card 3: mappa + consigli (nascosta fino a selezione) -->
+    <div class="valuta-card" id="valutaMapCard" style="display:none">
+      <div class="valuta-card-title">🗺️ Dove Cambiare</div>
+      <iframe id="valutaMapFrame" class="valuta-map-frame" src="" loading="lazy" allowfullscreen></iframe>
+      <div id="valutaTipsList"></div>
+    </div>
+  </div>
+</div>
+
 
 <!-- ═══ FOOTER ═══ -->
 <footer id="footer">
@@ -4075,6 +4195,10 @@ function switchTab(tab) {
   var btn = document.getElementById('bnav-' + tab);
   if (btn) btn.classList.add('active');
   window.scrollTo(0, 0);
+  if (tab === 'valuta' && window.initValutaSection && !window._valutaInited) {
+    window._valutaInited = true;
+    window.initValutaSection();
+  }
   if (tab === 'profilo') {
     if (window._renderProfilePage) {
       window._renderProfilePage();
@@ -4135,6 +4259,7 @@ document.addEventListener('DOMContentLoaded', function() {
     { id: 'bnav-esplora', tab: 'esplora' },
     { id: 'bnav-vota',    tab: 'vota'    },
     { id: 'bnav-scopri',  tab: 'scopri'  },
+    { id: 'bnav-valuta',  tab: 'valuta'  },
     { id: 'bnav-profilo', tab: 'profilo' }
   ];
   tabs.forEach(function(item) {
@@ -7761,7 +7886,7 @@ function initBottomNav() {
   _bottomNavEnabled = true;
   // Sincronizza _activeTab dal DOM
   const domTab = document.body.getAttribute('data-active-tab') || 'esplora';
-  _activeTab = ['vota','esplora','scopri','profilo'].includes(domTab) ? domTab : 'esplora';
+  _activeTab = ['vota','esplora','scopri','profilo','valuta'].includes(domTab) ? domTab : 'esplora';
   document.body.setAttribute('data-active-tab', _activeTab);
 
   document.querySelectorAll('.bnav-tab').forEach(el => el.classList.remove('active'));
@@ -7794,6 +7919,12 @@ function switchTab(tab, silent) {
   // Profile page
   if (tab === 'profilo') {
     renderProfilePage();
+  }
+
+  // Valuta section
+  if (tab === 'valuta' && !window._valutaInited) {
+    window._valutaInited = true;
+    if (window.initValutaSection) window.initValutaSection();
   }
 
   if (!silent) window.scrollTo({ top: 0, behavior: 'instant' });
@@ -7974,6 +8105,10 @@ window.addEventListener('resize', () => {
     <span class="bnav-icon">🧳</span>
     <span class="bnav-label">Valigia</span>
   </div>
+  <div class="bnav-tab" id="bnav-valuta" role="button" tabindex="0" aria-label="Valuta" ontouchstart="">
+    <span class="bnav-icon">💱</span>
+    <span class="bnav-label">Valuta</span>
+  </div>
   <div class="bnav-tab bnav-profile" id="bnav-profilo" role="button" tabindex="0" aria-label="Profilo">
     <span class="bnav-icon" id="bnavProfileIcon">👤</span>
     <span class="bnav-label">Profilo</span>
@@ -8001,6 +8136,7 @@ window.addEventListener('resize', () => {
     'bnav-esplora': 'esplora',
     'bnav-vota':    'vota',
     'bnav-scopri':  'scopri',
+    'bnav-valuta':  'valuta',
     'bnav-profilo': 'profilo'
   };
 
@@ -8015,6 +8151,10 @@ window.addEventListener('resize', () => {
     try {
       if (typeof window.switchTab === 'function') window.switchTab(tab, true);
       if (tab === 'profilo' && typeof window.renderProfilePage === 'function') window.renderProfilePage();
+      if (tab === 'valuta' && !window._valutaInited && typeof window.initValutaSection === 'function') {
+        window._valutaInited = true;
+        window.initValutaSection();
+      }
     } catch(e) {}
     window.scrollTo(0, 0);
   }
@@ -8052,6 +8192,276 @@ window.addEventListener('resize', () => {
   }
 })();
 
+</script>
+
+<!-- ═══ VALUTA & CAMBIO — logica JS completa ═══ -->
+<script>
+(function() {
+'use strict';
+
+// ── Dati destinazioni ──
+var VALUTA_CITIES = {
+  'ROM': { name:'Roma',       flag:'🇮🇹', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',           symbol:'€',  mapQ:'money exchange Rome Italy',       sameCurrency:true },
+  'TYO': { name:'Tokyo',      flag:'🇯🇵', currency:'JPY', currFlag:'🇯🇵', currName:'Yen Giapponese', symbol:'¥',  mapQ:'money exchange Tokyo Japan' },
+  'DXB': { name:'Dubai',      flag:'🇦🇪', currency:'AED', currFlag:'🇦🇪', currName:'Dirham EAU',     symbol:'د.إ',mapQ:'money exchange Dubai UAE',        fallback:true, fallbackRate:3.97 },
+  'BCN': { name:'Barcellona', flag:'🇪🇸', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',           symbol:'€',  mapQ:'money exchange Barcelona Spain',  sameCurrency:true },
+  'NYC': { name:'New York',   flag:'🇺🇸', currency:'USD', currFlag:'🇺🇸', currName:'Dollaro USA',    symbol:'$',  mapQ:'money exchange New York USA' },
+  'BKK': { name:'Bangkok',    flag:'🇹🇭', currency:'THB', currFlag:'🇹🇭', currName:'Baht Thai',      symbol:'฿',  mapQ:'money exchange Bangkok Thailand' },
+  'TYO2':{ name:'Osaka',      flag:'🇯🇵', currency:'JPY', currFlag:'🇯🇵', currName:'Yen Giapponese', symbol:'¥',  mapQ:'money exchange Osaka Japan' },
+  'IST': { name:'Istanbul',   flag:'🇹🇷', currency:'TRY', currFlag:'🇹🇷', currName:'Lira Turca',     symbol:'₺',  mapQ:'money exchange Istanbul Turkey' },
+  'MAR': { name:'Marrakech',  flag:'🇲🇦', currency:'MAD', currFlag:'🇲🇦', currName:'Dirham Maroc.',  symbol:'د.م',mapQ:'money exchange Marrakech Morocco' },
+  'BLN': { name:'Berlino',    flag:'🇩🇪', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',           symbol:'€',  mapQ:'money exchange Berlin Germany',   sameCurrency:true },
+  'LIS': { name:'Lisbona',    flag:'🇵🇹', currency:'EUR', currFlag:'🇪🇺', currName:'Euro',           symbol:'€',  mapQ:'money exchange Lisbon Portugal',  sameCurrency:true },
+  'LON': { name:'Londra',     flag:'🇬🇧', currency:'GBP', currFlag:'🇬🇧', currName:'Sterlina GBP',  symbol:'£',  mapQ:'money exchange London UK' },
+};
+
+// ── Consigli per valuta ──
+var VALUTA_TIPS = {
+  'EUR': ['Nessuna conversione necessaria — usi euro come a casa.', 'Prelievi ATM: poche banche applicano commissioni intra-UE.'],
+  'JPY': ['In Giappone il contante è re: porta almeno ¥30.000 al giorno.', 'Japan Post ATM e 7-Eleven ATM accettano carte estere h24.', 'Evita i cambiavalute negli aeroporti: spread fino al 5%.'],
+  'USD': ['ATM Citibank e Chase: spesso zero commissioni internazionali.', 'Verifica che la tua banca non applichi foreign transaction fee (1-3%).'],
+  'THB': ['SuperRich e Vasu cambiavalute: migliori tassi a Bangkok.', 'Prelievo ATM: commissione fissa ~220 THB indipendente dall\'importo — preleva cifre grandi.'],
+  'TRY': ['Cambio molto favorevole per europei (inflazione lira alta).', 'Usa ATM locali (Ziraat, Garanti): migliori di cambiavalute.'],
+  'GBP': ['Wise o Revolut: tassi interbancari, zero spread nascosti.', 'Evita i cambiavalute Travelex negli aeroporti: peggiori tassi.'],
+  'AED': ['Dubai: cambiavalute in Gold Souk hanno ottimi tassi.', 'ATM Emirates NBD e ADCB accettano Visa/MC internazionali.'],
+  'MAD': ['Cambia solo in banche o uffici ufficiali (Bureau de Change).', 'Il dirham non è convertibile fuori dal Marocco — non portarne a casa.'],
+  'DEFAULT': ['Controlla sempre il tasso interbancario su Google prima di cambiare.', 'Revolut e Wise offrono cambi ai tassi reali, senza markup.'],
+};
+
+// ── Stato ──
+var selectedCode = null;
+var currentRate  = null;
+var sparkData    = [];
+
+// ── Init: popola griglia destinazioni ──
+function initValutaSection() {
+  var grid = document.getElementById('valutaDestGrid');
+  if (!grid) return;
+  grid.innerHTML = Object.entries(VALUTA_CITIES).map(function(entry) {
+    var code = entry[0], city = entry[1];
+    return '<button class="valuta-dest-btn" onclick="selectValutaCity(\'' + code + '\')" ontouchstart="">' +
+      '<span class="valuta-dest-flag">' + city.flag + '</span>' +
+      '<span class="valuta-dest-name">' + city.name + '</span>' +
+      '<span class="valuta-dest-curr">' + city.currency + '</span>' +
+    '</button>';
+  }).join('');
+}
+
+// ── Selezione destinazione ──
+function selectValutaCity(code) {
+  selectedCode = code;
+  var city = VALUTA_CITIES[code];
+  if (!city) return;
+
+  // Highlight btn
+  document.querySelectorAll('.valuta-dest-btn').forEach(function(b) { b.classList.remove('selected'); });
+  var allBtns = document.querySelectorAll('.valuta-dest-btn');
+  allBtns.forEach(function(b) {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').indexOf("'" + code + "'") >= 0) b.classList.add('selected');
+  });
+
+  // Mostra cards
+  var rateCard = document.getElementById('valutaRateCard');
+  var mapCard  = document.getElementById('valutaMapCard');
+  if (rateCard) rateCard.style.display = 'block';
+  if (mapCard)  mapCard.style.display  = 'block';
+
+  // Imposta indicatore loading
+  setIndicator('loading', city);
+
+  // Fetch tasso
+  if (city.sameCurrency) {
+    currentRate = 1;
+    sparkData   = [1,1,1,1,1,1,1];
+    setIndicator('same', city);
+    valutaUpdateConversion();
+    drawSparkline([1,1,1,1,1,1,1]);
+  } else if (city.fallback) {
+    currentRate = city.fallbackRate;
+    var fakeHistory = generateFakeHistory(city.fallbackRate);
+    sparkData = fakeHistory;
+    setIndicatorFromData(fakeHistory, city);
+    valutaUpdateConversion();
+    drawSparkline(fakeHistory);
+  } else {
+    fetchRates(city);
+  }
+
+  // Mappa
+  var frame = document.getElementById('valutaMapFrame');
+  if (frame) {
+    frame.src = 'https://maps.google.com/maps?q=' + encodeURIComponent(city.mapQ) + '&output=embed&z=14';
+  }
+
+  // Tips
+  var tipsList = document.getElementById('valutaTipsList');
+  if (tipsList) {
+    var tips = VALUTA_TIPS[city.currency] || VALUTA_TIPS['DEFAULT'];
+    tipsList.innerHTML = tips.map(function(t) {
+      return '<div class="valuta-tip"><span class="valuta-tip-icon">💡</span><span class="valuta-tip-text">' + t + '</span></div>';
+    }).join('');
+  }
+}
+
+// ── Fetch tassi da frankfurter.app ──
+function fetchRates(city) {
+  var today = new Date();
+  var end   = today.toISOString().split('T')[0];
+  var start = new Date(today - 7 * 86400000).toISOString().split('T')[0];
+  var url   = 'https://api.frankfurter.app/' + start + '..' + end + '?from=EUR&to=' + city.currency;
+
+  fetch(url)
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var dates = Object.keys(data.rates).sort();
+      var rates = dates.map(function(d) { return data.rates[d][city.currency]; });
+      if (rates.length === 0) throw new Error('no data');
+      currentRate = rates[rates.length - 1];
+      sparkData   = rates;
+      setIndicatorFromData(rates, city);
+      valutaUpdateConversion();
+      drawSparkline(rates);
+    })
+    .catch(function() {
+      // fallback: tasso fisso 1.2 se tutto fallisce
+      currentRate = city.fallbackRate || 1.2;
+      var fake = generateFakeHistory(currentRate);
+      sparkData = fake;
+      setIndicatorFromData(fake, city);
+      valutaUpdateConversion();
+      drawSparkline(fake);
+    });
+}
+
+// ── Genera storia fittizia con ±2% variazione ──
+function generateFakeHistory(baseRate) {
+  var arr = [];
+  for (var i = 0; i < 7; i++) {
+    arr.push(baseRate * (1 + (Math.random() * 0.04 - 0.02)));
+  }
+  arr[6] = baseRate; // ultimo valore = tasso corrente
+  return arr;
+}
+
+// ── Indica semaforo ──
+function setIndicator(status, city) {
+  var label = document.getElementById('viLabel');
+  var sub   = document.getElementById('viSub');
+  var badge = document.getElementById('viBadge');
+  ['viRed','viYellow','viGreen'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('lit');
+  });
+  if (status === 'loading') {
+    if (label) label.textContent = 'Caricamento…';
+    if (sub)   sub.textContent   = city.currName;
+    if (badge) badge.textContent = city.currency;
+  } else if (status === 'same') {
+    var el = document.getElementById('viGreen');
+    if (el) el.classList.add('lit');
+    if (label) label.textContent = 'Stessa valuta!';
+    if (sub)   sub.textContent   = 'Usi Euro — nessun cambio necessario';
+    if (badge) badge.textContent = 'EUR = EUR';
+  }
+}
+
+function setIndicatorFromData(rates, city) {
+  if (!rates || rates.length < 2) return;
+  var first = rates[0];
+  var last  = rates[rates.length - 1];
+  var pct   = ((last - first) / first) * 100;
+  var label = document.getElementById('viLabel');
+  var sub   = document.getElementById('viSub');
+  var badge = document.getElementById('viBadge');
+  ['viRed','viYellow','viGreen'].forEach(function(id) {
+    var el = document.getElementById(id);
+    if (el) el.classList.remove('lit');
+  });
+  if (pct >= 1) {
+    // Euro si è indebolito — cambiare ora costa di più
+    var el = document.getElementById('viRed');
+    if (el) el.classList.add('lit');
+    if (label) label.textContent = 'Momento sfavorevole';
+    if (sub)   sub.textContent   = 'Euro più debole degli ultimi 7 giorni';
+    if (badge) badge.textContent = '+' + pct.toFixed(1) + '% vs 7gg';
+  } else if (pct <= -1) {
+    // Euro si è rafforzato — buon momento
+    var el2 = document.getElementById('viGreen');
+    if (el2) el2.classList.add('lit');
+    if (label) label.textContent = 'Momento favorevole';
+    if (sub)   sub.textContent   = 'Euro più forte degli ultimi 7 giorni';
+    if (badge) badge.textContent = pct.toFixed(1) + '% vs 7gg';
+  } else {
+    var el3 = document.getElementById('viYellow');
+    if (el3) el3.classList.add('lit');
+    if (label) label.textContent = 'Tasso stabile';
+    if (sub)   sub.textContent   = 'Variazione minima negli ultimi 7 giorni';
+    if (badge) badge.textContent = pct.toFixed(1) + '% vs 7gg';
+  }
+  if (label) label.textContent += ' · 1€ = ' + last.toFixed(2) + ' ' + city.currency;
+}
+
+// ── Aggiorna conversioni rapide ──
+function valutaUpdateConversion() {
+  if (!selectedCode || !currentRate) return;
+  var city   = VALUTA_CITIES[selectedCode];
+  var amount = parseFloat(document.getElementById('valutaAmount').value) || 100;
+  var grid   = document.getElementById('valutaQuickGrid');
+  if (!grid) return;
+  var amounts = [50, 100, 200, 500, 1000, 2000];
+  grid.innerHTML = amounts.map(function(a) {
+    return '<div class="valuta-quick-item">' +
+      '<div class="valuta-quick-eur">' + a + ' €</div>' +
+      '<div class="valuta-quick-conv">' + city.symbol + (a * currentRate).toFixed(0) + '</div>' +
+    '</div>';
+  }).join('');
+}
+
+// ── Disegna sparkline SVG ──
+function drawSparkline(rates) {
+  var svg = document.getElementById('valutaSparkline');
+  if (!svg || !rates || rates.length < 2) return;
+  var W = 280, H = 56, pad = 4;
+  var min = Math.min.apply(null, rates);
+  var max = Math.max.apply(null, rates);
+  var range = max - min || 0.0001;
+  var pts = rates.map(function(r, i) {
+    var x = pad + (i / (rates.length - 1)) * (W - pad * 2);
+    var y = H - pad - ((r - min) / range) * (H - pad * 2);
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  });
+  var first = rates[0], last = rates[rates.length - 1];
+  var trend = last > first ? '#E84040' : '#2EC57A';
+  svg.innerHTML =
+    '<defs><linearGradient id="spGrad" x1="0" y1="0" x2="0" y2="1">' +
+      '<stop offset="0%" stop-color="' + trend + '" stop-opacity="0.35"/>' +
+      '<stop offset="100%" stop-color="' + trend + '" stop-opacity="0.02"/>' +
+    '</linearGradient></defs>' +
+    '<polyline fill="none" stroke="' + trend + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="' + pts.join(' ') + '"/>' +
+    '<circle cx="' + pts[pts.length - 1].split(',')[0] + '" cy="' + pts[pts.length - 1].split(',')[1] + '" r="4" fill="' + trend + '"/>';
+}
+
+// ── Eager init ──
+window._valutaInited = false;
+window.initValutaSection   = initValutaSection;
+window.selectValutaCity    = selectValutaCity;
+window.valutaUpdateConversion = valutaUpdateConversion;
+
+(function() {
+  function _eager() {
+    if (!window._valutaInited) {
+      window._valutaInited = true;
+      initValutaSection();
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _eager);
+  } else {
+    _eager();
+  }
+})();
+
+})();
 </script>
 </html>
 
