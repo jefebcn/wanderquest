@@ -7449,6 +7449,12 @@ function cancelContestUpload() {
   document.getElementById('uploadDropArea').style.display = 'block';
 }
 
+let swipeQueue = [];
+let swipeCurrent = null;
+let swipeFilter = 'all';
+let swipeStats = { liked:0, skipped:0, super:0 };
+let swipeLog = [];
+
 async function submitContestUpload() {
   const user = firebaseAuth.currentUser;
   if (!user) { showToast('🔒 Accedi per partecipare al Contest!'); return; }
@@ -7560,11 +7566,6 @@ const SWIPE_PHOTOS = [
   { id:'p12', city:'Barcellona', country:'ES', user:'@isabella_es', emoji:'🌆', caption:"Bunkers del Carmel all'alba — la vista proibita di BCN.", bg:'linear-gradient(135deg,#154360,#1A5276)', votes:1201 },
 ];
 
-let swipeQueue = [];
-let swipeCurrent = null;
-let swipeFilter = 'all';
-let swipeStats = { liked:0, skipped:0, super:0 };
-let swipeLog = [];
 let _isDragging = false;
 let _startX = 0, _startY = 0, _currentX = 0;
 let _swipeAnimating = false;
