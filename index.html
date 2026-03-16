@@ -9158,6 +9158,22 @@ window.selectValutaCity = selectValutaCity;
 window.valutaUpdateConversion = valutaUpdateConversion;
 window.initValutaSection = initValutaSection;
 
+// Eager init — HTML is already in the DOM when this script runs (bottom of body).
+// Lazy-on-tab-switch missed desktop and edge cases where doSwitch never fires.
+(function() {
+  function _eagerValutaInit() {
+    if (!window._valutaInited) {
+      window._valutaInited = true;
+      initValutaSection();
+    }
+  }
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', _eagerValutaInit);
+  } else {
+    _eagerValutaInit();
+  }
+})();
+
 </script>
 
 <!-- ═══ BOTTOM NAV — Mobile Only ═══ -->
