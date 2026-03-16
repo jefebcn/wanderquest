@@ -850,7 +850,7 @@ a {
   .mobile-drawer { top: 56px; }
 
   /* ── HERO ── */
-  #hero { padding: 48px var(--px-mobile) 52px; min-height: auto; }
+  #hero { padding: 24px var(--px-mobile) 44px; min-height: auto; }
   .hero-title { font-size: clamp(26px, 8vw, 38px); letter-spacing: -1px; }
   .hero-sub   { font-size: 14px; margin-bottom: 28px; }
   .hero-ctas  { flex-direction: column; gap: 10px; width: 100%; }
@@ -947,29 +947,54 @@ a {
   .flt-iata { font-size: 22px; }
 
   /* ── HOW IT WORKS ── */
-  #how-it-works { padding: 60px 0; }
-  /* HIW: horizontal scroll on mobile */
+  #how-it-works { padding: 36px 0 40px; }
+  /* HIW: compact vertical stack on mobile (no horizontal scroll) */
   .hiw-grid.hiw-scroll-mobile {
     display: flex !important;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    -webkit-overflow-scrolling: touch;
-    gap: 14px;
-    padding-bottom: 8px;
+    flex-direction: column !important;
+    overflow-x: unset;
+    scroll-snap-type: unset;
+    gap: 10px;
     margin-top: 20px;
-    /* Hide scrollbar */
-    scrollbar-width: none;
+    padding-bottom: 0;
   }
-  .hiw-grid.hiw-scroll-mobile::-webkit-scrollbar { display: none; }
   .hiw-grid.hiw-scroll-mobile .hiw-card {
-    flex: 0 0 82vw;
-    max-width: 320px;
-    scroll-snap-align: center;
-    padding: 20px 18px;
+    flex: none;
+    width: 100%;
+    max-width: 100%;
+    scroll-snap-align: unset;
+    /* compact horizontal layout: number+icon on left, text on right */
+    display: flex !important;
+    flex-direction: row !important;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 14px 16px;
+    border-radius: 14px;
   }
-  .hiw-grid.hiw-scroll-mobile .hiw-icon  { font-size: 30px; margin-bottom: 12px; }
-  .hiw-grid.hiw-scroll-mobile .hiw-title { font-size: 18px; }
-  .hiw-grid.hiw-scroll-mobile .hiw-text  { font-size: 13px; line-height: 1.6; }
+  .hiw-grid.hiw-scroll-mobile .hiw-card::before { border-radius: 14px 14px 0 0; }
+  /* Left column: number + icon stacked */
+  .hiw-grid.hiw-scroll-mobile .hiw-num {
+    font-size: 9px; margin-bottom: 6px; white-space: nowrap;
+  }
+  .hiw-grid.hiw-scroll-mobile .hiw-icon {
+    font-size: 26px; margin-bottom: 0; line-height: 1;
+  }
+  .hiw-grid.hiw-scroll-mobile .hiw-left-col {
+    display: flex; flex-direction: column; align-items: center;
+    min-width: 42px; padding-top: 2px;
+  }
+  .hiw-grid.hiw-scroll-mobile .hiw-right-col {
+    flex: 1; min-width: 0;
+  }
+  .hiw-grid.hiw-scroll-mobile .hiw-title {
+    font-size: 14px; line-height: 1.35; margin-bottom: 4px;
+  }
+  .hiw-grid.hiw-scroll-mobile .hiw-text {
+    font-size: 12px; line-height: 1.5; margin: 0;
+  }
+  .hiw-grid.hiw-scroll-mobile .hiw-tag {
+    font-size: 10px; margin-top: 6px; padding: 4px 8px;
+  }
   .hiw-card  { padding: 22px 18px; border-radius: 16px; }
   .hiw-icon  { font-size: 34px; margin-bottom: 14px; }
   .hiw-title { font-size: 18px; line-height: 1.3; }
@@ -1154,7 +1179,7 @@ a {
   .nav-wish-btn { padding: 8px 10px; font-size: 18px; min-height: 44px; min-width: 44px; display: inline-flex; align-items: center; justify-content: center; }
 
   /* Hero */
-  #hero { padding: 40px var(--px-mobile) 44px; }
+  #hero { padding: 16px var(--px-mobile) 36px; }
   .hero-title { font-size: clamp(22px, 9vw, 30px); }
   .hero-eyebrow { font-size: 9px; padding: 4px 10px; }
 
@@ -1265,7 +1290,7 @@ a {
   #home-search-bar {
     display: block;
     background: var(--ink);
-    padding: calc(57px + 14px) 16px 20px;
+    padding: calc(57px + 14px) 16px 10px;
     border-bottom: 1px solid rgba(255,255,255,0.06);
   }
   .hsb-inner { max-width: 100%; }
@@ -2821,7 +2846,8 @@ a {
 @media (max-width: 768px) {
   .vota-actions { gap: 28px; padding: 8px 0; }
   .swipe-deck-wrap { height: min(50vh, 420px); min-height:260px; }
-  .vota-wrap { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); }
+  .vota-wrap { padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px)); min-height: 0; }
+  #swipe-vote { min-height: calc(100dvh - 52px); display: flex; flex-direction: column; }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -3542,25 +3568,37 @@ a {
     <p class="section-sub">WanderQuest non è una guida turistica. È un loop che ti porta a esplorare meglio, viaggiare preparato e guadagnare mentre lo fai.</p>
     <div class="hiw-grid hiw-scroll-mobile">
       <div class="hiw-card card-explore">
-        <div class="hiw-num">01 / Esplora</div>
-        <div class="hiw-icon">🗺️</div>
-        <div class="hiw-title">Trova le gemme che le guide non pubblicano</div>
-        <p class="hiw-text">Bar senza insegna, musei vuoti, mercati all'alba. Selezionati da chi ci vive, non da algoritmi SEO.</p>
-        <div class="hiw-tag">🔍 Drill-down Explorer</div>
+        <div class="hiw-left-col">
+          <div class="hiw-num">01 / Esplora</div>
+          <div class="hiw-icon">🗺️</div>
+        </div>
+        <div class="hiw-right-col">
+          <div class="hiw-title">Trova le gemme che le guide non pubblicano</div>
+          <p class="hiw-text">Bar senza insegna, musei vuoti, mercati all'alba. Selezionati da chi ci vive, non da algoritmi SEO.</p>
+          <div class="hiw-tag">🔍 Drill-down Explorer</div>
+        </div>
       </div>
       <div class="hiw-card card-organize">
-        <div class="hiw-num">02 / Organizza</div>
-        <div class="hiw-icon">🧳</div>
-        <div class="hiw-title">La valigia perfetta in 10 secondi</div>
-        <p class="hiw-text">Checklist personalizzata per destinazione, stagione e stile — con link Amazon filtrati per qualità.</p>
-        <div class="hiw-tag">⚡ Packing Planner</div>
+        <div class="hiw-left-col">
+          <div class="hiw-num">02 / Organizza</div>
+          <div class="hiw-icon">🧳</div>
+        </div>
+        <div class="hiw-right-col">
+          <div class="hiw-title">La valigia perfetta in 10 secondi</div>
+          <p class="hiw-text">Checklist personalizzata per destinazione, stagione e stile — con link Amazon filtrati per qualità.</p>
+          <div class="hiw-tag">⚡ Packing Planner</div>
+        </div>
       </div>
       <div class="hiw-card card-earn">
-        <div class="hiw-num">03 / Vota &amp; Vinci</div>
-        <div class="hiw-icon">📸</div>
-        <div class="hiw-title">€150 al mese per la foto migliore</div>
-        <p class="hiw-text">Swipe le foto come su Tinder. Ogni voto conta. Il vincitore mensile riceve €150 + badge Verified Explorer.</p>
-        <div class="hiw-tag">🏆 Contest Mensile</div>
+        <div class="hiw-left-col">
+          <div class="hiw-num">03 / Vota &amp; Vinci</div>
+          <div class="hiw-icon">📸</div>
+        </div>
+        <div class="hiw-right-col">
+          <div class="hiw-title">€150 al mese per la foto migliore</div>
+          <p class="hiw-text">Swipe le foto come su Tinder. Ogni voto conta. Il vincitore mensile riceve €150 + badge Verified Explorer.</p>
+          <div class="hiw-tag">🏆 Contest Mensile</div>
+        </div>
       </div>
     </div>
   </div>
