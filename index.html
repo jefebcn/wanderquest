@@ -3737,7 +3737,7 @@ a {
     <div class="vota-sub-section" id="csec-partecipa">
       <div class="contest-rules-wrap">
         <h3 style="color:var(--cream);font-size:18px">Carica la tua foto</h3>
-        <p style="color:var(--cream-dim);font-size:13px;line-height:1.5;margin-bottom:8px">Seleziona una foto dal tuo rullino. Verrà inserita nel mazzo delle votazioni in locale.</p>
+        <p style="color:var(--cream-dim);font-size:13px;line-height:1.5;margin-bottom:8px">Seleziona una foto dal tuo rullino. Verrà caricata su Firebase e inserita nel mazzo delle votazioni per tutti gli utenti.</p>
         
         <div id="uploadDropArea" class="upload-area" onclick="document.getElementById('contestFileInput').click()">
           <div class="upload-icon">📥</div>
@@ -3769,8 +3769,8 @@ a {
             <li><strong>🏆 Vinci:</strong> Alla mezzanotte del giorno 28 di ogni mese, l'autore della foto con più punti vincerà <strong>150€</strong> in buoni viaggio e otterrà il badge speciale sul profilo.</li>
           </ul>
         </div>
-        <div style="background:rgba(255,255,255,0.05);border:1px solid var(--glass-border);padding:14px;border-radius:12px;font-size:12px;color:var(--cream-dim);text-align:center">
-          <em>Nota: Il caricamento simulato in locale ti permette di vedere la foto e interagire col sistema in tempo reale senza dover attivare Firebase Storage sul server.</em>
+        <div style="background:rgba(232,162,40,0.08);border:1px solid rgba(232,162,40,0.2);padding:14px;border-radius:12px;font-size:12px;color:var(--cream-dim);text-align:center">
+          <em>📸 Le foto vengono salvate su Firebase Storage e sono visibili a tutti gli utenti nella sezione Vota.</em>
         </div>
       </div>
     </div>
@@ -4157,6 +4157,7 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-storage-compat.js"></script>
 
 <script>
 // ── Inizializza Firebase subito (compat API, disponibile globalmente) ──
@@ -4171,12 +4172,14 @@ var _fbConfig = {
 
 // Evita doppia inizializzazione
 if (!firebase.apps.length) { firebase.initializeApp(_fbConfig); }
-var _fbAuth = firebase.auth();
-var _fbDb   = firebase.firestore();
+var _fbAuth    = firebase.auth();
+var _fbDb      = firebase.firestore();
+var _fbStorage = firebase.storage();
 
 // Espone sullo window per il modulo ES (che li usa come firebaseAuth / firestoreDb)
-window._fbAuth = _fbAuth;
-window._fbDb   = _fbDb;
+window._fbAuth    = _fbAuth;
+window._fbDb      = _fbDb;
+window._fbStorage = _fbStorage;
 
 // ── loginUser — funziona subito, senza modulo ──
 function loginUser() {
@@ -4691,24 +4694,272 @@ const DB = {
     AM: {
       name: "Americhe", emoji: "🌎", countryCount: 35,
       countries: {
-        US: { name: "USA", emoji: "🇺🇸", cities: {} },
-        MX: { name: "Messico", emoji: "🇲🇽", cities: {} },
-        BR: { name: "Brasile", emoji: "🇧🇷", cities: {} }
+        US: {
+          name: "USA", emoji: "🇺🇸",
+          cities: {
+            NYC: {
+              name: "New York", emoji: "🗽",
+              bg: "linear-gradient(135deg,#1a1a2e,#e94560)",
+              hidden_gems: [
+                { name: "Roosevelt Island Tramway", desc: "La funivia più economica di NYC (2.90$): vista su Manhattan che i turisti non conoscono. Prendila di notte." },
+                { name: "Bronx Night Market", desc: "Il mercato più autentico di NYC. 50+ venditori di cibo etnico, tutti locali. Zero turisti, tutto sapore vero." },
+                { name: "The Elevated Acre", desc: "Terrazza segreta sopra un palazzo di Wall Street. Giardino pensile con vista sul porto. Sconosciuta anche ai newyorkesi." }
+              ],
+              food: {
+                dishes: ["Bagel con cream cheese (Ess-a-Bagel)", "Slice di pizza al forno a legna", "Cheesecake originale (Junior's)", "Dumplings di Flushing (Queens)"],
+                spots: ["Di Fara Pizza — Brooklyn, 75 anni di storia, il proprietario fa tutto a mano", "Xi'an Famous Foods — noodles cinesi del nordovest, economici e autentici"]
+              },
+              cultural_pill: "New York si cammina: i newyorkesi percorrono 3-5 km al giorno senza accorgersene. Porta scarpe comode e impara a camminare veloce a sinistra del marciapiede.",
+              weather: { estate: "☀️ 28-34°C (umido)", inverno: "❄️ -2-6°C (neve)", primavera: "🌸 12-20°C", autunno: "🍁 10-18°C" },
+              weather_tags: ["hot_humid_summer", "cold_winter", "mild_spring", "foliage_autumn"],
+              affiliates_amazon: [
+                { item: "MetroCard OMNY contactless", why: "Il trasporto pubblico di NYC è l'unico modo razionale di muoversi", asin: "B09NYC001" },
+                { item: "Scarpe da walking impermeabili", why: "NYC si esplora a piedi: minimo 8km al giorno", asin: "B08WALK777" }
+              ],
+              affiliates_booking: [
+                { name: "Hostel Brooklyn Williamsburg", why: "Quartiere hipster autentico, ottimi collegamenti" },
+                { name: "Hotel Astoria Queens", why: "Zona multiculturale, prezzi dimezzati rispetto Manhattan" }
+              ]
+            },
+            LAX: {
+              name: "Los Angeles", emoji: "🎬",
+              bg: "linear-gradient(135deg,#f7971e,#ffd200)",
+              hidden_gems: [
+                { name: "Griffith Park Dawn Hike", desc: "Il sentiero all'alba prima che arrivi la folla. Vista sul cartello Hollywood con LA avvolta nella nebbia. Alle 7:00 sei solo." },
+                { name: "Grand Central Market", desc: "Il mercato coperto dal 1917: taco a 2$, cold brew, ramen. Tutti i quartieri di LA si incontrano qui alle 8 di mattina." },
+                { name: "Venice Canals", desc: "A 200 metri dal boardwalk affollato: canali tranquilli con anatre, case colorate, nessun turista. La Venezia americana dimenticata." }
+              ],
+              food: {
+                dishes: ["Tacos de birria (Boyle Heights)", "In-N-Out Burger (solo Animal Style)", "Sushi omakase a prezzo fisso", "Korean BBQ (Koreatown, dopo mezzanotte)"],
+                spots: ["Mariscos Jalisco — taco truck leggendario, South Central", "Langer's Deli — il pastrami sandwich più famoso d'America dal 1947"]
+              },
+              cultural_pill: "A LA tutto si misura in minuti di guida, non in distanza. Un posto 'vicino' può significare 45 minuti in auto. Affitta una macchina e impara il sistema freeway.",
+              weather: { estate: "☀️ 27-33°C (secco)", inverno: "🌤️ 14-20°C", primavera: "⛅ 18-24°C", autunno: "☀️ 22-28°C" },
+              weather_tags: ["warm_dry_summer", "mild_winter", "warm_spring", "warm_autumn"],
+              affiliates_amazon: [
+                { item: "Protezione solare SPF50+ waterproof", why: "Sole californiano 365 giorni: melanoma free", asin: "B09SPF5050" },
+                { item: "Cooler portatile per spiaggia", why: "Beach days a Santa Monica e Malibu: obbligatorio", asin: "B07COOLER9" }
+              ],
+              affiliates_booking: [
+                { name: "Hostel Venice Beach", why: "Posizione perfetta, surf culture autentica" },
+                { name: "Motel Hollywood Hills", why: "Vista notturna sulla città, economico" }
+              ]
+            }
+          }
+        },
+        MX: {
+          name: "Messico", emoji: "🇲🇽",
+          cities: {
+            MEX: {
+              name: "Città del Messico", emoji: "🌮",
+              bg: "linear-gradient(135deg,#006847,#CE1126)",
+              hidden_gems: [
+                { name: "Mercado de Jamaica alle 5:00", desc: "Il mercato dei fiori più grande del Messico apre prima dell'alba. Colori impossibili, profumi stordenti, tutto a prezzi locali." },
+                { name: "Barrio de Tepito (con guida)", desc: "Il quartiere più autentico e controverso di CDMX. Street art, mercato nero, cultura popolare. Solo con un locale che conosci." },
+                { name: "Xochimilco in settimana", desc: "I canali aztechi sopravvissuti. Nel weekend sono disco-boat per turisti. Il mercoledì mattina sono silenziosi e magici." }
+              ],
+              food: {
+                dishes: ["Tacos de canasta (cestino, 5 pesos)", "Tlayuda oaxaqueña", "Tamales di Doña Emi (Mercato Medellín)", "Elotes con chile y limón"],
+                spots: ["El Turix — cochinita pibil, solo la mattina, finisce alle 11", "Taquería Los Cocuyos — tacos notturni, solo locali, Zócalo"]
+              },
+              cultural_pill: "A CDMX il tempo funziona diversamente: 'ahorita' può significare ora, tra poco, o mai. Non arrabbiarti: abbraccia il 'tiempo mexicano' e goditi il ritmo.",
+              weather: { estate: "⛈️ 18-22°C (piogge pomeridiane)", inverno: "🌤️ 12-20°C (secco, fresco la notte)", primavera: "☀️ 20-26°C", autunno: "🌧️ 17-22°C" },
+              weather_tags: ["rainy_summer", "mild_dry_winter", "warm_spring", "rainy_autumn"],
+              affiliates_amazon: [
+                { item: "Impermeabile leggero pieghevole", why: "Le piogge pomeridiane di luglio-settembre sono improvvise e intense", asin: "B08RAIN111" },
+                { item: "Farmacia-kit anti-montezuma", why: "Il cambio di flora batterica colpisce quasi tutti alla prima visita", asin: "B07TUMMY22" }
+              ],
+              affiliates_booking: [
+                { name: "Hostal Roma Norte", why: "Il quartiere più cool di CDMX: caffè, gallerie, mercati" },
+                { name: "Hotel Centro Histórico", why: "A 5 minuti dal Zócalo, patrimonio UNESCO" }
+              ]
+            }
+          }
+        },
+        BR: {
+          name: "Brasile", emoji: "🇧🇷",
+          cities: {
+            RIO: {
+              name: "Rio de Janeiro", emoji: "🏖️",
+              bg: "linear-gradient(135deg,#009c3b,#ffdf00)",
+              hidden_gems: [
+                { name: "Escadaria Selarón alle 7:00", desc: "La scalinata di azulejos colorati del Lapa è deserta all'alba. Alle 10 è una parata di selfie. Vai presto." },
+                { name: "Praia do Flamengo al tramonto", desc: "La spiaggia dei carioca veri: volley, samba, picnic. Non Copacabana. Vista sul Cristo e sul Pão de Açúcar senza turisti." },
+                { name: "Feira de São Cristóvão", desc: "Il mercato nordestino nel padiglione di San Cristóvão: forró dal vivo, cibo del nordest, carioca autentici. Solo il weekend." }
+              ],
+              food: {
+                dishes: ["Açaí na tigela (Amazônia, non Ipanema)", "Churrasco rodízio (Fogo de Chão)", "Pastel de feira (mercoledì mattina)", "Caipirinha com cachaça artesanal"],
+                spots: ["Bar do Mineiro — feijão tropeiro e cachaça, Santa Teresa dal 1960", "Aprazível — cucina carioca su terrazza con vista foresta"]
+              },
+              cultural_pill: "I carioca sono i maestri del 'jeitinho brasileiro': trovare sempre una soluzione creativa a qualsiasi problema. Rispetta la fila (mas não muito) e sorridi.",
+              weather: { estate: "🌧️ 28-35°C (piogge tropicali)", inverno: "☀️ 22-27°C (perfetto)", primavera: "⛅ 24-30°C", autunno: "🌤️ 25-30°C" },
+              weather_tags: ["hot_rainy_summer", "perfect_winter", "warm_spring", "warm_autumn"],
+              affiliates_amazon: [
+                { item: "Crema solare SPF100 waterproof", why: "Sole equatoriale su spiaggia bianca: ustione in 20 minuti", asin: "B09RIO_SUN" },
+                { item: "Sandali infradito resistenti", why: "La vita a Rio si vive scalzi o in infradito: nessuna eccezione", asin: "B08FLIPFLOP" }
+              ],
+              affiliates_booking: [
+                { name: "Hostel Santa Teresa", why: "Quartiere boho su collina, artisti e vista panoramica" },
+                { name: "Pousada Ipanema", why: "La spiaggia famosa, camere semplici, posizione perfetta" }
+              ]
+            }
+          }
+        }
       }
     },
     AF: {
       name: "Africa", emoji: "🌍", countryCount: 54,
       countries: {
-        MA: { name: "Marocco", emoji: "🇲🇦", cities: {} },
-        ZA: { name: "Sud Africa", emoji: "🇿🇦", cities: {} },
-        TZ: { name: "Tanzania", emoji: "🇹🇿", cities: {} }
+        MA: {
+          name: "Marocco", emoji: "🇲🇦",
+          cities: {
+            RAK: {
+              name: "Marrakech", emoji: "🕌",
+              bg: "linear-gradient(135deg,#c0392b,#e67e22)",
+              hidden_gems: [
+                { name: "Jemaa el-Fna alle 6:00", desc: "La piazza più famosa dell'Africa è silenziosa all'alba. Venditori di pane fresco, preghiera, gatti. Niente snake charmers." },
+                { name: "Fondouks della Medina", desc: "Le antiche caravanserai nascoste nelle viuzze. Artigiani al lavoro: cuoio, ottone, tessuti. Nessun prezzo gonfiato." },
+                { name: "Giardini di Agdal (accesso limitato)", desc: "Il giardino reale del XII secolo: 400 ettari di ulivi e frutteti con piscina storica. Apre raramente — informati localmente." }
+              ],
+              food: {
+                dishes: ["Tagine di agnello con albicocche secche", "Bastilla al piccione (o pollo)", "Harira (zuppa del Ramadan)", "Msemen (crêpe berbera con miele)"],
+                spots: ["Café Clock — riad nascosto, tajine di cammello, musica gnawa dal vivo", "Souk Ahl Fas — il souk alimentare vero, non per turisti"]
+              },
+              cultural_pill: "Nel souk il prezzo iniziale è una barzelletta. Offri il 30%, sorridi, fingi di andartene. Il vero prezzo emerge quando sei già sulla porta. È un gioco sociale, non un conflitto.",
+              weather: { estate: "🔥 36-42°C (secco, caldo record)", inverno: "🌤️ 12-18°C (notti fredde)", primavera: "🌸 20-28°C (perfetto)", autunno: "☀️ 22-30°C" },
+              weather_tags: ["extreme_heat_summer", "cool_winter", "perfect_spring", "warm_autumn"],
+              affiliates_amazon: [
+                { item: "Jalaba (vestito locale anti-calore)", why: "Il cotone locale è il miglior antidoto al caldo secco del deserto", asin: "B07JELL001" },
+                { item: "Scarpe basse chiuse (no sandali aperti)", why: "I vicoli della medina: sterco di mulo, fognature, pietre appuntite", asin: "B08MEDINA2" }
+              ],
+              affiliates_booking: [
+                { name: "Riad Medina Antica", why: "Esperienza autentica: cortile con fontana, colazione sul terrazzo" },
+                { name: "Dar nella Kasbah", why: "Meno turistico di Djemaa el-Fna, più autentico" }
+              ]
+            }
+          }
+        },
+        ZA: {
+          name: "Sud Africa", emoji: "🇿🇦",
+          cities: {
+            CPT: {
+              name: "Città del Capo", emoji: "🏔️",
+              bg: "linear-gradient(135deg,#1a6b3c,#2e86ab)",
+              hidden_gems: [
+                { name: "Bo-Kaap alle 7:00", desc: "Il quartiere delle case colorate — rosa, giallo, arancione — è fotografato di continuo. All'alba è solo tuo, con il Ramadan in background." },
+                { name: "Oranjezicht City Farm Market", desc: "Il mercato biologico dei capetoniani veri. Sabato mattina: feta locale, ostrich biltong, caffè di specialità. Nessun turista." },
+                { name: "Kalk Bay Harbour", desc: "Villaggio di pescatori 30 minuti dal centro. Pescatori che vendono direttamente dal barca, fish & chips sulla banchina. Cape Town che non si vede nelle guide." }
+              ],
+              food: {
+                dishes: ["Biltong (jerky di manzo o kudu)", "Braai (barbecue sudafricano, mai 'bbq')", "Bobotie (piatto nazionale Cape Malay)", "Boerewors (salsiccia speziata)"],
+                spots: ["Hussar Grill — bistecca di manzo grain-fed, la migliore della città", "Gold Restaurant — menu degustazione panafricano, cena con djembé live"]
+              },
+              cultural_pill: "Cape Town è una delle città più diseguali al mondo: 2km separano villa e township. Non ignorarlo: una township tour etico con guida locale è la lezione di viaggio più potente che puoi ricevere.",
+              weather: { estate: "☀️ 25-32°C (secco, vento Cape Doctor)", inverno: "🌧️ 8-16°C (piogge)", primavera: "🌸 16-24°C", autunno: "🍂 14-22°C" },
+              weather_tags: ["dry_windy_summer", "rainy_winter", "mild_spring", "mild_autumn"],
+              affiliates_amazon: [
+                { item: "Giacca antivento impermeabile", why: "Il Cape Doctor (vento del Capo) è feroce e improvviso tutto l'anno", asin: "B08CAPE001" },
+                { item: "Binocolo compatto 10x25", why: "Whale watching, pinguini a Boulders Beach, fauna del Capo", asin: "B07BINO777" }
+              ],
+              affiliates_booking: [
+                { name: "Guesthouse Bo-Kaap", why: "Nel quartiere colorato più iconico, gestito da famiglia locale" },
+                { name: "Hostel Long Street", why: "Il cuore della vita notturna e culturale di Cape Town" }
+              ]
+            }
+          }
+        },
+        TZ: {
+          name: "Tanzania", emoji: "🇹🇿",
+          cities: {
+            DAR: {
+              name: "Zanzibar Town", emoji: "🌊",
+              bg: "linear-gradient(135deg,#006994,#1abc9c)",
+              hidden_gems: [
+                { name: "Stone Town Forodhani Garden alle 18:00", desc: "Il mercato serale sul lungomare: polpo alla griglia, urojo (zuppa), succhi di canna. Tutto per pochi shilling. Solo locali e qualche coraggioso." },
+                { name: "Dala Dala (minibus locale)", desc: "Il trasporto pubblico di Zanzibar: affollato, colorato, autentico. 500 scellini da Stone Town all'aeroporto. La vita dell'isola tutta in una corsa." },
+                { name: "Jozani Forest all'alba", desc: "La foresta dei colobus rossi. Prima delle 8 sei solo con le scimmie e il richiamo degli uccelli. Dopo le 9 arrivano i bus turistici." }
+              ],
+              food: {
+                dishes: ["Urojo (Zanzibar mix soup)", "Octopus curry con riso pilau", "Mandazi (ciambella locale)", "Zanzibar pizza (street food serale)"],
+                spots: ["Lukmaan Restaurant — cucina swahili autentica, frequentato dai zanzibariti, prezzi minimi", "Forodhani Night Market — mercato serale sul waterfront, solo cibo locale"]
+              },
+              cultural_pill: "Zanzibar è prevalentemente musulmana. Vesti con rispetto nella Stone Town (no shorts, spalle coperte). Il Ramadan cambia tutto il ritmo dell'isola — rispettalo e potresti essere invitato a un iftar.",
+              weather: { estate: "☀️ 28-32°C", inverno: "🌤️ 24-28°C", primavera: "🌧️ 26-30°C (masika)", autunno: "🌦️ 25-30°C (vuli)" },
+              weather_tags: ["hot_humid", "warm_dry_winter", "rainy_spring", "short_rains_autumn"],
+              affiliates_amazon: [
+                { item: "Repellente DEET 40% (spray e lozione)", why: "Malaria risk area: protezione continua obbligatoria", asin: "B07DEET999" },
+                { item: "Maschera e boccaglio snorkel", why: "Le barriere coralline di Zanzibar sono tra le 10 migliori al mondo", asin: "B08SNORK11" }
+              ],
+              affiliates_booking: [
+                { name: "Guesthouse Stone Town", why: "Patrimonio UNESCO, architettura araba e swahili" },
+                { name: "Beach Bungalow Nungwi", why: "Spiaggia migliore dell'isola, tramonto incredibile" }
+              ]
+            }
+          }
+        }
       }
     },
     OC: {
       name: "Oceania", emoji: "🗺️", countryCount: 14,
       countries: {
-        AU: { name: "Australia", emoji: "🇦🇺", cities: {} },
-        NZ: { name: "Nuova Zelanda", emoji: "🇳🇿", cities: {} }
+        AU: {
+          name: "Australia", emoji: "🇦🇺",
+          cities: {
+            SYD: {
+              name: "Sydney", emoji: "🦘",
+              bg: "linear-gradient(135deg,#00467f,#a5cc82)",
+              hidden_gems: [
+                { name: "Bronte Beach alle 6:00", desc: "Mentre tutti vanno a Bondi, i sydneysiders fanno l'ocean pool di Bronte all'alba. Nuotata, caffè, silenzio. 10 minuti a piedi da Bondi." },
+                { name: "Newtown King Street (mercoledì sera)", desc: "Il quartiere bohémien di Sydney: librerie usate, live music nei pub, cibo etnico a prezzi onesti. Nessun selfie stick in vista." },
+                { name: "Manly via Spit Bridge Walk", desc: "Trek costiero 10km da Spit Bridge a Manly: bush australiano, baia trasparente, kookaburra. Zero turisti, panorami da mozzare il fiato." }
+              ],
+              food: {
+                dishes: ["Meat pie con salsa HP (Bourke Street Bakery)", "Flat white (il caffè australiano, mai cappuccino)", "Barramundi con chips (fish & chips vero)", "Avocado toast (non è un cliché: è una religione)"],
+                spots: ["Bourke Street Bakery — la bakery migliore dell'emisfero sud", "Lotus Dumpling Bar — yum cha domenica mattina, solo prenotazione"]
+              },
+              cultural_pill: "Gli australiani detestano chi si prende troppo sul serio. 'She'll be right' (andrà bene) è la filosofia di vita: rilassati, sorridi, non drammatizzare. Il falso modesto è la forma più alta di autostima.",
+              weather: { estate: "☀️ 26-35°C (nord caldo)", inverno: "🌤️ 10-17°C (mite)", primavera: "⛅ 18-25°C", autunno: "🍂 16-24°C" },
+              weather_tags: ["hot_summer", "mild_winter", "warm_spring", "mild_autumn"],
+              affiliates_amazon: [
+                { item: "Crema solare SPF50+ reef-safe", why: "L'UV index australiano è il più alto al mondo: cancro della pelle entità n.1", asin: "B09AUS_SUN" },
+                { item: "Scarpe da trekking waterproof", why: "I coastal walks richiedono grip solido su roccia bagnata", asin: "B08TREK_AU" }
+              ],
+              affiliates_booking: [
+                { name: "YHA Sydney Central", why: "Storico ostello nel centro, qualità garantita dalla rete YHA" },
+                { name: "Guesthouse Newtown", why: "Il quartiere più autentico e caratteristico di Sydney" }
+              ]
+            }
+          }
+        },
+        NZ: {
+          name: "Nuova Zelanda", emoji: "🇳🇿",
+          cities: {
+            QTN: {
+              name: "Queenstown", emoji: "🏔️",
+              bg: "linear-gradient(135deg,#134e5e,#71b280)",
+              hidden_gems: [
+                { name: "Bob's Peak (a piedi, non cable car)", desc: "Il sentiero Tiki Trail sale 450m sul Remarkables. In cima vedrai i turisti che arrivano col cable car — tu ci sei arrivato gratis e più in forma." },
+                { name: "Arrowtown (40 min da Queenstown)", desc: "Il villaggio dell'oro del 1860 con 11 alberi nel main street. In autunno (aprile-maggio) è il posto più fotografato della Nuova Zelanda — per un buon motivo." },
+                { name: "Lake Hayes Circuit", desc: "Lago color smeraldo circondato da ulivi e pecore. Walk di 8km, gratis, nessun turista. I locali vengono qui a fare jogging la domenica mattina." }
+              ],
+              food: {
+                dishes: ["Whitebait fritter (pesce bianco neozelandese)", "Venison pie (torta di cervo)", "Flat white (inventato in NZ, non in Australia)", "Hokey Pokey ice cream (vaniglia con toffee)"],
+                spots: ["Fergburger — il burger più famoso del Pacifico. Fila sempre. Vale sempre.", "Vudu Café — colazione kiwi autentica, frequentata dai locali"]
+              },
+              cultural_pill: "La cultura Māori è viva e rispettata: impara almeno 'Kia ora' (ciao/grazie) e 'Ka pai' (ben fatto). I neozelandesi apprezzano chi mostra rispetto genuino per la cultura indigena.",
+              weather: { estate: "☀️ 18-25°C", inverno: "❄️ -2-8°C (sci)", primavera: "🌸 12-18°C", autunno: "🍁 10-16°C (foliage)" },
+              weather_tags: ["warm_summer", "ski_winter", "mild_spring", "foliage_autumn"],
+              affiliates_amazon: [
+                { item: "Giacca da sci/trekking 3-in-1", why: "Il meteo del Queenstown cambia in 20 minuti: strati è la parola chiave", asin: "B08NZ_3IN1" },
+                { item: "Filtro acqua portatile (Sawyer Squeeze)", why: "L'acqua dei ruscelli NZ è tra le più pure al mondo: bevila direttamente", asin: "B07SAWYER1" }
+              ],
+              affiliates_booking: [
+                { name: "Nomads Queenstown Hostel", why: "Il migliore per backpackers, ottimo rooftop bar con vista" },
+                { name: "B&B Arrowtown", why: "Nel villaggio storico dell'oro, atmosfera d'altri tempi" }
+              ]
+            }
+          }
+        }
       }
     }
   }
@@ -5205,7 +5456,7 @@ async function renderCities(continentCode, countryCode) {
       <div class="city-body">
         <div class="city-name">${city.name}</div>
         <div class="city-tags">
-          ${city.weather_tags.slice(0,3).map(t => `<div class="city-tag">${t.replace(/_/g,' ')}</div>`).join('')}
+          ${(city.weather_tags || []).slice(0,3).map(t => `<div class="city-tag">${t.replace(/_/g,' ')}</div>`).join('')}
         </div>
       </div>
     </div>
@@ -7060,49 +7311,96 @@ function cancelContestUpload() {
   document.getElementById('uploadDropArea').style.display = 'block';
 }
 
-function submitContestUpload() {
+async function submitContestUpload() {
   const user = firebaseAuth.currentUser;
-  
-  // N.B: in un ambiente reale qui potresti bloccare l'upload se non è loggato.
-  // if (!user) { showToast('🔒 Accedi per inviare la foto al Contest!'); return; }
+  if (!user) { showToast('🔒 Accedi per partecipare al Contest!'); return; }
 
   const caption = document.getElementById('uploadCaption').value.trim();
-  const imgSrc = document.getElementById('uploadPreviewImg').src;
-  
-  if (!caption) {
-    showToast('⚠️ Aggiungi una didascalia alla tua foto!');
-    return;
-  }
+  const fileInput = document.getElementById('contestFileInput');
+  const file = fileInput.files && fileInput.files[0];
 
-  showToast('⏳ Simulazione invio in corso...');
-  
-  // Simuliamo un ritardo di rete per far sembrare vero l'upload
-  setTimeout(() => {
-    // 1. Aggiungiamo la foto IN CIMA alla coda di swipe locale per farla vedere subito
-    const newCard = {
-      id: 'local_' + Date.now(),
-      city: 'Local Upload', 
-      country: 'World', 
-      user: user ? user.email.split('@')[0] : '@guest_traveler',
-      emoji: '🌍',
-      caption: caption,
-      bg: `url(${imgSrc})`,
-      votes: 0,
-      isCustomLocal: true
+  if (!caption) { showToast('⚠️ Aggiungi una didascalia alla tua foto!'); return; }
+  if (!file)    { showToast('⚠️ Nessuna foto selezionata!'); return; }
+
+  const submitBtn = document.querySelector('.upload-btn-submit');
+  if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = '⏳ Invio…'; }
+  showToast('⏳ Upload in corso…');
+
+  try {
+    // 1. Upload su Firebase Storage
+    const ts      = Date.now();
+    const ext     = file.name.split('.').pop() || 'jpg';
+    const path    = `contest_photos/${user.uid}/${ts}.${ext}`;
+    const storRef = window._fbStorage.ref(path);
+    const snap    = await storRef.put(file);
+    const url     = await snap.ref.getDownloadURL();
+
+    // 2. Salva metadati su Firestore
+    const meta = {
+      uid:       user.uid,
+      userEmail: user.email || '',
+      caption:   caption,
+      url:       url,
+      storagePath: path,
+      city:      'Upload',
+      country:   'WQ',
+      emoji:     '📸',
+      votes:     0,
+      createdAt: new Date().toISOString()
     };
-    
-    // Inserisce in 2° posizione o 1° 
+    const docRef = await window._fbDb.collection('contest_photos').add(meta);
+
+    // 3. Inserisce nella coda swipe locale
+    const newCard = {
+      id:        docRef.id,
+      city:      caption.split(' ').slice(0,3).join(' '),
+      country:   'WQ',
+      user:      '@' + (user.email || 'explorer').split('@')[0],
+      emoji:     '📸',
+      caption:   caption,
+      bg:        `url(${url}) center/cover`,
+      votes:     0,
+      realPhoto: true
+    };
     swipeQueue.splice(1, 0, newCard);
-    
-    // 2. Resettiamo la UI di upload
+
     cancelContestUpload();
-    
-    // 3. Spostiamo l'utente sul tab "Gioca" per mostrargli la coda aggiornata
-    showToast('✅ Foto caricata con successo! Cercala nel mazzo.');
+    showToast('✅ Foto caricata nel contest! La vedrai nel mazzo.');
     switchContestTab('gioca');
-    renderSwipeDeck(); // Forza aggiornamento visivo
-    
-  }, 1200);
+    renderSwipeDeck();
+  } catch (err) {
+    console.error('[WQ Upload]', err);
+    showToast('❌ Errore upload: ' + (err.message || err));
+  } finally {
+    if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = '🚀 Invia Foto'; }
+  }
+}
+
+// Carica foto contest reali da Firestore e le inietta in SWIPE_PHOTOS
+async function loadContestPhotosFromFirestore() {
+  try {
+    const snap = await window._fbDb.collection('contest_photos')
+      .orderBy('votes', 'desc').limit(30).get();
+    if (snap.empty) return;
+    const existing = new Set(SWIPE_PHOTOS.map(p => p.id));
+    snap.forEach(doc => {
+      if (existing.has(doc.id)) return;
+      const d = doc.data();
+      SWIPE_PHOTOS.push({
+        id:        doc.id,
+        city:      d.city || 'WanderQuest',
+        country:   d.country || 'WQ',
+        user:      '@' + (d.userEmail || 'explorer').split('@')[0],
+        emoji:     d.emoji || '📸',
+        caption:   d.caption || '',
+        bg:        d.url ? `url(${d.url}) center/cover` : 'linear-gradient(135deg,#1a3a5c,#0e6e8c)',
+        votes:     d.votes || 0,
+        realPhoto: true
+      });
+    });
+  } catch (e) {
+    console.warn('[WQ] Firestore contest_photos:', e.message);
+  }
 }
 
 
@@ -7749,11 +8047,13 @@ renderCountryLeaderboard('IT');
 renderGlobalLeaderboard();
 renderRecentlyViewed();
 updateWishBadge();
-// Swipe deck desktop (mobile usa initBottomNav)
-if (typeof window !== 'undefined' && window.innerWidth > 768) {
-  buildSwipeQueue();
-  renderSwipeDeck();
-}
+// Carica foto contest reali da Firestore, poi costruisce il deck
+loadContestPhotosFromFirestore().then(() => {
+  if (typeof window !== 'undefined' && window.innerWidth > 768) {
+    buildSwipeQueue();
+    renderSwipeDeck();
+  }
+});
 
 function isMobile() { return window.innerWidth <= 768; }
 
@@ -7769,8 +8069,10 @@ function initBottomNav() {
   if (btn) btn.classList.add('active');
   updateBnavProfileIcon();
 
-  buildSwipeQueue();
-  renderSwipeDeck();
+  loadContestPhotosFromFirestore().then(() => {
+    buildSwipeQueue();
+    renderSwipeDeck();
+  });
   if (_activeTab === 'profilo') renderProfilePage();
 }
 
@@ -7787,8 +8089,13 @@ function switchTab(tab, silent) {
 
   // Swipe deck: (ri)costruisce al primo accesso
   if (tab === 'vota') {
+    const _actions = document.getElementById('swipeActions');
+    if (_actions) { _actions.style.opacity = '0'; _actions.style.transition = 'none'; }
     if (swipeQueue.length === 0) buildSwipeQueue();
     renderSwipeDeck();
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (_actions) { _actions.style.transition = 'opacity 0.25s'; _actions.style.opacity = '1'; }
+    }));
   }
 
   // Profile page
