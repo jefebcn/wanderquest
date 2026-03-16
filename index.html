@@ -1218,6 +1218,9 @@ a {
 /* ── HERO SECTION ── */
 /* ── Home Search Bar (mobile-first, hidden on desktop) ── */
 #home-search-bar { display: none; }
+@media (min-width: 769px) {
+  #home-search-bar { display: none !important; }
+}
 @media (max-width: 768px) {
   #home-search-bar {
     display: block;
@@ -2594,9 +2597,13 @@ a {
   body[data-active-tab="esplora"] #hero { display: flex !important; }
   /* city-detail: only when .show class present */
   body[data-active-tab="esplora"] #city-detail:not(.show) { display: none !important; }
-  /* Footer: hide only on profilo */
-  body[data-active-tab] #footer   { display: block !important; }
-  body[data-active-tab="profilo"] #footer { display: none !important; }
+  /* Footer: hide on profilo and vota */
+  body[data-active-tab] #footer            { display: block !important; }
+  body[data-active-tab="profilo"] #footer  { display: none !important; }
+  body[data-active-tab="vota"] #footer     { display: none !important; }
+  /* Vota: full-screen immersive, no scroll past content */
+  body[data-active-tab="vota"] { overflow: hidden; }
+  body[data-active-tab="vota"] [data-tab="vota"] { overflow-y: auto; height: 100dvh; }
   /* Profile page */
   body[data-active-tab] #profile-page            { display: none !important; }
   body[data-active-tab="profilo"] #profile-page  { display: block !important; }
@@ -2908,12 +2915,12 @@ a {
         <span class="hsb-cat-icon">🗺️</span>
         <span class="hsb-cat-label">Mete</span>
       </button>
-      <button type="button" class="hsb-cat" onclick="document.getElementById('ai-itinerary').scrollIntoView({behavior:'smooth'})" ontouchstart="">
+      <button type="button" class="hsb-cat" onclick="switchTab('scopri');setTimeout(function(){var el=document.getElementById('ai-itinerary');if(el)el.scrollIntoView({behavior:'smooth'});},180);" ontouchstart="">
         <span class="hsb-cat-icon">🎒</span>
         <span class="hsb-cat-label">Esperienze</span>
         <span class="hsb-cat-badge">New</span>
       </button>
-      <button type="button" class="hsb-cat" onclick="document.getElementById('packing').scrollIntoView({behavior:'smooth'})" ontouchstart="">
+      <button type="button" class="hsb-cat" onclick="switchTab('scopri');setTimeout(function(){var el=document.getElementById('packing');if(el)el.scrollIntoView({behavior:'smooth'});},180);" ontouchstart="">
         <span class="hsb-cat-icon">🛎️</span>
         <span class="hsb-cat-label">Servizi</span>
         <span class="hsb-cat-badge">New</span>
@@ -3739,13 +3746,13 @@ a {
         <h3 style="color:var(--cream);font-size:18px">Carica la tua foto</h3>
         <p style="color:var(--cream-dim);font-size:13px;line-height:1.5;margin-bottom:8px">Seleziona una foto dal tuo rullino. Verrà caricata su Firebase e inserita nel mazzo delle votazioni per tutti gli utenti.</p>
         
-        <div id="uploadDropArea" class="upload-area" onclick="document.getElementById('contestFileInput').click()">
+        <label id="uploadDropArea" class="upload-area" for="contestFileInput" style="display:block;cursor:pointer">
           <div class="upload-icon">📥</div>
           <div class="upload-title">Tocca per scegliere una foto</div>
-          <div class="upload-sub">JPG o PNG max 5MB</div>
-          <button class="upload-cta">Seleziona dal Rullino</button>
-          <input type="file" id="contestFileInput" class="upload-input-file" accept="image/*" onchange="handleContestPhotoSelect(event)">
-        </div>
+          <div class="upload-sub">JPG o PNG · max 10MB</div>
+          <span class="upload-cta" style="display:inline-block;pointer-events:none">Seleziona dal Rullino</span>
+          <input type="file" id="contestFileInput" class="upload-input-file" accept="image/*" capture="environment" onchange="handleContestPhotoSelect(event)" style="position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer">
+        </label>
 
         <div id="uploadPreviewWrap" class="upload-preview-wrap">
           <img id="uploadPreviewImg" src="" alt="Anteprima" class="upload-preview-img">
@@ -3760,18 +3767,68 @@ a {
 
     <!-- SEZIONE 3: REGOLE -->
     <div class="vota-sub-section" id="csec-regole">
-      <div class="contest-rules-wrap">
-        <div class="rules-box">
-          <h3><span style="font-size:20px">📖</span> Come funziona il Contest?</h3>
-          <ul class="rules-list" style="list-style:none;padding:0;margin:0">
-            <li><strong>📸 Carica:</strong> Invia una foto di una "gemma nascosta" (luoghi non turistici, orari particolari, prospettive inedite).</li>
-            <li><strong>🃏 Vota:</strong> La community esprime il proprio voto facendo swipe. Un cuore (❤️) vale +1 punto. Un super voto (⭐) vale +3 punti (solo utenti Premium).</li>
-            <li><strong>🏆 Vinci:</strong> Alla mezzanotte del giorno 28 di ogni mese, l'autore della foto con più punti vincerà <strong>150€</strong> in buoni viaggio e otterrà il badge speciale sul profilo.</li>
+      <div class="contest-rules-wrap" style="padding:0 4px">
+
+        <!-- Prize banner -->
+        <div style="background:linear-gradient(135deg,rgba(232,162,40,0.15),rgba(232,162,40,0.05));border:1px solid rgba(232,162,40,0.3);border-radius:16px;padding:20px;text-align:center;margin-bottom:20px">
+          <div style="font-size:36px;margin-bottom:8px">🏆</div>
+          <div style="font-size:22px;font-weight:900;color:var(--amber);letter-spacing:-0.5px">€150 in buoni viaggio</div>
+          <div style="font-size:12px;color:var(--cream-dim);margin-top:4px">+ Badge esclusivo <strong style="color:var(--amber)">Verified Explorer</strong> sul profilo</div>
+          <div style="margin-top:12px;font-size:11px;color:rgba(255,255,255,0.4)">Ogni mese · vincitore annunciato il 28</div>
+        </div>
+
+        <!-- Steps -->
+        <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+
+          <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px">
+            <div style="font-size:28px;flex-shrink:0;line-height:1">📸</div>
+            <div>
+              <div style="font-weight:800;font-size:14px;color:var(--cream);margin-bottom:4px">1 · Carica una gemma nascosta</div>
+              <div style="font-size:12px;color:var(--cream-dim);line-height:1.5">Scatta una foto di un luogo autentico: alba vuota, vicolo dimenticato, mercato locale. Niente cliché da cartolina. Solo il vero.</div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px">
+            <div style="font-size:28px;flex-shrink:0;line-height:1">🃏</div>
+            <div>
+              <div style="font-weight:800;font-size:14px;color:var(--cream);margin-bottom:4px">2 · La community vota con lo swipe</div>
+              <div style="font-size:12px;color:var(--cream-dim);line-height:1.5">
+                <span style="color:var(--cream)">❤️ Like</span> = +1 punto &nbsp;·&nbsp; <span style="color:var(--amber)">⭐ Super</span> = +3 punti <span style="font-size:10px;background:rgba(232,162,40,0.15);border-radius:6px;padding:1px 6px;color:var(--amber)">Pro</span><br>
+                Più swipe ricevi, più sali in classifica in tempo reale.
+              </div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:14px;align-items:flex-start;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:14px;padding:16px">
+            <div style="font-size:28px;flex-shrink:0;line-height:1">🎖️</div>
+            <div>
+              <div style="font-weight:800;font-size:14px;color:var(--cream);margin-bottom:4px">3 · Vinci e ottieni il badge esclusivo</div>
+              <div style="font-size:12px;color:var(--cream-dim);line-height:1.5">Il 28 di ogni mese la foto con più punti vince €150 in buoni viaggio. Il vincitore ottiene il badge <strong style="color:var(--amber)">Verified Explorer</strong> permanente sul profilo.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Pro multiplier -->
+        <div style="background:rgba(232,162,40,0.06);border:1px solid rgba(232,162,40,0.2);border-radius:12px;padding:14px;display:flex;gap:12px;align-items:center;margin-bottom:16px">
+          <div style="font-size:24px">⚡</div>
+          <div>
+            <div style="font-size:12px;font-weight:800;color:var(--amber)">Moltiplicatore Explorer Pro</div>
+            <div style="font-size:11px;color:var(--cream-dim);margin-top:2px">Gli utenti Pro ricevono ×2 su ogni voto ricevuto. Ogni ❤️ vale 2 punti, ogni ⭐ vale 6. Doppia la chance di vincere.</div>
+          </div>
+        </div>
+
+        <!-- Rules fine print -->
+        <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px">
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:8px">Regolamento</div>
+          <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:6px">
+            <li style="font-size:11px;color:var(--cream-dim);display:flex;gap:8px"><span style="color:var(--amber);flex-shrink:0">→</span>Una sola foto a persona per ciclo mensile</li>
+            <li style="font-size:11px;color:var(--cream-dim);display:flex;gap:8px"><span style="color:var(--amber);flex-shrink:0">→</span>Foto devono essere originali e scattate da te</li>
+            <li style="font-size:11px;color:var(--cream-dim);display:flex;gap:8px"><span style="color:var(--amber);flex-shrink:0">→</span>Vietati luoghi con minori riconoscibili senza consenso</li>
+            <li style="font-size:11px;color:var(--cream-dim);display:flex;gap:8px"><span style="color:var(--amber);flex-shrink:0">→</span>WanderQuest si riserva di rimuovere contenuti inappropriati</li>
+            <li style="font-size:11px;color:var(--cream-dim);display:flex;gap:8px"><span style="color:var(--amber);flex-shrink:0">→</span>I buoni viaggio sono trasferibili e validi 12 mesi</li>
           </ul>
         </div>
-        <div style="background:rgba(232,162,40,0.08);border:1px solid rgba(232,162,40,0.2);padding:14px;border-radius:12px;font-size:12px;color:var(--cream-dim);text-align:center">
-          <em>📸 Le foto vengono salvate su Firebase Storage e sono visibili a tutti gli utenti nella sezione Vota.</em>
-        </div>
+
       </div>
     </div>
 
