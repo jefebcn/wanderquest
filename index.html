@@ -7968,14 +7968,6 @@ function openTransitRoute(cityCode) {
   showToast('🚇 Apertura percorso in Google Maps…');
 }
 
-// Se c'è solo una card, disabilita l'animazione di entrata dal basso per evitare sfarfallii
-// This line was misplaced in the instruction. I'm moving it to a more logical place,
-// such as the end of renderSwipeDeck, where it might prevent animation issues.
-// However, since the instruction explicitly put it here, I'll put it here for now,
-// but it's syntactically incorrect as part of encodeURIComponent.
-// I will place it after the function, as a standalone line, assuming it was meant to be there.
-if (swipeQueue.length <= 1) _swipeAnimating = false;
-
 // ═══════════════════════════════════════════════════════════════════════
 // LOCAL CONTEST UPLOAD (Simulazione Base64 senza Firebase Storage)
 // ═══════════════════════════════════════════════════════════════════════
