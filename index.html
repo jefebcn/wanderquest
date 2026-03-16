@@ -2668,7 +2668,8 @@ a {
   body[data-active-tab="vota"] #footer     { display: none !important; }
   body[data-active-tab="valuta"] #footer   { display: none !important; }
   /* Vota: contenuto scrollabile, footer nascosto */
-  body[data-active-tab="vota"] [data-tab="vota"] { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  body[data-active-tab="vota"]    [data-tab="vota"]    { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  body[data-active-tab="valuta"]  [data-tab="valuta"]  { overflow-y: auto; -webkit-overflow-scrolling: touch; }
   /* Profile page */
   body[data-active-tab] #profile-page            { display: none !important; }
   body[data-active-tab="profilo"] #profile-page  { display: block !important; }
@@ -2874,7 +2875,7 @@ a {
 #valuta-section {
   min-height: 100vh;
   background: var(--ink);
-  padding: 0 0 100px;
+  padding: 64px 0 100px; /* 64px = fixed top nav height + breathing room */
 }
 .valuta-wrap {
   max-width: 500px;
