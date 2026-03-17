@@ -30,6 +30,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="it">
       {/* Google Fonts loaded via CDN — fonts self-hosted in production */}
       <head>
+        {/* iOS PWA standalone — belt-and-suspenders alongside Next.js appleWebApp metadata */}
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="mobile-web-app-capable" content="yes" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link

@@ -392,7 +392,7 @@ export function ProfileView() {
     return (
       <>
         <div className="min-h-screen bg-slate-950 text-white pb-24">
-          <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-14 pb-4 backdrop-blur-xl">
+          <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-4 backdrop-blur-xl">
             <div className="flex items-center gap-2">
               <User className="text-blue-400" size={22} />
               <h1 className="text-xl font-black">Profilo</h1>
@@ -408,7 +408,7 @@ export function ProfileView() {
   return (
     <div className="min-h-screen bg-slate-950 text-white pb-24">
       {/* Header */}
-      <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-14 pb-4 backdrop-blur-xl flex items-center justify-between">
+      <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-4 backdrop-blur-xl flex items-center justify-between">
         <div className="flex items-center gap-2">
           <User className="text-blue-400" size={22} />
           <h1 className="text-xl font-black">Profilo</h1>
