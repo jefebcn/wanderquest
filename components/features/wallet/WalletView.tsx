@@ -57,16 +57,23 @@ function PrizeCard({ wallet }: { wallet: UserWallet }) {
       initial={{ opacity: 0, y: 20, scale: 0.97 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      // Neumorphic-gradient hybrid: deep directional gradient + raised shadow + inner highlight
+      style={{
+        background: "linear-gradient(140deg, #1b2d4f 0%, #111827 45%, #1a1200 100%)",
+        boxShadow:
+          "8px 8px 24px rgba(0,0,0,0.6), " +
+          "-4px -4px 14px rgba(255,255,255,0.04), " +
+          "inset 0 1px 0 rgba(255,255,255,0.12), " +
+          "inset 0 -1px 0 rgba(0,0,0,0.3)",
+      }}
       className={cn(
         "relative overflow-hidden rounded-3xl p-6",
-        "bg-gradient-to-br from-blue-600/40 via-indigo-700/30 to-[#FFD700]/20",
-        "border border-white/12",
-        "shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+        "border border-white/10"
       )}
     >
-      {/* Background glow */}
-      <div className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full bg-[#FFD700]/10 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-6 -left-6 h-32 w-32 rounded-full bg-blue-500/15 blur-2xl" />
+      {/* Glowing orbs */}
+      <div className="pointer-events-none absolute -top-8 -right-8 h-36 w-36 rounded-full bg-[#FFD700]/12 blur-3xl animate-breathe" />
+      <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-blue-600/18 blur-2xl" />
 
       {/* Card header */}
       <div className="flex items-start justify-between mb-4">
@@ -253,15 +260,16 @@ export function WalletView() {
             <div className="flex-1">
               <p className="text-sm font-bold">Collega account pagamenti</p>
               <p className="text-xs text-white/40 mt-0.5">Necessario per ricevere i premi sul tuo conto bancario.</p>
-              <button
+              <motion.button
+                whileTap={{ scale: 0.95 }}
                 onClick={handleStripeSetup}
                 disabled={busy}
-                className="mt-3 flex items-center gap-1.5 rounded-xl bg-blue-500 px-4 py-2 text-xs font-black text-white hover:bg-blue-400 active:scale-95 transition-all disabled:opacity-50"
+                className="mt-3 flex items-center gap-1.5 rounded-xl bg-blue-500 px-4 py-2 text-xs font-black text-white hover:bg-blue-400 transition-colors disabled:opacity-50"
               >
                 <CreditCard size={13} />
                 Configura Stripe
                 <ChevronRight size={12} />
-              </button>
+              </motion.button>
             </div>
           </div>
         )}
@@ -273,18 +281,19 @@ export function WalletView() {
           {/* Method selector */}
           <div className="flex gap-2">
             {(["stripe", "paypal"] as const).map((m) => (
-              <button
+              <motion.button
                 key={m}
+                whileTap={{ scale: 0.95 }}
                 onClick={() => setMethod(m)}
                 className={cn(
-                  "flex-1 rounded-xl py-2.5 text-xs font-bold transition-all active:scale-95",
+                  "flex-1 rounded-xl py-2.5 text-xs font-bold transition-colors",
                   method === m
                     ? "bg-blue-500/20 border border-blue-500/40 text-blue-300"
                     : "bg-white/6 border border-transparent text-white/40 hover:text-white/60"
                 )}
               >
                 {m === "stripe" ? "💳 Stripe" : "🅿️ PayPal"}
-              </button>
+              </motion.button>
             ))}
           </div>
 
@@ -314,13 +323,14 @@ export function WalletView() {
           )}
 
           {/* Withdraw button */}
-          <button
+          <motion.button
+            whileTap={canWithdraw && !busy ? { scale: 0.95 } : {}}
             onClick={handleWithdraw}
             disabled={busy || !amount || !canWithdraw}
             className={cn(
               "relative w-full overflow-hidden rounded-xl py-3.5 text-sm font-black",
               "flex items-center justify-center gap-2",
-              "transition-all duration-200 active:scale-95",
+              "transition-colors duration-200",
               canWithdraw && !busy
                 ? "bg-blue-500 text-white hover:bg-blue-400 shadow-[0_4px_16px_rgba(59,130,246,0.35)]"
                 : "bg-white/8 text-white/30 cursor-not-allowed"
@@ -329,7 +339,7 @@ export function WalletView() {
             {!canWithdraw && <Lock size={14} />}
             <ArrowDownToLine size={15} />
             {busy ? "Elaborazione…" : canWithdraw ? "Preleva ora" : "Saldo insufficiente"}
-          </button>
+          </motion.button>
 
           <p className="text-[11px] text-white/25 text-center">
             Prelievo minimo €5 · Elaborato in 1–3 giorni lavorativi

@@ -23,9 +23,25 @@ function PodiumPlace({
   isMe: boolean;
 }) {
   const cfg = {
-    1: { blockH: "h-20", avatarCls: "h-16 w-16 ring-[#FFD700] shadow-[0_0_20px_rgba(255,215,0,0.45)]", order: "order-2", textColor: "text-[#FFD700]", blockGrad: "from-[#FFD700]/25 to-transparent border-[#FFD700]/35" },
-    2: { blockH: "h-14", avatarCls: "h-12 w-12 ring-slate-400",                                         order: "order-1", textColor: "text-slate-300",  blockGrad: "from-slate-400/15 to-transparent border-slate-400/25" },
-    3: { blockH: "h-10", avatarCls: "h-12 w-12 ring-amber-700",                                         order: "order-3", textColor: "text-amber-600",  blockGrad: "from-amber-700/15 to-transparent border-amber-700/25" },
+    1: {
+      blockH: "h-20", order: "order-2", textColor: "text-[#FFD700]",
+      blockGrad: "from-[#FFD700]/25 to-transparent border-[#FFD700]/35",
+      avatarSize: "h-16 w-16",
+      // Outer glow ring via boxShadow — can't do dynamic colours in Tailwind JIT
+      avatarGlow: "0 0 0 3px #FFD700, 0 0 20px rgba(255,215,0,0.7), 0 0 48px rgba(255,215,0,0.3)",
+    },
+    2: {
+      blockH: "h-14", order: "order-1", textColor: "text-slate-300",
+      blockGrad: "from-slate-400/15 to-transparent border-slate-400/25",
+      avatarSize: "h-12 w-12",
+      avatarGlow: "0 0 0 3px #9ca3af, 0 0 14px rgba(156,163,175,0.65), 0 0 32px rgba(156,163,175,0.25)",
+    },
+    3: {
+      blockH: "h-10", order: "order-3", textColor: "text-amber-600",
+      blockGrad: "from-amber-700/15 to-transparent border-amber-700/25",
+      avatarSize: "h-12 w-12",
+      avatarGlow: "0 0 0 3px #b45309, 0 0 14px rgba(180,83,9,0.6), 0 0 30px rgba(180,83,9,0.25)",
+    },
   }[rank];
 
   return (
@@ -40,8 +56,13 @@ function PodiumPlace({
       )}
       {rank !== 1 && <div className="h-5" />}
 
-      {/* Avatar */}
-      <div className={cn("relative rounded-full overflow-hidden ring-2 flex items-center justify-center bg-slate-800", cfg.avatarCls)}>
+      {/* Avatar with rank-colored glowing ring */}
+      <motion.div
+        animate={rank === 1 ? { scale: [1, 1.04, 1] } : {}}
+        transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+        className={cn("relative rounded-full overflow-hidden flex items-center justify-center bg-slate-800", cfg.avatarSize)}
+        style={{ boxShadow: cfg.avatarGlow }}
+      >
         {entry.photoURL ? (
           <Image src={entry.photoURL} alt={entry.displayName} fill className="object-cover" sizes="64px" />
         ) : (
@@ -49,7 +70,7 @@ function PodiumPlace({
             {entry.displayName.slice(0, 2).toUpperCase()}
           </span>
         )}
-      </div>
+      </motion.div>
 
       <p className={cn("text-xs font-black text-center truncate max-w-[72px]", isMe ? "text-[#FFD700]" : "text-white")}>
         {entry.displayName}

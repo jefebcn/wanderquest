@@ -22,11 +22,12 @@ export function BottomNav() {
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || (href !== "/" && pathname.startsWith(href));
           return (
-            <button
+            <motion.button
               key={href}
+              whileTap={{ scale: 0.9 }}
               onClick={() => router.push(href)}
               aria-current={active ? "page" : undefined}
-              className="relative flex flex-1 flex-col items-center justify-center gap-0.5 active:scale-95 transition-transform duration-100"
+              className="relative flex flex-1 flex-col items-center justify-center gap-0.5"
             >
               {/* Sliding top border indicator */}
               {active && (
@@ -58,7 +59,7 @@ export function BottomNav() {
               >
                 {label}
               </span>
-            </button>
+            </motion.button>
           );
         })}
       </div>
