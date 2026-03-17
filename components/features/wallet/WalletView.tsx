@@ -6,22 +6,25 @@ import { getFirebaseClient } from "@/lib/firebase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { AuthModal } from "@/components/features/auth/AuthModal";
-import { getWallet, requestWithdrawal, initiateStripeOnboarding } from "@/actions/wallet";
-import { WalletSkeleton } from "@/components/ui/Skeleton";
-import { formatCents } from "@/lib/utils";
-import type { UserWallet } from "@/types";
+import { getWallet, requestWithdrawal } from "@/actions/wallet";
+import { WalletSkeleton }   from "@/components/ui/Skeleton";
+import { formatCents }      from "@/lib/utils";
+import { GoPro }            from "@/components/features/subscription/GoPro";
+import { LocalDeals }       from "@/components/features/deals/LocalDeals";
+import { useSubscription }  from "@/hooks/useSubscription";
+import type { UserWallet }  from "@/types";
 import {
   Wallet,
   ArrowDownToLine,
-  CreditCard,
   AlertCircle,
   TrendingUp,
   Clock,
   CheckCircle2,
-  ChevronRight,
   Lock,
   Sparkles,
   Star,
+  Tag,
+  CreditCard,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -224,9 +227,12 @@ function LockedWallet({ prizePool, onSignIn }: { prizePool?: number; onSignIn: (
 
 // ── Main View ─────────────────────────────────────────────────────────────
 
+type WalletTab = "wallet" | "deals";
+
 export function WalletView() {
   const { user, loading: authLoading } = useAuth();
-  const { contest } = useContest();
+  const { contest }    = useContest();
+  const { isPro }      = useSubscription();
   const [authOpen, setAuthOpen]       = useState(false);
   const [wallet, setWallet]           = useState<UserWallet | null>(null);
   const [loading, setLoading]         = useState(true);
@@ -234,6 +240,7 @@ export function WalletView() {
   const [method, setMethod]           = useState<"stripe" | "paypal">("stripe");
   const [message, setMessage]         = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy]               = useState(false);
+  const [tab, setTab]                 = useState<WalletTab>("wallet");
 
   const transactions = useMockTransactions(wallet);
 
@@ -264,16 +271,6 @@ export function WalletView() {
       const res = await requestWithdrawal(tok, cents, method);
       setMessage({ ok: res.success, text: res.message });
       if (res.success) { setAmount(""); loadWallet(); }
-    } finally { setBusy(false); }
-  };
-
-  const handleStripeSetup = async () => {
-    setBusy(true);
-    try {
-      const { auth } = getFirebaseClient();
-      const tok = await auth.currentUser!.getIdToken();
-      const { url } = await initiateStripeOnboarding(tok, window.location.origin);
-      window.location.href = url;
     } finally { setBusy(false); }
   };
 
@@ -309,38 +306,53 @@ export function WalletView() {
   return (
     <div className="min-h-screen bg-slate-950 pb-24 text-white">
       {/* Header */}
-      <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-4 backdrop-blur-xl">
-        <div className="flex items-center gap-2">
+      <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-0 backdrop-blur-xl">
+        <div className="flex items-center gap-2 pb-3">
           <Wallet className="text-[#FFD700]" size={22} />
           <h1 className="text-xl font-black">Portafoglio</h1>
+        </div>
+        {/* Tab bar */}
+        <div className="flex">
+          {([
+            { id: "wallet" as WalletTab, label: "Saldo & Prelievo", icon: Wallet },
+            { id: "deals"  as WalletTab, label: "Local Deals",       icon: Tag   },
+          ] as const).map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setTab(id)}
+              className={cn(
+                "relative flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-black transition-colors",
+                tab === id ? "text-[#FFD700]" : "text-white/30"
+              )}
+            >
+              <Icon size={13} />
+              {label}
+              {tab === id && (
+                <motion.div
+                  layoutId="wallet-tab-ind"
+                  className="absolute bottom-0 inset-x-3 h-0.5 rounded-full bg-[#FFD700]"
+                  transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                />
+              )}
+            </button>
+          ))}
         </div>
       </div>
 
       <div className="px-4 pt-5 space-y-5">
 
+        {tab === "deals" ? (
+          <>
+            <GoPro variant="compact" />
+            <LocalDeals />
+          </>
+        ) : (
+        <>
         {/* Prize card */}
         <PrizeCard wallet={wallet} />
 
-        {/* Stripe connect CTA */}
-        {!wallet.stripeAccountId && (
-          <div className="rounded-2xl bg-blue-500/8 border border-blue-500/20 p-4 flex items-start gap-3">
-            <AlertCircle className="text-blue-400 flex-shrink-0 mt-0.5" size={18} />
-            <div className="flex-1">
-              <p className="text-sm font-bold">Collega account pagamenti</p>
-              <p className="text-xs text-white/40 mt-0.5">Necessario per ricevere i premi sul tuo conto bancario.</p>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
-                onClick={handleStripeSetup}
-                disabled={busy}
-                className="mt-3 flex items-center gap-1.5 rounded-xl bg-blue-500 px-4 py-2 text-xs font-black text-white hover:bg-blue-400 transition-colors disabled:opacity-50"
-              >
-                <CreditCard size={13} />
-                Configura Stripe
-                <ChevronRight size={12} />
-              </motion.button>
-            </div>
-          </div>
-        )}
+        {/* Go Pro upsell for free users */}
+        {!isPro && <GoPro variant="compact" />}
 
         {/* Withdrawal form */}
         <div className="rounded-2xl bg-white/4 border border-white/8 p-4 space-y-3">
@@ -424,6 +436,8 @@ export function WalletView() {
               ))}
             </div>
           </div>
+        )}
+        </>
         )}
 
       </div>

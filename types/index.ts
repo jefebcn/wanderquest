@@ -27,6 +27,14 @@ export interface UserProfile {
   displayName: string;
   photoURL?: string;
   plan: "free" | "pro";
+  /** Subscription tier — drives multiplier & gating */
+  tier: "free" | "pro";
+  /** 1.0 for free, 1.25 for pro */
+  pointsMultiplier: number;
+  isPremium: boolean;
+  premiumSince?: string;
+  premiumExpiresAt?: string;
+  paypalSubscriptionId?: string;
   totalPoints: number;
   totalVisits: number;
   /** Consecutive scan-days streak */
@@ -135,3 +143,36 @@ export interface ContestPhoto {
 }
 
 export type VoteType = "like" | "superlike" | "skip";
+
+// ── B2B Partner Hub ────────────────────────────────────────────────────────
+
+export interface Coupon {
+  id: string;
+  partnerId: string;
+  title: string;
+  description: string;
+  discountText: string;
+  code?: string;
+  qrUrl?: string;
+  isProOnly: boolean;
+  expiresAt?: string;
+  usageCount: number;
+}
+
+export interface Partner {
+  id: string;
+  name: string;
+  category: "restaurant" | "bar" | "museum" | "hotel" | "shop" | "other";
+  emoji: string;
+  logoUrl?: string;
+  description: string;
+  city: string;
+  coupons: Coupon[];
+}
+
+// ── Subscription ───────────────────────────────────────────────────────────
+
+export interface SubscriptionActivation {
+  success: boolean;
+  message: string;
+}
