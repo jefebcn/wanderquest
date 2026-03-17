@@ -8,10 +8,111 @@ import { useAuth }        from "@/hooks/useAuth";
 import { AuthModal }      from "@/components/features/auth/AuthModal";
 import { LeaderboardSkeleton } from "@/components/ui/Skeleton";
 import { formatCents }    from "@/lib/utils";
-import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles } from "lucide-react";
+import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import type { LeaderboardEntry } from "@/types";
+
+// ── Mock photo leaderboard ────────────────────────────────────────────────
+
+const AVATAR_GRADIENTS = [
+  "from-purple-500 to-pink-500",
+  "from-blue-500 to-cyan-500",
+  "from-amber-500 to-orange-500",
+  "from-green-500 to-emerald-500",
+  "from-red-500 to-rose-500",
+  "from-indigo-500 to-blue-500",
+];
+
+interface PhotoRankEntry {
+  rank: number;
+  userId: string;
+  displayName: string;
+  initials: string;
+  avatarGradient: string;
+  votePoints: number;
+  photoCount: number;
+  topPhoto?: string;
+  city?: string;
+}
+
+const MOCK_PHOTO_RANKINGS: PhotoRankEntry[] = [
+  { rank: 1, userId: "u5", displayName: "Elena López",   initials: "EL", avatarGradient: AVATAR_GRADIENTS[4], votePoints: 611, photoCount: 3, topPhoto: "https://images.unsplash.com/photo-1543349689-9a4d426bee8e?w=120&q=70", city: "Parigi" },
+  { rank: 2, userId: "u3", displayName: "Lucia García",  initials: "LG", avatarGradient: AVATAR_GRADIENTS[2], votePoints: 546, photoCount: 2, topPhoto: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=120&q=70", city: "Barcellona" },
+  { rank: 3, userId: "u1", displayName: "Sofia Rossi",   initials: "SR", avatarGradient: AVATAR_GRADIENTS[0], votePoints: 369, photoCount: 4, topPhoto: "https://images.unsplash.com/photo-1583779457094-efcd1a8ca25a?w=120&q=70", city: "Barcellona" },
+  { rank: 4, userId: "u2", displayName: "Marco Bianchi", initials: "MB", avatarGradient: AVATAR_GRADIENTS[1], votePoints: 282, photoCount: 2, topPhoto: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=120&q=70", city: "Barcellona" },
+  { rank: 5, userId: "u4", displayName: "Luca Ferrari",  initials: "LF", avatarGradient: AVATAR_GRADIENTS[3], votePoints: 214, photoCount: 1, topPhoto: "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=120&q=70", city: "Roma" },
+  { rank: 6, userId: "u6", displayName: "Filippo Conte", initials: "FC", avatarGradient: AVATAR_GRADIENTS[5], votePoints: 140, photoCount: 2, topPhoto: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=120&q=70", city: "Roma" },
+];
+
+// ── Photo Leaderboard Row ─────────────────────────────────────────────────
+
+function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boolean; index: number }) {
+  const isTop3 = entry.rank <= 3;
+  const medalColors: Record<number, string> = { 1: "text-[#FFD700]", 2: "text-slate-300", 3: "text-amber-600" };
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -14 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.04 + index * 0.04 }}
+      className={cn(
+        "flex items-center gap-3 rounded-2xl p-3",
+        isMe  ? "bg-[#FFD700]/8 border border-[#FFD700]/22" :
+        isTop3 ? "bg-[#FFD700]/4 border border-[#FFD700]/10" :
+                 "bg-white/4 border border-transparent"
+      )}
+    >
+      {/* Rank */}
+      <span className={cn(
+        "flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full text-xs font-black",
+        isTop3 ? (medalColors[entry.rank] ?? "text-white/45") : "bg-white/8 text-white/45"
+      )}>
+        {entry.rank <= 3 ? ["🥇","🥈","🥉"][entry.rank - 1] : entry.rank}
+      </span>
+
+      {/* Avatar */}
+      <div
+        className={cn(
+          "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-black text-white",
+          `bg-gradient-to-br ${entry.avatarGradient}`,
+        )}
+      >
+        {entry.initials}
+      </div>
+
+      {/* Info */}
+      <div className="flex-1 min-w-0">
+        <p className={cn("text-sm font-bold truncate", isMe && "text-[#FFD700]")}>
+          {entry.displayName}
+          {isMe && <span className="ml-1.5 text-[10px] font-normal opacity-60">(tu)</span>}
+        </p>
+        <div className="flex items-center gap-2 text-[10px] text-white/35">
+          {entry.city && <span className="flex items-center gap-0.5"><MapPin size={8}/>{entry.city}</span>}
+          <span>{entry.photoCount} foto</span>
+        </div>
+      </div>
+
+      {/* Top photo thumbnail */}
+      {entry.topPhoto && (
+        <div className="relative h-10 w-10 flex-shrink-0 rounded-xl overflow-hidden">
+          <Image src={entry.topPhoto} alt="top" fill className="object-cover" sizes="40px" />
+        </div>
+      )}
+
+      {/* Vote points */}
+      <div className="text-right flex-shrink-0">
+        <p className="text-sm font-black tabular-nums">{entry.votePoints.toLocaleString("it-IT")}</p>
+        {isTop3 ? (
+          <p className="text-[9px] font-black text-[#FFD700]/70 flex items-center gap-0.5">
+            <Heart size={8} fill="currentColor"/>voti
+          </p>
+        ) : (
+          <p className="text-[10px] text-white/30">voti</p>
+        )}
+      </div>
+    </motion.div>
+  );
+}
 
 // ── Podium place ──────────────────────────────────────────────────────────
 
@@ -177,6 +278,8 @@ function LockedLeaderboard({ onSignIn }: { onSignIn: () => void }) {
   );
 }
 
+type LbTab = "points" | "photos";
+
 // ── Main ──────────────────────────────────────────────────────────────────
 
 export function LeaderboardView() {
@@ -184,6 +287,7 @@ export function LeaderboardView() {
   const { entries, loading: listLoading } = useLeaderboard(contest?.id ?? null);
   const { user } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
+  const [lbTab, setLbTab] = useState<LbTab>("photos");
 
   const isLoading = contestLoading || listLoading;
   const top3      = entries.slice(0, 3) as LeaderboardEntry[];
@@ -221,7 +325,7 @@ export function LeaderboardView() {
         </div>
 
         {contest && (
-          <div className="rounded-2xl bg-gradient-to-r from-[#FFD700]/18 to-[#FFD700]/5 border border-[#FFD700]/22 p-3.5">
+          <div className="rounded-2xl bg-gradient-to-r from-[#FFD700]/18 to-[#FFD700]/5 border border-[#FFD700]/22 p-3.5 mb-3">
             <p className="text-[10px] font-bold uppercase tracking-widest text-[#FFD700]/65 mb-0.5">Contest Attivo</p>
             <p className="font-black text-base text-white">{contest.title}</p>
             <div className="flex items-center justify-between mt-2">
@@ -236,55 +340,112 @@ export function LeaderboardView() {
             </div>
           </div>
         )}
+
+        {/* Tab bar */}
+        <div className="flex gap-0">
+          {([
+            { id: "photos" as LbTab, label: "Voti Foto",  icon: Heart },
+            { id: "points" as LbTab, label: "Punti GPS",  icon: Trophy },
+          ] as const).map(({ id, label, icon: Icon }) => (
+            <button
+              key={id}
+              onClick={() => setLbTab(id)}
+              className={cn(
+                "relative flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-black transition-colors",
+                lbTab === id ? "text-[#FFD700]" : "text-white/30",
+              )}
+            >
+              <Icon size={14} />
+              {label}
+              {lbTab === id && (
+                <motion.div
+                  layoutId="lb-tab-indicator"
+                  className="absolute bottom-0 inset-x-3 h-0.5 rounded-full bg-[#FFD700]"
+                  transition={{ type: "spring", stiffness: 500, damping: 40 }}
+                />
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
-      {isLoading ? (
-        <LeaderboardSkeleton />
-      ) : entries.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-20 text-white/30">
-          <Trophy size={48} className="mb-3 opacity-30" />
-          <p className="text-sm">Nessun partecipante ancora.</p>
-          <p className="text-xs mt-1">Esplora i monumenti per entrare in classifica!</p>
-        </div>
+      {lbTab === "photos" ? (
+        /* ── Photo Votes Leaderboard ──────────────────────────────── */
+        <motion.div
+          key="photos-lb"
+          initial={{ opacity: 0, x: -16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2 }}
+          className="px-4 pt-4 space-y-2"
+        >
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3 flex items-center gap-1.5">
+            <Heart size={11} className="text-rose-400" fill="currentColor" />
+            Classifica voti foto · {contest?.title ?? "Contest attivo"}
+          </p>
+          {MOCK_PHOTO_RANKINGS.map((entry, idx) => (
+            <PhotoRankRow
+              key={entry.userId}
+              entry={entry}
+              isMe={entry.userId === user?.uid}
+              index={idx}
+            />
+          ))}
+          <p className="text-[10px] text-white/20 text-center pt-2 pb-4">
+            1 Like = 1 punto · 1 Super Like = 3 punti · I voti ricevuti determinano il premio
+          </p>
+        </motion.div>
       ) : (
-        <>
-          {/* Podium */}
-          {top3.length > 0 && (
-            <div className="px-4 pt-6 pb-2">
-              <div className="flex items-end justify-center gap-2">
-                {podium.map((entry) => (
-                  <PodiumPlace
+        /* ── GPS Points Leaderboard ───────────────────────────────── */
+        <motion.div
+          key="points-lb"
+          initial={{ opacity: 0, x: 16 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.2 }}
+        >
+          {isLoading ? (
+            <LeaderboardSkeleton />
+          ) : entries.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-20 text-white/30">
+              <Trophy size={48} className="mb-3 opacity-30" />
+              <p className="text-sm">Nessun partecipante ancora.</p>
+              <p className="text-xs mt-1">Esplora i monumenti per entrare in classifica!</p>
+            </div>
+          ) : (
+            <>
+              {top3.length > 0 && (
+                <div className="px-4 pt-6 pb-2">
+                  <div className="flex items-end justify-center gap-2">
+                    {podium.map((entry) => (
+                      <PodiumPlace
+                        key={entry.userId}
+                        entry={entry}
+                        rank={entry.rank as 1 | 2 | 3}
+                        isMe={entry.userId === user?.uid}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+              {rest.length > 0 && (
+                <div className="flex items-center gap-3 px-4 py-3">
+                  <div className="flex-1 h-px bg-white/8" />
+                  <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">Tutti i partecipanti</span>
+                  <div className="flex-1 h-px bg-white/8" />
+                </div>
+              )}
+              <div className="px-4 space-y-2">
+                {rest.map((entry, idx) => (
+                  <LeaderboardRow
                     key={entry.userId}
                     entry={entry}
-                    rank={entry.rank as 1 | 2 | 3}
                     isMe={entry.userId === user?.uid}
+                    index={idx}
                   />
                 ))}
               </div>
-            </div>
+            </>
           )}
-
-          {/* Divider */}
-          {rest.length > 0 && (
-            <div className="flex items-center gap-3 px-4 py-3">
-              <div className="flex-1 h-px bg-white/8" />
-              <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">Tutti i partecipanti</span>
-              <div className="flex-1 h-px bg-white/8" />
-            </div>
-          )}
-
-          {/* Rest */}
-          <div className="px-4 space-y-2">
-            {rest.map((entry, idx) => (
-              <LeaderboardRow
-                key={entry.userId}
-                entry={entry}
-                isMe={entry.userId === user?.uid}
-                index={idx}
-              />
-            ))}
-          </div>
-        </>
+        </motion.div>
       )}
 
       {/* Fixed "Your Rank" bar */}

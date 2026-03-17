@@ -9,7 +9,7 @@ import Image from "next/image";
 
 const tabs = [
   { href: "/",            label: "Home",       icon: Home     },
-  { href: "/scan",        label: "Scansiona",  icon: ScanLine },
+  { href: "/scan",        label: "Contest",    icon: ScanLine },
   { href: "/leaderboard", label: "Classifica", icon: Trophy   },
   { href: "/profile",     label: "Profilo",    icon: Wallet   },
 ] as const;
