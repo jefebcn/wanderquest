@@ -12,37 +12,22 @@ function getAdminApp(): App {
     return adminApp;
   }
 
-  // Prefer a single base64-encoded service account JSON (set in Vercel as
-  // FIREBASE_SERVICE_ACCOUNT_KEY).  Fall back to individual fields.
-  let serviceAccount: object;
-
-  if (process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
-    try {
-      serviceAccount = JSON.parse(
-        Buffer.from(process.env.FIREBASE_SERVICE_ACCOUNT_KEY, "base64").toString("utf8")
-      );
-    } catch {
-      throw new Error(
-        "FIREBASE_SERVICE_ACCOUNT_KEY is set but could not be decoded / parsed as JSON. " +
-        "Encode the service-account file with: openssl base64 -in key.json | tr -d '\\n'"
-      );
-    }
-  } else if (process.env.FIREBASE_PROJECT_ID) {
-    serviceAccount = {
-      projectId:   process.env.FIREBASE_PROJECT_ID,
-      clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-      privateKey:  (process.env.FIREBASE_PRIVATE_KEY ?? "").replace(/\\n/g, "\n"),
-    };
-  } else {
+  if (!process.env.FIREBASE_SERVICE_ACCOUNT_KEY) {
     throw new Error(
-      "Firebase Admin credentials not found. " +
-      "Set FIREBASE_SERVICE_ACCOUNT_KEY (base64 JSON) or " +
-      "FIREBASE_PROJECT_ID + FIREBASE_CLIENT_EMAIL + FIREBASE_PRIVATE_KEY."
+      "Missing FIREBASE_SERVICE_ACCOUNT_KEY. " +
+      "Paste the raw service-account JSON into that Vercel environment variable."
     );
   }
 
+  // Vercel stores multi-line env vars as plain strings — parse directly.
+  // Fix escaped newlines in private_key that Vercel may introduce.
+  const serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT_KEY as string);
+  if (serviceAccount.private_key) {
+    serviceAccount.private_key = serviceAccount.private_key.replace(/\\n/g, "\n");
+  }
+
   adminApp = initializeApp({
-    credential:    cert(serviceAccount as Parameters<typeof cert>[0]),
+    credential:    cert(serviceAccount),
     storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
     databaseURL:   process.env.NEXT_PUBLIC_FIREBASE_DATABASE_URL,
   });
