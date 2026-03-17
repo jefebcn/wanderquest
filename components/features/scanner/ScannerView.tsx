@@ -1,0 +1,209 @@
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
+import { useUserLocation } from "@/hooks/useUserLocation";
+import { useScanner }      from "@/hooks/useScanner";
+import { useContest }      from "@/hooks/useContest";
+import { getNearbyLandmarks } from "@/actions/landmarks";
+import { formatDistance }  from "@/lib/utils";
+import { VoiceSynthesizer } from "@/components/features/voice/VoiceSynthesizer";
+import { LandmarkCardSkeleton } from "@/components/ui/Skeleton";
+import type { Landmark }   from "@/types";
+import { ScanLine, MapPin, Star, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import Image from "next/image";
+import { cn } from "@/lib/utils";
+
+export function ScannerView() {
+  const { contest } = useContest();
+  const { position, isLoading: locLoading, hasError: locError, errorMsg, start } = useUserLocation();
+  const { state: scanState, result, checkIn, reset } = useScanner(contest?.id);
+
+  const [nearby, setNearby]       = useState<(Landmark & { distanceMetres: number })[]>([]);
+  const [selected, setSelected]   = useState<Landmark | null>(null);
+  const [fetching, setFetching]   = useState(false);
+
+  // Fetch nearby landmarks whenever position changes
+  const fetchNearby = useCallback(async () => {
+    if (!position) return;
+    setFetching(true);
+    try {
+      const { landmarks } = await getNearbyLandmarks(position.lat, position.lng, 5000);
+      setNearby(landmarks);
+    } finally {
+      setFetching(false);
+    }
+  }, [position]);
+
+  useEffect(() => { fetchNearby(); }, [fetchNearby]);
+
+  const handleCheckIn = async (landmark: Landmark) => {
+    if (!position) return;
+    setSelected(landmark);
+    await checkIn(landmark, position.lat, position.lng);
+  };
+
+  // ── Permission error ──────────────────────────────────────────────────────
+  if (locError) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#080C1A] px-6 text-center text-white">
+        <AlertCircle size={48} className="text-red-400" />
+        <h2 className="text-xl font-black">GPS non disponibile</h2>
+        <p className="text-sm text-white/50">{errorMsg}</p>
+        <button
+          onClick={start}
+          className="rounded-2xl bg-amber-400 px-6 py-3 font-bold text-[#080C1A]"
+        >
+          Riprova
+        </button>
+      </div>
+    );
+  }
+
+  // ── Locating ─────────────────────────────────────────────────────────────
+  if (locLoading || !position) {
+    return (
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#080C1A] text-white">
+        <Loader2 size={40} className="animate-spin text-amber-400" />
+        <p className="text-sm font-bold text-white/60">Rilevamento posizione…</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#080C1A] pb-24 text-white">
+      {/* Header */}
+      <div className="sticky top-0 z-10 border-b border-white/8 bg-[#080C1A]/95 px-4 pt-14 pb-4 backdrop-blur-md">
+        <div className="flex items-center gap-2">
+          <ScanLine className="text-amber-400" size={22} />
+          <h1 className="text-xl font-black">Scansiona</h1>
+        </div>
+        <div className="flex items-center gap-1.5 mt-1 text-xs text-white/40">
+          <MapPin size={12} />
+          <span>{position.lat.toFixed(5)}, {position.lng.toFixed(5)}</span>
+        </div>
+      </div>
+
+      {/* Check-in result overlay */}
+      {result && (
+        <div
+          className={cn(
+            "mx-4 mt-4 rounded-2xl p-4 flex items-start gap-3",
+            result.success
+              ? "bg-green-500/15 border border-green-500/30"
+              : "bg-red-500/10 border border-red-500/20"
+          )}
+        >
+          {result.success ? (
+            <CheckCircle className="text-green-400 mt-0.5" size={20} />
+          ) : (
+            <AlertCircle className="text-red-400 mt-0.5" size={20} />
+          )}
+          <div className="flex-1">
+            <p className="font-bold text-sm">{result.message}</p>
+            <p className="text-xs text-white/40 mt-0.5">
+              Distanza: {formatDistance(result.distanceMetres)}
+            </p>
+          </div>
+          <button onClick={reset} className="text-white/30 hover:text-white/60 text-xs">✕</button>
+        </div>
+      )}
+
+      {/* Landmark list */}
+      <div className="px-4 pt-4 space-y-3">
+        <h2 className="text-xs font-bold uppercase tracking-widest text-white/40">
+          Monumenti Vicini ({nearby.length})
+        </h2>
+
+        {fetching && !nearby.length ? (
+          Array.from({ length: 3 }).map((_, i) => <LandmarkCardSkeleton key={i} />)
+        ) : nearby.length === 0 ? (
+          <div className="flex flex-col items-center py-16 text-center text-white/30">
+            <MapPin size={40} className="mb-3 opacity-40" />
+            <p className="text-sm">Nessun monumento nei pressi.</p>
+            <p className="text-xs mt-1">Esplora la tua città!</p>
+          </div>
+        ) : (
+          nearby.map((lm) => (
+            <LandmarkCard
+              key={lm.id}
+              landmark={lm}
+              distanceMetres={lm.distanceMetres}
+              scanning={scanState === "checking" && selected?.id === lm.id}
+              onCheckIn={() => handleCheckIn(lm)}
+            />
+          ))
+        )}
+      </div>
+    </div>
+  );
+}
+
+function LandmarkCard({
+  landmark,
+  distanceMetres,
+  scanning,
+  onCheckIn,
+}: {
+  landmark: Landmark;
+  distanceMetres: number;
+  scanning: boolean;
+  onCheckIn: () => void;
+}) {
+  const withinRadius = distanceMetres <= landmark.radius;
+
+  return (
+    <div className="rounded-2xl bg-white/4 border border-white/8 overflow-hidden">
+      {landmark.imageUrl && (
+        <div className="relative h-36 w-full">
+          <Image src={landmark.imageUrl} alt={landmark.name} fill className="object-cover" sizes="(max-width: 768px) 100vw" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#080C1A]/80 to-transparent" />
+          <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
+            <span className="text-xs font-bold text-white/70">{landmark.city}</span>
+            <span className="rounded-full bg-amber-400/20 border border-amber-400/30 px-2 py-0.5 text-xs font-bold text-amber-400">
+              +{landmark.points} pt
+            </span>
+          </div>
+        </div>
+      )}
+
+      <div className="p-3">
+        <div className="flex items-start justify-between gap-2 mb-2">
+          <h3 className="font-black text-sm leading-tight">{landmark.name}</h3>
+          <div className="flex items-center gap-1 text-xs text-white/50 flex-shrink-0">
+            <MapPin size={11} />
+            <span>{formatDistance(distanceMetres)}</span>
+          </div>
+        </div>
+
+        <p className="text-xs text-white/50 line-clamp-2 mb-3">{landmark.description}</p>
+
+        <div className="flex gap-2">
+          {landmark.audioUrl && (
+            <VoiceSynthesizer text={landmark.description} audioUrl={landmark.audioUrl} />
+          )}
+
+          <button
+            onClick={onCheckIn}
+            disabled={!withinRadius || scanning}
+            className={cn(
+              "flex-1 rounded-xl py-2.5 text-xs font-black transition-all",
+              withinRadius && !scanning
+                ? "bg-amber-400 text-[#080C1A] hover:bg-amber-300"
+                : "bg-white/8 text-white/30 cursor-not-allowed"
+            )}
+          >
+            {scanning ? (
+              <span className="flex items-center justify-center gap-1.5">
+                <Loader2 size={12} className="animate-spin" /> Verifica…
+              </span>
+            ) : withinRadius ? (
+              "✓ Check-in"
+            ) : (
+              `Avvicinati (${formatDistance(distanceMetres - landmark.radius)})`
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
