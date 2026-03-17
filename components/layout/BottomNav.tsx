@@ -20,7 +20,10 @@ export function BottomNav() {
   const { user } = useAuth();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 pb-safe border-t border-white/8 bg-slate-950/92 backdrop-blur-xl">
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 pb-safe border-t border-white/12 bg-slate-950/75 backdrop-blur-2xl"
+      style={{ boxShadow: "0 -1px 0 rgba(255,255,255,0.06), 0 -12px 40px rgba(2,6,23,0.7)" }}
+    >
       <div className="flex h-16 items-stretch">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || (href !== "/" && pathname.startsWith(href));

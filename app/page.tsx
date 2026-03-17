@@ -24,11 +24,13 @@ import {
   AlertTriangle,
   Euro,
   Info,
+  Quote,
+  Download,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
-// ── Bento step cards config ───────────────────────────────────────────────
+// ── Bento step cards ────────────────────────────────────────────────────────
 
 const steps = [
   {
@@ -77,7 +79,76 @@ const steps = [
   },
 ] as const;
 
-// ── GPS rules config ─────────────────────────────────────────────────────
+// ── Featured cities ─────────────────────────────────────────────────────────
+
+const CITIES = [
+  {
+    name: "Barcellona",
+    country: "ES",
+    landmarks: 48,
+    active: true,
+    img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80",
+  },
+  {
+    name: "Roma",
+    country: "IT",
+    landmarks: 62,
+    active: false,
+    img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80",
+  },
+  {
+    name: "Parigi",
+    country: "FR",
+    landmarks: 55,
+    active: false,
+    img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80",
+  },
+  {
+    name: "Madrid",
+    country: "ES",
+    landmarks: 39,
+    active: false,
+    img: "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=400&q=80",
+  },
+  {
+    name: "Firenze",
+    country: "IT",
+    landmarks: 33,
+    active: false,
+    img: "https://images.unsplash.com/photo-1543414164-09db18f38c05?w=400&q=80",
+  },
+];
+
+// ── Testimonials ────────────────────────────────────────────────────────────
+
+const TESTIMONIALS = [
+  {
+    name: "Marco B.",
+    city: "Roma",
+    avatar: "MB",
+    color: "bg-blue-500/20 text-blue-300",
+    stars: 5,
+    text: "In 2 settimane ho guadagnato €47 esplorando la città. Incredibile fare turismo e guadagnare allo stesso tempo!",
+  },
+  {
+    name: "Sofia A.",
+    city: "Barcellona",
+    avatar: "SA",
+    color: "bg-purple-500/20 text-purple-300",
+    stars: 5,
+    text: "L'ho installata come PWA e si apre istantaneamente. Design bellissimo, funziona perfettamente offline.",
+  },
+  {
+    name: "Luca M.",
+    city: "Parigi",
+    avatar: "LM",
+    color: "bg-amber-500/20 text-amber-300",
+    stars: 5,
+    text: "Top 5 finisher per 3 mesi consecutivi. La community è fantastica e i pagamenti arrivano puntuali.",
+  },
+];
+
+// ── GPS rules ───────────────────────────────────────────────────────────────
 
 const GPS_RULES = [
   {
@@ -110,7 +181,7 @@ const GPS_RULES = [
   },
 ];
 
-// ── Payout schedule ──────────────────────────────────────────────────────
+// ── Payout schedule ─────────────────────────────────────────────────────────
 
 const PAYOUT_STEPS = [
   { label: "Fine mese", desc: "Il contest si chiude l'ultimo giorno del mese alle 23:59 (ora locale)." },
@@ -119,7 +190,7 @@ const PAYOUT_STEPS = [
   { label: "Pagamento", desc: "Il bonifico Stripe/PayPal viene eseguito entro 7 giorni lavorativi." },
 ];
 
-// ── Floating landmark pill ────────────────────────────────────────────────
+// ── Floating landmark pill ───────────────────────────────────────────────────
 
 function FloatingPill({ name, pts, delay, style }: {
   name: string; pts: number; delay: number; style: React.CSSProperties;
@@ -143,7 +214,7 @@ function FloatingPill({ name, pts, delay, style }: {
   );
 }
 
-// ── Animated prize counter ───────────────────────────────────────────────
+// ── Animated prize counter ───────────────────────────────────────────────────
 
 function AnimatedPrize({ targetCents }: { targetCents: number }) {
   const [displayed, setDisplayed] = useState(0);
@@ -154,7 +225,6 @@ function AnimatedPrize({ targetCents }: { targetCents: number }) {
     const tick = () => {
       const elapsed = Date.now() - start;
       const progress = Math.min(elapsed / duration, 1);
-      // Ease-out cubic
       const eased = 1 - Math.pow(1 - progress, 3);
       setDisplayed(Math.round(eased * targetCents));
       if (progress < 1) requestAnimationFrame(tick);
@@ -171,12 +241,27 @@ function AnimatedPrize({ targetCents }: { targetCents: number }) {
   );
 }
 
-// ── Main ──────────────────────────────────────────────────────────────────
+// ── Main ─────────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
   const { user, loading } = useAuth();
   const { contest }       = useContest();
   const [authOpen, setAuthOpen] = useState(false);
+  /* iOS Safari "Add to Home Screen" hint — shown once per session */
+  const [showInstallHint, setShowInstallHint] = useState(false);
+
+  useEffect(() => {
+    const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isStandalone = window.matchMedia("(display-mode: standalone)").matches
+      || (navigator as { standalone?: boolean }).standalone === true;
+    const dismissed = sessionStorage.getItem("wq_install_dismissed");
+    if (isIOS && !isStandalone && !dismissed) setShowInstallHint(true);
+  }, []);
+
+  const dismissInstall = () => {
+    sessionStorage.setItem("wq_install_dismissed", "1");
+    setShowInstallHint(false);
+  };
 
   if (loading) {
     return (
@@ -190,8 +275,36 @@ export default function HomePage() {
     <>
       <div className="min-h-screen bg-[#020617] text-white overflow-x-hidden pb-28">
 
-        {/* ── HERO — Barcelona ─────────────────────────────────────── */}
-        <section className="relative min-h-[90svh] flex flex-col justify-end overflow-hidden">
+        {/* ── iOS "Add to Home Screen" hint ──────────────────────── */}
+        {showInstallHint && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="fixed top-[env(safe-area-inset-top,0px)] left-0 right-0 z-50 mx-3 mt-2"
+          >
+            <div className="flex items-center gap-3 rounded-2xl border border-[#FFD700]/30 bg-slate-900/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[#FFD700]/15">
+                <Download size={16} className="text-[#FFD700]" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[12px] font-black text-white">Installa WanderQuest</p>
+                <p className="text-[10px] text-white/50 leading-tight mt-0.5">
+                  Tocca <span className="text-white/80">Condividi →</span> poi <span className="text-white/80">&ldquo;Aggiungi a Home&rdquo;</span> per l'esperienza completa.
+                </p>
+              </div>
+              <button
+                onClick={dismissInstall}
+                className="text-white/30 hover:text-white/60 text-lg leading-none flex-shrink-0 px-1"
+                aria-label="Chiudi"
+              >
+                ×
+              </button>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── HERO — Barcelona full-bleed ──────────────────────────── */}
+        <section className="relative min-h-[92svh] flex flex-col justify-end overflow-hidden">
           <div className="absolute inset-0">
             {/* Barcelona skyline — Sagrada Família at dusk */}
             <Image
@@ -203,19 +316,31 @@ export default function HomePage() {
               sizes="100vw"
             />
             {/* Multi-layer gradient for readability */}
-            <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/70 to-[#020617]/10" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#020617]/60 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#020617] via-[#020617]/65 to-[#020617]/5" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#020617]/55 via-transparent to-transparent" />
             {/* Subtle gold glow at horizon */}
-            <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-[#FFD700]/6 to-transparent" />
+            <div className="absolute bottom-0 left-0 right-0 h-56 bg-gradient-to-t from-[#FFD700]/7 to-transparent" />
           </div>
 
-          {/* Floating landmark pills */}
-          <FloatingPill name="Sagrada Família" pts={750} delay={0.9} style={{ left: "7%",  top: "20%" }} />
-          <FloatingPill name="Park Güell"      pts={500} delay={1.3} style={{ left: "50%", top: "14%" }} />
-          <FloatingPill name="Casa Batlló"     pts={620} delay={1.7} style={{ left: "14%", top: "40%" }} />
+          {/* Floating landmark pills — clear of status bar */}
+          <FloatingPill name="Sagrada Família" pts={750} delay={0.9} style={{ left: "7%",  top: "22%" }} />
+          <FloatingPill name="Park Güell"      pts={500} delay={1.3} style={{ left: "50%", top: "16%" }} />
+          <FloatingPill name="Casa Batlló"     pts={620} delay={1.7} style={{ left: "12%", top: "42%" }} />
 
           {/* Copy */}
           <div className="relative z-10 px-5 pb-10">
+            {/* Tagline chip */}
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.15 }}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/8 border border-white/15 px-3 py-1 mb-4 backdrop-blur-sm"
+            >
+              <span className="text-[10px] font-bold uppercase tracking-widest text-white/60">
+                Viaggia come un locale
+              </span>
+            </motion.div>
+
             {contest && (
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
@@ -234,7 +359,7 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2, duration: 0.55 }}
-              className="font-serif text-[2.8rem] leading-[1.05] font-black mb-4"
+              className="font-serif text-[2.9rem] leading-[1.04] font-black mb-4"
             >
               Unleash Your<br />
               <span style={{
@@ -264,7 +389,7 @@ export default function HomePage() {
               >
                 <Link
                   href="/scan"
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-[15px] font-black text-slate-900 shadow-[0_6px_32px_rgba(255,215,0,0.38)] hover:bg-yellow-300 transition-colors min-h-[52px]"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-[15px] font-black text-slate-900 shadow-[0_6px_32px_rgba(255,215,0,0.40)] hover:bg-yellow-300 transition-colors min-h-[52px]"
                 >
                   <Trophy size={18} />
                   Vai al Contest
@@ -279,7 +404,7 @@ export default function HomePage() {
                   transition={{ delay: 0.5, type: "spring", stiffness: 300, damping: 24 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={() => setAuthOpen(true)}
-                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-[15px] font-black text-slate-900 shadow-[0_6px_32px_rgba(255,215,0,0.38)] hover:bg-yellow-300 transition-colors min-h-[52px]"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-[15px] font-black text-slate-900 shadow-[0_6px_32px_rgba(255,215,0,0.40)] hover:bg-yellow-300 transition-colors min-h-[52px]"
                 >
                   <Compass size={18} />
                   Inizia l&apos;avventura
@@ -365,7 +490,7 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.85 }}
-            className="rounded-2xl bg-white/4 border border-white/8 p-5 grid grid-cols-3 divide-x divide-white/8"
+            className="rounded-2xl bg-white/[0.04] border border-white/10 p-5 grid grid-cols-3 divide-x divide-white/8 backdrop-blur-sm"
           >
             {[
               { value: "500+", label: "Monumenti" },
@@ -380,12 +505,119 @@ export default function HomePage() {
           </motion.div>
         </section>
 
-        {/* ── GPS VERIFICATION RULES ─────────────────────────────── */}
+        {/* ── FEATURED CITIES — horizontal scroll ─────────────────── */}
+        <section className="mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.88 }}
+            className="px-4 mb-4"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Destinazioni</p>
+            <h2 className="text-2xl font-black">Esplora l&apos;Europa</h2>
+          </motion.div>
+
+          <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {CITIES.map((city, i) => (
+              <motion.div
+                key={city.name}
+                initial={{ opacity: 0, x: 24 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.9 + i * 0.07 }}
+                className="relative flex-shrink-0 w-44 snap-start rounded-2xl overflow-hidden h-60 border border-white/10"
+              >
+                <Image
+                  src={city.img}
+                  alt={city.name}
+                  fill
+                  className="object-cover"
+                  sizes="176px"
+                />
+                {/* Dark overlay */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+
+                {/* Live / soon badge */}
+                <div className="absolute top-2.5 right-2.5">
+                  {city.active ? (
+                    <span className="flex items-center gap-1 rounded-full bg-green-500/20 border border-green-500/40 px-2 py-0.5 text-[9px] font-black text-green-400 backdrop-blur-sm">
+                      <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
+                      LIVE
+                    </span>
+                  ) : (
+                    <span className="rounded-full bg-white/10 border border-white/15 px-2 py-0.5 text-[9px] font-bold text-white/50 backdrop-blur-sm">
+                      Presto
+                    </span>
+                  )}
+                </div>
+
+                {/* City info */}
+                <div className="absolute bottom-0 left-0 right-0 p-3">
+                  <p className="text-[9px] font-bold uppercase tracking-widest text-white/40 mb-0.5">{city.country}</p>
+                  <p className="font-black text-white text-sm leading-tight">{city.name}</p>
+                  <p className="text-[11px] text-white/55 mt-0.5">{city.landmarks} monumenti</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── TESTIMONIALS ───────────────────────────────────────── */}
         <section className="px-4 mb-10">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
+            className="mb-4"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Community</p>
+            <h2 className="text-2xl font-black">Chi ha già vinto</h2>
+          </motion.div>
+
+          <div className="space-y-3">
+            {TESTIMONIALS.map(({ name, city, avatar, color, stars, text }, i) => (
+              <motion.div
+                key={name}
+                initial={{ opacity: 0, y: 12 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.92 + i * 0.08 }}
+                className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-sm overflow-hidden"
+              >
+                {/* Subtle quote mark */}
+                <Quote size={40} className="absolute -right-1 -top-1 text-white/4 rotate-180" />
+
+                <div className="flex items-start gap-3">
+                  <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl text-xs font-black ${color}`}>
+                    {avatar}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <div>
+                        <p className="text-sm font-black text-white">{name}</p>
+                        <p className="text-[10px] text-white/40 flex items-center gap-1">
+                          <MapPin size={8} />
+                          {city}
+                        </p>
+                      </div>
+                      <div className="flex gap-0.5">
+                        {Array.from({ length: stars }).map((_, s) => (
+                          <Star key={s} size={10} className="text-[#FFD700]" fill="currentColor" />
+                        ))}
+                      </div>
+                    </div>
+                    <p className="text-[12px] text-white/60 leading-relaxed">{text}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </section>
+
+        {/* ── GPS VERIFICATION RULES ─────────────────────────────── */}
+        <section className="px-4 mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
             className="mb-4"
           >
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Regole del gioco</p>
@@ -398,8 +630,8 @@ export default function HomePage() {
                 key={title}
                 initial={{ opacity: 0, x: -14 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.9 + i * 0.07 }}
-                className={`flex items-start gap-3 rounded-2xl border p-4 ${bg}`}
+                transition={{ delay: 1.0 + i * 0.07 }}
+                className={`flex items-start gap-3 rounded-2xl border p-4 backdrop-blur-sm ${bg}`}
               >
                 <div className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-black/20 ${color}`}>
                   <Icon size={18} />
@@ -418,7 +650,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.0 }}
+            transition={{ delay: 1.05 }}
             className="mb-4"
           >
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Pagamenti</p>
@@ -426,7 +658,6 @@ export default function HomePage() {
           </motion.div>
 
           <div className="relative pl-4">
-            {/* Vertical line */}
             <div className="absolute left-[1.35rem] top-2 bottom-2 w-px bg-gradient-to-b from-[#FFD700]/40 via-[#FFD700]/20 to-transparent" />
             <div className="space-y-4">
               {PAYOUT_STEPS.map(({ label, desc }, i) => (
@@ -434,7 +665,7 @@ export default function HomePage() {
                   key={label}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 1.0 + i * 0.08 }}
+                  transition={{ delay: 1.05 + i * 0.08 }}
                   className="flex items-start gap-4"
                 >
                   <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[#FFD700]/15 border border-[#FFD700]/30 z-10">
@@ -455,7 +686,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.05 }}
+            transition={{ delay: 1.1 }}
             className="mb-4"
           >
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Strumenti per il viaggiatore</p>
@@ -464,7 +695,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 1.1 }}
+            transition={{ delay: 1.15 }}
           >
             <CurrencyConverter />
           </motion.div>
@@ -475,7 +706,7 @@ export default function HomePage() {
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.15 }}
+            transition={{ delay: 1.2 }}
             className="relative overflow-hidden rounded-3xl border border-[#FFD700]/22 p-6"
             style={{
               background: "linear-gradient(135deg,#1a1200 0%,#0d1a30 100%)",
@@ -483,6 +714,7 @@ export default function HomePage() {
             }}
           >
             <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[#FFD700]/10 blur-3xl" />
+            <div className="pointer-events-none absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-blue-500/8 blur-2xl" />
             <p className="text-xs font-bold uppercase tracking-widest text-[#FFD700]/50 mb-2">Pronto?</p>
             <h3 className="text-[1.6rem] font-black mb-2 leading-tight">
               La prossima avventura<br />è a un passo.
@@ -512,7 +744,7 @@ export default function HomePage() {
 
         {/* ── LEGAL FOOTER ───────────────────────────────────────── */}
         <footer className="px-4 pb-4">
-          <div className="rounded-2xl bg-white/3 border border-white/6 p-4 space-y-3">
+          <div className="rounded-2xl bg-white/[0.025] border border-white/6 p-4 space-y-3 backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-1">
               <Info size={13} className="text-white/30 flex-shrink-0" />
               <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">
