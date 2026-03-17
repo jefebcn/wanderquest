@@ -209,8 +209,9 @@ export function WeatherQuest({ userLat, userLng }: Props) {
       initial={{ opacity: 0, y: 16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 260, damping: 26, delay: 0.1 }}
-      className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900"
+      className="relative overflow-hidden rounded-3xl border border-white/10 bg-slate-900 cursor-pointer"
       style={{ boxShadow: "0 8px 40px rgba(0,0,0,0.5)" }}
+      onClick={() => { window.location.href = "/scan"; }}
     >
       {/* Gradient overlay */}
       <div
@@ -255,7 +256,7 @@ export function WeatherQuest({ userLat, userLng }: Props) {
           ) : (
             !locGranted && (
               <button
-                onClick={requestLocation}
+                onClick={(e) => { e.stopPropagation(); requestLocation(); }}
                 className="flex items-center gap-1 rounded-xl bg-white/8 border border-white/10 px-2.5 py-1.5 text-[10px] font-bold text-white/50 hover:text-white/80 transition-colors"
               >
                 <MapPin size={10} />
@@ -296,20 +297,19 @@ export function WeatherQuest({ userLat, userLng }: Props) {
               </>
             )}
             {!weather && !locGranted && (
-              <span>Attiva la posizione per dati meteo in tempo reale</span>
+              <span>Tocca per iniziare a esplorare e guadagnare punti</span>
             )}
           </div>
-          <a
-            href="/scan"
+          <div
             className={cn(
               "flex items-center gap-1 rounded-xl px-3 py-1.5",
-              "text-xs font-black transition-colors",
-              "bg-white/10 border border-white/15 text-white/70 hover:text-white hover:bg-white/15"
+              "text-xs font-black",
+              "bg-[#FFD700]/15 border border-[#FFD700]/30 text-[#FFD700]"
             )}
           >
             Esplora ora
             <ChevronRight size={11} />
-          </a>
+          </div>
         </div>
       </div>
     </motion.div>
