@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { CurrencyConverter } from "@/components/features/currency/CurrencyConverter";
 import { WeatherQuest }      from "@/components/features/weather/WeatherQuest";
+import { GoPro }             from "@/components/features/subscription/GoPro";
 import { formatCents } from "@/lib/utils";
 import {
   Compass,
@@ -191,6 +192,104 @@ const PAYOUT_STEPS = [
   { label: "Pagamento", desc: "Il bonifico Stripe/PayPal viene eseguito entro 7 giorni lavorativi." },
 ];
 
+// ── City card ───────────────────────────────────────────────────────────────
+
+function CityCard({
+  city,
+  index,
+  onAuthOpen,
+  user,
+}: {
+  city: typeof CITIES[number];
+  index: number;
+  onAuthOpen: () => void;
+  user: unknown;
+}) {
+  const [tapped, setTapped] = useState(false);
+
+  const handleTap = () => {
+    if (!city.active) {
+      setTapped(true);
+      setTimeout(() => setTapped(false), 900);
+      return;
+    }
+    if (!user) { onAuthOpen(); return; }
+    window.location.href = "/scan";
+  };
+
+  return (
+    <motion.div
+      key={city.name}
+      initial={{ opacity: 0, x: 24 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.9 + index * 0.07 }}
+      whileTap={{ scale: 0.95 }}
+      onClick={handleTap}
+      className="relative flex-shrink-0 w-44 snap-start rounded-2xl overflow-hidden h-60 border border-white/10 cursor-pointer select-none"
+      style={{ WebkitTapHighlightColor: "transparent" }}
+    >
+      <Image
+        src={city.img}
+        alt={city.name}
+        fill
+        className="object-cover transition-transform duration-300 hover:scale-105"
+        sizes="176px"
+      />
+      {/* Dark overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
+      {/* Hover shimmer */}
+      <div className="absolute inset-0 bg-white/0 hover:bg-white/5 transition-colors duration-200 rounded-2xl" />
+
+      {/* "Prossimamente" tap feedback */}
+      <AnimatePresence>
+        {tapped && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.8 }}
+            className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50 backdrop-blur-sm"
+          >
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-2xl">🔜</span>
+              <span className="text-xs font-black text-white">Prossimamente!</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Live / soon badge */}
+      <div className="absolute top-2.5 right-2.5">
+        {city.active ? (
+          <span className="flex items-center gap-1 rounded-full bg-green-500/20 border border-green-500/40 px-2 py-0.5 text-[9px] font-black text-green-400 backdrop-blur-sm">
+            <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
+            LIVE
+          </span>
+        ) : (
+          <span className="rounded-full bg-white/10 border border-white/15 px-2 py-0.5 text-[9px] font-bold text-white/50 backdrop-blur-sm">
+            Presto
+          </span>
+        )}
+      </div>
+
+      {/* Tap arrow for active cities */}
+      {city.active && (
+        <div className="absolute top-2.5 left-2.5">
+          <span className="flex items-center justify-center h-6 w-6 rounded-full bg-[#FFD700]/20 border border-[#FFD700]/40 backdrop-blur-sm">
+            <ChevronRight size={12} className="text-[#FFD700]" />
+          </span>
+        </div>
+      )}
+
+      {/* City info */}
+      <div className="absolute bottom-0 left-0 right-0 p-3">
+        <p className="text-[9px] font-bold uppercase tracking-widest text-white/40 mb-0.5">{city.country}</p>
+        <p className="font-black text-white text-sm leading-tight">{city.name}</p>
+        <p className="text-[11px] text-white/55 mt-0.5">{city.landmarks} monumenti</p>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Floating landmark pill ───────────────────────────────────────────────────
 
 function FloatingPill({ name, pts, delay, style }: {
@@ -362,13 +461,13 @@ export default function HomePage() {
               transition={{ delay: 0.2, duration: 0.55 }}
               className="font-serif text-[2.9rem] leading-[1.04] font-black mb-4"
             >
-              Unleash Your<br />
+              Esplora le Città,<br />
               <span style={{
                 background: "linear-gradient(135deg,#FFD700 0%,#FFA500 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}>
-                Inner Explorer
+                Vinci in Euro
               </span>
             </motion.h1>
 
@@ -531,44 +630,7 @@ export default function HomePage() {
 
           <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {CITIES.map((city, i) => (
-              <motion.div
-                key={city.name}
-                initial={{ opacity: 0, x: 24 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.9 + i * 0.07 }}
-                className="relative flex-shrink-0 w-44 snap-start rounded-2xl overflow-hidden h-60 border border-white/10"
-              >
-                <Image
-                  src={city.img}
-                  alt={city.name}
-                  fill
-                  className="object-cover"
-                  sizes="176px"
-                />
-                {/* Dark overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-
-                {/* Live / soon badge */}
-                <div className="absolute top-2.5 right-2.5">
-                  {city.active ? (
-                    <span className="flex items-center gap-1 rounded-full bg-green-500/20 border border-green-500/40 px-2 py-0.5 text-[9px] font-black text-green-400 backdrop-blur-sm">
-                      <span className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse inline-block" />
-                      LIVE
-                    </span>
-                  ) : (
-                    <span className="rounded-full bg-white/10 border border-white/15 px-2 py-0.5 text-[9px] font-bold text-white/50 backdrop-blur-sm">
-                      Presto
-                    </span>
-                  )}
-                </div>
-
-                {/* City info */}
-                <div className="absolute bottom-0 left-0 right-0 p-3">
-                  <p className="text-[9px] font-bold uppercase tracking-widest text-white/40 mb-0.5">{city.country}</p>
-                  <p className="font-black text-white text-sm leading-tight">{city.name}</p>
-                  <p className="text-[11px] text-white/55 mt-0.5">{city.landmarks} monumenti</p>
-                </div>
-              </motion.div>
+              <CityCard key={city.name} city={city} index={i} onAuthOpen={() => setAuthOpen(true)} user={user} />
             ))}
           </div>
         </section>
@@ -622,6 +684,26 @@ export default function HomePage() {
               </motion.div>
             ))}
           </div>
+        </section>
+
+        {/* ── PREMIUM PLAN ───────────────────────────────────────── */}
+        <section className="px-4 mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.95 }}
+            className="mb-4"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Piano Premium</p>
+            <h2 className="text-2xl font-black">WanderQuest Pro</h2>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+          >
+            <GoPro />
+          </motion.div>
         </section>
 
         {/* ── GPS VERIFICATION RULES ─────────────────────────────── */}
