@@ -3,6 +3,9 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { getFirebaseClient } from "@/lib/firebase/client";
+import { useAuth } from "@/hooks/useAuth";
+import { useContest } from "@/hooks/useContest";
+import { AuthModal } from "@/components/features/auth/AuthModal";
 import { getWallet, requestWithdrawal, initiateStripeOnboarding } from "@/actions/wallet";
 import { WalletSkeleton } from "@/components/ui/Skeleton";
 import { formatCents } from "@/lib/utils";
@@ -17,6 +20,8 @@ import {
   CheckCircle2,
   ChevronRight,
   Lock,
+  Sparkles,
+  Star,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -172,15 +177,63 @@ function TransactionRow({ tx, index }: { tx: Transaction; index: number }) {
   );
 }
 
+// ── Locked state ──────────────────────────────────────────────────────────
+
+function LockedWallet({ prizePool, onSignIn }: { prizePool?: number; onSignIn: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 22 }}
+        className="flex flex-col items-center"
+      >
+        <div
+          className="flex h-20 w-20 items-center justify-center rounded-3xl bg-green-500/12 border border-green-500/22 mb-5"
+          style={{ boxShadow: "0 0 40px rgba(34,197,94,0.15)" }}
+        >
+          <Wallet size={34} className="text-green-400" />
+        </div>
+
+        {prizePool !== undefined && (
+          <div className="flex items-center gap-1.5 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 px-3 py-1 mb-4">
+            <Star size={11} className="text-[#FFD700]" fill="currentColor" />
+            <span className="text-[11px] font-black text-[#FFD700]">
+              {formatCents(prizePool)} in palio ora
+            </span>
+          </div>
+        )}
+
+        <h2 className="text-2xl font-black text-white mb-2">Portafoglio bloccato</h2>
+        <p className="text-sm text-white/45 leading-relaxed max-w-[270px] mb-7">
+          Accedi per gestire il tuo saldo, vedere le tue vincite e richiedere un prelievo in euro.
+        </p>
+
+        <motion.button
+          whileTap={{ scale: 0.96 }}
+          onClick={onSignIn}
+          className="flex items-center gap-2 rounded-2xl bg-[#FFD700] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
+        >
+          <Sparkles size={16} />
+          Accedi per guadagnare
+        </motion.button>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Main View ─────────────────────────────────────────────────────────────
 
 export function WalletView() {
-  const [wallet, setWallet]   = useState<UserWallet | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [amount, setAmount]   = useState("");
-  const [method, setMethod]   = useState<"stripe" | "paypal">("stripe");
-  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
-  const [busy, setBusy]       = useState(false);
+  const { user, loading: authLoading } = useAuth();
+  const { contest } = useContest();
+  const [authOpen, setAuthOpen]       = useState(false);
+  const [wallet, setWallet]           = useState<UserWallet | null>(null);
+  const [loading, setLoading]         = useState(true);
+  const [amount, setAmount]           = useState("");
+  const [method, setMethod]           = useState<"stripe" | "paypal">("stripe");
+  const [message, setMessage]         = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy]               = useState(false);
 
   const transactions = useMockTransactions(wallet);
 
@@ -224,10 +277,25 @@ export function WalletView() {
     } finally { setBusy(false); }
   };
 
-  if (loading) return (
+  if (authLoading || loading) return (
     <div className="bg-slate-950 min-h-screen pt-14">
       <WalletSkeleton />
     </div>
+  );
+
+  if (!user) return (
+    <>
+      <div className="min-h-screen bg-slate-950 text-white">
+        <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-14 pb-4 backdrop-blur-xl">
+          <div className="flex items-center gap-2">
+            <Wallet className="text-[#FFD700]" size={22} />
+            <h1 className="text-xl font-black">Portafoglio</h1>
+          </div>
+        </div>
+        <LockedWallet prizePool={contest?.prizePool} onSignIn={() => setAuthOpen(true)} />
+      </div>
+      <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+    </>
   );
 
   if (!wallet) return (
@@ -362,3 +430,4 @@ export function WalletView() {
     </div>
   );
 }
+

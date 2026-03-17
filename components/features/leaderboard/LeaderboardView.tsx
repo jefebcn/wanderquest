@@ -1,12 +1,14 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 import { useContest }     from "@/hooks/useContest";
 import { useAuth }        from "@/hooks/useAuth";
+import { AuthModal }      from "@/components/features/auth/AuthModal";
 import { LeaderboardSkeleton } from "@/components/ui/Skeleton";
 import { formatCents }    from "@/lib/utils";
-import { Crown, Trophy, Clock, Coins, Star } from "lucide-react";
+import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import type { LeaderboardEntry } from "@/types";
@@ -88,6 +90,7 @@ function PodiumPlace({
 // ── Row rank 4+ ───────────────────────────────────────────────────────────
 
 function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe: boolean; index: number }) {
+  const isTop10 = entry.rank <= 10;
   return (
     <motion.div
       initial={{ opacity: 0, x: -14 }}
@@ -97,8 +100,11 @@ function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe:
         "flex items-center gap-3 rounded-2xl p-3",
         isMe
           ? "bg-[#FFD700]/8 border border-[#FFD700]/22"
-          : "bg-white/4 border border-transparent"
+          : isTop10
+            ? "bg-[#FFD700]/4 border border-[#FFD700]/10"
+            : "bg-white/4 border border-transparent"
       )}
+      style={isTop10 && !isMe ? { boxShadow: "0 2px 16px rgba(255,215,0,0.07)" } : undefined}
     >
       <span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/8 text-xs font-black text-white/45 flex-shrink-0">
         {entry.rank}
@@ -119,9 +125,55 @@ function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe:
       </div>
       <div className="text-right">
         <p className="text-sm font-black">{entry.points.toLocaleString("it-IT")}</p>
-        <p className="text-[10px] text-white/30">pt</p>
+        {isTop10 ? (
+          <p className="text-[9px] font-black text-[#FFD700]/70 uppercase tracking-wide">Rank Up ↑</p>
+        ) : (
+          <p className="text-[10px] text-white/30">pt</p>
+        )}
       </div>
     </motion.div>
+  );
+}
+
+// ── Locked state ──────────────────────────────────────────────────────────
+
+function LockedLeaderboard({ onSignIn }: { onSignIn: () => void }) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[70vh] px-6 text-center">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.85 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ type: "spring", stiffness: 260, damping: 22 }}
+        className="flex flex-col items-center"
+      >
+        {/* Lock icon with glow */}
+        <div
+          className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#FFD700]/10 border border-[#FFD700]/22 mb-5"
+          style={{ boxShadow: "0 0 40px rgba(255,215,0,0.18)" }}
+        >
+          <Lock size={34} className="text-[#FFD700]" />
+        </div>
+
+        <div className="flex items-center gap-1.5 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 px-3 py-1 mb-4">
+          <Sparkles size={11} className="text-[#FFD700]" />
+          <span className="text-[11px] font-black text-[#FFD700]">Contenuto esclusivo</span>
+        </div>
+
+        <h2 className="text-2xl font-black text-white mb-2">Classifica bloccata</h2>
+        <p className="text-sm text-white/45 leading-relaxed max-w-[260px] mb-7">
+          Accedi per vedere chi sta vincendo il montepremi e sfidare gli altri esploratori.
+        </p>
+
+        <motion.button
+          whileTap={{ scale: 0.96 }}
+          onClick={onSignIn}
+          className="flex items-center gap-2 rounded-2xl bg-[#FFD700] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.35)] hover:bg-yellow-300 transition-colors min-h-[48px]"
+        >
+          <Trophy size={16} />
+          Accedi per competere
+        </motion.button>
+      </motion.div>
+    </div>
   );
 }
 
@@ -131,6 +183,7 @@ export function LeaderboardView() {
   const { contest, loading: contestLoading, timeLeft } = useContest();
   const { entries, loading: listLoading } = useLeaderboard(contest?.id ?? null);
   const { user } = useAuth();
+  const [authOpen, setAuthOpen] = useState(false);
 
   const isLoading = contestLoading || listLoading;
   const top3      = entries.slice(0, 3) as LeaderboardEntry[];
@@ -140,7 +193,25 @@ export function LeaderboardView() {
   // Podium order: 2nd · 1st · 3rd
   const podium = ([top3[1], top3[0], top3[2]].filter(Boolean)) as LeaderboardEntry[];
 
+  if (!user && !isLoading) {
+    return (
+      <>
+        <div className="min-h-screen bg-slate-950 text-white">
+          <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-14 pb-4 backdrop-blur-xl">
+            <div className="flex items-center gap-2">
+              <Trophy className="text-[#FFD700]" size={22} />
+              <h1 className="text-xl font-black">Classifica</h1>
+            </div>
+          </div>
+          <LockedLeaderboard onSignIn={() => setAuthOpen(true)} />
+        </div>
+        <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+      </>
+    );
+  }
+
   return (
+    <>
     <div className="min-h-screen bg-slate-950 pb-36 text-white">
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-14 pb-4 backdrop-blur-xl">
@@ -243,5 +314,7 @@ export function LeaderboardView() {
         </motion.div>
       )}
     </div>
+    <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+    </>
   );
 }
