@@ -8,10 +8,10 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 
 const tabs = [
-  { href: "/",            label: "Home",        icon: Home     },
-  { href: "/scan",        label: "Scansiona",   icon: ScanLine },
-  { href: "/leaderboard", label: "Classifica",  icon: Trophy   },
-  { href: "/wallet",      label: "Portafoglio", icon: Wallet   },
+  { href: "/",            label: "Home",       icon: Home     },
+  { href: "/scan",        label: "Scansiona",  icon: ScanLine },
+  { href: "/leaderboard", label: "Classifica", icon: Trophy   },
+  { href: "/profile",     label: "Profilo",    icon: Wallet   },
 ] as const;
 
 export function BottomNav() {
@@ -24,7 +24,7 @@ export function BottomNav() {
       <div className="flex h-16 items-stretch">
         {tabs.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || (href !== "/" && pathname.startsWith(href));
-          const isWallet = href === "/wallet";
+          const isWallet = href === "/profile";
 
           return (
             <motion.button

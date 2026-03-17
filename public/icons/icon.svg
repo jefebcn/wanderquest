@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#020617"/>
+  <!-- Outer glow ring -->
+  <circle cx="256" cy="256" r="190" fill="none" stroke="#FFD700" stroke-width="6" opacity="0.3"/>
+  <!-- Compass outer ring -->
+  <circle cx="256" cy="256" r="160" fill="none" stroke="#FFD700" stroke-width="3" opacity="0.5"/>
+  <!-- Compass body -->
+  <circle cx="256" cy="256" r="120" fill="#0f172a"/>
+  <circle cx="256" cy="256" r="120" fill="none" stroke="#FFD700" stroke-width="4" opacity="0.8"/>
+  <!-- Cardinal marks -->
+  <line x1="256" y1="146" x2="256" y2="168" stroke="#FFD700" stroke-width="5" stroke-linecap="round" opacity="0.9"/>
+  <line x1="256" y1="344" x2="256" y2="366" stroke="#FFD700" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+  <line x1="146" y1="256" x2="168" y2="256" stroke="#FFD700" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+  <line x1="344" y1="256" x2="366" y2="256" stroke="#FFD700" stroke-width="5" stroke-linecap="round" opacity="0.5"/>
+  <!-- North needle (gold) -->
+  <polygon points="256,168 244,260 256,250 268,260" fill="#FFD700" opacity="0.95"/>
+  <!-- South needle (white) -->
+  <polygon points="256,344 244,252 256,262 268,252" fill="#ffffff" opacity="0.5"/>
+  <!-- Center dot -->
+  <circle cx="256" cy="256" r="10" fill="#FFD700"/>
+  <circle cx="256" cy="256" r="5" fill="#020617"/>
+  <!-- N label -->
+  <text x="256" y="142" text-anchor="middle" font-family="system-ui,sans-serif" font-weight="900" font-size="22" fill="#FFD700" opacity="0.9">N</text>
+</svg>
