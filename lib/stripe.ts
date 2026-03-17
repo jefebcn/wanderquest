@@ -1,12 +1,13 @@
 import Stripe from "stripe";
 
-// Server-side only
-export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: "2026-02-25.clover",
-  typescript: true,
-});
-
 export const MIN_PAYOUT_CENTS = 500; // €5 minimum withdrawal
+
+// Lazily initialised — build succeeds even without STRIPE_SECRET_KEY
+function getStripe(): Stripe {
+  const key = process.env.STRIPE_SECRET_KEY;
+  if (!key) throw new Error("STRIPE_SECRET_KEY is not set");
+  return new Stripe(key, { apiVersion: "2026-02-25.clover", typescript: true });
+}
 
 /**
  * Creates or retrieves a Stripe Connect Express account for a user.
@@ -16,7 +17,7 @@ export async function getOrCreateStripeAccount(
   userId: string,
   email: string
 ): Promise<string> {
-  const account = await stripe.accounts.create({
+  const account = await getStripe().accounts.create({
     type:  "express",
     email,
     capabilities: {
@@ -35,7 +36,7 @@ export async function createStripeOnboardingLink(
   returnUrl: string,
   refreshUrl: string
 ): Promise<string> {
-  const link = await stripe.accountLinks.create({
+  const link = await getStripe().accountLinks.create({
     account:     stripeAccountId,
     return_url:  returnUrl,
     refresh_url: refreshUrl,
@@ -52,7 +53,7 @@ export async function createPayout(
   amountCents: number,
   currency = "eur"
 ): Promise<Stripe.Transfer> {
-  return stripe.transfers.create({
+  return getStripe().transfers.create({
     amount:      amountCents,
     currency,
     destination: stripeAccountId,
