@@ -8,9 +8,10 @@ import { useAuth }        from "@/hooks/useAuth";
 import { AuthModal }      from "@/components/features/auth/AuthModal";
 import { LeaderboardSkeleton } from "@/components/ui/Skeleton";
 import { formatCents }    from "@/lib/utils";
-import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin, Shield, Zap } from "lucide-react";
+import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin, Shield } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
+import { ProBadge } from "@/components/features/subscription/ProBadge";
 import type { LeaderboardEntry } from "@/types";
 
 // ── Mock photo leaderboard ────────────────────────────────────────────────
@@ -181,6 +182,10 @@ function PodiumPlace({
       <p className={cn("text-[11px] font-bold", cfg.textColor)}>
         {entry.points.toLocaleString("it-IT")} pt
       </p>
+      {/* PRO badge on top-3 podium entries when applicable */}
+      {(entry as LeaderboardEntry & { isPro?: boolean }).isPro && (
+        <ProBadge size="xs" animate={false} />
+      )}
 
       {/* Podium block */}
       <div className={cn("w-full rounded-t-2xl bg-gradient-to-b border", cfg.blockH, cfg.blockGrad)} />
@@ -218,10 +223,12 @@ function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe:
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <p className={cn("text-sm font-bold truncate", isMe && "text-[#FFD700]")}>
-          {entry.displayName}
-          {isMe && <span className="ml-1.5 text-[10px] font-normal opacity-60">(tu)</span>}
-        </p>
+        <div className="flex items-center gap-1.5">
+          <p className={cn("text-sm font-bold truncate", isMe && "text-[#FFD700]")}>
+            {entry.displayName}
+            {isMe && <span className="ml-1.5 text-[10px] font-normal opacity-60">(tu)</span>}
+          </p>
+        </div>
         <p className="text-xs text-white/35">{entry.visits} visite</p>
       </div>
       <div className="text-right">

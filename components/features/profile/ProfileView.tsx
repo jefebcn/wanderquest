@@ -9,8 +9,11 @@ import { CurrencyConverter } from "@/components/features/currency/CurrencyConver
 import { getWallet } from "@/actions/wallet";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { formatCents } from "@/lib/utils";
-import { useStreak } from "@/hooks/useStreak";
-import type { UserWallet } from "@/types";
+import { useStreak }        from "@/hooks/useStreak";
+import { useSubscription }  from "@/hooks/useSubscription";
+import { ProBadge }         from "@/components/features/subscription/ProBadge";
+import { GoPro }            from "@/components/features/subscription/GoPro";
+import type { UserWallet }  from "@/types";
 import type { LucideIcon } from "lucide-react";
 import {
   User,
@@ -457,8 +460,9 @@ function ScanTimeline() {
 
 export function ProfileView() {
   const { user, loading: authLoading, logout } = useAuth();
-  const { contest } = useContest();
+  const { contest }                  = useContest();
   const { currentStreak, longestStreak } = useStreak();
+  const { isPro }                    = useSubscription();
   const [authOpen, setAuthOpen]   = useState(false);
   const [wallet, setWallet]       = useState<UserWallet | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
@@ -561,7 +565,10 @@ export function ProfileView() {
 
           {/* Info */}
           <div className="flex-1 min-w-0">
-            <p className="text-lg font-black truncate">{user.displayName ?? "Esploratore"}</p>
+            <div className="flex items-center gap-2 mb-0.5">
+              <p className="text-lg font-black truncate">{user.displayName ?? "Esploratore"}</p>
+              {isPro && <ProBadge size="sm" />}
+            </div>
             <p className="text-xs text-white/40 truncate">{user.email}</p>
             {contest && (
               <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#FFD700]/12 border border-[#FFD700]/20 px-2 py-0.5">
@@ -586,6 +593,9 @@ export function ProfileView() {
             <Link href="/wallet" className="ml-auto text-xs text-blue-400 underline">Apri</Link>
           </div>
         )}
+
+        {/* Pro subscription card */}
+        <GoPro variant="compact" />
 
         {/* Streak Card */}
         <StreakCard currentStreak={currentStreak} longestStreak={longestStreak} />

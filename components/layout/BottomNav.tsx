@@ -3,9 +3,10 @@
 import { usePathname, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Home, ScanLine, Trophy, Wallet } from "lucide-react";
-import { useAuth } from "@/hooks/useAuth";
-import { cn } from "@/lib/utils";
-import Image from "next/image";
+import { useAuth }         from "@/hooks/useAuth";
+import { useSubscription } from "@/hooks/useSubscription";
+import { cn }              from "@/lib/utils";
+import Image               from "next/image";
 
 const tabs = [
   { href: "/",            label: "Home",       icon: Home     },
@@ -15,9 +16,10 @@ const tabs = [
 ] as const;
 
 export function BottomNav() {
-  const pathname = usePathname();
-  const router   = useRouter();
-  const { user } = useAuth();
+  const pathname  = usePathname();
+  const router    = useRouter();
+  const { user }  = useAuth();
+  const { isPro } = useSubscription();
 
   return (
     <nav
@@ -56,20 +58,30 @@ export function BottomNav() {
                 )}
               >
                 {isWallet && user?.photoURL ? (
-                  /* Show user photo on the wallet/profile tab */
-                  <div
-                    className={cn(
-                      "relative h-7 w-7 overflow-hidden rounded-full",
-                      active ? "ring-2 ring-[#FFD700]" : "ring-1 ring-white/20"
+                  /* Show user photo + optional PRO badge on the profile tab */
+                  <div className="relative">
+                    <div
+                      className={cn(
+                        "relative h-7 w-7 overflow-hidden rounded-full",
+                        active ? "ring-2 ring-[#FFD700]" : "ring-1 ring-white/20"
+                      )}
+                    >
+                      <Image
+                        src={user.photoURL}
+                        alt={user.displayName ?? "Avatar"}
+                        fill
+                        sizes="28px"
+                        className="object-cover"
+                      />
+                    </div>
+                    {isPro && (
+                      <span
+                        className="absolute -bottom-1 -right-1 flex h-3.5 w-3.5 items-center justify-center rounded-full bg-gradient-to-br from-[#FFD700] to-amber-500"
+                        style={{ boxShadow: "0 0 6px rgba(255,215,0,0.7)" }}
+                      >
+                        <span className="text-[5px] font-black text-slate-900">P</span>
+                      </span>
                     )}
-                  >
-                    <Image
-                      src={user.photoURL}
-                      alt={user.displayName ?? "Avatar"}
-                      fill
-                      sizes="28px"
-                      className="object-cover"
-                    />
                   </div>
                 ) : (
                   <Icon size={21} strokeWidth={active ? 2.4 : 1.7} />

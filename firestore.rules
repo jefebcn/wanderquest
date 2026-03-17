@@ -16,6 +16,10 @@ service cloud.firestore {
         exists(/databases/$(database)/documents/admins/$(request.auth.uid));
     }
 
+    function isPro() {
+      return isSignedIn() && request.auth.token.tier == "pro";
+    }
+
     // ── Landmarks (read-only for public, write only for admins) ─────────────
     match /landmarks/{landmarkId} {
       allow read: if true;
@@ -67,6 +71,31 @@ service cloud.firestore {
       allow create: if isOwner(request.resource.data.userId)
         && request.resource.data.status == "pending";
       allow update: if false;
+    }
+
+    // ── Partners (B2B coupon hub) ─────────────────────────────────────────────
+    match /partners/{partnerId} {
+      // Free coupons: public read. Pro-only coupons: require Pro claim.
+      allow read: if !resource.data.isProOnly || isPro() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    match /partners/{partnerId}/coupons/{couponId} {
+      allow read: if !resource.data.isProOnly || isPro() || isAdmin();
+      allow write: if isAdmin();
+    }
+
+    // ── Manual subscription reviews (write-once by owner) ────────────────────
+    match /manual_subscription_reviews/{reviewId} {
+      allow read: if isAdmin();
+      allow create: if isSignedIn() && request.resource.data.uid == request.auth.uid;
+      allow update, delete: if false;
+    }
+
+    // ── Elite Landmarks (Pro-only sub-collection) ────────────────────────────
+    match /elite_landmarks/{landmarkId} {
+      allow read: if isPro() || isAdmin();
+      allow write: if isAdmin();
     }
   }
 }

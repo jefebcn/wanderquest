@@ -115,8 +115,11 @@ export async function validateCheckIn(
     if (newStreak === 3) bonusPoints = 50;
     else if (newStreak > 0 && newStreak % 7 === 0) bonusPoints = 150;
 
-    const totalPoints  = landmark.points + bonusPoints;
-    const newLongest   = Math.max(longestStreak, newStreak);
+    // ── Pro multiplier (+25% for Pro users) ──────────────────────
+    const multiplier  = (userData.pointsMultiplier as number) ?? 1.0;
+    const basePoints  = landmark.points + bonusPoints;
+    const totalPoints = Math.round(basePoints * multiplier);
+    const newLongest  = Math.max(longestStreak, newStreak);
 
     // ── Writes ───────────────────────────────────────────────────
     tx.set(visitRef, visit);
@@ -147,19 +150,21 @@ export async function validateCheckIn(
     }
   });
 
-  const totalPointsEarned = landmark.points + bonusPoints;
-  const streakMsg =
-    bonusPoints > 0
-      ? ` 🔥 Streak ${newStreak}gg! +${bonusPoints} bonus pt`
-      : newStreak > 1
-        ? ` 🔥 ${newStreak} giorni di fila!`
-        : "";
+  // Re-read multiplier outside tx scope (was captured inside)
+  const userDocFinal = await db.collection("users").doc(uid).get();
+  const multiplierFinal = (userDocFinal.data()?.pointsMultiplier as number) ?? 1.0;
+  const totalPointsEarned = Math.round((landmark.points + bonusPoints) * multiplierFinal);
+
+  const streakMsg = bonusPoints > 0
+    ? ` 🔥 Streak ${newStreak}gg! +${bonusPoints} bonus`
+    : newStreak > 1 ? ` 🔥 ${newStreak} giorni di fila!` : "";
+  const proMsg = multiplierFinal > 1 ? ` ⚡ Pro ×${multiplierFinal}` : "";
 
   return {
     success:        true,
     pointsEarned:   totalPointsEarned,
     distanceMetres,
-    message:        `+${landmark.points} punti! Fantastico!${streakMsg}`,
+    message:        `+${totalPointsEarned} punti! Fantastico!${streakMsg}${proMsg}`,
     visit:          { ...visit, id: visitRef.id } as Visit,
     streakBonus:    bonusPoints,
     currentStreak:  newStreak,

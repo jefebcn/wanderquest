@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
-import { BottomNav } from "@/components/layout/BottomNav";
+import { BottomNav }      from "@/components/layout/BottomNav";
+import { PayPalProvider } from "@/components/providers/PayPalProvider";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -42,8 +43,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="font-sans bg-slate-950 text-white antialiased">
-        <main className="relative min-h-screen">{children}</main>
-        <BottomNav />
+        <PayPalProvider>
+          <main className="relative min-h-screen">{children}</main>
+          <BottomNav />
+        </PayPalProvider>
       </body>
     </html>
   );

@@ -18,7 +18,8 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
-import { PartnerWidget } from "@/components/features/partners/PartnerWidget";
+import { PartnerWidget }    from "@/components/features/partners/PartnerWidget";
+import { TravelConcierge }  from "@/components/features/ai/TravelConcierge";
 
 type LandmarkWithDist = Landmark & { distanceMetres: number };
 
@@ -350,6 +351,9 @@ export function ScannerView() {
           onCheckIn={handleCheckIn}
         />
       )}
+
+      {/* AI Travel Concierge floating button */}
+      <TravelConcierge ctx={{ lat: position.lat, lng: position.lng }} />
     </div>
   );
 }
