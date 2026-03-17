@@ -29,9 +29,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export async function generateStaticParams() {
-  // Pre-generate the nearest landmarks at build time using Rome as center
-  const { landmarks } = await getNearbyLandmarks(41.9028, 12.4964, 50000);
-  return landmarks.map((lm) => ({ id: lm.id }));
+  // Pre-generate the nearest landmarks at build time using Rome as center.
+  // Returns [] if Firebase Admin credentials are not available in this
+  // environment (e.g. CI preview builds) — pages are still served on-demand
+  // via ISR thanks to `export const revalidate = 86400` above.
+  try {
+    const { landmarks } = await getNearbyLandmarks(41.9028, 12.4964, 50000);
+    return landmarks.map((lm) => ({ id: lm.id }));
+  } catch {
+    return [];
+  }
 }
 
 export default async function LandmarkPage({ params }: Props) {
