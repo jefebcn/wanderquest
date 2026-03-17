@@ -127,28 +127,27 @@ function LandmarkSheet({
           {/* Detail link */}
           <Link
             href={`/landmarks/${landmark.id}`}
-            className="flex items-center gap-1 rounded-xl bg-white/8 border border-white/8 px-3 py-2.5 text-xs font-bold text-white/60 hover:text-white"
+            className="flex items-center gap-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 px-3 py-2.5 text-xs font-bold text-white/70 hover:text-white"
           >
             Dettagli <ChevronRight size={12} />
           </Link>
         </div>
 
         {/* Main CTA */}
-        <button
+        <motion.button
+          whileTap={withinRadius && !scanning ? { scale: 0.95 } : {}}
           onClick={onCheckIn}
           disabled={!withinRadius || scanning}
           className={cn(
             "relative w-full overflow-hidden rounded-2xl py-4 text-sm font-black",
-            "transition-all duration-200",
+            "transition-colors duration-200",
             withinRadius && !scanning
               ? [
                   "bg-[#FFD700] text-slate-950",
-                  "shadow-[0_4px_20px_rgba(255,215,0,0.4)]",
-                  "active:scale-[0.97]",
-                  // Pulsing glow when within radius
+                  "shadow-[0_4px_20px_rgba(255,215,0,0.45)]",
                   "before:absolute before:inset-0 before:rounded-2xl before:animate-pulse-glow",
                 ]
-              : "bg-white/8 text-white/30 cursor-not-allowed"
+              : "bg-white/10 backdrop-blur-sm text-white/30 cursor-not-allowed"
           )}
         >
           <span className="relative z-10 flex items-center justify-center gap-2">
@@ -160,7 +159,7 @@ function LandmarkSheet({
               <>Avvicinati ({formatDistance(distanceMetres - landmark.radius)})</>
             )}
           </span>
-        </button>
+        </motion.button>
       </div>
     </BottomSheet>
   );
@@ -256,7 +255,7 @@ export function ScannerView() {
         <AlertCircle size={48} className="text-red-400" />
         <h2 className="text-xl font-black">GPS non disponibile</h2>
         <p className="text-sm text-white/50">{errorMsg}</p>
-        <button onClick={start} className="rounded-2xl bg-[#FFD700] px-6 py-3 font-black text-slate-950 active:scale-95 transition-transform">
+        <motion.button whileTap={{ scale: 0.95 }} onClick={start} className="rounded-2xl bg-[#FFD700] px-6 py-3 font-black text-slate-950 shadow-[0_4px_18px_rgba(255,215,0,0.4)]">
           Riprova
         </button>
       </div>
