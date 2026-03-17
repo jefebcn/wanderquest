@@ -8,8 +8,7 @@
  * GPS + weather context injected automatically.
  */
 
-import { useState, useRef, useEffect } from "react";
-import { useChat } from "ai/react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   MessageSquare, X, Send, Sparkles, Loader2, Crown, Lock,
@@ -22,6 +21,12 @@ interface ChatContext {
   lat?: number;
   lng?: number;
   weather?: { description: string; temp: number; condition: string };
+}
+
+interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
 }
 
 // ── Locked overlay for free users ─────────────────────────────────────────
@@ -53,12 +58,22 @@ function LockedOverlay() {
 // ── Main concierge component ──────────────────────────────────────────────
 
 export function TravelConcierge({ ctx }: { ctx?: ChatContext }) {
-  const { isPro }               = useSubscription();
-  const [open, setOpen]         = useState(false);
-  const [token, setToken]       = useState<string | null>(null);
-  const bottomRef               = useRef<HTMLDivElement>(null);
+  const { isPro }           = useSubscription();
+  const [open, setOpen]     = useState(false);
+  const [token, setToken]   = useState<string | null>(null);
+  const [input, setInput]   = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [messages, setMessages]   = useState<Message[]>([
+    {
+      id:      "welcome",
+      role:    "assistant",
+      content: "Ciao! Sono il tuo concierge WanderQuest 🗺️. Dove vuoi andare adesso? Dimmi la tua situazione e ti suggerisco il landmark perfetto.",
+    },
+  ]);
+  const abortRef  = useRef<AbortController | null>(null);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  // Get auth token for the Authorization header
+  // Get auth token
   useEffect(() => {
     if (!open || !isPro) return;
     getFirebaseClient()
@@ -67,23 +82,85 @@ export function TravelConcierge({ ctx }: { ctx?: ChatContext }) {
       .catch(() => setToken(null));
   }, [open, isPro]);
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, stop } = useChat({
-    api: "/api/chat",
-    body: { context: ctx ?? {} },
-    headers: token ? { Authorization: `Bearer ${token}` } : {},
-    initialMessages: [
-      {
-        id:      "welcome",
-        role:    "assistant",
-        content: "Ciao! Sono il tuo concierge WanderQuest 🗺️. Dove vuoi andare adesso? Dimmi la tua situazione e ti suggerisco il landmark perfetto.",
-      },
-    ],
-  });
-
   // Auto-scroll to bottom
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const sendMessage = useCallback(async (userText: string) => {
+    if (!userText.trim() || isLoading || !token) return;
+
+    const userMsg: Message = { id: Date.now().toString(), role: "user", content: userText };
+    const assistantId = (Date.now() + 1).toString();
+    const assistantMsg: Message = { id: assistantId, role: "assistant", content: "" };
+
+    setMessages((prev) => [...prev, userMsg, assistantMsg]);
+    setIsLoading(true);
+
+    abortRef.current = new AbortController();
+
+    try {
+      const res = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMsg].map(({ role, content }) => ({ role, content })),
+          context: ctx ?? {},
+        }),
+        signal: abortRef.current.signal,
+      });
+
+      if (!res.ok || !res.body) {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: "Errore: riprova più tardi." } : m
+          )
+        );
+        return;
+      }
+
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulated = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        accumulated += decoder.decode(value, { stream: true });
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: accumulated } : m
+          )
+        );
+      }
+    } catch (err: unknown) {
+      if (err instanceof Error && err.name !== "AbortError") {
+        setMessages((prev) =>
+          prev.map((m) =>
+            m.id === assistantId ? { ...m, content: "Errore di connessione." } : m
+          )
+        );
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoading, token, messages, ctx]);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isLoading) {
+      abortRef.current?.abort();
+      setIsLoading(false);
+      return;
+    }
+    const text = input.trim();
+    if (!text) return;
+    setInput("");
+    sendMessage(text);
+  };
 
   return (
     <>
@@ -166,18 +243,10 @@ export function TravelConcierge({ ctx }: { ctx?: ChatContext }) {
                             : "bg-white/6 border border-white/8 text-white/85"
                         )}
                       >
-                        {msg.content}
+                        {msg.content || <Loader2 size={13} className="animate-spin text-purple-400" />}
                       </div>
                     </motion.div>
                   ))}
-                  {isLoading && (
-                    <div className="flex justify-start">
-                      <div className="flex items-center gap-2 rounded-2xl bg-white/6 border border-white/8 px-3.5 py-2.5">
-                        <Loader2 size={13} className="animate-spin text-purple-400" />
-                        <span className="text-xs text-white/40">Il concierge sta pensando…</span>
-                      </div>
-                    </div>
-                  )}
                   <div ref={bottomRef} />
                 </div>
               )}
@@ -185,13 +254,10 @@ export function TravelConcierge({ ctx }: { ctx?: ChatContext }) {
               {/* Input (Pro only) */}
               {isPro && (
                 <div className="px-4 py-3 border-t border-white/8">
-                  <form
-                    onSubmit={isLoading ? (e) => { e.preventDefault(); stop(); } : handleSubmit}
-                    className="flex items-center gap-2"
-                  >
+                  <form onSubmit={handleSubmit} className="flex items-center gap-2">
                     <input
                       value={input}
-                      onChange={handleInputChange}
+                      onChange={(e) => setInput(e.target.value)}
                       placeholder="Chiedimi dove andare…"
                       className="flex-1 rounded-2xl bg-white/6 border border-white/10 px-4 py-2.5 text-sm text-white placeholder-white/25 focus:outline-none focus:border-purple-500/40"
                     />
