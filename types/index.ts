@@ -103,3 +103,25 @@ export interface CheckInResult {
 export interface NearbyLandmarksResult {
   landmarks: (Landmark & { distanceMetres: number })[];
 }
+
+// ── Photo Contest ────────────────────────────────────────────────────────
+
+export interface ContestPhoto {
+  id: string;
+  userId: string;
+  displayName: string;
+  /** First-letter initials fallback (e.g. "SR") */
+  initials: string;
+  /** Tailwind gradient classes for avatar background */
+  avatarGradient: string;
+  imageUrl: string;
+  caption: string;
+  city?: string;
+  likes: number;
+  superLikes: number;
+  skips: number;
+  contestId: string;
+  uploadedAt: string;
+}
+
+export type VoteType = "like" | "superlike" | "skip";
