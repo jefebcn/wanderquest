@@ -17,6 +17,9 @@ const nextConfig: NextConfig = {
   },
 
   reactStrictMode: true,
+
+  // three.js is used in components/features/ar/ARView.tsx
+  transpilePackages: ["three"],
 };
 
 export default nextConfig;
