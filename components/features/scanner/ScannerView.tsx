@@ -18,6 +18,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { PartnerWidget } from "@/components/features/partners/PartnerWidget";
 
 type LandmarkWithDist = Landmark & { distanceMetres: number };
 
@@ -160,6 +161,10 @@ function LandmarkSheet({
             )}
           </span>
         </motion.button>
+
+        {/* ── Affiliate partner offers ───────────────────────────── */}
+        <div className="h-px bg-white/8 -mx-5" />
+        <PartnerWidget landmarkName={landmark.name} city={landmark.city ?? "Barcelona"} />
       </div>
     </BottomSheet>
   );

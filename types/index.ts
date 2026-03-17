@@ -29,6 +29,12 @@ export interface UserProfile {
   plan: "free" | "pro";
   totalPoints: number;
   totalVisits: number;
+  /** Consecutive scan-days streak */
+  currentStreak: number;
+  /** All-time longest streak */
+  longestStreak: number;
+  /** ISO date string (YYYY-MM-DD) of last successful scan */
+  lastScanDate?: string;
   createdAt: string;
 }
 
@@ -98,6 +104,10 @@ export interface CheckInResult {
   distanceMetres: number;
   message: string;
   visit?: Visit;
+  /** Bonus points awarded for a streak milestone (0 if none) */
+  streakBonus?: number;
+  /** Updated streak count after this check-in */
+  currentStreak?: number;
 }
 
 export interface NearbyLandmarksResult {

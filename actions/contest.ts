@@ -72,10 +72,12 @@ export async function validateCheckIn(
     };
   }
 
-  // 5. Atomic write — visit + user points + leaderboard
+  // 5. Atomic write — visit + user points + streak + leaderboard
   const visitRef = db.collection("visits").doc();
   const userRef  = db.collection("users").doc(uid);
   const now      = new Date().toISOString();
+  /** ISO date (YYYY-MM-DD) in UTC — used for streak comparisons */
+  const todayStr = now.slice(0, 10);
 
   const visit: Omit<Visit, "id"> = {
     userId:       uid,
@@ -86,11 +88,47 @@ export async function validateCheckIn(
     verifiedAt:   now,
   };
 
+  // Streak calculation (run inside the transaction so it's consistent)
+  let newStreak  = 1;
+  let bonusPoints = 0;
+
   await db.runTransaction(async (tx) => {
+    // ── Read user doc for streak data ────────────────────────────
+    const userSnap    = await tx.get(userRef);
+    const userData    = userSnap.data() ?? {};
+    const lastScanDate  = (userData.lastScanDate as string | undefined) ?? null;
+    const currentStreak = (userData.currentStreak as number) ?? 0;
+    const longestStreak = (userData.longestStreak as number) ?? 0;
+
+    // ── Compute new streak ───────────────────────────────────────
+    if (!lastScanDate) {
+      newStreak = 1;
+    } else if (lastScanDate === todayStr) {
+      // Same calendar day — keep streak, no bonus re-award
+      newStreak = currentStreak;
+    } else {
+      const yesterday = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
+      newStreak = lastScanDate === yesterday ? currentStreak + 1 : 1;
+    }
+
+    // Milestone bonuses: 3-day → +50 pt, every 7-day multiple → +150 pt
+    if (newStreak === 3) bonusPoints = 50;
+    else if (newStreak > 0 && newStreak % 7 === 0) bonusPoints = 150;
+
+    const totalPoints  = landmark.points + bonusPoints;
+    const newLongest   = Math.max(longestStreak, newStreak);
+
+    // ── Writes ───────────────────────────────────────────────────
     tx.set(visitRef, visit);
     tx.set(
       userRef,
-      { totalPoints: FieldValue.increment(landmark.points), totalVisits: FieldValue.increment(1) },
+      {
+        totalPoints:    FieldValue.increment(totalPoints),
+        totalVisits:    FieldValue.increment(1),
+        currentStreak:  newStreak,
+        longestStreak:  newLongest,
+        lastScanDate:   todayStr,
+      },
       { merge: true }
     );
 
@@ -103,18 +141,28 @@ export async function validateCheckIn(
         .doc(uid);
       tx.set(
         entryRef,
-        { points: FieldValue.increment(landmark.points), visits: FieldValue.increment(1), userId: uid },
+        { points: FieldValue.increment(totalPoints), visits: FieldValue.increment(1), userId: uid },
         { merge: true }
       );
     }
   });
 
+  const totalPointsEarned = landmark.points + bonusPoints;
+  const streakMsg =
+    bonusPoints > 0
+      ? ` 🔥 Streak ${newStreak}gg! +${bonusPoints} bonus pt`
+      : newStreak > 1
+        ? ` 🔥 ${newStreak} giorni di fila!`
+        : "";
+
   return {
-    success: true,
-    pointsEarned: landmark.points,
+    success:        true,
+    pointsEarned:   totalPointsEarned,
     distanceMetres,
-    message: `+${landmark.points} punti! Fantastico!`,
-    visit: { ...visit, id: visitRef.id } as Visit,
+    message:        `+${landmark.points} punti! Fantastico!${streakMsg}`,
+    visit:          { ...visit, id: visitRef.id } as Visit,
+    streakBonus:    bonusPoints,
+    currentStreak:  newStreak,
   };
 }
 
