@@ -16,18 +16,7 @@ const nextConfig: NextConfig = {
     ],
   },
 
-  // Enable React strict mode for better dev warnings
   reactStrictMode: true,
-
-  // Allow Three.js / WebGL packages to be bundled
-  transpilePackages: ["three"],
-
-  // Silence known harmless webpack warnings from @react-three/fiber
-  webpack(config) {
-    config.module = config.module ?? {};
-    config.module.exprContextCritical = false;
-    return config;
-  },
 };
 
 export default nextConfig;
