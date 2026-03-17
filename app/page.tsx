@@ -8,6 +8,7 @@ import { AuthModal } from "@/components/features/auth/AuthModal";
 import { CurrencyConverter } from "@/components/features/currency/CurrencyConverter";
 import { WeatherQuest }      from "@/components/features/weather/WeatherQuest";
 import { GoPro }             from "@/components/features/subscription/GoPro";
+import { BottomSheet }       from "@/components/ui/BottomSheet";
 import { formatCents } from "@/lib/utils";
 import {
   Compass,
@@ -28,6 +29,8 @@ import {
   Info,
   Quote,
   Download,
+  Navigation2,
+  X,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -84,42 +87,213 @@ const steps = [
 // ── Featured cities ─────────────────────────────────────────────────────────
 
 const CITIES = [
-  {
-    name: "Barcellona",
-    country: "ES",
-    landmarks: 48,
-    active: true,
-    img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80",
-  },
-  {
-    name: "Roma",
-    country: "IT",
-    landmarks: 62,
-    active: false,
-    img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80",
-  },
-  {
-    name: "Parigi",
-    country: "FR",
-    landmarks: 55,
-    active: false,
-    img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80",
-  },
-  {
-    name: "Madrid",
-    country: "ES",
-    landmarks: 39,
-    active: false,
-    img: "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=400&q=80",
-  },
-  {
-    name: "Firenze",
-    country: "IT",
-    landmarks: 33,
-    active: false,
-    img: "https://images.unsplash.com/photo-1543414164-09db18f38c05?w=400&q=80",
-  },
+  { name: "Barcellona", country: "ES", landmarks: 48, active: true,  img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80" },
+  { name: "Roma",       country: "IT", landmarks: 62, active: false, img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80" },
+  { name: "Parigi",     country: "FR", landmarks: 55, active: false, img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80" },
+  { name: "Madrid",     country: "ES", landmarks: 39, active: false, img: "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=400&q=80" },
+  { name: "Firenze",    country: "IT", landmarks: 33, active: false, img: "https://images.unsplash.com/photo-1543414164-09db18f38c05?w=400&q=80" },
+  { name: "Amsterdam",  country: "NL", landmarks: 41, active: false, img: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&q=80" },
+  { name: "Vienna",     country: "AT", landmarks: 37, active: false, img: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&q=80" },
+  { name: "Lisbona",    country: "PT", landmarks: 29, active: false, img: "https://images.unsplash.com/photo-1548707309-dcebeab9ea9b?w=400&q=80" },
+  { name: "Praga",      country: "CZ", landmarks: 44, active: false, img: "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&q=80" },
+  { name: "Budapest",   country: "HU", landmarks: 31, active: false, img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+  { name: "Venezia",    country: "IT", landmarks: 52, active: false, img: "https://images.unsplash.com/photo-1534113414509-0eec2bfb493f?w=400&q=80" },
+  { name: "Milano",     country: "IT", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1552751753-0fc84ae5b6c8?w=400&q=80" },
+  { name: "Berlino",    country: "DE", landmarks: 46, active: false, img: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80" },
+  { name: "Siviglia",   country: "ES", landmarks: 22, active: false, img: "https://images.unsplash.com/photo-1593672715438-d88a70629abe?w=400&q=80" },
+  { name: "Atene",      country: "GR", landmarks: 35, active: false, img: "https://images.unsplash.com/photo-1555993539-1732b0258235?w=400&q=80" },
 ];
+
+// ── City detail data ──────────────────────────────────────────────────────────
+
+const CITY_DETAILS: Record<string, {
+  description: string;
+  highlights: string[];
+  topLandmarks: Array<{ name: string; pts: number; emoji: string }>;
+  openDate?: string;
+  bestFor: string;
+  countryEmoji: string;
+}> = {
+  "Barcellona": {
+    description: "La perla del Mediterraneo, patria di Gaudì e della cultura catalana. Architettura modernista unica, spiagge urbane e vita notturna imbattibile.",
+    highlights: ["48 monumenti da conquistare", "Architettura Art Nouveau UNESCO", "Spiagge a 15 min dal centro storico"],
+    topLandmarks: [
+      { name: "Sagrada Família", pts: 750, emoji: "⛪" },
+      { name: "Park Güell",      pts: 500, emoji: "🌿" },
+      { name: "Casa Batlló",     pts: 620, emoji: "🏛️" },
+    ],
+    bestFor: "Architettura & Spiagge",
+    countryEmoji: "🇪🇸",
+  },
+  "Roma": {
+    description: "La Città Eterna dove ogni pietra racconta tremila anni di storia. Colosseo, Vaticano, fontane barocche — il museo a cielo aperto più grande del mondo.",
+    highlights: ["62 monumenti storici", "Sede del Vaticano e Sistina", "Gastronomia tradizionale autentica"],
+    topLandmarks: [
+      { name: "Colosseo",        pts: 800, emoji: "🏛️" },
+      { name: "Fontana di Trevi", pts: 450, emoji: "⛲" },
+      { name: "Pantheon",        pts: 550, emoji: "🔵" },
+    ],
+    openDate: "Maggio 2025",
+    bestFor: "Storia & Cultura",
+    countryEmoji: "🇮🇹",
+  },
+  "Parigi": {
+    description: "La Ville Lumière che ha ispirato artisti e sognatori per secoli. Torre Eiffel, Louvre, Montmartre — ogni quartiere è un'opera d'arte.",
+    highlights: ["55 monumenti iconici", "Più di 130 musei mondiali", "Cucina haute cuisine certificata"],
+    topLandmarks: [
+      { name: "Torre Eiffel",     pts: 700, emoji: "🗼" },
+      { name: "Louvre",           pts: 650, emoji: "🖼️" },
+      { name: "Arco di Trionfo",  pts: 500, emoji: "🏛️" },
+    ],
+    openDate: "Giugno 2025",
+    bestFor: "Arte & Romanticismo",
+    countryEmoji: "🇫🇷",
+  },
+  "Madrid": {
+    description: "La capitale spagnola che non dorme mai. Prado, Retiro, tapas e flamenco — una città che ti conquista con la sua energia contagiosa.",
+    highlights: ["39 luoghi da esplorare", "Museo del Prado di fama mondiale", "Vita notturna leggendaria"],
+    topLandmarks: [
+      { name: "Museo del Prado", pts: 600, emoji: "🖼️" },
+      { name: "Plaza Mayor",     pts: 400, emoji: "🏟️" },
+      { name: "Palacio Real",    pts: 550, emoji: "🏰" },
+    ],
+    openDate: "Luglio 2025",
+    bestFor: "Arte & Vita Notturna",
+    countryEmoji: "🇪🇸",
+  },
+  "Firenze": {
+    description: "La culla del Rinascimento italiano. Duomo, Uffizi, Ponte Vecchio — ogni angolo di Firenze è un capolavoro assoluto dell'umanità.",
+    highlights: ["33 gioielli rinascimentali", "Galleria degli Uffizi", "Vista dal Piazzale Michelangelo"],
+    topLandmarks: [
+      { name: "Duomo di Firenze",  pts: 700, emoji: "⛪" },
+      { name: "Galleria degli Uffizi", pts: 550, emoji: "🖼️" },
+      { name: "Ponte Vecchio",     pts: 450, emoji: "🌉" },
+    ],
+    openDate: "Agosto 2025",
+    bestFor: "Arte Rinascimentale",
+    countryEmoji: "🇮🇹",
+  },
+  "Amsterdam": {
+    description: "La città dei canali, dei tulipani e dell'arte. Rijksmuseum, Anne Frank House e centinaia di ponti — Amsterdam è unica al mondo.",
+    highlights: ["41 destinazioni iconiche", "165 canali navigabili UNESCO", "Van Gogh Museum"],
+    topLandmarks: [
+      { name: "Rijksmuseum",       pts: 600, emoji: "🖼️" },
+      { name: "Anne Frank House",  pts: 500, emoji: "🏠" },
+      { name: "Vondelpark",        pts: 300, emoji: "🌳" },
+    ],
+    openDate: "Settembre 2025",
+    bestFor: "Canali & Musei",
+    countryEmoji: "🇳🇱",
+  },
+  "Vienna": {
+    description: "La città imperiale degli Asburgo, capitale mondiale della musica classica. Palazzi barocchi, Schönbrunn e Wiener Schnitzel — eleganza pura.",
+    highlights: ["37 palazzi e musei imperiali", "Patrimonio musicale di Mozart & Beethoven", "Caffè storici leggendari"],
+    topLandmarks: [
+      { name: "Palazzo Schönbrunn", pts: 650, emoji: "🏰" },
+      { name: "Stephansdom",        pts: 500, emoji: "⛪" },
+      { name: "Belvedere",          pts: 550, emoji: "🎨" },
+    ],
+    openDate: "Ottobre 2025",
+    bestFor: "Musica & Architettura Imperiale",
+    countryEmoji: "🇦🇹",
+  },
+  "Lisbona": {
+    description: "La città dalle sette colline e dai vicoli lastricati dove il fado risuona tra le azulejos. La capitale più autentica dell'Europa occidentale.",
+    highlights: ["29 luoghi da scoprire", "Tram storico n.28 iconico", "Belém e la Torre famosa"],
+    topLandmarks: [
+      { name: "Torre de Belém",          pts: 550, emoji: "🗼" },
+      { name: "Mosteiro dos Jerónimos",  pts: 600, emoji: "⛪" },
+      { name: "Castelo de S. Jorge",     pts: 500, emoji: "🏰" },
+    ],
+    openDate: "Novembre 2025",
+    bestFor: "Cultura Fado & Storia",
+    countryEmoji: "🇵🇹",
+  },
+  "Praga": {
+    description: "La città dalle cento torri con il suo centro medievale intatto e magico. Castello di Praga, Ponte Carlo e birra artigianale a fiumi.",
+    highlights: ["44 gioielli medievali", "Castello più grande d'Europa", "Birre artigianali leggendarie"],
+    topLandmarks: [
+      { name: "Castello di Praga",              pts: 700, emoji: "🏰" },
+      { name: "Ponte Carlo",                     pts: 550, emoji: "🌉" },
+      { name: "Piazza della Città Vecchia",      pts: 450, emoji: "🏟️" },
+    ],
+    openDate: "Dicembre 2025",
+    bestFor: "Medioevo & Birra Artigianale",
+    countryEmoji: "🇨🇿",
+  },
+  "Budapest": {
+    description: "La Perla del Danubio divisa in Buda e Pest, con terme storiche, un parlamento mozzafiato e una scena gastronomica in continua evoluzione.",
+    highlights: ["31 attrazioni sul Danubio", "Terme Széchenyi e Gellért", "Parlamento tra i più belli d'Europa"],
+    topLandmarks: [
+      { name: "Parlamento Ungherese", pts: 700, emoji: "🏛️" },
+      { name: "Castello di Buda",     pts: 600, emoji: "🏰" },
+      { name: "Terme Széchenyi",      pts: 400, emoji: "♨️" },
+    ],
+    openDate: "Gennaio 2026",
+    bestFor: "Terme & Architettura",
+    countryEmoji: "🇭🇺",
+  },
+  "Venezia": {
+    description: "La Serenissima galleggiante sull'acqua, labirinto di calli e ponti dove ogni angolo è una sorpresa. Unica, irripetibile, irresistibile.",
+    highlights: ["52 monumenti su acqua e terra", "Intero centro storico UNESCO", "Carnevale leggendario"],
+    topLandmarks: [
+      { name: "Piazza San Marco",  pts: 600, emoji: "🕌" },
+      { name: "Palazzo Ducale",    pts: 650, emoji: "🏛️" },
+      { name: "Ponte di Rialto",   pts: 450, emoji: "🌉" },
+    ],
+    openDate: "Febbraio 2026",
+    bestFor: "Canali & Arte Veneziana",
+    countryEmoji: "🇮🇹",
+  },
+  "Milano": {
+    description: "La capitale italiana della moda, del design e degli affari. Il Duomo imponente, l'Ultima Cena di Leonardo e i Navigli per gli aperitivi.",
+    highlights: ["28 destinazioni fashion & art", "Duomo tra le cattedrali più grandi al mondo", "Scena culturale e notturna vivace"],
+    topLandmarks: [
+      { name: "Duomo di Milano",                pts: 700, emoji: "⛪" },
+      { name: "Ultima Cena (da Vinci)",          pts: 750, emoji: "🖼️" },
+      { name: "Galleria Vittorio Emanuele II",   pts: 450, emoji: "🏛️" },
+    ],
+    openDate: "Marzo 2026",
+    bestFor: "Moda & Design",
+    countryEmoji: "🇮🇹",
+  },
+  "Berlino": {
+    description: "La capitale tedesca reinventata, dove storia difficile incontra arte d'avanguardia. Muro, Brandeburgo, musei di livello mondiale e nightlife globale.",
+    highlights: ["46 luoghi di storia e cultura", "Isola dei Musei UNESCO", "Nightlife famosa in tutto il mondo"],
+    topLandmarks: [
+      { name: "Porta di Brandeburgo", pts: 600, emoji: "🏛️" },
+      { name: "Museo di Pergamo",     pts: 550, emoji: "🏺" },
+      { name: "Muro di Berlino",      pts: 500, emoji: "🧱" },
+    ],
+    openDate: "Aprile 2026",
+    bestFor: "Storia & Arte Contemporanea",
+    countryEmoji: "🇩🇪",
+  },
+  "Siviglia": {
+    description: "Il cuore dell'Andalusia, patria del flamenco e dell'architettura moresca. Real Alcázar, Catedral e tapas infinite sotto il sole.",
+    highlights: ["22 tesori andalusi", "Real Alcázar patrimonio UNESCO", "Flamenco autentico ogni sera"],
+    topLandmarks: [
+      { name: "Real Alcázar",          pts: 600, emoji: "🏰" },
+      { name: "Cattedrale di Siviglia", pts: 700, emoji: "⛪" },
+      { name: "Plaza de España",        pts: 450, emoji: "🏟️" },
+    ],
+    openDate: "Maggio 2026",
+    bestFor: "Flamenco & Architettura Moresca",
+    countryEmoji: "🇪🇸",
+  },
+  "Atene": {
+    description: "La culla della civiltà occidentale, dove la democrazia e la filosofia sono nate. Acropoli, Partenone e souvlaki — un viaggio nella storia.",
+    highlights: ["35 siti dell'antichità classica", "Acropoli: monumento più emblematico d'Europa", "Cucina greca autentica"],
+    topLandmarks: [
+      { name: "Partenone / Acropoli",  pts: 850, emoji: "🏛️" },
+      { name: "Museo dell'Acropoli",   pts: 550, emoji: "🏺" },
+      { name: "Agorà Antica",          pts: 450, emoji: "⚱️" },
+    ],
+    openDate: "Giugno 2026",
+    bestFor: "Archeologia & Cultura Greca",
+    countryEmoji: "🇬🇷",
+  },
+};
 
 // ── Testimonials ────────────────────────────────────────────────────────────
 
@@ -197,34 +371,19 @@ const PAYOUT_STEPS = [
 function CityCard({
   city,
   index,
-  onAuthOpen,
-  user,
+  onSelect,
 }: {
   city: typeof CITIES[number];
   index: number;
-  onAuthOpen: () => void;
-  user: unknown;
+  onSelect: () => void;
 }) {
-  const [tapped, setTapped] = useState(false);
-
-  const handleTap = () => {
-    if (!city.active) {
-      setTapped(true);
-      setTimeout(() => setTapped(false), 900);
-      return;
-    }
-    if (!user) { onAuthOpen(); return; }
-    window.location.href = "/scan";
-  };
-
   return (
     <motion.div
-      key={city.name}
       initial={{ opacity: 0, x: 24 }}
       animate={{ opacity: 1, x: 0 }}
       transition={{ delay: 0.9 + index * 0.07 }}
       whileTap={{ scale: 0.95 }}
-      onClick={handleTap}
+      onClick={onSelect}
       className="relative flex-shrink-0 w-44 snap-start rounded-2xl overflow-hidden h-60 border border-white/10 cursor-pointer select-none"
       style={{ WebkitTapHighlightColor: "transparent" }}
     >
@@ -240,23 +399,6 @@ function CityCard({
       {/* Hover shimmer */}
       <div className="absolute inset-0 bg-white/0 hover:bg-white/5 transition-colors duration-200 rounded-2xl" />
 
-      {/* "Prossimamente" tap feedback */}
-      <AnimatePresence>
-        {tapped && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            className="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50 backdrop-blur-sm"
-          >
-            <div className="flex flex-col items-center gap-1">
-              <span className="text-2xl">🔜</span>
-              <span className="text-xs font-black text-white">Prossimamente!</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
       {/* Live / soon badge */}
       <div className="absolute top-2.5 right-2.5">
         {city.active ? (
@@ -271,14 +413,12 @@ function CityCard({
         )}
       </div>
 
-      {/* Tap arrow for active cities */}
-      {city.active && (
-        <div className="absolute top-2.5 left-2.5">
-          <span className="flex items-center justify-center h-6 w-6 rounded-full bg-[#FFD700]/20 border border-[#FFD700]/40 backdrop-blur-sm">
-            <ChevronRight size={12} className="text-[#FFD700]" />
-          </span>
-        </div>
-      )}
+      {/* Info chip bottom-left */}
+      <div className="absolute top-2.5 left-2.5">
+        <span className="flex items-center justify-center h-6 w-6 rounded-full bg-black/40 border border-white/20 backdrop-blur-sm">
+          <Info size={11} className="text-white/60" />
+        </span>
+      </div>
 
       {/* City info */}
       <div className="absolute bottom-0 left-0 right-0 p-3">
@@ -287,6 +427,153 @@ function CityCard({
         <p className="text-[11px] text-white/55 mt-0.5">{city.landmarks} monumenti</p>
       </div>
     </motion.div>
+  );
+}
+
+// ── City detail modal ─────────────────────────────────────────────────────────
+
+function CityDetailModal({
+  city,
+  onClose,
+  user,
+  onAuthOpen,
+}: {
+  city: typeof CITIES[number] | null;
+  onClose: () => void;
+  user: unknown;
+  onAuthOpen: () => void;
+}) {
+  const details = city ? CITY_DETAILS[city.name] : null;
+
+  return (
+    <BottomSheet open={!!city} onClose={onClose} snapTo="full">
+      {city && details && (
+        <div className="pb-10">
+          {/* Hero image */}
+          <div className="relative h-52 w-full overflow-hidden rounded-t-none">
+            <Image src={city.img} alt={city.name} fill className="object-cover" sizes="100vw" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/30 to-transparent" />
+
+            {/* Status badge */}
+            <div className="absolute top-4 right-4">
+              {city.active ? (
+                <span className="flex items-center gap-1.5 rounded-full bg-green-500/80 border border-green-400/50 px-3 py-1 text-[11px] font-black text-white backdrop-blur-sm">
+                  <span className="h-1.5 w-1.5 rounded-full bg-white animate-pulse" />
+                  LIVE ORA
+                </span>
+              ) : (
+                <span className="rounded-full bg-black/50 border border-white/25 px-3 py-1 text-[11px] font-bold text-white/80 backdrop-blur-sm">
+                  🗓 {details.openDate ?? "Prossimamente"}
+                </span>
+              )}
+            </div>
+
+            {/* Close button */}
+            <button
+              onClick={onClose}
+              className="absolute top-4 left-4 flex h-8 w-8 items-center justify-center rounded-full bg-black/50 border border-white/20 backdrop-blur-sm"
+            >
+              <X size={14} className="text-white/80" />
+            </button>
+
+            {/* City name overlay */}
+            <div className="absolute bottom-4 left-5">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/60 mb-0.5">
+                {details.countryEmoji} {city.country}
+              </p>
+              <h2 className="text-3xl font-black text-white">{city.name}</h2>
+            </div>
+          </div>
+
+          {/* Content */}
+          <div className="px-5 pt-5 space-y-5">
+            {/* Description */}
+            <p className="text-sm text-white/70 leading-relaxed">{details.description}</p>
+
+            {/* Stats row */}
+            <div className="grid grid-cols-3 gap-2">
+              <div className="rounded-xl bg-white/[0.05] border border-white/10 p-3 text-center">
+                <p className="text-xl font-black text-[#FFD700]">{city.landmarks}</p>
+                <p className="text-[10px] text-white/40 mt-0.5">Monumenti</p>
+              </div>
+              <div className="rounded-xl bg-white/[0.05] border border-white/10 p-3 text-center">
+                <p className="text-xl font-black text-[#FFD700]">
+                  {details.topLandmarks.reduce((a, l) => a + l.pts, 0)}+
+                </p>
+                <p className="text-[10px] text-white/40 mt-0.5">Punti top 3</p>
+              </div>
+              <div className="rounded-xl bg-white/[0.05] border border-white/10 p-3 text-center">
+                <p className="text-xl font-black text-white/60">{city.active ? "🟢" : "🔜"}</p>
+                <p className="text-[10px] text-white/40 mt-0.5">{city.active ? "Disponibile" : "In arrivo"}</p>
+              </div>
+            </div>
+
+            {/* Highlights */}
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-2">Highlights</p>
+              <div className="space-y-2">
+                {details.highlights.map((h) => (
+                  <div key={h} className="flex items-center gap-2">
+                    <CheckCircle2 size={13} className="text-[#FFD700] flex-shrink-0" />
+                    <p className="text-sm text-white/65">{h}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Top Landmarks */}
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-2">Top Monumenti</p>
+              <div className="grid grid-cols-3 gap-2">
+                {details.topLandmarks.map((lm) => (
+                  <div key={lm.name} className="rounded-xl bg-white/[0.05] border border-white/8 p-3 text-center">
+                    <p className="text-2xl mb-1">{lm.emoji}</p>
+                    <p className="text-[10px] font-bold text-white/70 leading-tight line-clamp-2">{lm.name}</p>
+                    <p className="text-[11px] font-black text-[#FFD700] mt-1">+{lm.pts}pt</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Best For tag */}
+            <div className="flex items-center gap-2 rounded-xl bg-white/[0.04] border border-white/8 px-4 py-3">
+              <Sparkles size={14} className="text-[#FFD700]" />
+              <p className="text-xs text-white/60">
+                <span className="font-bold text-white/80">Ideale per:</span> {details.bestFor}
+              </p>
+            </div>
+
+            {/* CTA */}
+            {city.active ? (
+              user ? (
+                <Link
+                  href="/scan"
+                  onClick={onClose}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-sm font-black text-slate-900 shadow-[0_4px_24px_rgba(255,215,0,0.32)]"
+                >
+                  <Navigation2 size={16} />
+                  Inizia a Esplorare {city.name}
+                </Link>
+              ) : (
+                <button
+                  onClick={() => { onClose(); onAuthOpen(); }}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-sm font-black text-slate-900 shadow-[0_4px_24px_rgba(255,215,0,0.32)]"
+                >
+                  <Compass size={16} />
+                  Registrati e Inizia a Esplorare
+                </button>
+              )
+            ) : (
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-center">
+                <p className="text-xs text-white/40 mb-1">Disponibile a partire da</p>
+                <p className="text-2xl font-black text-[#FFD700]">{details.openDate ?? "Prossimamente"}</p>
+                <p className="text-xs text-white/30 mt-2">Segui WanderQuest per essere tra i primi esploratori</p>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </BottomSheet>
   );
 }
 
@@ -347,6 +634,7 @@ export default function HomePage() {
   const { user, loading } = useAuth();
   const { contest }       = useContest();
   const [authOpen, setAuthOpen] = useState(false);
+  const [selectedCity, setSelectedCity] = useState<typeof CITIES[number] | null>(null);
   /* iOS Safari "Add to Home Screen" hint — shown once per session */
   const [showInstallHint, setShowInstallHint] = useState(false);
 
@@ -461,13 +749,14 @@ export default function HomePage() {
               transition={{ delay: 0.2, duration: 0.55 }}
               className="font-serif text-[2.9rem] leading-[1.04] font-black mb-4"
             >
-              Esplora le Città,<br />
+              Ogni Angolo<br />Nasconde
+              <br />
               <span style={{
                 background: "linear-gradient(135deg,#FFD700 0%,#FFA500 100%)",
                 WebkitBackgroundClip: "text",
                 WebkitTextFillColor: "transparent",
               }}>
-                Vinci in Euro
+                il Tuo Premio
               </span>
             </motion.h1>
 
@@ -477,8 +766,8 @@ export default function HomePage() {
               transition={{ delay: 0.35 }}
               className="text-base text-white/60 leading-relaxed mb-7 max-w-xs"
             >
-              Scansiona monumenti reali, scala la classifica e vinci premi in euro.
-              L&apos;avventura è dietro l&apos;angolo.
+              Visita monumenti reali, scala la classifica e incassa premi in euro veri.
+              La tua prossima avventura parte adesso.
             </motion.p>
 
             {user ? (
@@ -630,7 +919,7 @@ export default function HomePage() {
 
           <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {CITIES.map((city, i) => (
-              <CityCard key={city.name} city={city} index={i} onAuthOpen={() => setAuthOpen(true)} user={user} />
+              <CityCard key={city.name} city={city} index={i} onSelect={() => setSelectedCity(city)} />
             ))}
           </div>
         </section>
@@ -917,6 +1206,12 @@ export default function HomePage() {
 
       </div>
 
+      <CityDetailModal
+        city={selectedCity}
+        onClose={() => setSelectedCity(null)}
+        user={user}
+        onAuthOpen={() => setAuthOpen(true)}
+      />
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
     </>
   );

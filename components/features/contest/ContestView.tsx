@@ -40,6 +40,69 @@ import {
 import Image from "next/image";
 import { cn } from "@/lib/utils";
 
+// ── Prize tiers ───────────────────────────────────────────────────────────
+
+const PRIZE_TIERS = [
+  { rank: 1, emoji: "🥇", label: "1° posto", amount: "€200", color: "border-[#FFD700]/40 bg-[#FFD700]/8", textColor: "text-[#FFD700]" },
+  { rank: 2, emoji: "🥈", label: "2° posto", amount: "€100", color: "border-white/15 bg-white/[0.04]",   textColor: "text-white/70" },
+  { rank: 3, emoji: "🥉", label: "3° posto", amount: "€50",  color: "border-amber-700/30 bg-amber-900/10", textColor: "text-amber-400/80" },
+] as const;
+
+function PrizeTierBanner() {
+  return (
+    <div className="mx-4 my-3">
+      <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-2">Premi mensili</p>
+      <div className="grid grid-cols-3 gap-2">
+        {PRIZE_TIERS.map(({ rank, emoji, label, amount, color, textColor }) => (
+          <motion.div
+            key={rank}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: rank * 0.07 }}
+            className={`rounded-xl border p-3 text-center ${color}`}
+          >
+            <p className="text-xl mb-1">{emoji}</p>
+            <p className="text-[9px] font-bold uppercase tracking-wide text-white/40">{label}</p>
+            <p className={`text-base font-black ${textColor}`}>{amount}</p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ── Voting hint ────────────────────────────────────────────────────────────
+
+function VotingHint() {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 0.2 }}
+      className="mx-4 mb-3 rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3"
+    >
+      <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-2.5">Come votare</p>
+      <div className="grid grid-cols-3 gap-0 text-center divide-x divide-white/8">
+        <div className="px-2">
+          <p className="text-base mb-1">←</p>
+          <p className="text-[10px] font-bold text-red-400/80">Salta</p>
+          <p className="text-[9px] text-white/30">Scorri sx</p>
+        </div>
+        <div className="px-2">
+          <p className="text-base mb-1">↑</p>
+          <p className="text-[10px] font-bold text-[#FFD700]">Super Like</p>
+          <p className="text-[9px] text-[#FFD700]/50">+3 pt</p>
+        </div>
+        <div className="px-2">
+          <p className="text-base mb-1">→</p>
+          <p className="text-[10px] font-bold text-green-400/80">Like</p>
+          <p className="text-[9px] text-white/30">Scorri dx</p>
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 // ── Mock photos (shown while Firestore loads or in dev) ───────────────────
 
 const AVATAR_GRADIENTS = [
@@ -902,21 +965,26 @@ export function ContestView() {
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-xl border-b border-white/8">
         <div className="px-4 pt-14 pb-3 flex items-start justify-between gap-3">
-          <div>
-            <div className="flex items-center gap-2">
-              <Trophy className="text-[#FFD700]" size={20} />
-              <h1 className="text-xl font-black">
-                {contest?.title ?? "Photo Contest"}
-              </h1>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-1">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FFD700]/15 border border-[#FFD700]/25">
+                <Trophy className="text-[#FFD700]" size={16} />
+              </div>
+              <div>
+                <h1 className="text-xl font-black leading-tight">
+                  {contest?.title ?? "Photo Contest"}
+                </h1>
+                <p className="text-[10px] text-white/35 font-medium">Carica foto — vota — vinci premi reali</p>
+              </div>
             </div>
             {contest && (
-              <div className="flex items-center gap-3 mt-1">
-                <span className="text-[11px] text-[#FFD700]/70 font-bold flex items-center gap-1">
-                  <Sparkles size={10} />{formatCents(contest.prizePool)} in palio
+              <div className="flex items-center gap-2 mt-2 flex-wrap">
+                <span className="flex items-center gap-1 rounded-full bg-[#FFD700]/12 border border-[#FFD700]/25 px-2.5 py-1 text-[10px] font-black text-[#FFD700]">
+                  <Sparkles size={9} />{formatCents(contest.prizePool)} in palio
                 </span>
                 {timeLeft && timeLeft !== "Terminato" && (
-                  <span className="text-[11px] text-white/35">
-                    Scade in {timeLeft}
+                  <span className="flex items-center gap-1 rounded-full bg-white/6 border border-white/10 px-2.5 py-1 text-[10px] text-white/45">
+                    ⏱ Scade in {timeLeft}
                   </span>
                 )}
               </div>
@@ -968,6 +1036,8 @@ export function ContestView() {
       {/* ── Content ─────────────────────────────────────────────────────── */}
       {!user ? (
         <>
+          {/* Prize tiers visible even when locked */}
+          <PrizeTierBanner />
           <LockedContest prizePool={contest?.prizePool} onSignIn={() => setAuthOpen(true)} />
           {/* Still show a peek of the deck blurred */}
           <div className="relative mx-4 mt-4 h-48 rounded-3xl overflow-hidden pointer-events-none select-none">
@@ -985,6 +1055,9 @@ export function ContestView() {
         </>
       ) : (
         <>
+          {/* Prize tiers always visible */}
+          <PrizeTierBanner />
+
           <AnimatePresence mode="wait">
             {tab === "vote" ? (
               <motion.div
@@ -1001,7 +1074,7 @@ export function ContestView() {
                       initial={{ opacity: 0, y: -12 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -12 }}
-                      className="mx-4 mt-3 mb-1 flex items-center gap-2 rounded-2xl bg-green-500/12 border border-green-500/20 px-4 py-3"
+                      className="mx-4 mt-1 mb-1 flex items-center gap-2 rounded-2xl bg-green-500/12 border border-green-500/20 px-4 py-3"
                     >
                       <CheckCircle2 size={16} className="text-green-400" />
                       <p className="text-sm font-bold text-white">
@@ -1018,17 +1091,19 @@ export function ContestView() {
                 </AnimatePresence>
 
                 {/* Total votes earned today */}
-                {totalVoted > 0 && (
+                {totalVoted > 0 ? (
                   <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="mx-4 mt-3 mb-1 flex items-center gap-2 rounded-xl bg-white/4 border border-white/8 px-4 py-2.5"
+                    className="mx-4 mt-1 mb-1 flex items-center gap-2 rounded-xl bg-white/4 border border-white/8 px-4 py-2.5"
                   >
                     <TrendingUp size={13} className="text-[#FFD700]" />
                     <p className="text-xs text-white/50">
                       <span className="text-[#FFD700] font-black">{totalVoted}</span> vot{totalVoted === 1 ? "o" : "i"} dati — continua a votare per salire in classifica!
                     </p>
                   </motion.div>
+                ) : (
+                  <VotingHint />
                 )}
 
                 <VoteDeck
