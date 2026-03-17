@@ -8,8 +8,8 @@
 }
 
 @theme inline {
-  --font-sans:  var(--font-dm-sans);
-  --font-serif: var(--font-dm-serif);
+  --font-sans:  "DM Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "DM Serif Display", ui-serif, Georgia, serif;
   --color-gold: #FFD700;
   --color-blue: #3b82f6;
 }
@@ -31,7 +31,11 @@ body {
   color: #ffffff;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  padding-bottom: env(safe-area-inset-bottom);
+  /* Safe-area padding for standalone PWA / notch phones */
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
   overscroll-behavior-y: contain;
 }
 
