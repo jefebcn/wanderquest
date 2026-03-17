@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
@@ -27,6 +26,7 @@ import {
   Info,
 } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 // ── Bento step cards config ───────────────────────────────────────────────
 
@@ -176,16 +176,7 @@ function AnimatedPrize({ targetCents }: { targetCents: number }) {
 export default function HomePage() {
   const { user, loading } = useAuth();
   const { contest }       = useContest();
-  const router            = useRouter();
   const [authOpen, setAuthOpen] = useState(false);
-
-  // Logged-in users go straight to explore
-  useEffect(() => {
-    if (!loading && user) {
-      const onboarded = localStorage.getItem("wq_onboarded");
-      router.replace(onboarded ? "/scan" : "/onboarding");
-    }
-  }, [user, loading, router]);
 
   if (loading) {
     return (
@@ -194,7 +185,6 @@ export default function HomePage() {
       </div>
     );
   }
-  if (user) return null;
 
   return (
     <>
@@ -266,28 +256,47 @@ export default function HomePage() {
               L&apos;avventura è dietro l&apos;angolo.
             </motion.p>
 
-            <motion.button
-              initial={{ opacity: 0, scale: 0.93 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.5, type: "spring", stiffness: 300, damping: 24 }}
-              whileTap={{ scale: 0.96 }}
-              onClick={() => setAuthOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-[15px] font-black text-slate-900 shadow-[0_6px_32px_rgba(255,215,0,0.38)] hover:bg-yellow-300 transition-colors min-h-[52px]"
-            >
-              <Compass size={18} />
-              Inizia l&apos;avventura
-              <ChevronRight size={16} />
-            </motion.button>
+            {user ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.93 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.5, type: "spring", stiffness: 300, damping: 24 }}
+              >
+                <Link
+                  href="/scan"
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-[15px] font-black text-slate-900 shadow-[0_6px_32px_rgba(255,215,0,0.38)] hover:bg-yellow-300 transition-colors min-h-[52px]"
+                >
+                  <Trophy size={18} />
+                  Vai al Contest
+                  <ChevronRight size={16} />
+                </Link>
+              </motion.div>
+            ) : (
+              <>
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.93 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: 0.5, type: "spring", stiffness: 300, damping: 24 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={() => setAuthOpen(true)}
+                  className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-[15px] font-black text-slate-900 shadow-[0_6px_32px_rgba(255,215,0,0.38)] hover:bg-yellow-300 transition-colors min-h-[52px]"
+                >
+                  <Compass size={18} />
+                  Inizia l&apos;avventura
+                  <ChevronRight size={16} />
+                </motion.button>
 
-            <motion.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.7 }}
-              onClick={() => setAuthOpen(true)}
-              className="w-full text-center mt-3 text-xs text-white/38 py-2 hover:text-white/60 transition-colors"
-            >
-              Hai già un account? <span className="underline underline-offset-2">Accedi</span>
-            </motion.button>
+                <motion.button
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ delay: 0.7 }}
+                  onClick={() => setAuthOpen(true)}
+                  className="w-full text-center mt-3 text-xs text-white/38 py-2 hover:text-white/60 transition-colors"
+                >
+                  Hai già un account? <span className="underline underline-offset-2">Accedi</span>
+                </motion.button>
+              </>
+            )}
           </div>
         </section>
 
@@ -481,13 +490,23 @@ export default function HomePage() {
             <p className="text-sm text-white/48 mb-5 leading-relaxed">
               Registrati gratis in 30 secondi e inizia a guadagnare punti reali esplorando la tua città.
             </p>
-            <button
-              onClick={() => setAuthOpen(true)}
-              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-sm font-black text-slate-900 shadow-[0_4px_24px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
-            >
-              <Compass size={16} />
-              Crea account gratis
-            </button>
+            {user ? (
+              <Link
+                href="/scan"
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-sm font-black text-slate-900 shadow-[0_4px_24px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
+              >
+                <Trophy size={16} />
+                Vai al Contest
+              </Link>
+            ) : (
+              <button
+                onClick={() => setAuthOpen(true)}
+                className="flex w-full items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-4 text-sm font-black text-slate-900 shadow-[0_4px_24px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
+              >
+                <Compass size={16} />
+                Crea account gratis
+              </button>
+            )}
           </motion.div>
         </section>
 
