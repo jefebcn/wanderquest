@@ -1,94 +1,72 @@
 "use client";
 
 import { useState, useCallback, useRef } from "react";
+import { motion } from "framer-motion";
 import { Volume2, VolumeX, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface VoiceSynthesizerProps {
   text: string;
-  /** Optional pre-recorded audio URL (e.g., from Firebase Storage). */
   audioUrl?: string;
+  landmarkName?: string;
   className?: string;
 }
 
 type PlayState = "idle" | "loading" | "playing" | "error";
 
-/**
- * Narrates landmark descriptions using:
- * 1. Pre-recorded audio file from Firebase Storage (best quality).
- * 2. Browser Web Speech API (SpeechSynthesis) as fallback.
- * 3. Google TTS Cloud endpoint as final fallback.
- */
-export function VoiceSynthesizer({ text, audioUrl, className }: VoiceSynthesizerProps) {
+// ── Animated waveform bars ────────────────────────────────────────────────
+
+function SoundWave() {
+  const bars = [0.4, 0.9, 0.6, 1, 0.7, 0.85, 0.5];
+  return (
+    <span className="flex items-center gap-[2px] h-4" aria-hidden>
+      {bars.map((scale, i) => (
+        <motion.span
+          key={i}
+          className="w-[2px] rounded-full bg-current"
+          animate={{ scaleY: [1, scale, 0.3, scale, 1] }}
+          transition={{
+            duration: 1.1,
+            repeat: Infinity,
+            delay: i * 0.1,
+            ease: "easeInOut",
+          }}
+          style={{ height: 14, originY: 0.5 }}
+        />
+      ))}
+    </span>
+  );
+}
+
+export function VoiceSynthesizer({ text, audioUrl, landmarkName, className }: VoiceSynthesizerProps) {
   const [state, setState] = useState<PlayState>("idle");
   const audioRef          = useRef<HTMLAudioElement | null>(null);
-  const synthRef          = useRef<SpeechSynthesisUtterance | null>(null);
 
   const stop = useCallback(() => {
-    // Stop HTML audio
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
-    }
-    // Stop Web Speech API
-    if (typeof window !== "undefined" && window.speechSynthesis) {
-      window.speechSynthesis.cancel();
-    }
+    audioRef.current?.pause();
+    if (audioRef.current) audioRef.current.currentTime = 0;
+    window.speechSynthesis?.cancel();
     setState("idle");
   }, []);
 
   const playWithWebSpeech = useCallback(() => {
-    if (!window.speechSynthesis) {
-      setState("error");
-      return;
-    }
+    if (!window.speechSynthesis) { setState("error"); return; }
     const utter = new SpeechSynthesisUtterance(text);
     utter.lang  = "it-IT";
-    utter.rate  = 0.9;
-    // Prefer a natural Italian voice
-    const voices = window.speechSynthesis.getVoices();
+    utter.rate  = 0.88;
+    const voices  = window.speechSynthesis.getVoices();
     const italian = voices.find((v) => v.lang.startsWith("it") && v.localService);
     if (italian) utter.voice = italian;
-
     utter.onstart = () => setState("playing");
     utter.onend   = () => setState("idle");
-    utter.onerror = () => {
-      // Last-resort: Google TTS
-      playWithGoogleTTS();
-    };
-
-    synthRef.current = utter;
+    utter.onerror = () => setState("error");
     window.speechSynthesis.speak(utter);
-  }, [text]);
-
-  const playWithGoogleTTS = useCallback(async () => {
-    setState("loading");
-    try {
-      const res = await fetch(
-        `https://translate.google.com/translate_tts?ie=UTF-8&q=${encodeURIComponent(
-          text.slice(0, 200)
-        )}&tl=it&client=tw-ob`,
-        { headers: { "Referer": "http://www.google.com/" } }
-      );
-      if (!res.ok) throw new Error("TTS fetch failed");
-      const blob = URL.createObjectURL(await res.blob());
-      const audio = new Audio(blob);
-      audioRef.current = audio;
-      audio.onplay  = () => setState("playing");
-      audio.onended = () => setState("idle");
-      audio.onerror = () => setState("error");
-      audio.play();
-    } catch {
-      setState("error");
-    }
   }, [text]);
 
   const play = useCallback(async () => {
     if (state === "playing" || state === "loading") { stop(); return; }
-
     setState("loading");
 
-    // 1. Try pre-recorded audio from Firebase Storage
     if (audioUrl) {
       const audio = new Audio(audioUrl);
       audioRef.current = audio;
@@ -98,8 +76,6 @@ export function VoiceSynthesizer({ text, audioUrl, className }: VoiceSynthesizer
       audio.load();
       return;
     }
-
-    // 2. Web Speech API
     playWithWebSpeech();
   }, [state, audioUrl, stop, playWithWebSpeech]);
 
@@ -111,21 +87,25 @@ export function VoiceSynthesizer({ text, audioUrl, className }: VoiceSynthesizer
       onClick={play}
       aria-label={isPlaying ? "Ferma narrazione" : "Ascolta descrizione"}
       className={cn(
-        "flex items-center gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold transition-all",
+        "flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold",
+        "transition-all active:scale-95",
         isPlaying
-          ? "bg-amber-400/20 border border-amber-400/40 text-amber-400"
-          : "bg-white/8 text-white/60 hover:text-white hover:bg-white/12",
+          ? "bg-[#FFD700]/18 border border-[#FFD700]/35 text-[#FFD700]"
+          : "bg-white/8 border border-white/8 text-white/60 hover:text-white hover:bg-white/12",
         className
       )}
     >
       {isLoading ? (
-        <Loader2 size={14} className="animate-spin" />
+        <Loader2 size={14} className="animate-spin flex-shrink-0" />
       ) : isPlaying ? (
-        <VolumeX size={14} />
+        <>
+          <SoundWave />
+          <VolumeX size={13} className="flex-shrink-0" />
+        </>
       ) : (
-        <Volume2 size={14} />
+        <Volume2 size={14} className="flex-shrink-0" />
       )}
-      {isPlaying ? "Stop" : "Ascolta"}
+      <span>{isPlaying ? "Stop" : "Ascolta"}</span>
     </button>
   );
 }

@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor:  "#080C1A",
+  themeColor:  "#020617",
   initialScale: 1,
   width:       "device-width",
   viewportFit: "cover",
@@ -40,8 +40,8 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="it" className={`${dmSans.variable} ${dmSerif.variable}`}>
-      <body className="font-sans bg-[#080C1A] text-white antialiased">
-        <main className="relative">{children}</main>
+      <body className="font-sans bg-slate-950 text-white antialiased">
+        <main className="relative min-h-screen">{children}</main>
         <BottomNav />
       </body>
     </html>

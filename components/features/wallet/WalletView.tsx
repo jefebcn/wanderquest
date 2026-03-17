@@ -1,21 +1,181 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getAuth }    from "firebase/auth";
+import { motion } from "framer-motion";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { getWallet, requestWithdrawal, initiateStripeOnboarding } from "@/actions/wallet";
 import { WalletSkeleton } from "@/components/ui/Skeleton";
-import { formatCents }   from "@/lib/utils";
+import { formatCents } from "@/lib/utils";
 import type { UserWallet } from "@/types";
-import { Wallet, ArrowDownToLine, CreditCard, AlertCircle } from "lucide-react";
+import {
+  Wallet,
+  ArrowDownToLine,
+  CreditCard,
+  AlertCircle,
+  TrendingUp,
+  Clock,
+  CheckCircle2,
+  ChevronRight,
+  Lock,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+// ── Mock transaction history (replace with Firestore fetch when live) ──────
+// Each transaction would come from wallets/{uid}/transactions sub-collection
+interface Transaction {
+  id: string;
+  type: "earn" | "withdraw";
+  amountCents: number;
+  label: string;
+  timestamp: string; // ISO string
+  status: "completed" | "pending";
+}
+
+function useMockTransactions(wallet: UserWallet | null): Transaction[] {
+  if (!wallet) return [];
+  return [
+    { id: "1", type: "earn",     amountCents: 250,  label: "Colosseo — Check-in",        timestamp: new Date(Date.now() - 1000 * 3600 * 2).toISOString(),  status: "completed" },
+    { id: "2", type: "earn",     amountCents: 500,  label: "Pantheon — Check-in",         timestamp: new Date(Date.now() - 1000 * 3600 * 26).toISOString(), status: "completed" },
+    { id: "3", type: "earn",     amountCents: 750,  label: "Trevi Fountain — Check-in",   timestamp: new Date(Date.now() - 1000 * 3600 * 50).toISOString(), status: "completed" },
+    { id: "4", type: "withdraw", amountCents: 1000, label: "Prelievo Stripe",             timestamp: new Date(Date.now() - 1000 * 3600 * 72).toISOString(), status: "pending"   },
+    { id: "5", type: "earn",     amountCents: 300,  label: "Foro Romano — Check-in",      timestamp: new Date(Date.now() - 1000 * 3600 * 100).toISOString(),status: "completed" },
+  ];
+}
+
+function fmtDate(iso: string) {
+  const d = new Date(iso);
+  return d.toLocaleDateString("it-IT", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+}
+
+// ── Prize Card ────────────────────────────────────────────────────────────
+
+function PrizeCard({ wallet }: { wallet: UserWallet }) {
+  const progressPct = Math.min(100, (wallet.balanceCents / 500) * 100);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      className={cn(
+        "relative overflow-hidden rounded-3xl p-6",
+        "bg-gradient-to-br from-blue-600/40 via-indigo-700/30 to-[#FFD700]/20",
+        "border border-white/12",
+        "shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]"
+      )}
+    >
+      {/* Background glow */}
+      <div className="pointer-events-none absolute -top-10 -right-10 h-40 w-40 rounded-full bg-[#FFD700]/10 blur-3xl" />
+      <div className="pointer-events-none absolute -bottom-6 -left-6 h-32 w-32 rounded-full bg-blue-500/15 blur-2xl" />
+
+      {/* Card header */}
+      <div className="flex items-start justify-between mb-4">
+        <div>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Saldo Disponibile</p>
+          <p className="text-4xl font-black text-white mt-0.5 tabular-nums">
+            {formatCents(wallet.balanceCents)}
+          </p>
+        </div>
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
+          <Wallet size={18} className="text-[#FFD700]" />
+        </div>
+      </div>
+
+      {/* Stats row */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <div className="rounded-2xl bg-white/8 border border-white/8 p-3">
+          <p className="text-[10px] text-white/45 flex items-center gap-1">
+            <TrendingUp size={10} /> Totale guadagnato
+          </p>
+          <p className="text-sm font-black mt-0.5">{formatCents(wallet.totalEarnedCents)}</p>
+        </div>
+        <div className="rounded-2xl bg-white/8 border border-white/8 p-3">
+          <p className="text-[10px] text-white/45 flex items-center gap-1">
+            <Clock size={10} /> In elaborazione
+          </p>
+          <p className="text-sm font-black mt-0.5">
+            {wallet.pendingCents > 0 ? formatCents(wallet.pendingCents) : "—"}
+          </p>
+        </div>
+      </div>
+
+      {/* Progress toward minimum */}
+      {wallet.balanceCents < 500 && (
+        <div>
+          <div className="flex justify-between text-[10px] text-white/45 mb-1.5">
+            <span>Verso il prelievo minimo</span>
+            <span>{formatCents(wallet.balanceCents)} / €5.00</span>
+          </div>
+          <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPct}%` }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+              className="h-full rounded-full bg-gradient-to-r from-blue-400 to-[#FFD700]"
+            />
+          </div>
+        </div>
+      )}
+    </motion.div>
+  );
+}
+
+// ── Transaction row ───────────────────────────────────────────────────────
+
+function TransactionRow({ tx, index }: { tx: Transaction; index: number }) {
+  const isEarn = tx.type === "earn";
+  return (
+    <motion.div
+      initial={{ opacity: 0, x: -12 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.1 + index * 0.05, duration: 0.25 }}
+      className="flex items-center gap-3 py-3 border-b border-white/6 last:border-0"
+    >
+      {/* Icon */}
+      <div
+        className={cn(
+          "flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-2xl",
+          isEarn ? "bg-green-500/12" : "bg-blue-500/12"
+        )}
+      >
+        {isEarn ? (
+          <TrendingUp size={15} className="text-green-400" />
+        ) : (
+          <ArrowDownToLine size={15} className="text-blue-400" />
+        )}
+      </div>
+
+      {/* Label */}
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-bold truncate text-white">{tx.label}</p>
+        <p className="text-[11px] text-white/35 flex items-center gap-1">
+          {tx.status === "pending" ? (
+            <><Clock size={9} className="inline" /> In attesa</>
+          ) : (
+            <><CheckCircle2 size={9} className="inline" /> {fmtDate(tx.timestamp)}</>
+          )}
+        </p>
+      </div>
+
+      {/* Amount */}
+      <p className={cn("text-sm font-black tabular-nums", isEarn ? "text-green-400" : "text-blue-400")}>
+        {isEarn ? "+" : "−"}{formatCents(tx.amountCents)}
+      </p>
+    </motion.div>
+  );
+}
+
+// ── Main View ─────────────────────────────────────────────────────────────
 
 export function WalletView() {
-  const [wallet, setWallet]     = useState<UserWallet | null>(null);
-  const [loading, setLoading]   = useState(true);
-  const [amount, setAmount]     = useState("");
-  const [method, setMethod]     = useState<"stripe" | "paypal">("stripe");
-  const [message, setMessage]   = useState<{ ok: boolean; text: string } | null>(null);
-  const [busy, setBusy]         = useState(false);
+  const [wallet, setWallet]   = useState<UserWallet | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [amount, setAmount]   = useState("");
+  const [method, setMethod]   = useState<"stripe" | "paypal">("stripe");
+  const [message, setMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  const [busy, setBusy]       = useState(false);
+
+  const transactions = useMockTransactions(wallet);
 
   const loadWallet = async () => {
     const { auth } = getFirebaseClient();
@@ -32,23 +192,19 @@ export function WalletView() {
 
   useEffect(() => { loadWallet(); }, []);
 
+  const canWithdraw = wallet ? wallet.balanceCents >= 500 : false;
+
   const handleWithdraw = async () => {
     const cents = Math.round(parseFloat(amount) * 100);
-    if (!cents || cents < 500) {
-      setMessage({ ok: false, text: "Importo minimo: €5.00" });
-      return;
-    }
-    setBusy(true);
-    setMessage(null);
+    if (!cents || cents < 500) { setMessage({ ok: false, text: "Importo minimo: €5.00" }); return; }
+    setBusy(true); setMessage(null);
     try {
       const { auth } = getFirebaseClient();
       const tok = await auth.currentUser!.getIdToken();
       const res = await requestWithdrawal(tok, cents, method);
       setMessage({ ok: res.success, text: res.message });
       if (res.success) { setAmount(""); loadWallet(); }
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   };
 
   const handleStripeSetup = async () => {
@@ -58,95 +214,83 @@ export function WalletView() {
       const tok = await auth.currentUser!.getIdToken();
       const { url } = await initiateStripeOnboarding(tok, window.location.origin);
       window.location.href = url;
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   };
 
-  if (loading) return <div className="bg-[#080C1A] min-h-screen pt-14"><WalletSkeleton /></div>;
+  if (loading) return (
+    <div className="bg-slate-950 min-h-screen pt-14">
+      <WalletSkeleton />
+    </div>
+  );
 
-  if (!wallet) {
-    return (
-      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-[#080C1A] px-6 text-center text-white">
-        <Wallet size={48} className="text-amber-400/40" />
-        <p className="font-bold">Portafoglio non disponibile</p>
-        <p className="text-xs text-white/40">Accumula punti nelle classifiche per sbloccare i premi.</p>
-      </div>
-    );
-  }
+  if (!wallet) return (
+    <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 px-6 text-center text-white">
+      <Wallet size={48} className="text-[#FFD700]/40" />
+      <p className="font-bold">Portafoglio non disponibile</p>
+      <p className="text-xs text-white/40">Accumula punti nelle classifiche per sbloccare i premi.</p>
+    </div>
+  );
 
   return (
-    <div className="min-h-screen bg-[#080C1A] pb-24 text-white">
-      <div className="sticky top-0 z-10 border-b border-white/8 bg-[#080C1A]/95 px-4 pt-14 pb-4 backdrop-blur-md">
+    <div className="min-h-screen bg-slate-950 pb-24 text-white">
+      {/* Header */}
+      <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-14 pb-4 backdrop-blur-xl">
         <div className="flex items-center gap-2">
-          <Wallet className="text-amber-400" size={22} />
+          <Wallet className="text-[#FFD700]" size={22} />
           <h1 className="text-xl font-black">Portafoglio</h1>
         </div>
       </div>
 
-      <div className="px-4 pt-6 space-y-5">
-        {/* Balance card */}
-        <div className="rounded-3xl bg-gradient-to-br from-amber-500/20 via-amber-400/10 to-transparent border border-amber-400/20 p-6">
-          <p className="text-xs font-bold uppercase tracking-widest text-amber-400/70 mb-1">Saldo disponibile</p>
-          <p className="text-4xl font-black text-amber-400">{formatCents(wallet.balanceCents)}</p>
-          {wallet.pendingCents > 0 && (
-            <p className="text-xs text-white/40 mt-1">
-              {formatCents(wallet.pendingCents)} in elaborazione
-            </p>
-          )}
-          <div className="mt-4 pt-4 border-t border-white/10 grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <p className="text-white/40 text-xs">Totale guadagnato</p>
-              <p className="font-bold">{formatCents(wallet.totalEarnedCents)}</p>
-            </div>
-            <div>
-              <p className="text-white/40 text-xs">Prelievi</p>
-              <p className="font-bold">{formatCents(wallet.totalEarnedCents - wallet.balanceCents)}</p>
-            </div>
-          </div>
-        </div>
+      <div className="px-4 pt-5 space-y-5">
 
-        {/* Stripe connect */}
+        {/* Prize card */}
+        <PrizeCard wallet={wallet} />
+
+        {/* Stripe connect CTA */}
         {!wallet.stripeAccountId && (
-          <div className="rounded-2xl bg-white/4 border border-white/10 p-4 flex items-start gap-3">
-            <AlertCircle className="text-amber-400 flex-shrink-0 mt-0.5" size={18} />
+          <div className="rounded-2xl bg-blue-500/8 border border-blue-500/20 p-4 flex items-start gap-3">
+            <AlertCircle className="text-blue-400 flex-shrink-0 mt-0.5" size={18} />
             <div className="flex-1">
-              <p className="text-sm font-bold">Collega il tuo account pagamenti</p>
-              <p className="text-xs text-white/40 mt-0.5">Necessario per ricevere i premi sul tuo conto.</p>
+              <p className="text-sm font-bold">Collega account pagamenti</p>
+              <p className="text-xs text-white/40 mt-0.5">Necessario per ricevere i premi sul tuo conto bancario.</p>
               <button
                 onClick={handleStripeSetup}
                 disabled={busy}
-                className="mt-3 rounded-xl bg-indigo-500 px-4 py-2 text-xs font-black text-white hover:bg-indigo-400 disabled:opacity-50"
+                className="mt-3 flex items-center gap-1.5 rounded-xl bg-blue-500 px-4 py-2 text-xs font-black text-white hover:bg-blue-400 active:scale-95 transition-all disabled:opacity-50"
               >
-                <CreditCard size={13} className="inline mr-1.5" />
+                <CreditCard size={13} />
                 Configura Stripe
+                <ChevronRight size={12} />
               </button>
             </div>
           </div>
         )}
 
         {/* Withdrawal form */}
-        <div className="rounded-2xl bg-white/4 border border-white/10 p-4 space-y-3">
-          <h2 className="font-bold text-sm">Richiedi prelievo</h2>
+        <div className="rounded-2xl bg-white/4 border border-white/8 p-4 space-y-3">
+          <h2 className="font-black text-sm">Richiedi prelievo</h2>
 
+          {/* Method selector */}
           <div className="flex gap-2">
             {(["stripe", "paypal"] as const).map((m) => (
               <button
                 key={m}
                 onClick={() => setMethod(m)}
-                className={`flex-1 rounded-xl py-2.5 text-xs font-bold transition-all ${
+                className={cn(
+                  "flex-1 rounded-xl py-2.5 text-xs font-bold transition-all active:scale-95",
                   method === m
-                    ? "bg-amber-400/20 border border-amber-400/40 text-amber-400"
-                    : "bg-white/6 text-white/40"
-                }`}
+                    ? "bg-blue-500/20 border border-blue-500/40 text-blue-300"
+                    : "bg-white/6 border border-transparent text-white/40 hover:text-white/60"
+                )}
               >
                 {m === "stripe" ? "💳 Stripe" : "🅿️ PayPal"}
               </button>
             ))}
           </div>
 
+          {/* Amount input */}
           <div className="relative">
-            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 font-bold text-sm">€</span>
+            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-bold text-sm">€</span>
             <input
               type="number"
               min="5"
@@ -154,26 +298,56 @@ export function WalletView() {
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0.00"
-              className="w-full rounded-xl bg-white/6 border border-white/10 pl-7 pr-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-amber-400/50"
+              disabled={!canWithdraw}
+              className="w-full rounded-xl bg-white/6 border border-white/10 pl-8 pr-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-blue-500/50 disabled:opacity-40"
             />
           </div>
 
+          {/* Error/success message */}
           {message && (
-            <p className={`text-xs rounded-xl px-3 py-2 ${message.ok ? "bg-green-500/15 text-green-400" : "bg-red-500/10 text-red-400"}`}>
+            <p className={cn(
+              "text-xs rounded-xl px-3 py-2.5",
+              message.ok ? "bg-green-500/12 text-green-400" : "bg-red-500/10 text-red-400"
+            )}>
               {message.text}
             </p>
           )}
 
+          {/* Withdraw button */}
           <button
             onClick={handleWithdraw}
-            disabled={busy || !amount || wallet.balanceCents < 500}
-            className="w-full rounded-xl bg-amber-400 py-3 text-sm font-black text-[#080C1A] disabled:opacity-40 flex items-center justify-center gap-2"
+            disabled={busy || !amount || !canWithdraw}
+            className={cn(
+              "relative w-full overflow-hidden rounded-xl py-3.5 text-sm font-black",
+              "flex items-center justify-center gap-2",
+              "transition-all duration-200 active:scale-95",
+              canWithdraw && !busy
+                ? "bg-blue-500 text-white hover:bg-blue-400 shadow-[0_4px_16px_rgba(59,130,246,0.35)]"
+                : "bg-white/8 text-white/30 cursor-not-allowed"
+            )}
           >
-            <ArrowDownToLine size={16} />
-            {busy ? "Elaborazione…" : "Preleva ora"}
+            {!canWithdraw && <Lock size={14} />}
+            <ArrowDownToLine size={15} />
+            {busy ? "Elaborazione…" : canWithdraw ? "Preleva ora" : "Saldo insufficiente"}
           </button>
-          <p className="text-xs text-white/30 text-center">Prelievo minimo: €5 · Elaborato in 1–3 giorni</p>
+
+          <p className="text-[11px] text-white/25 text-center">
+            Prelievo minimo €5 · Elaborato in 1–3 giorni lavorativi
+          </p>
         </div>
+
+        {/* Transaction history */}
+        {transactions.length > 0 && (
+          <div className="rounded-2xl bg-white/4 border border-white/8 p-4">
+            <h2 className="font-black text-sm mb-1">Cronologia</h2>
+            <div>
+              {transactions.map((tx, idx) => (
+                <TransactionRow key={tx.id} tx={tx} index={idx} />
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
