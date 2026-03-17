@@ -1,14 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 import { useContest }     from "@/hooks/useContest";
 import { useAuth }        from "@/hooks/useAuth";
 import { AuthModal }      from "@/components/features/auth/AuthModal";
 import { LeaderboardSkeleton } from "@/components/ui/Skeleton";
 import { formatCents }    from "@/lib/utils";
-import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin } from "lucide-react";
+import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin, Shield, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import type { LeaderboardEntry } from "@/types";
@@ -278,7 +278,200 @@ function LockedLeaderboard({ onSignIn }: { onSignIn: () => void }) {
   );
 }
 
-type LbTab = "points" | "photos";
+// ── League config ─────────────────────────────────────────────────────────
+
+interface League {
+  id: "rookie" | "explorer" | "legend";
+  label: string;
+  emoji: string;
+  minPoints: number;
+  maxPoints: number | null;
+  color: string;
+  border: string;
+  bg: string;
+  glow: string;
+  desc: string;
+}
+
+const LEAGUES: League[] = [
+  {
+    id: "rookie",
+    label: "Rookie",
+    emoji: "🏅",
+    minPoints: 0,
+    maxPoints: 499,
+    color: "text-slate-300",
+    border: "border-slate-400/25",
+    bg: "bg-slate-400/8",
+    glow: "rgba(148,163,184,0.15)",
+    desc: "Guadagna 500 pt per scalare a Explorer",
+  },
+  {
+    id: "explorer",
+    label: "Explorer",
+    emoji: "⭐",
+    minPoints: 500,
+    maxPoints: 1999,
+    color: "text-blue-400",
+    border: "border-blue-400/25",
+    bg: "bg-blue-400/8",
+    glow: "rgba(96,165,250,0.15)",
+    desc: "Guadagna 2.000 pt per diventare Legend",
+  },
+  {
+    id: "legend",
+    label: "Legend",
+    emoji: "👑",
+    minPoints: 2000,
+    maxPoints: null,
+    color: "text-[#FFD700]",
+    border: "border-[#FFD700]/30",
+    bg: "bg-[#FFD700]/8",
+    glow: "rgba(255,215,0,0.18)",
+    desc: "Il top degli esploratori WanderQuest",
+  },
+];
+
+function getUserLeague(points: number): League {
+  return (
+    LEAGUES.slice().reverse().find((l) => points >= l.minPoints) ?? LEAGUES[0]
+  );
+}
+
+// ── Leagues tab panel ─────────────────────────────────────────────────────
+
+function LeaguesPanel({
+  entries,
+  myUserId,
+}: {
+  entries: LeaderboardEntry[];
+  myUserId?: string;
+}) {
+  const myEntry  = entries.find((e) => e.userId === myUserId);
+  const myPoints = myEntry?.points ?? 0;
+  const myLeague = getUserLeague(myPoints);
+
+  // Compute next league threshold progress
+  const nextPts  = myLeague.maxPoints ?? myLeague.minPoints;
+  const pct      = myLeague.maxPoints
+    ? Math.min(100, ((myPoints - myLeague.minPoints) / (myLeague.maxPoints - myLeague.minPoints + 1)) * 100)
+    : 100;
+
+  return (
+    <div className="px-4 pt-4 pb-6 space-y-5">
+      {/* Your current league */}
+      {myEntry && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.96 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 26 }}
+          className={cn(
+            "rounded-3xl border p-5 relative overflow-hidden",
+            myLeague.bg, myLeague.border
+          )}
+          style={{ boxShadow: `0 8px 32px ${myLeague.glow}` }}
+        >
+          <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full blur-3xl"
+            style={{ background: myLeague.glow }} />
+
+          <div className="flex items-center gap-3 mb-3">
+            <span className="text-3xl">{myLeague.emoji}</span>
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">La tua lega</p>
+              <p className={cn("text-xl font-black", myLeague.color)}>{myLeague.label}</p>
+            </div>
+            <div className="ml-auto text-right">
+              <p className="text-xs font-bold text-white/40">Punti totali</p>
+              <p className="text-lg font-black tabular-nums">{myPoints.toLocaleString("it-IT")}</p>
+            </div>
+          </div>
+
+          {myLeague.maxPoints && (
+            <>
+              <div className="flex justify-between text-[10px] text-white/35 mb-1">
+                <span>{myLeague.desc}</span>
+                <span>{myPoints} / {nextPts + 1}</span>
+              </div>
+              <div className="h-2 w-full rounded-full bg-black/30 overflow-hidden">
+                <motion.div
+                  initial={{ width: 0 }}
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                  className={cn(
+                    "h-full rounded-full",
+                    myLeague.id === "rookie" ? "bg-gradient-to-r from-slate-400 to-slate-300"
+                    : "bg-gradient-to-r from-blue-500 to-blue-300"
+                  )}
+                />
+              </div>
+            </>
+          )}
+          {!myLeague.maxPoints && (
+            <p className="text-[11px] text-[#FFD700]/60 font-bold flex items-center gap-1">
+              <Crown size={11} /> Hai raggiunto il massimo!
+            </p>
+          )}
+        </motion.div>
+      )}
+
+      {/* League breakdown */}
+      {LEAGUES.map((league, i) => {
+        const members = entries.filter((e) => getUserLeague(e.points).id === league.id);
+        const leader  = members[0];
+        return (
+          <motion.div
+            key={league.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 + i * 0.07 }}
+            className={cn("rounded-2xl border p-4", league.bg, league.border)}
+          >
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <span className="text-xl">{league.emoji}</span>
+                <div>
+                  <p className={cn("font-black text-sm", league.color)}>{league.label}</p>
+                  <p className="text-[10px] text-white/35">
+                    {league.maxPoints
+                      ? `${league.minPoints.toLocaleString("it-IT")} – ${league.maxPoints.toLocaleString("it-IT")} pt`
+                      : `${league.minPoints.toLocaleString("it-IT")}+ pt`}
+                  </p>
+                </div>
+              </div>
+              <div className="text-right">
+                <p className={cn("text-lg font-black", league.color)}>{members.length}</p>
+                <p className="text-[10px] text-white/35">giocatori</p>
+              </div>
+            </div>
+
+            {/* Top player in this league */}
+            {leader && (
+              <div className="flex items-center gap-2 rounded-xl bg-black/20 px-3 py-2">
+                <div className="h-7 w-7 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 flex items-center justify-center">
+                  {leader.photoURL
+                    ? <Image src={leader.photoURL} alt={leader.displayName} fill className="object-cover" sizes="28px" />
+                    : <span className="text-[10px] font-black text-white/60">{leader.displayName.slice(0, 2).toUpperCase()}</span>}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-bold truncate text-white">{leader.displayName}</p>
+                  <p className="text-[10px] text-white/35">leader della lega</p>
+                </div>
+                <p className={cn("text-xs font-black tabular-nums", league.color)}>
+                  {leader.points.toLocaleString("it-IT")} pt
+                </p>
+              </div>
+            )}
+            {members.length === 0 && (
+              <p className="text-[11px] text-white/25 text-center py-2">Nessun giocatore ancora in questa lega</p>
+            )}
+          </motion.div>
+        );
+      })}
+    </div>
+  );
+}
+
+type LbTab = "points" | "photos" | "leagues";
 
 // ── Main ──────────────────────────────────────────────────────────────────
 
@@ -344,8 +537,9 @@ export function LeaderboardView() {
         {/* Tab bar */}
         <div className="flex gap-0">
           {([
-            { id: "photos" as LbTab, label: "Voti Foto",  icon: Heart },
-            { id: "points" as LbTab, label: "Punti GPS",  icon: Trophy },
+            { id: "photos"  as LbTab, label: "Voti Foto",  icon: Heart   },
+            { id: "points"  as LbTab, label: "Punti GPS",  icon: Trophy  },
+            { id: "leagues" as LbTab, label: "Leghe",      icon: Shield  },
           ] as const).map(({ id, label, icon: Icon }) => (
             <button
               key={id}
@@ -369,84 +563,105 @@ export function LeaderboardView() {
         </div>
       </div>
 
-      {lbTab === "photos" ? (
-        /* ── Photo Votes Leaderboard ──────────────────────────────── */
-        <motion.div
-          key="photos-lb"
-          initial={{ opacity: 0, x: -16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.2 }}
-          className="px-4 pt-4 space-y-2"
-        >
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3 flex items-center gap-1.5">
-            <Heart size={11} className="text-rose-400" fill="currentColor" />
-            Classifica voti foto · {contest?.title ?? "Contest attivo"}
-          </p>
-          {MOCK_PHOTO_RANKINGS.map((entry, idx) => (
-            <PhotoRankRow
-              key={entry.userId}
-              entry={entry}
-              isMe={entry.userId === user?.uid}
-              index={idx}
-            />
-          ))}
-          <p className="text-[10px] text-white/20 text-center pt-2 pb-4">
-            1 Like = 1 punto · 1 Super Like = 3 punti · I voti ricevuti determinano il premio
-          </p>
-        </motion.div>
-      ) : (
-        /* ── GPS Points Leaderboard ───────────────────────────────── */
-        <motion.div
-          key="points-lb"
-          initial={{ opacity: 0, x: 16 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          {isLoading ? (
-            <LeaderboardSkeleton />
-          ) : entries.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 text-white/30">
-              <Trophy size={48} className="mb-3 opacity-30" />
-              <p className="text-sm">Nessun partecipante ancora.</p>
-              <p className="text-xs mt-1">Esplora i monumenti per entrare in classifica!</p>
-            </div>
-          ) : (
-            <>
-              {top3.length > 0 && (
-                <div className="px-4 pt-6 pb-2">
-                  <div className="flex items-end justify-center gap-2">
-                    {podium.map((entry) => (
-                      <PodiumPlace
-                        key={entry.userId}
-                        entry={entry}
-                        rank={entry.rank as 1 | 2 | 3}
-                        isMe={entry.userId === user?.uid}
-                      />
-                    ))}
-                  </div>
-                </div>
-              )}
-              {rest.length > 0 && (
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <div className="flex-1 h-px bg-white/8" />
-                  <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">Tutti i partecipanti</span>
-                  <div className="flex-1 h-px bg-white/8" />
-                </div>
-              )}
-              <div className="px-4 space-y-2">
-                {rest.map((entry, idx) => (
-                  <LeaderboardRow
-                    key={entry.userId}
-                    entry={entry}
-                    isMe={entry.userId === user?.uid}
-                    index={idx}
-                  />
-                ))}
+      {/* ── Liquid tab transitions via AnimatePresence ────────────── */}
+      <AnimatePresence mode="wait" initial={false}>
+        {lbTab === "photos" && (
+          <motion.div
+            key="photos-lb"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+            className="px-4 pt-4 space-y-2"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3 flex items-center gap-1.5">
+              <Heart size={11} className="text-rose-400" fill="currentColor" />
+              Classifica voti foto · {contest?.title ?? "Contest attivo"}
+            </p>
+            {MOCK_PHOTO_RANKINGS.map((entry, idx) => (
+              <PhotoRankRow
+                key={entry.userId}
+                entry={entry}
+                isMe={entry.userId === user?.uid}
+                index={idx}
+              />
+            ))}
+            <p className="text-[10px] text-white/20 text-center pt-2 pb-4">
+              1 Like = 1 punto · 1 Super Like = 3 punti · I voti ricevuti determinano il premio
+            </p>
+          </motion.div>
+        )}
+
+        {lbTab === "points" && (
+          <motion.div
+            key="points-lb"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+          >
+            {isLoading ? (
+              <LeaderboardSkeleton />
+            ) : entries.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-20 text-white/30">
+                <Trophy size={48} className="mb-3 opacity-30" />
+                <p className="text-sm">Nessun partecipante ancora.</p>
+                <p className="text-xs mt-1">Esplora i monumenti per entrare in classifica!</p>
               </div>
-            </>
-          )}
-        </motion.div>
-      )}
+            ) : (
+              <>
+                {top3.length > 0 && (
+                  <div className="px-4 pt-6 pb-2">
+                    <div className="flex items-end justify-center gap-2">
+                      {podium.map((entry) => (
+                        <PodiumPlace
+                          key={entry.userId}
+                          entry={entry}
+                          rank={entry.rank as 1 | 2 | 3}
+                          isMe={entry.userId === user?.uid}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {rest.length > 0 && (
+                  <div className="flex items-center gap-3 px-4 py-3">
+                    <div className="flex-1 h-px bg-white/8" />
+                    <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">Tutti i partecipanti</span>
+                    <div className="flex-1 h-px bg-white/8" />
+                  </div>
+                )}
+                <div className="px-4 space-y-2">
+                  {rest.map((entry, idx) => (
+                    <LeaderboardRow
+                      key={entry.userId}
+                      entry={entry}
+                      isMe={entry.userId === user?.uid}
+                      index={idx}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+          </motion.div>
+        )}
+
+        {lbTab === "leagues" && (
+          <motion.div
+            key="leagues-lb"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: 20 }}
+            transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
+          >
+            {isLoading ? (
+              <LeaderboardSkeleton />
+            ) : (
+              <LeaguesPanel entries={entries} myUserId={user?.uid} />
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Fixed "Your Rank" bar */}
       {myEntry && !isLoading && (

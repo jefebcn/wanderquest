@@ -44,6 +44,14 @@ export function useScanner(contestId?: string) {
 
         if (res.success) {
           setState("success");
+          // Haptic feedback — success pattern
+          if (typeof navigator !== "undefined" && navigator.vibrate) {
+            navigator.vibrate(
+              res.streakBonus && res.streakBonus > 0
+                ? [80, 40, 80, 40, 200]   // bonus prize pattern — stronger
+                : [80, 40, 80]             // standard success
+            );
+          }
         } else if (res.message.includes("troppo lontano")) {
           setState("too-far");
         } else if (res.message.includes("24 ore")) {

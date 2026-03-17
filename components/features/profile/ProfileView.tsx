@@ -9,6 +9,7 @@ import { CurrencyConverter } from "@/components/features/currency/CurrencyConver
 import { getWallet } from "@/actions/wallet";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { formatCents } from "@/lib/utils";
+import { useStreak } from "@/hooks/useStreak";
 import type { UserWallet } from "@/types";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -30,6 +31,7 @@ import {
   Lock,
   LogOut,
   ChevronRight,
+  CalendarDays,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -265,6 +267,100 @@ function WalletCard({ wallet }: { wallet: UserWallet }) {
   );
 }
 
+// ── Streak card ───────────────────────────────────────────────────────────
+
+interface StreakCardProps {
+  currentStreak: number;
+  longestStreak: number;
+}
+
+function StreakCard({ currentStreak, longestStreak }: StreakCardProps) {
+  // Progress toward the next bonus milestone
+  const nextMilestone = currentStreak < 3 ? 3 : currentStreak < 7 ? 7 : Math.ceil(currentStreak / 7) * 7;
+  const prev          = nextMilestone === 3 ? 0 : nextMilestone === 7 ? 3 : nextMilestone - 7;
+  const pct           = Math.min(100, ((currentStreak - prev) / (nextMilestone - prev)) * 100);
+
+  const isOnFire = currentStreak >= 3;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 14, scale: 0.97 }}
+      animate={{ opacity: 1, y: 0, scale: 1 }}
+      transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      className="relative overflow-hidden rounded-2xl border border-orange-500/25 bg-orange-500/8 p-4"
+      style={{ boxShadow: isOnFire ? "0 6px 24px rgba(249,115,22,0.18)" : undefined }}
+    >
+      {/* background glow */}
+      {isOnFire && (
+        <div className="pointer-events-none absolute -right-6 -top-6 h-24 w-24 rounded-full bg-orange-500/20 blur-2xl" />
+      )}
+
+      <div className="flex items-center gap-3 mb-3">
+        {/* Flame icon — pulses when streak active */}
+        <motion.div
+          animate={isOnFire ? { scale: [1, 1.15, 1] } : {}}
+          transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-orange-500/20"
+        >
+          <Flame size={20} className="text-orange-400" />
+        </motion.div>
+
+        <div className="flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">Streak Giornaliero</p>
+          <div className="flex items-baseline gap-1.5">
+            <span className="text-2xl font-black text-orange-400 tabular-nums">{currentStreak}</span>
+            <span className="text-xs text-white/40">
+              {currentStreak === 1 ? "giorno" : "giorni"} di fila
+            </span>
+          </div>
+        </div>
+
+        <div className="text-right">
+          <p className="text-[10px] text-white/30 font-bold flex items-center gap-0.5 justify-end">
+            <CalendarDays size={9} />
+            Record
+          </p>
+          <p className="text-sm font-black text-white/60 tabular-nums">{longestStreak}gg</p>
+        </div>
+      </div>
+
+      {/* Progress to next bonus */}
+      <div className="flex justify-between text-[9px] text-white/30 mb-1">
+        <span className="font-bold">
+          {currentStreak < 3
+            ? `+50 pt al ${nextMilestone}° giorno`
+            : `+150 pt ogni 7 giorni`}
+        </span>
+        <span>{currentStreak} / {nextMilestone}</span>
+      </div>
+      <div className="h-1.5 w-full rounded-full bg-black/30 overflow-hidden">
+        <motion.div
+          initial={{ width: 0 }}
+          animate={{ width: `${pct}%` }}
+          transition={{ duration: 0.7, delay: 0.2 }}
+          className="h-full rounded-full bg-gradient-to-r from-orange-600 to-orange-400"
+        />
+      </div>
+
+      {/* Day dots */}
+      <div className="flex gap-1.5 mt-3">
+        {Array.from({ length: 7 }).map((_, i) => (
+          <div
+            key={i}
+            className={cn(
+              "flex-1 h-1.5 rounded-full transition-colors",
+              i < (currentStreak % 7 === 0 && currentStreak > 0 ? 7 : currentStreak % 7)
+                ? "bg-orange-400"
+                : "bg-white/10"
+            )}
+          />
+        ))}
+      </div>
+      <p className="text-[9px] text-white/20 mt-1 text-right">prossimo bonus: {nextMilestone}gg</p>
+    </motion.div>
+  );
+}
+
 // ── Achievement grid ──────────────────────────────────────────────────────
 
 function BadgeGrid() {
@@ -362,6 +458,7 @@ function ScanTimeline() {
 export function ProfileView() {
   const { user, loading: authLoading, logout } = useAuth();
   const { contest } = useContest();
+  const { currentStreak, longestStreak } = useStreak();
   const [authOpen, setAuthOpen]   = useState(false);
   const [wallet, setWallet]       = useState<UserWallet | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
@@ -489,6 +586,9 @@ export function ProfileView() {
             <Link href="/wallet" className="ml-auto text-xs text-blue-400 underline">Apri</Link>
           </div>
         )}
+
+        {/* Streak Card */}
+        <StreakCard currentStreak={currentStreak} longestStreak={longestStreak} />
 
         {/* Badge Grid */}
         <BadgeGrid />

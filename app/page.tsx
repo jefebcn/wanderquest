@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { CurrencyConverter } from "@/components/features/currency/CurrencyConverter";
+import { WeatherQuest }      from "@/components/features/weather/WeatherQuest";
 import { formatCents } from "@/lib/utils";
 import {
   Compass,
@@ -484,6 +485,17 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ── AI WEATHERQUEST CARD ───────────────────────────────── */}
+        <section className="px-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.78 }}
+          >
+            <WeatherQuest />
+          </motion.div>
+        </section>
+
         {/* ── STATS ROW ──────────────────────────────────────────── */}
         <section className="px-4 mb-10">
           <motion.div
@@ -778,6 +790,37 @@ export default function HomePage() {
                 della normativa spagnola sui concorsi a premi (Real Decreto 1463/1997). La
                 partecipazione è gratuita. Il montepremi è finanziato dai ricavi della piattaforma,
                 non dai partecipanti. Vietata la partecipazione ai minori di 18 anni.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <Download size={12} className="text-purple-400/60 flex-shrink-0 mt-0.5" />
+              <p className="text-[10px] text-white/35 leading-relaxed">
+                <span className="text-white/55 font-bold">Basi del concorso:</span> Le basi complete del
+                concorso sono depositate ante notario e disponibili su richiesta a{" "}
+                <span className="text-white/55">legal@wanderquest.app</span>, in conformità all&apos;art.&nbsp;8
+                del Real Decreto 1463/1997 e alla Ley 13/2011 di regolamentazione del gioco.
+              </p>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <Sparkles size={12} className="text-orange-400/60 flex-shrink-0 mt-0.5" />
+              <p className="text-[10px] text-white/35 leading-relaxed">
+                <span className="text-white/55 font-bold">Link affiliati:</span> Alcune offerte di esperienze
+                e hotel presenti nell&apos;app sono link di affiliazione verso GetYourGuide e Booking.com.
+                WanderQuest può ricevere una commissione a fronte di prenotazioni effettuate tramite tali
+                link, senza costi aggiuntivi per l&apos;utente. Conforme alla Direttiva UE 2019/2161 (Omnibus).
+              </p>
+            </div>
+
+            <div className="flex items-start gap-2">
+              <Star size={12} className="text-white/20 flex-shrink-0 mt-0.5" />
+              <p className="text-[10px] text-white/35 leading-relaxed">
+                <span className="text-white/55 font-bold">RGPD / Datos personales:</span> I dati di
+                geolocalizzazione sono trattati esclusivamente per validare le visite ai monumenti e non
+                vengono ceduti a terzi. Responsabile del trattamento: WanderQuest S.L., CIF ficticio,
+                Barcelona. Diritti di accesso, rettifica, cancellazione e opposizione:
+                <span className="text-white/55"> privacy@wanderquest.app</span>. Conforme al RGPD (UE) 2016/679.
               </p>
             </div>
 
