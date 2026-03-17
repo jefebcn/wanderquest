@@ -257,7 +257,7 @@ export function ScannerView() {
         <p className="text-sm text-white/50">{errorMsg}</p>
         <motion.button whileTap={{ scale: 0.95 }} onClick={start} className="rounded-2xl bg-[#FFD700] px-6 py-3 font-black text-slate-950 shadow-[0_4px_18px_rgba(255,215,0,0.4)]">
           Riprova
-        </button>
+        </motion.button>
       </div>
     );
   }
