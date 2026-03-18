@@ -8,6 +8,7 @@
  */
 
 import { adminDb, adminAuth } from "@/lib/firebase/admin";
+import { cancelStripeSubscription } from "@/lib/stripe";
 import type { SubscriptionActivation } from "@/types";
 
 const PRO_DURATION_MS = 30 * 24 * 60 * 60 * 1000; // 30 days
@@ -74,6 +75,21 @@ export async function cancelProSubscription(
     return { success: false, message: "Non autenticato." };
   }
 
+  const userDoc = await adminDb().collection("users").doc(uid).get();
+  const userData = userDoc.data() ?? {};
+
+  // Cancel via Stripe if the subscription was created through Stripe
+  if (userData.stripeSubscriptionId) {
+    try {
+      await cancelStripeSubscription(userData.stripeSubscriptionId as string);
+      // Stripe webhook will downgrade the user when the period ends
+      return { success: true, message: "Abbonamento cancellato. Rimarrà attivo fino alla fine del periodo." };
+    } catch (err) {
+      console.error("[cancelProSubscription] Stripe cancel failed:", err);
+    }
+  }
+
+  // PayPal or manual: downgrade immediately in Firestore
   await adminDb()
     .collection("users")
     .doc(uid)
@@ -84,6 +100,7 @@ export async function cancelProSubscription(
         pointsMultiplier: 1.0,
         premiumExpiresAt: null,
         paypalSubscriptionId: null,
+        stripeSubscriptionId: null,
       },
       { merge: true }
     );

@@ -13,8 +13,9 @@ import {
   Crown, Zap, Map, ArrowUpCircle, Sparkles, CheckCircle2,
   CalendarDays, X, MessageSquare, Tag,
 } from "lucide-react";
-import { PayPalSubscriptionButton } from "./PayPalSubscriptionButton";
-import { cancelProSubscription }    from "@/actions/subscription";
+import { PayPalSubscriptionButton }  from "./PayPalSubscriptionButton";
+import { StripeSubscriptionButton }  from "./StripeSubscriptionButton";
+import { cancelProSubscription }     from "@/actions/subscription";
 import { getFirebaseClient }        from "@/lib/firebase/client";
 import { useSubscription }          from "@/hooks/useSubscription";
 import { cn } from "@/lib/utils";
@@ -262,8 +263,19 @@ export function GoPro({ variant = "full" }: Props) {
           ))}
         </div>
 
-        {/* PayPal subscription button */}
-        <PayPalSubscriptionButton onSuccess={() => setOpen(false)} />
+        {/* Payment options */}
+        <div className="space-y-3">
+          <PayPalSubscriptionButton onSuccess={() => setOpen(false)} />
+
+          {/* Divider */}
+          <div className="flex items-center gap-3">
+            <div className="flex-1 h-px bg-white/8" />
+            <span className="text-[10px] text-white/25 font-bold uppercase tracking-widest">oppure</span>
+            <div className="flex-1 h-px bg-white/8" />
+          </div>
+
+          <StripeSubscriptionButton />
+        </div>
 
         {/* Social proof */}
         <div className="flex items-center gap-2 mt-4 justify-center">
