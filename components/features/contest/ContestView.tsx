@@ -18,7 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { getFirebaseClient } from "@/lib/firebase/client";
-import { submitVote, saveContestPhoto, getMyPhotos } from "@/actions/contest-photos";
+import { submitVote, saveContestPhoto, getMyPhotos, getContestPhotos } from "@/actions/contest-photos";
 import { formatCents } from "@/lib/utils";
 import type { ContestPhoto, VoteType } from "@/types";
 import {
@@ -560,11 +560,13 @@ function UploadSheet({
   onClose,
   onSubmit,
   submitting,
+  uploadError,
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (file: File, caption: string, city: string) => void;
   submitting: boolean;
+  uploadError?: string | null;
 }) {
   const [preview, setPreview]   = useState<string | null>(null);
   const [file, setFile]         = useState<File | null>(null);
@@ -575,6 +577,11 @@ function UploadSheet({
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const f = e.target.files?.[0];
     if (!f) return;
+    // Validate file size (max 10 MB)
+    if (f.size > 10 * 1024 * 1024) {
+      alert("Foto troppo grande. Massimo 10 MB.");
+      return;
+    }
     setFile(f);
     const reader = new FileReader();
     reader.onload = (ev) => setPreview(ev.target?.result as string);
@@ -612,6 +619,7 @@ function UploadSheet({
             exit={{ y: "110%" }}
             transition={{ type: "spring", stiffness: 380, damping: 38 }}
             className="fixed bottom-0 left-0 right-0 z-[70] rounded-t-[30px] bg-slate-900 border-t border-white/12 pb-safe"
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Handle */}
             <div className="flex justify-center pt-3 pb-4">
@@ -653,7 +661,7 @@ function UploadSheet({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/*"
+                accept="image/jpeg,image/png,image/webp,image/heic,image/*"
                 className="hidden"
                 onChange={handleFile}
               />
@@ -687,6 +695,14 @@ function UploadSheet({
                   className="w-full rounded-xl bg-white/6 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-blue-500/50"
                 />
               </div>
+
+              {/* Error message */}
+              {uploadError && (
+                <div className="flex items-center gap-2 rounded-xl bg-red-500/12 border border-red-500/25 px-4 py-3">
+                  <X size={14} className="text-red-400 flex-shrink-0" />
+                  <p className="text-[12px] text-red-300">{uploadError}</p>
+                </div>
+              )}
 
               {/* Submit */}
               <motion.button
@@ -895,9 +911,32 @@ export function ContestView() {
   const [uploadOpen, setUploadOpen]    = useState(false);
   const [submitting, setSubmitting]    = useState(false);
   const [uploadDone, setUploadDone]    = useState(false);
+  const [uploadError, setUploadError]  = useState<string | null>(null);
   const [myPhotos, setMyPhotos]        = useState<ContestPhoto[]>([]);
   const [myPhotosLoading, setMyPhotosLoading] = useState(false);
   const [totalVoted, setTotalVoted]    = useState(0);
+  const [contestPhotos, setContestPhotos] = useState<ContestPhoto[]>(MOCK_PHOTOS);
+  const [contestPhotosLoading, setContestPhotosLoading] = useState(false);
+
+  // Load contest photos for voting when user + contest are ready
+  useEffect(() => {
+    if (!user || !contest) return;
+    setContestPhotosLoading(true);
+    (async () => {
+      try {
+        const { auth } = getFirebaseClient();
+        const tok = await auth.currentUser?.getIdToken();
+        if (tok) {
+          const { photos } = await getContestPhotos(tok, contest.id);
+          if (photos.length > 0) setContestPhotos(photos);
+        }
+      } catch {
+        // Fallback: keep MOCK_PHOTOS
+      } finally {
+        setContestPhotosLoading(false);
+      }
+    })();
+  }, [user, contest]);
 
   // Load my photos when tab switches to "mine"
   useEffect(() => {
@@ -920,20 +959,30 @@ export function ContestView() {
   }, [tab, user, contest]);
 
   const handleUploadSubmit = async (file: File, caption: string, city: string) => {
-    if (!contest || !user) return;
+    if (!user) {
+      setUploadError("Devi effettuare il login per caricare una foto.");
+      return;
+    }
+    if (!contest) {
+      setUploadError("Nessun contest attivo al momento. Riprova più tardi.");
+      return;
+    }
+    setUploadError(null);
     setSubmitting(true);
     try {
       const { storage, auth } = getFirebaseClient();
       // Upload image to Firebase Storage
       const { ref: storageRef, uploadBytes, getDownloadURL } = await import("firebase/storage");
-      const path = `contest_photos/${contest.id}/${user.uid}/${Date.now()}_${file.name}`;
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const path = `contest_photos/${contest.id}/${user.uid}/${Date.now()}_${safeName}`;
       const fileRef = storageRef(storage, path);
       await uploadBytes(fileRef, file);
       const imageUrl = await getDownloadURL(fileRef);
 
       // Save metadata via server action
       const tok = await auth.currentUser?.getIdToken();
-      if (tok) await saveContestPhoto(tok, contest.id, imageUrl, caption, city);
+      if (!tok) throw new Error("Token non disponibile");
+      await saveContestPhoto(tok, contest.id, imageUrl, caption, city);
 
       setUploadDone(true);
       setUploadOpen(false);
@@ -947,6 +996,7 @@ export function ContestView() {
       }
     } catch (err) {
       console.error("Upload failed:", err);
+      setUploadError("Errore durante il caricamento. Controlla la connessione e riprova.");
     } finally {
       setSubmitting(false);
     }
@@ -1106,11 +1156,17 @@ export function ContestView() {
                   <VotingHint />
                 )}
 
-                <VoteDeck
-                  photos={MOCK_PHOTOS}
-                  contestId={contest?.id}
-                  onVoteSubmitted={setTotalVoted}
-                />
+                {contestPhotosLoading ? (
+                  <div className="flex items-center justify-center py-20">
+                    <Loader2 size={28} className="animate-spin text-[#FFD700]/50" />
+                  </div>
+                ) : (
+                  <VoteDeck
+                    photos={contestPhotos}
+                    contestId={contest?.id}
+                    onVoteSubmitted={setTotalVoted}
+                  />
+                )}
               </motion.div>
             ) : (
               <motion.div
@@ -1138,9 +1194,10 @@ export function ContestView() {
       {/* ── Upload sheet ────────────────────────────────────────────────── */}
       <UploadSheet
         open={uploadOpen}
-        onClose={() => setUploadOpen(false)}
+        onClose={() => { setUploadOpen(false); setUploadError(null); }}
         onSubmit={handleUploadSubmit}
         submitting={submitting}
+        uploadError={uploadError}
       />
     </div>
   );
