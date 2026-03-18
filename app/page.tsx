@@ -1147,6 +1147,39 @@ export default function HomePage() {
           </motion.section>
         )}
 
+        {/* ── CITY EXPLORER ──────────────────────────────────────── */}
+        <section>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.68 }}
+            className="px-4 mb-4"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Scopri il Mondo</p>
+            <h2 className="text-2xl font-black">Cerca una città</h2>
+          </motion.div>
+          <CityExplorer />
+        </section>
+
+        {/* ── FEATURED CITIES — horizontal scroll ─────────────────── */}
+        <section className="mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+            className="px-4 mb-4"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Destinazioni</p>
+            <h2 className="text-2xl font-black">Esplora l&apos;Europa</h2>
+          </motion.div>
+
+          <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+            {CITIES.map((city, i) => (
+              <CityCard key={city.name} city={city} index={i} onSelect={() => setSelectedCity(city)} />
+            ))}
+          </div>
+        </section>
+
         {/* ── HOW IT WORKS — BENTO GRID ─────────────────────────── */}
         <section className="px-4 mb-10">
           <motion.div
@@ -1212,39 +1245,6 @@ export default function HomePage() {
               </div>
             ))}
           </motion.div>
-        </section>
-
-        {/* ── CITY EXPLORER ──────────────────────────────────────── */}
-        <section>
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.87 }}
-            className="px-4 mb-4"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Scopri il Mondo</p>
-            <h2 className="text-2xl font-black">Cerca una città</h2>
-          </motion.div>
-          <CityExplorer />
-        </section>
-
-        {/* ── FEATURED CITIES — horizontal scroll ─────────────────── */}
-        <section className="mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.88 }}
-            className="px-4 mb-4"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Destinazioni</p>
-            <h2 className="text-2xl font-black">Esplora l&apos;Europa</h2>
-          </motion.div>
-
-          <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-            {CITIES.map((city, i) => (
-              <CityCard key={city.name} city={city} index={i} onSelect={() => setSelectedCity(city)} />
-            ))}
-          </div>
         </section>
 
         {/* ── TESTIMONIALS ───────────────────────────────────────── */}

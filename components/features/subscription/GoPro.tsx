@@ -263,18 +263,21 @@ export function GoPro({ variant = "full" }: Props) {
           ))}
         </div>
 
-        {/* Payment options */}
+        {/* Payment options — Stripe (card) first, PayPal below */}
         <div className="space-y-3">
-          <PayPalSubscriptionButton onSuccess={() => setOpen(false)} />
-
-          {/* Divider */}
-          <div className="flex items-center gap-3">
-            <div className="flex-1 h-px bg-white/8" />
-            <span className="text-[10px] text-white/25 font-bold uppercase tracking-widest">oppure</span>
-            <div className="flex-1 h-px bg-white/8" />
-          </div>
-
           <StripeSubscriptionButton />
+
+          {process.env.NEXT_PUBLIC_PAYPAL_PLAN_ID_PRO && (
+            <>
+              {/* Divider */}
+              <div className="flex items-center gap-3">
+                <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+                <span className="text-[10px] text-white/25 font-bold uppercase tracking-widest">oppure</span>
+                <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
+              </div>
+              <PayPalSubscriptionButton onSuccess={() => setOpen(false)} />
+            </>
+          )}
         </div>
 
         {/* Social proof */}
