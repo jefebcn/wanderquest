@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
@@ -31,6 +31,11 @@ import {
   Download,
   Navigation2,
   X,
+  Search,
+  UtensilsCrossed,
+  Moon,
+  Landmark,
+  ChefHat,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -294,6 +299,310 @@ const CITY_DETAILS: Record<string, {
     countryEmoji: "🇬🇷",
   },
 };
+
+// ── City Explorer types ──────────────────────────────────────────────────────
+
+interface CitySearchResult {
+  city: string;
+  country: string;
+  countryEmoji: string;
+  description: string;
+  restaurants: Array<{ name: string; cuisine: string; rating: string; priceRange: string; tripadvisorRank: number }>;
+  typicalDish: { name: string; description: string; emoji: string };
+  monuments: Array<{ name: string; description: string; emoji: string; mustSee: boolean }>;
+  nightlife: Array<{ name: string; type: string; description: string; vibe: string }>;
+}
+
+// ── City Explorer component ──────────────────────────────────────────────────
+
+function CityExplorer() {
+  const [query, setQuery]       = useState("");
+  const [loading, setLoading]   = useState(false);
+  const [result, setResult]     = useState<CitySearchResult | null>(null);
+  const [error, setError]       = useState<string | null>(null);
+  const [open, setOpen]         = useState(false);
+  const inputRef                = useRef<HTMLInputElement>(null);
+
+  const search = useCallback(async (cityName: string) => {
+    const trimmed = cityName.trim();
+    if (trimmed.length < 2) return;
+
+    // Check local DB first
+    const localKey = Object.keys(CITY_DETAILS).find(
+      (k) => k.toLowerCase() === trimmed.toLowerCase(),
+    );
+    if (localKey) {
+      const city = CITIES.find((c) => c.name === localKey);
+      const details = CITY_DETAILS[localKey];
+      if (city && details) {
+        const localResult: CitySearchResult = {
+          city: localKey,
+          country: city.country,
+          countryEmoji: details.countryEmoji,
+          description: details.description,
+          restaurants: [
+            { name: "Ristorante #1", cuisine: "Cucina locale", rating: "4.8", priceRange: "€€€", tripadvisorRank: 1 },
+            { name: "Ristorante #2", cuisine: "Cucina tipica", rating: "4.6", priceRange: "€€",  tripadvisorRank: 2 },
+            { name: "Ristorante #3", cuisine: "Cucina moderna", rating: "4.5", priceRange: "€€€", tripadvisorRank: 3 },
+          ],
+          typicalDish: { name: details.bestFor, description: details.highlights[0] ?? "", emoji: "🍽️" },
+          monuments: details.topLandmarks.map((lm) => ({
+            name: lm.name,
+            description: `Uno dei luoghi più visitati di ${localKey}.`,
+            emoji: lm.emoji,
+            mustSee: true,
+          })),
+          nightlife: [
+            { name: "Bar centro storico", type: "Bar", description: `Atmosfera autentica nel cuore di ${localKey}.`, vibe: "Relax e cocktail" },
+            { name: "Club principale", type: "Club", description: "La discoteca più popolare della città.", vibe: "Energia & musica" },
+          ],
+        };
+        setResult(localResult);
+        setOpen(true);
+        setError(null);
+        return;
+      }
+    }
+
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`/api/city-search?city=${encodeURIComponent(trimmed)}`);
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error ?? "Errore nella ricerca");
+      }
+      const data: CitySearchResult = await res.json();
+      setResult(data);
+      setOpen(true);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Errore sconosciuto");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    search(query);
+  };
+
+  const NIGHTLIFE_ICONS: Record<string, string> = {
+    Club: "🎧",
+    Bar: "🍹",
+    Lounge: "✨",
+    Rooftop: "🌃",
+  };
+
+  return (
+    <>
+      {/* Search Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.82 }}
+        className="mx-4 mb-8 rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/8 to-indigo-500/5 p-5"
+        style={{ boxShadow: "0 8px 32px rgba(59,130,246,0.10)" }}
+      >
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/15">
+            <Search size={16} className="text-blue-400" />
+          </div>
+          <div>
+            <p className="text-sm font-black text-white">Esplora una città</p>
+            <p className="text-[10px] text-white/40">Ristoranti, monumenti, nightlife e molto altro</p>
+          </div>
+        </div>
+
+        <form onSubmit={handleSubmit} className="flex gap-2">
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30" />
+            <input
+              ref={inputRef}
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              placeholder='Es. "Malaga", "Tokyo", "Napoli"…'
+              className="w-full rounded-xl bg-white/6 border border-white/10 pl-9 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-blue-500/50 min-h-[44px]"
+            />
+          </div>
+          <motion.button
+            whileTap={{ scale: 0.95 }}
+            type="submit"
+            disabled={loading || query.trim().length < 2}
+            className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-3 text-[13px] font-black text-white disabled:opacity-40 min-h-[44px] min-w-[80px] justify-center"
+          >
+            {loading ? <Loader2 size={15} className="animate-spin" /> : "Cerca"}
+          </motion.button>
+        </form>
+
+        {error && (
+          <p className="mt-2 text-[11px] text-red-400">{error}</p>
+        )}
+
+        <p className="mt-3 text-[10px] text-white/25">
+          Powered by <span className="text-blue-400/70">Claude AI</span> — cerca qualsiasi città del mondo
+        </p>
+      </motion.div>
+
+      {/* Result Bottom Sheet */}
+      <AnimatePresence>
+        {open && result && (
+          <>
+            <motion.div
+              key="city-backdrop"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[60] bg-black/65 backdrop-blur-md"
+              onClick={() => setOpen(false)}
+            />
+            <motion.div
+              key="city-sheet"
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "110%" }}
+              transition={{ type: "spring", stiffness: 360, damping: 36 }}
+              className="fixed bottom-0 left-0 right-0 z-[70] max-h-[92svh] rounded-t-[28px] bg-slate-900 border-t border-white/12 overflow-hidden flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Handle */}
+              <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
+                <div className="h-1 w-10 rounded-full bg-white/25" />
+              </div>
+
+              {/* Header */}
+              <div className="px-5 pb-4 flex items-start justify-between gap-3 flex-shrink-0">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">{result.countryEmoji}</span>
+                    <h2 className="text-2xl font-black text-white">{result.city}</h2>
+                  </div>
+                  <p className="text-xs text-white/45 mt-0.5">{result.country}</p>
+                </div>
+                <button
+                  onClick={() => setOpen(false)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white/50 flex-shrink-0"
+                >
+                  <X size={14} />
+                </button>
+              </div>
+
+              {/* Scrollable content */}
+              <div className="overflow-y-auto flex-1 px-5 pb-8 space-y-6">
+                {/* Description */}
+                <p className="text-sm text-white/65 leading-relaxed">{result.description}</p>
+
+                {/* Top Restaurants */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <UtensilsCrossed size={14} className="text-orange-400" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                      Top 3 Ristoranti — TripAdvisor
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    {result.restaurants.map((r, i) => (
+                      <div key={i} className="flex items-center gap-3 rounded-xl bg-white/[0.04] border border-white/8 px-4 py-3">
+                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-500/15 flex-shrink-0">
+                          <span className="text-sm font-black text-orange-400">#{r.tripadvisorRank}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-bold text-white truncate">{r.name}</p>
+                          <p className="text-[11px] text-white/40">{r.cuisine}</p>
+                        </div>
+                        <div className="text-right flex-shrink-0">
+                          <div className="flex items-center gap-1 justify-end">
+                            <Star size={10} className="text-[#FFD700]" fill="currentColor" />
+                            <span className="text-[12px] font-black text-[#FFD700]">{r.rating}</span>
+                          </div>
+                          <span className="text-[10px] text-white/35">{r.priceRange}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Typical Dish */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <ChefHat size={14} className="text-amber-400" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                      Piatto tipico
+                    </p>
+                  </div>
+                  <div className="flex items-center gap-4 rounded-xl bg-amber-500/8 border border-amber-500/20 px-4 py-4">
+                    <span className="text-3xl">{result.typicalDish.emoji}</span>
+                    <div>
+                      <p className="text-base font-black text-white">{result.typicalDish.name}</p>
+                      <p className="text-[12px] text-white/50 mt-0.5 leading-snug">{result.typicalDish.description}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Monuments */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Landmark size={14} className="text-blue-400" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                      Monumenti da visitare
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    {result.monuments.map((m, i) => (
+                      <div key={i} className="flex items-start gap-3 rounded-xl bg-white/[0.03] border border-white/8 px-4 py-3">
+                        <span className="text-xl flex-shrink-0 mt-0.5">{m.emoji}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-white">{m.name}</p>
+                            {m.mustSee && (
+                              <span className="rounded-full bg-[#FFD700]/15 border border-[#FFD700]/25 px-1.5 py-0.5 text-[9px] font-black text-[#FFD700]">
+                                DA VEDERE
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-[11px] text-white/45 mt-0.5 leading-snug">{m.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Nightlife */}
+                <div>
+                  <div className="flex items-center gap-2 mb-3">
+                    <Moon size={14} className="text-purple-400" />
+                    <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">
+                      Nightlife — Locali & Discoteche
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    {result.nightlife.map((n, i) => (
+                      <div key={i} className="flex items-start gap-3 rounded-xl bg-purple-500/[0.05] border border-purple-500/15 px-4 py-3">
+                        <span className="text-xl flex-shrink-0 mt-0.5">
+                          {NIGHTLIFE_ICONS[n.type] ?? "🎉"}
+                        </span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <p className="text-sm font-bold text-white">{n.name}</p>
+                            <span className="rounded-full bg-purple-500/20 border border-purple-500/25 px-1.5 py-0.5 text-[9px] font-bold text-purple-300">
+                              {n.type}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-white/45 mt-0.5 leading-snug">{n.description}</p>
+                          <p className="text-[10px] text-purple-300/50 mt-1 italic">{n.vibe}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
 
 // ── Testimonials ────────────────────────────────────────────────────────────
 
@@ -903,6 +1212,20 @@ export default function HomePage() {
               </div>
             ))}
           </motion.div>
+        </section>
+
+        {/* ── CITY EXPLORER ──────────────────────────────────────── */}
+        <section>
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.87 }}
+            className="px-4 mb-4"
+          >
+            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Scopri il Mondo</p>
+            <h2 className="text-2xl font-black">Cerca una città</h2>
+          </motion.div>
+          <CityExplorer />
         </section>
 
         {/* ── FEATURED CITIES — horizontal scroll ─────────────────── */}
