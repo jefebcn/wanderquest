@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { doc, onSnapshot } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, limit, getDocs } from "firebase/firestore";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import type { Contest } from "@/types";
 
@@ -12,20 +12,60 @@ export function useContest() {
 
   // Subscribe to active contest from Firestore
   useEffect(() => {
-    let unsub: (() => void) | undefined;
+    let innerUnsub: (() => void) | undefined;
+    let outerUnsub: (() => void) | undefined;
+
     try {
       const { db } = getFirebaseClient();
       // "active_contest" is a well-known document ID for the current contest
-      unsub = onSnapshot(doc(db, "meta", "active_contest"), (snap) => {
-        if (!snap.exists()) { setContest(null); setLoading(false); return; }
+      outerUnsub = onSnapshot(doc(db, "meta", "active_contest"), (snap) => {
+        // Clean up previous inner subscription
+        innerUnsub?.();
+        innerUnsub = undefined;
+
+        if (!snap.exists()) {
+          // Fallback: query contests collection directly by status + endDate
+          const now = new Date().toISOString();
+          const q = query(
+            collection(db, "contests"),
+            where("status", "==", "active"),
+            where("endDate", ">=", now),
+            limit(1)
+          );
+          getDocs(q)
+            .then((qSnap) => {
+              if (!qSnap.empty) {
+                const d = qSnap.docs[0];
+                setContest({ ...(d.data() as Contest), id: d.id });
+              } else {
+                setContest(null);
+              }
+              setLoading(false);
+            })
+            .catch(() => {
+              setContest(null);
+              setLoading(false);
+            });
+          return;
+        }
+
         const data = snap.data();
         const contestId: string = data?.contestId;
         if (!contestId) { setContest(null); setLoading(false); return; }
 
-        // Subscribe to the actual contest
-        return onSnapshot(doc(db, "contests", contestId), (contestSnap) => {
+        // Subscribe to the actual contest document
+        innerUnsub = onSnapshot(doc(db, "contests", contestId), (contestSnap) => {
           if (contestSnap.exists()) {
-            setContest({ ...(contestSnap.data() as Contest), id: contestSnap.id });
+            const contestData = { ...(contestSnap.data() as Contest), id: contestSnap.id };
+            // Only expose the contest if it is still active and not expired
+            const now = new Date().toISOString();
+            if (contestData.status === "active" && contestData.endDate >= now) {
+              setContest(contestData);
+            } else {
+              setContest(null);
+            }
+          } else {
+            setContest(null);
           }
           setLoading(false);
         });
@@ -33,7 +73,11 @@ export function useContest() {
     } catch {
       setLoading(false);
     }
-    return () => unsub?.();
+
+    return () => {
+      innerUnsub?.();
+      outerUnsub?.();
+    };
   }, []);
 
   // Countdown timer
