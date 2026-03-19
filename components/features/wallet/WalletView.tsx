@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { AuthModal } from "@/components/features/auth/AuthModal";
-import { getWallet, requestWithdrawal } from "@/actions/wallet";
+import { getWallet, requestWithdrawal, initiateStripeOnboarding } from "@/actions/wallet";
 import { WalletSkeleton }   from "@/components/ui/Skeleton";
 import { formatCents }      from "@/lib/utils";
 import { GoPro }            from "@/components/features/subscription/GoPro";
@@ -25,6 +26,8 @@ import {
   Star,
   Tag,
   CreditCard,
+  ExternalLink,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -233,6 +236,7 @@ export function WalletView() {
   const { user, loading: authLoading } = useAuth();
   const { contest }    = useContest();
   const { isPro }      = useSubscription();
+  const searchParams   = useSearchParams();
   const [authOpen, setAuthOpen]       = useState(false);
   const [wallet, setWallet]           = useState<UserWallet | null>(null);
   const [loading, setLoading]         = useState(true);
@@ -240,6 +244,7 @@ export function WalletView() {
   const [method, setMethod]           = useState<"stripe" | "paypal">("stripe");
   const [message, setMessage]         = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy]               = useState(false);
+  const [onboardingBusy, setOnboardingBusy] = useState(false);
   const [tab, setTab]                 = useState<WalletTab>("wallet");
 
   const transactions = useMockTransactions(wallet);
@@ -259,7 +264,35 @@ export function WalletView() {
 
   useEffect(() => { loadWallet(); }, []);
 
+  // Handle redirect back from Stripe Connect onboarding
+  useEffect(() => {
+    const onboarding = searchParams.get("onboarding");
+    if (onboarding === "success") {
+      setMessage({ ok: true, text: "Account Stripe collegato! Puoi ora prelevare con Stripe." });
+      loadWallet();
+    } else if (onboarding === "refresh") {
+      setMessage({ ok: false, text: "Onboarding Stripe non completato. Riprova per collegare il tuo account." });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchParams]);
+
   const canWithdraw = wallet ? wallet.balanceCents >= 500 : false;
+  const stripeConnected = !!wallet?.stripeAccountId;
+
+  const handleStripeOnboarding = async () => {
+    setOnboardingBusy(true);
+    setMessage(null);
+    try {
+      const { auth } = getFirebaseClient();
+      const tok = await auth.currentUser!.getIdToken();
+      const appUrl = window.location.origin;
+      const { url } = await initiateStripeOnboarding(tok, appUrl);
+      window.location.href = url;
+    } catch (err) {
+      setMessage({ ok: false, text: err instanceof Error ? err.message : "Errore nell'avvio dell'onboarding Stripe." });
+      setOnboardingBusy(false);
+    }
+  };
 
   const handleWithdraw = async () => {
     const cents = Math.round(parseFloat(amount) * 100);
@@ -366,31 +399,68 @@ export function WalletView() {
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setMethod(m)}
                 className={cn(
-                  "flex-1 rounded-xl py-2.5 text-xs font-bold transition-colors",
+                  "flex-1 rounded-xl py-3 text-xs font-bold transition-colors min-h-[44px]",
                   method === m
                     ? "bg-blue-500/20 border border-blue-500/40 text-blue-300"
                     : "bg-white/6 border border-transparent text-white/40 hover:text-white/60"
                 )}
               >
                 {m === "stripe" ? "💳 Stripe" : "🅿️ PayPal"}
+                {m === "stripe" && stripeConnected && (
+                  <span className="ml-1 text-green-400 text-[10px]">✓</span>
+                )}
               </motion.button>
             ))}
           </div>
 
-          {/* Amount input */}
-          <div className="relative">
-            <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-bold text-sm">€</span>
-            <input
-              type="number"
-              min="5"
-              step="1"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.00"
-              disabled={!canWithdraw}
-              className="w-full rounded-xl bg-white/6 border border-white/10 pl-8 pr-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-blue-500/50 disabled:opacity-40"
-            />
-          </div>
+          {/* Stripe Connect onboarding — shown when Stripe is selected but not connected */}
+          {method === "stripe" && !stripeConnected && (
+            <motion.div
+              initial={{ opacity: 0, y: -6 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="rounded-xl bg-blue-500/10 border border-blue-500/25 p-3.5 space-y-2.5"
+            >
+              <div className="flex items-start gap-2">
+                <CreditCard size={15} className="text-blue-400 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-xs font-bold text-blue-300">Collega il tuo account Stripe</p>
+                  <p className="text-[11px] text-white/40 mt-0.5">
+                    Per ricevere pagamenti via Stripe devi completare la verifica una sola volta.
+                  </p>
+                </div>
+              </div>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={handleStripeOnboarding}
+                disabled={onboardingBusy}
+                className="w-full flex items-center justify-center gap-2 rounded-xl bg-blue-500 py-3 text-xs font-black text-white hover:bg-blue-400 transition-colors disabled:opacity-60 min-h-[44px]"
+              >
+                {onboardingBusy ? (
+                  <RefreshCw size={13} className="animate-spin" />
+                ) : (
+                  <ExternalLink size={13} />
+                )}
+                {onboardingBusy ? "Reindirizzamento…" : "Collega account Stripe"}
+              </motion.button>
+            </motion.div>
+          )}
+
+          {/* Amount input — only shown when payout method is ready */}
+          {(method === "paypal" || stripeConnected) && (
+            <div className="relative">
+              <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/40 font-bold text-sm">€</span>
+              <input
+                type="number"
+                min="5"
+                step="1"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                placeholder="0.00"
+                disabled={!canWithdraw}
+                className="w-full rounded-xl bg-white/6 border border-white/10 pl-8 pr-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-blue-500/50 disabled:opacity-40"
+              />
+            </div>
+          )}
 
           {/* Error/success message */}
           {message && (
@@ -402,24 +472,26 @@ export function WalletView() {
             </p>
           )}
 
-          {/* Withdraw button */}
-          <motion.button
-            whileTap={canWithdraw && !busy ? { scale: 0.95 } : {}}
-            onClick={handleWithdraw}
-            disabled={busy || !amount || !canWithdraw}
-            className={cn(
-              "relative w-full overflow-hidden rounded-xl py-3.5 text-sm font-black",
-              "flex items-center justify-center gap-2",
-              "transition-colors duration-200",
-              canWithdraw && !busy
-                ? "bg-blue-500 text-white hover:bg-blue-400 shadow-[0_4px_16px_rgba(59,130,246,0.35)]"
-                : "bg-white/8 text-white/30 cursor-not-allowed"
-            )}
-          >
-            {!canWithdraw && <Lock size={14} />}
-            <ArrowDownToLine size={15} />
-            {busy ? "Elaborazione…" : canWithdraw ? "Preleva ora" : "Saldo insufficiente"}
-          </motion.button>
+          {/* Withdraw button — only shown when payout method is ready */}
+          {(method === "paypal" || stripeConnected) && (
+            <motion.button
+              whileTap={canWithdraw && !busy ? { scale: 0.95 } : {}}
+              onClick={handleWithdraw}
+              disabled={busy || !amount || !canWithdraw}
+              className={cn(
+                "relative w-full overflow-hidden rounded-xl py-3.5 text-sm font-black",
+                "flex items-center justify-center gap-2",
+                "transition-colors duration-200 min-h-[48px]",
+                canWithdraw && !busy
+                  ? "bg-blue-500 text-white hover:bg-blue-400 shadow-[0_4px_16px_rgba(59,130,246,0.35)]"
+                  : "bg-white/8 text-white/30 cursor-not-allowed"
+              )}
+            >
+              {!canWithdraw && <Lock size={14} />}
+              <ArrowDownToLine size={15} />
+              {busy ? "Elaborazione…" : canWithdraw ? "Preleva ora" : "Saldo insufficiente"}
+            </motion.button>
+          )}
 
           <p className="text-[11px] text-white/25 text-center">
             Prelievo minimo €5 · Elaborato in 1–3 giorni lavorativi
