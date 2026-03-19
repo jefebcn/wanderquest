@@ -10,7 +10,7 @@ async function verifyToken(idToken: string) {
   return adminAuth().verifyIdToken(idToken);
 }
 
-// ── Get contest photos, excluding already-voted and own photos ────────────
+// ── Get contest photos, excluding already-voted, already-seen and own photos ──
 
 export async function getContestPhotos(
   idToken: string,
@@ -20,12 +20,24 @@ export async function getContestPhotos(
   const decoded = await verifyToken(idToken);
   const uid = decoded.uid;
 
-  const votedSnap = await db
-    .collection("contest_votes")
-    .where("contestId", "==", contestId)
-    .where("voterId", "==", uid)
-    .get();
-  const votedIds = new Set(votedSnap.docs.map((d) => d.data().photoId as string));
+  // Fetch votes and views in parallel to build the full "already seen" set
+  const [votedSnap, viewedSnap] = await Promise.all([
+    db
+      .collection("contest_votes")
+      .where("contestId", "==", contestId)
+      .where("voterId", "==", uid)
+      .get(),
+    db
+      .collection("contest_photo_views")
+      .where("contestId", "==", contestId)
+      .where("userId", "==", uid)
+      .get(),
+  ]);
+
+  const seenIds = new Set<string>([
+    ...votedSnap.docs.map((d) => d.data().photoId as string),
+    ...viewedSnap.docs.map((d) => d.data().photoId as string),
+  ]);
 
   const photosSnap = await db
     .collection("contest_photos")
@@ -37,7 +49,7 @@ export async function getContestPhotos(
 
   const photos = photosSnap.docs
     .map((d) => ({ id: d.id, ...d.data() } as ContestPhoto))
-    .filter((p) => p.userId !== uid && !votedIds.has(p.id));
+    .filter((p) => p.userId !== uid && !seenIds.has(p.id));
 
   return { photos };
 }
@@ -105,6 +117,32 @@ export async function submitVote(
 
   await batch.commit();
   return { success: true };
+}
+
+// ── Mark photos as seen (prevents re-showing photos the user has already viewed) ──
+
+export async function markPhotosAsSeen(
+  idToken: string,
+  photoIds: string[],
+  contestId: string,
+): Promise<void> {
+  if (photoIds.length === 0) return;
+  const db = adminDb();
+  const decoded = await verifyToken(idToken);
+  const uid = decoded.uid;
+
+  // Batch write — document ID is deterministic to guarantee idempotency
+  const batch = db.batch();
+  const now = new Date().toISOString();
+  for (const photoId of photoIds.slice(0, 50)) {
+    const docId = `${contestId}_${uid}_${photoId}`;
+    batch.set(
+      db.collection("contest_photo_views").doc(docId),
+      { userId: uid, photoId, contestId, viewedAt: now },
+      { merge: true },
+    );
+  }
+  await batch.commit();
 }
 
 // ── Save photo metadata after client-side Storage upload ─────────────────
