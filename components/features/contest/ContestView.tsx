@@ -927,6 +927,7 @@ export function ContestView() {
   const [totalVoted, setTotalVoted]    = useState(0);
   const [contestPhotos, setContestPhotos] = useState<ContestPhoto[]>(MOCK_PHOTOS);
   const [contestPhotosLoading, setContestPhotosLoading] = useState(false);
+  const skipNextMyPhotosLoad = useRef(false);
 
   // Load contest photos for voting when user + contest are ready
   useEffect(() => {
@@ -951,6 +952,10 @@ export function ContestView() {
   // Load my photos when tab switches to "mine"
   useEffect(() => {
     if (tab !== "mine" || !user || !contest) return;
+    if (skipNextMyPhotosLoad.current) {
+      skipNextMyPhotosLoad.current = false;
+      return;
+    }
     setMyPhotosLoading(true);
     (async () => {
       try {
@@ -996,14 +1001,14 @@ export function ContestView() {
 
       setUploadDone(true);
       setUploadOpen(false);
-      // Refresh my photos
-      if (tab === "mine") {
-        const tokRefresh = await auth.currentUser?.getIdToken();
-        if (tokRefresh) {
-          const { photos } = await getMyPhotos(tokRefresh, contest.id);
-          setMyPhotos(photos);
-        }
+      // Always refresh my photos after upload and switch to "mine" tab
+      const tokRefresh = await auth.currentUser?.getIdToken();
+      if (tokRefresh) {
+        const { photos } = await getMyPhotos(tokRefresh, contest.id);
+        setMyPhotos(photos);
       }
+      skipNextMyPhotosLoad.current = true;
+      setTab("mine");
     } catch (err) {
       console.error("Upload failed:", err);
       setUploadError("Errore durante il caricamento. Controlla la connessione e riprova.");
