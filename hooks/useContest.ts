@@ -5,6 +5,20 @@ import { doc, onSnapshot, collection, query, where, limit, getDocs } from "fireb
 import { getFirebaseClient } from "@/lib/firebase/client";
 import type { Contest } from "@/types";
 
+// Fallback contest used when no active contest exists in Firestore.
+// This keeps the app alive so users can always upload photos.
+const GALLERY_CONTEST: Contest = {
+  id: "general",
+  title: "WanderQuest Gallery",
+  description: "Carica e vota le tue foto di viaggio",
+  prizePool: 0,
+  startDate: "2024-01-01T00:00:00.000Z",
+  endDate: "2099-12-31T23:59:59.000Z",
+  status: "active",
+  minThresholdCents: 0,
+  topN: 3,
+};
+
 export function useContest() {
   const [contest, setContest]   = useState<Contest | null>(null);
   const [loading, setLoading]   = useState(true);
@@ -38,12 +52,12 @@ export function useContest() {
                 const d = qSnap.docs[0];
                 setContest({ ...(d.data() as Contest), id: d.id });
               } else {
-                setContest(null);
+                setContest(GALLERY_CONTEST);
               }
               setLoading(false);
             })
             .catch(() => {
-              setContest(null);
+              setContest(GALLERY_CONTEST);
               setLoading(false);
             });
           return;
@@ -51,7 +65,7 @@ export function useContest() {
 
         const data = snap.data();
         const contestId: string = data?.contestId;
-        if (!contestId) { setContest(null); setLoading(false); return; }
+        if (!contestId) { setContest(GALLERY_CONTEST); setLoading(false); return; }
 
         // Subscribe to the actual contest document
         innerUnsub = onSnapshot(doc(db, "contests", contestId), (contestSnap) => {
@@ -62,15 +76,16 @@ export function useContest() {
             if (contestData.status === "active" && contestData.endDate >= now) {
               setContest(contestData);
             } else {
-              setContest(null);
+              setContest(GALLERY_CONTEST);
             }
           } else {
-            setContest(null);
+            setContest(GALLERY_CONTEST);
           }
           setLoading(false);
         });
       });
     } catch {
+      setContest(GALLERY_CONTEST);
       setLoading(false);
     }
 

@@ -1034,15 +1034,19 @@ export function ContestView() {
                 <h1 className="text-xl font-black leading-tight">
                   {contest?.title ?? "Photo Contest"}
                 </h1>
-                <p className="text-[10px] text-white/35 font-medium">Carica foto — vota — vinci premi reali</p>
+                <p className="text-[10px] text-white/35 font-medium">
+                  {contest?.prizePool && contest.prizePool > 0
+                    ? "Carica foto — vota — vinci premi reali"
+                    : "Carica foto — vota — condividi i tuoi viaggi"}
+                </p>
               </div>
             </div>
-            {contest && (
+            {contest && contest.prizePool > 0 && (
               <div className="flex items-center gap-2 mt-2 flex-wrap">
                 <span className="flex items-center gap-1 rounded-full bg-[#FFD700]/12 border border-[#FFD700]/25 px-2.5 py-1 text-[10px] font-black text-[#FFD700]">
                   <Sparkles size={9} />{formatCents(contest.prizePool)} in palio
                 </span>
-                {timeLeft && timeLeft !== "Terminato" && (
+                {timeLeft && timeLeft !== "Terminato" && contest.id !== "general" && (
                   <span className="flex items-center gap-1 rounded-full bg-white/6 border border-white/10 px-2.5 py-1 text-[10px] text-white/45">
                     ⏱ Scade in {timeLeft}
                   </span>
@@ -1096,8 +1100,8 @@ export function ContestView() {
       {/* ── Content ─────────────────────────────────────────────────────── */}
       {!user ? (
         <>
-          {/* Prize tiers visible even when locked */}
-          <PrizeTierBanner />
+          {/* Prize tiers visible even when locked — only when real prize */}
+          {contest && contest.prizePool > 0 && <PrizeTierBanner />}
           <LockedContest prizePool={contest?.prizePool} onSignIn={() => setAuthOpen(true)} />
           {/* Still show a peek of the deck blurred */}
           <div className="relative mx-4 mt-4 h-48 rounded-3xl overflow-hidden pointer-events-none select-none">
@@ -1115,8 +1119,8 @@ export function ContestView() {
         </>
       ) : (
         <>
-          {/* Prize tiers always visible */}
-          <PrizeTierBanner />
+          {/* Prize tiers — hidden in gallery mode (no real prize pool) */}
+          {contest && contest.prizePool > 0 && <PrizeTierBanner />}
 
           <AnimatePresence mode="wait">
             {tab === "vote" ? (
