@@ -265,7 +265,9 @@ export function GoPro({ variant = "full" }: Props) {
 
         {/* Payment options — Stripe (card) first, PayPal below */}
         <div className="space-y-3">
-          <StripeSubscriptionButton />
+          {process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY && (
+            <StripeSubscriptionButton />
+          )}
 
           {process.env.NEXT_PUBLIC_PAYPAL_PLAN_ID_PRO && (
             <>

@@ -42,9 +42,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url });
   } catch (err) {
     console.error("[stripe-checkout] Error:", err);
-    return NextResponse.json(
-      { error: err instanceof Error ? err.message : "Errore interno" },
-      { status: 500 }
-    );
+    let errorMessage = "Errore interno del server. Riprova più tardi.";
+    if (err instanceof Error) {
+      const msg = err.message;
+      if (msg.includes("recurring price") || msg.includes("subscription") || msg.includes("STRIPE_PRICE_ID_PRO")) {
+        errorMessage = "Pagamento con carta temporaneamente non disponibile. Usa PayPal per completare l'abbonamento.";
+      } else if (msg.includes("No such price") || msg.includes("resource_missing")) {
+        errorMessage = "Configurazione pagamento non valida. Contatta il supporto.";
+      } else if (msg.includes("authentication") || msg.includes("STRIPE_SECRET_KEY")) {
+        errorMessage = "Servizio di pagamento non configurato. Usa PayPal.";
+      }
+    }
+    return NextResponse.json({ error: errorMessage }, { status: 500 });
   }
 }
