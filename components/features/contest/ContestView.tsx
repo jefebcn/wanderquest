@@ -1026,7 +1026,7 @@ export function ContestView() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white">
+    <div className="min-h-screen bg-slate-950 text-white pb-28">
       {/* ── Header ──────────────────────────────────────────────────────── */}
       <div className="sticky top-0 z-10 bg-slate-950/95 backdrop-blur-xl border-b border-white/8">
         <div className="px-4 pt-14 pb-3 flex items-start justify-between gap-3">
