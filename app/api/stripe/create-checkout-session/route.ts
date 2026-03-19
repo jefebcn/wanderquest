@@ -42,16 +42,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ url });
   } catch (err) {
     console.error("[stripe-checkout] Error:", err);
+    // Extract message from any error type (Stripe SDK errors may not be plain Error instances)
+    const msg: string =
+      err instanceof Error
+        ? err.message
+        : typeof (err as Record<string, unknown>)?.message === "string"
+          ? (err as Record<string, unknown>).message as string
+          : String(err);
+
     let errorMessage = "Errore interno del server. Riprova più tardi.";
-    if (err instanceof Error) {
-      const msg = err.message;
-      if (msg.includes("recurring price") || msg.includes("subscription") || msg.includes("STRIPE_PRICE_ID_PRO")) {
-        errorMessage = "Pagamento con carta temporaneamente non disponibile. Usa PayPal per completare l'abbonamento.";
-      } else if (msg.includes("No such price") || msg.includes("resource_missing")) {
-        errorMessage = "Configurazione pagamento non valida. Contatta il supporto.";
-      } else if (msg.includes("authentication") || msg.includes("STRIPE_SECRET_KEY")) {
-        errorMessage = "Servizio di pagamento non configurato. Usa PayPal.";
-      }
+    if (msg.includes("recurring price") || msg.includes("one-time price") || msg.includes("STRIPE_PRICE_ID_PRO")) {
+      errorMessage = "Configurazione abbonamento non valida: il prezzo Stripe non è ricorrente. Contatta il supporto o usa PayPal.";
+    } else if (msg.includes("No such price") || msg.includes("resource_missing") || msg.includes("no such")) {
+      errorMessage = "Prezzo Stripe non trovato. Contatta il supporto.";
+    } else if (msg.includes("authentication") || msg.includes("STRIPE_SECRET_KEY") || msg.includes("Invalid API Key")) {
+      errorMessage = "Servizio di pagamento non configurato. Usa PayPal.";
+    } else if (msg.includes("subscription") && msg.includes("mode")) {
+      errorMessage = "Configurazione abbonamento non valida. Usa PayPal per completare l'abbonamento.";
     }
     return NextResponse.json({ error: errorMessage }, { status: 500 });
   }

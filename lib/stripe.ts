@@ -24,7 +24,18 @@ export async function createSubscriptionCheckoutSession(
   const priceId = process.env.STRIPE_PRICE_ID_PRO;
   if (!priceId) throw new Error("STRIPE_PRICE_ID_PRO is not set");
 
-  const session = await getStripe().checkout.sessions.create({
+  const stripe = getStripe();
+
+  // Validate that the price is a recurring subscription price
+  const price = await stripe.prices.retrieve(priceId);
+  if (price.type !== "recurring") {
+    throw new Error(
+      `STRIPE_PRICE_ID_PRO (${priceId}) is a one-time price, not a recurring subscription price. ` +
+      `Create a recurring price in the Stripe dashboard and update STRIPE_PRICE_ID_PRO.`
+    );
+  }
+
+  const session = await stripe.checkout.sessions.create({
     mode: "subscription",
     line_items: [{ price: priceId, quantity: 1 }],
     customer_email: userEmail,
