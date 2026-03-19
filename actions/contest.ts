@@ -200,6 +200,76 @@ export async function validateCheckIn(
 }
 
 /**
+ * Creates or renews a monthly contest in Firestore.
+ * Sets meta/active_contest to point to the new contest.
+ * Should only be called by an admin user.
+ */
+export async function createOrRenewContest(
+  idToken: string,
+  options?: {
+    title?: string;
+    description?: string;
+    prizePool?: number;
+    topN?: number;
+    durationDays?: number;
+  }
+): Promise<{ success: boolean; contestId?: string; message: string }> {
+  const db = adminDb();
+
+  let uid: string;
+  try {
+    const decoded = await adminAuth().verifyIdToken(idToken);
+    uid = decoded.uid;
+  } catch {
+    return { success: false, message: "Non autenticato." };
+  }
+
+  // Check admin role
+  const userSnap = await db.collection("users").doc(uid).get();
+  const userData = userSnap.data();
+  if (!userData?.isAdmin) {
+    return { success: false, message: "Permessi insufficienti." };
+  }
+
+  const now = new Date();
+  const durationDays = options?.durationDays ?? 30;
+  const endDate = new Date(now.getTime() + durationDays * 86_400_000);
+
+  const contestData = {
+    title: options?.title ?? `Contest ${now.toLocaleString("it-IT", { month: "long", year: "numeric" })}`,
+    description: options?.description ?? "Carica le tue foto di viaggio e vinci premi reali!",
+    prizePool: options?.prizePool ?? 35000, // €350 default
+    startDate: now.toISOString(),
+    endDate: endDate.toISOString(),
+    status: "active" as const,
+    minThresholdCents: 1000,
+    topN: options?.topN ?? 3,
+    createdBy: uid,
+    createdAt: now.toISOString(),
+  };
+
+  const batch = db.batch();
+
+  // Create contest document
+  const contestRef = db.collection("contests").doc();
+  batch.set(contestRef, contestData);
+
+  // Update meta/active_contest pointer
+  batch.set(db.collection("meta").doc("active_contest"), {
+    contestId: contestRef.id,
+    updatedAt: now.toISOString(),
+  });
+
+  await batch.commit();
+
+  return {
+    success: true,
+    contestId: contestRef.id,
+    message: `Contest creato! Scade il ${endDate.toLocaleDateString("it-IT")}.`,
+  };
+}
+
+/**
  * Returns the active contest (if any).
  */
 export async function getActiveContest(): Promise<Contest | null> {
