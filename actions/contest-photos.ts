@@ -156,9 +156,10 @@ export async function getMyPhotos(
     .collection("contest_photos")
     .where("contestId", "==", contestId)
     .where("userId", "==", decoded.uid)
-    .orderBy("uploadedAt", "desc")
     .get();
 
-  const photos = snap.docs.map((d) => ({ id: d.id, ...d.data() } as ContestPhoto));
+  const photos = snap.docs
+    .map((d) => ({ id: d.id, ...d.data() } as ContestPhoto))
+    .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt));
   return { photos };
 }
