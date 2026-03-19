@@ -98,6 +98,7 @@ export function BottomSheet({
             transition={{ type: "spring", stiffness: 390, damping: 38, mass: 0.85 }}
             className={cn(
               "fixed bottom-0 left-0 right-0 z-[70]",
+              "flex flex-col",
               "rounded-t-[30px] overflow-hidden",
               // Glassmorphic surface
               "bg-white/10 backdrop-blur-2xl",
@@ -135,7 +136,7 @@ export function BottomSheet({
 
             {/* Content — prevent drag propagation inside scrollable area */}
             <div
-              className="overflow-y-auto overscroll-contain"
+              className="flex-1 min-h-0 overflow-y-auto overscroll-contain"
               onPointerDown={(e) => e.stopPropagation()}
             >
               {children}
