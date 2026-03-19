@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { WalletView } from "@/components/features/wallet/WalletView";
 
 export const metadata = {
@@ -6,5 +7,9 @@ export const metadata = {
 };
 
 export default function WalletPage() {
-  return <WalletView />;
+  return (
+    <Suspense>
+      <WalletView />
+    </Suspense>
+  );
 }

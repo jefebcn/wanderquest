@@ -561,12 +561,14 @@ function UploadSheet({
   onSubmit,
   submitting,
   uploadError,
+  hasContest,
 }: {
   open: boolean;
   onClose: () => void;
   onSubmit: (file: File, caption: string, city: string) => void;
   submitting: boolean;
   uploadError?: string | null;
+  hasContest: boolean;
 }) {
   const [preview, setPreview]   = useState<string | null>(null);
   const [file, setFile]         = useState<File | null>(null);
@@ -696,8 +698,16 @@ function UploadSheet({
                 />
               </div>
 
+              {/* No active contest warning */}
+              {!hasContest && (
+                <div className="flex items-center gap-2 rounded-xl bg-amber-500/12 border border-amber-500/25 px-4 py-3">
+                  <X size={14} className="text-amber-400 flex-shrink-0" />
+                  <p className="text-[12px] text-amber-300">Nessun contest attivo al momento. Riprova più tardi.</p>
+                </div>
+              )}
+
               {/* Error message */}
-              {uploadError && (
+              {uploadError && hasContest && (
                 <div className="flex items-center gap-2 rounded-xl bg-red-500/12 border border-red-500/25 px-4 py-3">
                   <X size={14} className="text-red-400 flex-shrink-0" />
                   <p className="text-[12px] text-red-300">{uploadError}</p>
@@ -706,12 +716,12 @@ function UploadSheet({
 
               {/* Submit */}
               <motion.button
-                whileTap={file && caption.trim() && !submitting ? { scale: 0.97 } : {}}
+                whileTap={file && caption.trim() && !submitting && hasContest ? { scale: 0.97 } : {}}
                 onClick={handleSubmit}
-                disabled={!file || !caption.trim() || submitting}
+                disabled={!file || !caption.trim() || submitting || !hasContest}
                 className={cn(
                   "w-full flex items-center justify-center gap-2 rounded-2xl py-4 text-sm font-black transition-colors min-h-[52px]",
-                  file && caption.trim() && !submitting
+                  file && caption.trim() && !submitting && hasContest
                     ? "bg-[#FFD700] text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.30)]"
                     : "bg-white/10 text-white/30 cursor-not-allowed",
                 )}
@@ -905,7 +915,7 @@ type Tab = "vote" | "mine";
 
 export function ContestView() {
   const { user, loading: authLoading } = useAuth();
-  const { contest, timeLeft }          = useContest();
+  const { contest, timeLeft, loading: contestLoading } = useContest();
   const [authOpen, setAuthOpen]        = useState(false);
   const [tab, setTab]                  = useState<Tab>("vote");
   const [uploadOpen, setUploadOpen]    = useState(false);
@@ -1198,6 +1208,7 @@ export function ContestView() {
         onSubmit={handleUploadSubmit}
         submitting={submitting}
         uploadError={uploadError}
+        hasContest={!!contest && !contestLoading}
       />
     </div>
   );

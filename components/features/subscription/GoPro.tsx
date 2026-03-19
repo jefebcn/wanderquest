@@ -7,7 +7,7 @@
  * For Pro users, renders a compact "Pro Status" management panel instead.
  */
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Crown, Zap, Map, ArrowUpCircle, Sparkles, CheckCircle2,
@@ -140,6 +140,17 @@ export function GoPro({ variant = "full" }: Props) {
   const { isPro } = useSubscription();
   const [open, setOpen]   = useState(false);
   const [cancelling, setCancelling] = useState(false);
+  const paymentRef = useRef<HTMLDivElement>(null);
+
+  // When compact card opens, scroll payment buttons into view so they
+  // aren't hidden under the fixed BottomNav on mobile
+  useEffect(() => {
+    if (open && variant === "compact" && paymentRef.current) {
+      setTimeout(() => {
+        paymentRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+      }, 350); // wait for open animation
+    }
+  }, [open, variant]);
 
   const handleCancel = async () => {
     setCancelling(true);
@@ -264,8 +275,10 @@ export function GoPro({ variant = "full" }: Props) {
         </div>
 
         {/* Payment options — Stripe (card) first, PayPal below */}
-        <div className="space-y-3">
-          <StripeSubscriptionButton />
+        <div ref={paymentRef} className="space-y-3">
+          {process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY && (
+            <StripeSubscriptionButton />
+          )}
 
           {process.env.NEXT_PUBLIC_PAYPAL_PLAN_ID_PRO && (
             <>
