@@ -176,3 +176,24 @@ export interface SubscriptionActivation {
   success: boolean;
   message: string;
 }
+
+// ── League / Season ────────────────────────────────────────────────────────
+
+export type LeagueId = "bronze" | "silver" | "gold" | "platinum" | "diamond";
+
+export interface Season {
+  id: string;           // "YYYY-MM"
+  startAt: string;      // ISO
+  endAt: string;        // ISO
+  status: "active" | "ended";
+}
+
+/** Entry in a league's season standings */
+export interface SeasonStandingEntry {
+  uid: string;
+  displayName: string;
+  photoURL?: string;
+  seasonPoints: number;
+  rank: number;
+  leagueId: LeagueId;
+}

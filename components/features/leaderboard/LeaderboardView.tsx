@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 import { useContest }     from "@/hooks/useContest";
 import { useAuth }        from "@/hooks/useAuth";
+import { useSeason }      from "@/hooks/useSeason";
 import { AuthModal }      from "@/components/features/auth/AuthModal";
 import { LeaderboardSkeleton } from "@/components/ui/Skeleton";
+import { SeasonBanner, LeagueStripOverview } from "@/components/features/league/SeasonBanner";
 import { formatCents }    from "@/lib/utils";
-import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin, Shield } from "lucide-react";
+import { LEAGUE_CONFIGS, getLeagueConfig } from "@/lib/leagues";
+import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin, Shield, TrendingUp, TrendingDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ProBadge } from "@/components/features/subscription/ProBadge";
-import type { LeaderboardEntry } from "@/types";
+import type { LeaderboardEntry, SeasonStandingEntry, LeagueId } from "@/types";
 
 // ── Mock photo leaderboard ────────────────────────────────────────────────
 
@@ -285,195 +288,165 @@ function LockedLeaderboard({ onSignIn }: { onSignIn: () => void }) {
   );
 }
 
-// ── League config ─────────────────────────────────────────────────────────
+// ── Season Leagues Panel ──────────────────────────────────────────────────
 
-interface League {
-  id: "rookie" | "explorer" | "legend";
-  label: string;
-  emoji: string;
-  minPoints: number;
-  maxPoints: number | null;
-  color: string;
-  border: string;
-  bg: string;
-  glow: string;
-  desc: string;
-}
+function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
+  const { season, leagueId: myLeagueId, seasonPoints, timeLeft } = useSeason(myUserId);
+  const [activeLeague, setActiveLeague] = useState<LeagueId>("bronze");
+  const [standings, setStandings] = useState<SeasonStandingEntry[]>([]);
+  const [standingsLoading, setStandingsLoading] = useState(false);
 
-const LEAGUES: League[] = [
-  {
-    id: "rookie",
-    label: "Rookie",
-    emoji: "🏅",
-    minPoints: 0,
-    maxPoints: 499,
-    color: "text-slate-300",
-    border: "border-slate-400/25",
-    bg: "bg-slate-400/8",
-    glow: "rgba(148,163,184,0.15)",
-    desc: "Guadagna 500 pt per scalare a Explorer",
-  },
-  {
-    id: "explorer",
-    label: "Explorer",
-    emoji: "⭐",
-    minPoints: 500,
-    maxPoints: 1999,
-    color: "text-blue-400",
-    border: "border-blue-400/25",
-    bg: "bg-blue-400/8",
-    glow: "rgba(96,165,250,0.15)",
-    desc: "Guadagna 2.000 pt per diventare Legend",
-  },
-  {
-    id: "legend",
-    label: "Legend",
-    emoji: "👑",
-    minPoints: 2000,
-    maxPoints: null,
-    color: "text-[#FFD700]",
-    border: "border-[#FFD700]/30",
-    bg: "bg-[#FFD700]/8",
-    glow: "rgba(255,215,0,0.18)",
-    desc: "Il top degli esploratori WanderQuest",
-  },
-];
+  // Default active league to user's own league
+  useEffect(() => {
+    setActiveLeague(myLeagueId);
+  }, [myLeagueId]);
 
-function getUserLeague(points: number): League {
-  return (
-    LEAGUES.slice().reverse().find((l) => points >= l.minPoints) ?? LEAGUES[0]
-  );
-}
+  // Fetch standings for active league
+  useEffect(() => {
+    if (!season?.id) return;
+    setStandingsLoading(true);
+    fetch(`/api/seasons/standings?leagueId=${activeLeague}&seasonId=${season.id}`)
+      .then((r) => r.json())
+      .then((data) => {
+        setStandings((data.entries as SeasonStandingEntry[]) ?? []);
+      })
+      .catch(() => setStandings([]))
+      .finally(() => setStandingsLoading(false));
+  }, [activeLeague, season?.id]);
 
-// ── Leagues tab panel ─────────────────────────────────────────────────────
-
-function LeaguesPanel({
-  entries,
-  myUserId,
-}: {
-  entries: LeaderboardEntry[];
-  myUserId?: string;
-}) {
-  const myEntry  = entries.find((e) => e.userId === myUserId);
-  const myPoints = myEntry?.points ?? 0;
-  const myLeague = getUserLeague(myPoints);
-
-  // Compute next league threshold progress
-  const nextPts  = myLeague.maxPoints ?? myLeague.minPoints;
-  const pct      = myLeague.maxPoints
-    ? Math.min(100, ((myPoints - myLeague.minPoints) / (myLeague.maxPoints - myLeague.minPoints + 1)) * 100)
-    : 100;
+  const myLeagueConfig = getLeagueConfig(myLeagueId);
+  const viewConfig     = getLeagueConfig(activeLeague);
 
   return (
-    <div className="px-4 pt-4 pb-6 space-y-5">
-      {/* Your current league */}
-      {myEntry && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.96 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 300, damping: 26 }}
-          className={cn(
-            "rounded-3xl border p-5 relative overflow-hidden",
-            myLeague.bg, myLeague.border
-          )}
-          style={{ boxShadow: `0 8px 32px ${myLeague.glow}` }}
-        >
-          <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full blur-3xl"
-            style={{ background: myLeague.glow }} />
-
-          <div className="flex items-center gap-3 mb-3">
-            <span className="text-3xl">{myLeague.emoji}</span>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/40">La tua lega</p>
-              <p className={cn("text-xl font-black", myLeague.color)}>{myLeague.label}</p>
-            </div>
-            <div className="ml-auto text-right">
-              <p className="text-xs font-bold text-white/40">Punti totali</p>
-              <p className="text-lg font-black tabular-nums">{myPoints.toLocaleString("it-IT")}</p>
-            </div>
-          </div>
-
-          {myLeague.maxPoints && (
-            <>
-              <div className="flex justify-between text-[10px] text-white/35 mb-1">
-                <span>{myLeague.desc}</span>
-                <span>{myPoints} / {nextPts + 1}</span>
-              </div>
-              <div className="h-2 w-full rounded-full bg-black/30 overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.8, delay: 0.2 }}
-                  className={cn(
-                    "h-full rounded-full",
-                    myLeague.id === "rookie" ? "bg-gradient-to-r from-slate-400 to-slate-300"
-                    : "bg-gradient-to-r from-blue-500 to-blue-300"
-                  )}
-                />
-              </div>
-            </>
-          )}
-          {!myLeague.maxPoints && (
-            <p className="text-[11px] text-[#FFD700]/60 font-bold flex items-center gap-1">
-              <Crown size={11} /> Hai raggiunto il massimo!
-            </p>
-          )}
-        </motion.div>
+    <div className="px-4 pt-4 pb-6 space-y-4">
+      {/* User's current season card */}
+      {myUserId && (
+        <SeasonBanner uid={myUserId} />
       )}
 
-      {/* League breakdown */}
-      {LEAGUES.map((league, i) => {
-        const members = entries.filter((e) => getUserLeague(e.points).id === league.id);
-        const leader  = members[0];
-        return (
-          <motion.div
-            key={league.id}
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 + i * 0.07 }}
-            className={cn("rounded-2xl border p-4", league.bg, league.border)}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <span className="text-xl">{league.emoji}</span>
-                <div>
-                  <p className={cn("font-black text-sm", league.color)}>{league.label}</p>
-                  <p className="text-[10px] text-white/35">
-                    {league.maxPoints
-                      ? `${league.minPoints.toLocaleString("it-IT")} – ${league.maxPoints.toLocaleString("it-IT")} pt`
-                      : `${league.minPoints.toLocaleString("it-IT")}+ pt`}
-                  </p>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className={cn("text-lg font-black", league.color)}>{members.length}</p>
-                <p className="text-[10px] text-white/35">giocatori</p>
-              </div>
-            </div>
+      {/* League selector strip */}
+      <div>
+        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Scegli la lega</p>
+        <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] pb-1">
+          {LEAGUE_CONFIGS.map((l) => (
+            <button
+              key={l.id}
+              onClick={() => setActiveLeague(l.id as LeagueId)}
+              className={cn(
+                "flex-shrink-0 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold border transition-all",
+                activeLeague === l.id
+                  ? cn(l.bg, l.border, l.color)
+                  : "bg-white/4 border-white/10 text-white/35"
+              )}
+            >
+              <span>{l.emoji}</span>
+              {l.label}
+              {l.prizePoolCents > 0 && (
+                <span className={cn("text-[9px]", activeLeague === l.id ? "opacity-70" : "opacity-40")}>
+                  €{(l.prizePoolCents / 100).toFixed(0)}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      </div>
 
-            {/* Top player in this league */}
-            {leader && (
-              <div className="flex items-center gap-2 rounded-xl bg-black/20 px-3 py-2">
-                <div className="h-7 w-7 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 flex items-center justify-center">
-                  {leader.photoURL
-                    ? <Image src={leader.photoURL} alt={leader.displayName} fill className="object-cover" sizes="28px" />
-                    : <span className="text-[10px] font-black text-white/60">{leader.displayName.slice(0, 2).toUpperCase()}</span>}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs font-bold truncate text-white">{leader.displayName}</p>
-                  <p className="text-[10px] text-white/35">leader della lega</p>
-                </div>
-                <p className={cn("text-xs font-black tabular-nums", league.color)}>
-                  {leader.points.toLocaleString("it-IT")} pt
-                </p>
-              </div>
-            )}
-            {members.length === 0 && (
-              <p className="text-[11px] text-white/25 text-center py-2">Nessun giocatore ancora in questa lega</p>
-            )}
-          </motion.div>
-        );
-      })}
+      {/* League standings */}
+      <div className={cn("rounded-2xl border overflow-hidden", viewConfig.bg, viewConfig.border)}>
+        {/* League header */}
+        <div className="flex items-center justify-between px-4 py-3 border-b border-white/6">
+          <div className="flex items-center gap-2">
+            <span className="text-xl">{viewConfig.emoji}</span>
+            <div>
+              <p className={cn("font-black text-sm", viewConfig.color)}>{viewConfig.label}</p>
+              {season && (
+                <p className="text-[10px] text-white/35">Stagione {season.id}</p>
+              )}
+            </div>
+          </div>
+          {viewConfig.prizePoolCents > 0 && (
+            <div className="text-right">
+              <p className="text-[10px] text-white/35">Premi (1°/2°/3°)</p>
+              <p className={cn("text-xs font-black", viewConfig.color)}>
+                {viewConfig.prizes.map((c) => `€${(c / 100).toFixed(2)}`).join(" · ")}
+              </p>
+            </div>
+          )}
+          {viewConfig.prizePoolCents === 0 && (
+            <p className="text-[10px] text-white/25 italic">Nessun premio monetario</p>
+          )}
+        </div>
+
+        {/* Standings list */}
+        {standingsLoading ? (
+          <div className="flex items-center justify-center py-8 text-white/30 text-sm">
+            Caricamento…
+          </div>
+        ) : standings.length === 0 ? (
+          <div className="flex flex-col items-center py-8 text-center text-white/25">
+            <span className="text-2xl mb-2">{viewConfig.emoji}</span>
+            <p className="text-sm font-bold">Nessun giocatore ancora</p>
+            <p className="text-xs mt-1">Scansiona monumenti per entrare!</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-white/5">
+            {standings.map((entry, i) => {
+              const isMe = entry.uid === myUserId;
+              const isTop3 = entry.rank <= 3;
+              const medal = ["🥇", "🥈", "🥉"][entry.rank - 1];
+              const prizeAmount = viewConfig.prizes[entry.rank - 1] ?? 0;
+
+              return (
+                <motion.div
+                  key={entry.uid}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.04 }}
+                  className={cn(
+                    "flex items-center gap-3 px-4 py-3",
+                    isMe && "bg-[#FFD700]/6"
+                  )}
+                >
+                  <span className="w-6 text-center text-sm flex-shrink-0">
+                    {isTop3 ? medal : <span className="text-xs text-white/30 font-bold">{entry.rank}</span>}
+                  </span>
+                  <div className="h-8 w-8 rounded-full overflow-hidden bg-slate-700 flex-shrink-0 flex items-center justify-center">
+                    {entry.photoURL ? (
+                      <Image src={entry.photoURL} alt={entry.displayName} width={32} height={32} className="object-cover" />
+                    ) : (
+                      <span className="text-[10px] font-black text-white/60">
+                        {entry.displayName.slice(0, 2).toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className={cn("text-sm font-bold truncate", isMe ? "text-[#FFD700]" : "text-white")}>
+                      {entry.displayName}
+                      {isMe && <span className="ml-1 text-[10px] opacity-60 font-normal">(tu)</span>}
+                    </p>
+                    {prizeAmount > 0 && (
+                      <p className="text-[10px] text-green-400 font-bold">
+                        €{(prizeAmount / 100).toFixed(2)} a fine stagione
+                      </p>
+                    )}
+                  </div>
+                  <p className={cn("text-sm font-black tabular-nums flex-shrink-0", isTop3 ? viewConfig.color : "text-white/60")}>
+                    {entry.seasonPoints.toLocaleString("it-IT")} pt
+                  </p>
+                </motion.div>
+              );
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Season countdown footer */}
+      {season && timeLeft && (
+        <div className="flex items-center justify-center gap-2 text-[11px] text-white/30">
+          <Clock size={11} />
+          <span>Fine stagione: {timeLeft} · Top 30% promossi, fondo 30% retrocessi</span>
+        </div>
+      )}
     </div>
   );
 }
@@ -661,11 +634,7 @@ export function LeaderboardView() {
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
           >
-            {isLoading ? (
-              <LeaderboardSkeleton />
-            ) : (
-              <LeaguesPanel entries={entries} myUserId={user?.uid} />
-            )}
+            <SeasonLeaguesPanel myUserId={user?.uid} />
           </motion.div>
         )}
       </AnimatePresence>

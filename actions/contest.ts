@@ -2,6 +2,7 @@
 
 import { adminDb, adminAuth } from "@/lib/firebase/admin";
 import { haversineMetres, isWithinRadius } from "@/lib/geo";
+import { getCurrentSeasonId, getSeasonStartDate, getSeasonEndDate } from "@/lib/leagues";
 import type {
   CheckInPayload,
   CheckInResult,
@@ -121,6 +122,13 @@ export async function validateCheckIn(
     const totalPoints = Math.round(basePoints * multiplier);
     const newLongest  = Math.max(longestStreak, newStreak);
 
+    // ── Season tracking ──────────────────────────────────────────
+    const activeSeasonId = getCurrentSeasonId();
+    const existingSeasonId = (userData.currentSeasonId as string | undefined) ?? null;
+    // Reset seasonPoints if user is in a different season (e.g. new month just started)
+    const seasonPointsDelta = totalPoints;
+    const isNewSeason = existingSeasonId !== activeSeasonId;
+
     // ── Writes ───────────────────────────────────────────────────
     tx.set(visitRef, visit);
     tx.set(
@@ -131,6 +139,26 @@ export async function validateCheckIn(
         currentStreak:  newStreak,
         longestStreak:  newLongest,
         lastScanDate:   todayStr,
+        // Season fields — reset to delta if new season, increment otherwise
+        currentSeasonId: activeSeasonId,
+        seasonPoints:    isNewSeason
+          ? seasonPointsDelta
+          : FieldValue.increment(seasonPointsDelta),
+        // New users start in bronze
+        leagueId: (userData.leagueId as string | undefined) ?? "bronze",
+      },
+      { merge: true }
+    );
+
+    // Update season meta document (create if missing)
+    const metaSeasonRef = db.collection("meta").doc("active_season");
+    tx.set(
+      metaSeasonRef,
+      {
+        seasonId: activeSeasonId,
+        startAt:  getSeasonStartDate(activeSeasonId),
+        endAt:    getSeasonEndDate(activeSeasonId),
+        status:   "active",
       },
       { merge: true }
     );
