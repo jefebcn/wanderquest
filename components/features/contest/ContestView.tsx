@@ -18,7 +18,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { getFirebaseClient } from "@/lib/firebase/client";
-import { submitVote, saveContestPhoto, getMyPhotos, getContestPhotos } from "@/actions/contest-photos";
+import { submitVote, saveContestPhoto, getMyPhotos, getContestPhotos, markPhotosAsSeen } from "@/actions/contest-photos";
 import { formatCents } from "@/lib/utils";
 import type { ContestPhoto, VoteType } from "@/types";
 import {
@@ -939,7 +939,12 @@ export function ContestView() {
         const tok = await auth.currentUser?.getIdToken();
         if (tok) {
           const { photos } = await getContestPhotos(tok, contest.id);
-          if (photos.length > 0) setContestPhotos(photos);
+          if (photos.length > 0) {
+            setContestPhotos(photos);
+            // Mark all fetched photos as seen immediately so they are never
+            // shown again, even if the user leaves without voting on them.
+            markPhotosAsSeen(tok, photos.map((p) => p.id), contest.id).catch(() => {});
+          }
         }
       } catch {
         // Fallback: keep MOCK_PHOTOS
