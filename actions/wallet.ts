@@ -10,11 +10,20 @@ import {
 import type { UserWallet, WithdrawalRequest } from "@/types";
 import { FieldValue } from "firebase-admin/firestore";
 
-export async function getWallet(idToken: string): Promise<UserWallet | null> {
+export async function getWallet(idToken: string): Promise<UserWallet> {
   const decoded = await adminAuth().verifyIdToken(idToken);
-  const doc = await adminDb().collection("wallets").doc(decoded.uid).get();
-  if (!doc.exists) return null;
-  return doc.data() as UserWallet;
+  const uid = decoded.uid;
+  const docSnap = await adminDb().collection("wallets").doc(uid).get();
+  if (!docSnap.exists) {
+    return {
+      userId: uid,
+      balanceCents: 0,
+      pendingCents: 0,
+      totalEarnedCents: 0,
+      updatedAt: new Date().toISOString(),
+    };
+  }
+  return docSnap.data() as UserWallet;
 }
 
 /**

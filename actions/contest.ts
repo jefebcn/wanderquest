@@ -212,6 +212,13 @@ export async function createOrRenewContest(
     prizePool?: number;
     topN?: number;
     durationDays?: number;
+    leaguePrizes?: {
+      bronze: number;
+      silver: number;
+      gold: number;
+      platinum: number;
+      diamond: number;
+    };
   }
 ): Promise<{ success: boolean; contestId?: string; message: string }> {
   const db = adminDb();
@@ -235,10 +242,24 @@ export async function createOrRenewContest(
   const durationDays = options?.durationDays ?? 30;
   const endDate = new Date(now.getTime() + durationDays * 86_400_000);
 
+  const defaultLeaguePrizes = {
+    bronze:   0,
+    silver:   500,
+    gold:     1500,
+    platinum: 5000,
+    diamond:  15000,
+  };
+
+  const leaguePrizes = options?.leaguePrizes ?? defaultLeaguePrizes;
+  // Total prize pool = sum of all league pools
+  const totalPrizePool = options?.prizePool ??
+    Object.values(leaguePrizes).reduce((a, b) => a + b, 0);
+
   const contestData = {
     title: options?.title ?? `Contest ${now.toLocaleString("it-IT", { month: "long", year: "numeric" })}`,
     description: options?.description ?? "Carica le tue foto di viaggio e vinci premi reali!",
-    prizePool: options?.prizePool ?? 35000, // €350 default
+    prizePool: totalPrizePool,
+    leaguePrizes,
     startDate: now.toISOString(),
     endDate: endDate.toISOString(),
     status: "active" as const,

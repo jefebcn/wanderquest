@@ -12,6 +12,7 @@ const GALLERY_CONTEST: Contest = {
   title: "WanderQuest Gallery",
   description: "Carica e vota le tue foto di viaggio",
   prizePool: 0,
+  leaguePrizes: { bronze: 0, silver: 0, gold: 0, platinum: 0, diamond: 0 },
   startDate: "2024-01-01T00:00:00.000Z",
   endDate: "2099-12-31T23:59:59.000Z",
   status: "active",

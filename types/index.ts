@@ -56,11 +56,21 @@ export interface Visit {
   verifiedAt: string;
 }
 
+export interface LeaguePrizes {
+  bronze: number;
+  silver: number;
+  gold: number;
+  platinum: number;
+  diamond: number;
+}
+
 export interface Contest {
   id: string;
   title: string;
   description: string;
   prizePool: number; // in EUR cents
+  /** Per-league prize pools (total to split among top 3 in that league) */
+  leaguePrizes?: LeaguePrizes;
   startDate: string;
   endDate: string;
   status: "upcoming" | "active" | "ended";
