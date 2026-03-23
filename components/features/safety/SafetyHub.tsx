@@ -14,6 +14,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence }          from "framer-motion";
+import type { LucideIcon } from "lucide-react";
 import {
   Shield, ShieldAlert, ShieldCheck,
   AlertTriangle, PhoneCall, X, RefreshCw,
@@ -30,7 +31,7 @@ import type { SafetyAudit, SafetyLevel } from "@/types";
 
 const LEVEL_CONFIG: Record<SafetyLevel, {
   labelIt:     string;
-  icon:        React.ElementType;
+  icon:        LucideIcon;
   glow:        string;
   glowStrong:  string;
   border:      string;
