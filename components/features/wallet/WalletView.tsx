@@ -83,32 +83,32 @@ function PrizeCard({ wallet }: { wallet: UserWallet }) {
       )}
     >
       {/* Glowing orbs */}
-      <div className="pointer-events-none absolute -top-8 -right-8 h-36 w-36 rounded-full bg-[#FFD700]/12 blur-3xl animate-breathe" />
+      <div className="pointer-events-none absolute -top-8 -right-8 h-36 w-36 rounded-full bg-[var(--s-primary)]/12 blur-3xl animate-breathe" />
       <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-blue-600/18 blur-2xl" />
 
       {/* Card header */}
       <div className="flex items-start justify-between mb-4">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Saldo Disponibile</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-white/50">Saldo Disponibile</p>
           <p className="text-4xl font-black text-white mt-0.5 tabular-nums">
             {formatCents(wallet.balanceCents)}
           </p>
         </div>
         <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 backdrop-blur-sm">
-          <Wallet size={18} className="text-[#FFD700]" />
+          <Wallet size={18} className="text-[var(--s-primary)]" />
         </div>
       </div>
 
       {/* Stats row */}
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="rounded-2xl bg-white/8 border border-white/8 p-3">
-          <p className="text-[10px] text-white/45 flex items-center gap-1">
+          <p className="text-xs text-white/45 flex items-center gap-1">
             <TrendingUp size={10} /> Totale guadagnato
           </p>
           <p className="text-sm font-black mt-0.5">{formatCents(wallet.totalEarnedCents)}</p>
         </div>
         <div className="rounded-2xl bg-white/8 border border-white/8 p-3">
-          <p className="text-[10px] text-white/45 flex items-center gap-1">
+          <p className="text-xs text-white/45 flex items-center gap-1">
             <Clock size={10} /> In elaborazione
           </p>
           <p className="text-sm font-black mt-0.5">
@@ -120,7 +120,7 @@ function PrizeCard({ wallet }: { wallet: UserWallet }) {
       {/* Progress toward minimum */}
       {wallet.balanceCents < 500 && (
         <div>
-          <div className="flex justify-between text-[10px] text-white/45 mb-1.5">
+          <div className="flex justify-between text-xs text-white/45 mb-1.5">
             <span>Verso il prelievo minimo</span>
             <span>{formatCents(wallet.balanceCents)} / €5.00</span>
           </div>
@@ -129,7 +129,7 @@ function PrizeCard({ wallet }: { wallet: UserWallet }) {
               initial={{ width: 0 }}
               animate={{ width: `${progressPct}%` }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="h-full rounded-full bg-gradient-to-r from-blue-400 to-[#FFD700]"
+              className="h-full rounded-full bg-gradient-to-r from-blue-400 to-[var(--s-primary)]"
             />
           </div>
         </div>
@@ -166,7 +166,7 @@ function TransactionRow({ tx, index }: { tx: Transaction; index: number }) {
       {/* Label */}
       <div className="flex-1 min-w-0">
         <p className="text-sm font-bold truncate text-white">{tx.label}</p>
-        <p className="text-[11px] text-white/35 flex items-center gap-1">
+        <p className="text-xs text-white/35 flex items-center gap-1">
           {tx.status === "pending" ? (
             <><Clock size={9} className="inline" /> In attesa</>
           ) : (
@@ -202,9 +202,9 @@ function LockedWallet({ prizePool, onSignIn }: { prizePool?: number; onSignIn: (
         </div>
 
         {prizePool !== undefined && (
-          <div className="flex items-center gap-1.5 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 px-3 py-1 mb-4">
-            <Star size={11} className="text-[#FFD700]" fill="currentColor" />
-            <span className="text-[11px] font-black text-[#FFD700]">
+          <div className="flex items-center gap-1.5 rounded-full bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/20 px-3 py-1 mb-4">
+            <Star size={11} className="text-[var(--s-primary)]" fill="currentColor" />
+            <span className="text-xs font-black text-[var(--s-primary)]">
               {formatCents(prizePool)} in palio ora
             </span>
           </div>
@@ -218,7 +218,7 @@ function LockedWallet({ prizePool, onSignIn }: { prizePool?: number; onSignIn: (
         <motion.button
           whileTap={{ scale: 0.96 }}
           onClick={onSignIn}
-          className="flex items-center gap-2 rounded-2xl bg-[#FFD700] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
+          className="flex items-center gap-2 rounded-2xl bg-[var(--s-primary)] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
         >
           <Sparkles size={16} />
           Accedi per guadagnare
@@ -318,7 +318,7 @@ export function WalletView() {
       <div className="min-h-screen bg-slate-950 text-white">
         <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-4 backdrop-blur-xl">
           <div className="flex items-center gap-2">
-            <Wallet className="text-[#FFD700]" size={22} />
+            <Wallet className="text-[var(--s-primary)]" size={22} />
             <h1 className="text-xl font-black">Portafoglio</h1>
           </div>
         </div>
@@ -330,7 +330,7 @@ export function WalletView() {
 
   if (!wallet) return (
     <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 px-6 text-center text-white">
-      <Wallet size={48} className="text-[#FFD700]/40" />
+      <Wallet size={48} className="text-[var(--s-primary)]/40" />
       <p className="font-bold">Portafoglio non disponibile</p>
       <p className="text-xs text-white/40">Accumula punti nelle classifiche per sbloccare i premi.</p>
     </div>
@@ -341,7 +341,7 @@ export function WalletView() {
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-0 backdrop-blur-xl">
         <div className="flex items-center gap-2 pb-3">
-          <Wallet className="text-[#FFD700]" size={22} />
+          <Wallet className="text-[var(--s-primary)]" size={22} />
           <h1 className="text-xl font-black">Portafoglio</h1>
         </div>
         {/* Tab bar */}
@@ -355,7 +355,7 @@ export function WalletView() {
               onClick={() => setTab(id)}
               className={cn(
                 "relative flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-black transition-colors",
-                tab === id ? "text-[#FFD700]" : "text-white/30"
+                tab === id ? "text-[var(--s-primary)]" : "text-white/30"
               )}
             >
               <Icon size={13} />
@@ -363,7 +363,7 @@ export function WalletView() {
               {tab === id && (
                 <motion.div
                   layoutId="wallet-tab-ind"
-                  className="absolute bottom-0 inset-x-3 h-0.5 rounded-full bg-[#FFD700]"
+                  className="absolute bottom-0 inset-x-3 h-0.5 rounded-full bg-[var(--s-primary)]"
                   transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 />
               )}
@@ -407,7 +407,7 @@ export function WalletView() {
               >
                 {m === "stripe" ? "💳 Stripe" : "🅿️ PayPal"}
                 {m === "stripe" && stripeConnected && (
-                  <span className="ml-1 text-green-400 text-[10px]">✓</span>
+                  <span className="ml-1 text-green-400 text-xs">✓</span>
                 )}
               </motion.button>
             ))}
@@ -424,7 +424,7 @@ export function WalletView() {
                 <CreditCard size={15} className="text-blue-400 mt-0.5 flex-shrink-0" />
                 <div>
                   <p className="text-xs font-bold text-blue-300">Collega il tuo account Stripe</p>
-                  <p className="text-[11px] text-white/40 mt-0.5">
+                  <p className="text-xs text-white/40 mt-0.5">
                     Per ricevere pagamenti via Stripe devi completare la verifica una sola volta.
                   </p>
                 </div>
@@ -493,7 +493,7 @@ export function WalletView() {
             </motion.button>
           )}
 
-          <p className="text-[11px] text-white/25 text-center">
+          <p className="text-xs text-white/25 text-center">
             Prelievo minimo €5 · Elaborato in 1–3 giorni lavorativi
           </p>
         </div>

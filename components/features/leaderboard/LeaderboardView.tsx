@@ -53,7 +53,7 @@ const MOCK_PHOTO_RANKINGS: PhotoRankEntry[] = [
 
 function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boolean; index: number }) {
   const isTop3 = entry.rank <= 3;
-  const medalColors: Record<number, string> = { 1: "text-[#FFD700]", 2: "text-slate-300", 3: "text-amber-600" };
+  const medalColors: Record<number, string> = { 1: "text-[var(--s-primary)]", 2: "text-slate-300", 3: "text-amber-600" };
   return (
     <motion.div
       initial={{ opacity: 0, x: -14 }}
@@ -61,8 +61,8 @@ function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boo
       transition={{ delay: 0.04 + index * 0.04 }}
       className={cn(
         "flex items-center gap-3 rounded-2xl p-3",
-        isMe  ? "bg-[#FFD700]/8 border border-[#FFD700]/22" :
-        isTop3 ? "bg-[#FFD700]/4 border border-[#FFD700]/10" :
+        isMe  ? "bg-[var(--s-primary)]/8 border border-[var(--s-primary)]/22" :
+        isTop3 ? "bg-[var(--s-primary)]/4 border border-[var(--s-primary)]/10" :
                  "bg-white/4 border border-transparent"
       )}
     >
@@ -77,7 +77,7 @@ function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boo
       {/* Avatar */}
       <div
         className={cn(
-          "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-[11px] font-black text-white",
+          "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-xs font-black text-white",
           `bg-gradient-to-br ${entry.avatarGradient}`,
         )}
       >
@@ -86,11 +86,11 @@ function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boo
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <p className={cn("text-sm font-bold truncate", isMe && "text-[#FFD700]")}>
+        <p className={cn("text-sm font-bold truncate", isMe && "text-[var(--s-primary)]")}>
           {entry.displayName}
-          {isMe && <span className="ml-1.5 text-[10px] font-normal opacity-60">(tu)</span>}
+          {isMe && <span className="ml-1.5 text-xs font-normal opacity-60">(tu)</span>}
         </p>
-        <div className="flex items-center gap-2 text-[10px] text-white/35">
+        <div className="flex items-center gap-2 text-xs text-white/35">
           {entry.city && <span className="flex items-center gap-0.5"><MapPin size={8}/>{entry.city}</span>}
           <span>{entry.photoCount} foto</span>
         </div>
@@ -107,11 +107,11 @@ function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boo
       <div className="text-right flex-shrink-0">
         <p className="text-sm font-black tabular-nums">{entry.votePoints.toLocaleString("it-IT")}</p>
         {isTop3 ? (
-          <p className="text-[9px] font-black text-[#FFD700]/70 flex items-center gap-0.5">
+          <p className="text-xs font-black text-[var(--s-primary)]/70 flex items-center gap-0.5">
             <Heart size={8} fill="currentColor"/>voti
           </p>
         ) : (
-          <p className="text-[10px] text-white/30">voti</p>
+          <p className="text-xs text-white/30">voti</p>
         )}
       </div>
     </motion.div>
@@ -131,11 +131,11 @@ function PodiumPlace({
 }) {
   const cfg = {
     1: {
-      blockH: "h-20", order: "order-2", textColor: "text-[#FFD700]",
-      blockGrad: "from-[#FFD700]/25 to-transparent border-[#FFD700]/35",
+      blockH: "h-20", order: "order-2", textColor: "text-[var(--s-primary)]",
+      blockGrad: "from-[var(--s-primary)]/25 to-transparent border-[var(--s-primary)]/35",
       avatarSize: "h-16 w-16",
       // Outer glow ring via boxShadow — can't do dynamic colours in Tailwind JIT
-      avatarGlow: "0 0 0 3px #FFD700, 0 0 20px rgba(255,215,0,0.7), 0 0 48px rgba(255,215,0,0.3)",
+      avatarGlow: "0 0 0 3px var(--s-primary), 0 0 20px rgba(255,215,0,0.7), 0 0 48px rgba(255,215,0,0.3)",
     },
     2: {
       blockH: "h-14", order: "order-1", textColor: "text-slate-300",
@@ -159,7 +159,7 @@ function PodiumPlace({
       className={cn("flex flex-col items-center gap-1.5 flex-1", cfg.order)}
     >
       {rank === 1 && (
-        <Crown size={22} className="text-[#FFD700] drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
+        <Crown size={22} className="text-[var(--s-primary)] drop-shadow-[0_0_8px_rgba(255,215,0,0.9)]" />
       )}
       {rank !== 1 && <div className="h-5" />}
 
@@ -179,10 +179,10 @@ function PodiumPlace({
         )}
       </motion.div>
 
-      <p className={cn("text-xs font-black text-center truncate max-w-[72px]", isMe ? "text-[#FFD700]" : "text-white")}>
+      <p className={cn("text-xs font-black text-center truncate max-w-[72px]", isMe ? "text-[var(--s-primary)]" : "text-white")}>
         {entry.displayName}
       </p>
-      <p className={cn("text-[11px] font-bold", cfg.textColor)}>
+      <p className={cn("text-xs font-bold", cfg.textColor)}>
         {entry.points.toLocaleString("it-IT")} pt
       </p>
       {/* PRO badge on top-3 podium entries when applicable */}
@@ -208,9 +208,9 @@ function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe:
       className={cn(
         "flex items-center gap-3 rounded-2xl p-3",
         isMe
-          ? "bg-[#FFD700]/8 border border-[#FFD700]/22"
+          ? "bg-[var(--s-primary)]/8 border border-[var(--s-primary)]/22"
           : isTop10
-            ? "bg-[#FFD700]/4 border border-[#FFD700]/10"
+            ? "bg-[var(--s-primary)]/4 border border-[var(--s-primary)]/10"
             : "bg-white/4 border border-transparent"
       )}
       style={isTop10 && !isMe ? { boxShadow: "0 2px 16px rgba(255,215,0,0.07)" } : undefined}
@@ -227,9 +227,9 @@ function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe:
       </div>
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
-          <p className={cn("text-sm font-bold truncate", isMe && "text-[#FFD700]")}>
+          <p className={cn("text-sm font-bold truncate", isMe && "text-[var(--s-primary)]")}>
             {entry.displayName}
-            {isMe && <span className="ml-1.5 text-[10px] font-normal opacity-60">(tu)</span>}
+            {isMe && <span className="ml-1.5 text-xs font-normal opacity-60">(tu)</span>}
           </p>
         </div>
         <p className="text-xs text-white/35">{entry.visits} visite</p>
@@ -237,9 +237,9 @@ function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe:
       <div className="text-right">
         <p className="text-sm font-black">{entry.points.toLocaleString("it-IT")}</p>
         {isTop10 ? (
-          <p className="text-[9px] font-black text-[#FFD700]/70 uppercase tracking-wide">Rank Up ↑</p>
+          <p className="text-xs font-black text-[var(--s-primary)]/70 uppercase tracking-wide">Rank Up ↑</p>
         ) : (
-          <p className="text-[10px] text-white/30">pt</p>
+          <p className="text-xs text-white/30">pt</p>
         )}
       </div>
     </motion.div>
@@ -259,15 +259,15 @@ function LockedLeaderboard({ onSignIn }: { onSignIn: () => void }) {
       >
         {/* Lock icon with glow */}
         <div
-          className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#FFD700]/10 border border-[#FFD700]/22 mb-5"
+          className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/22 mb-5"
           style={{ boxShadow: "0 0 40px rgba(255,215,0,0.18)" }}
         >
-          <Lock size={34} className="text-[#FFD700]" />
+          <Lock size={34} className="text-[var(--s-primary)]" />
         </div>
 
-        <div className="flex items-center gap-1.5 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 px-3 py-1 mb-4">
-          <Sparkles size={11} className="text-[#FFD700]" />
-          <span className="text-[11px] font-black text-[#FFD700]">Contenuto esclusivo</span>
+        <div className="flex items-center gap-1.5 rounded-full bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/20 px-3 py-1 mb-4">
+          <Sparkles size={11} className="text-[var(--s-primary)]" />
+          <span className="text-xs font-black text-[var(--s-primary)]">Contenuto esclusivo</span>
         </div>
 
         <h2 className="text-2xl font-black text-white mb-2">Classifica bloccata</h2>
@@ -278,7 +278,7 @@ function LockedLeaderboard({ onSignIn }: { onSignIn: () => void }) {
         <motion.button
           whileTap={{ scale: 0.96 }}
           onClick={onSignIn}
-          className="flex items-center gap-2 rounded-2xl bg-[#FFD700] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.35)] hover:bg-yellow-300 transition-colors min-h-[48px]"
+          className="flex items-center gap-2 rounded-2xl bg-[var(--s-primary)] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.35)] hover:bg-yellow-300 transition-colors min-h-[48px]"
         >
           <Trophy size={16} />
           Accedi per competere
@@ -326,7 +326,7 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
 
       {/* League selector strip */}
       <div>
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-2">Scegli la lega</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Scegli la lega</p>
         <div className="flex gap-1.5 overflow-x-auto [scrollbar-width:none] pb-1">
           {LEAGUE_CONFIGS.map((l) => (
             <button
@@ -342,7 +342,7 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
               <span>{l.emoji}</span>
               {l.label}
               {l.prizePoolCents > 0 && (
-                <span className={cn("text-[9px]", activeLeague === l.id ? "opacity-70" : "opacity-40")}>
+                <span className={cn("text-xs", activeLeague === l.id ? "opacity-70" : "opacity-40")}>
                   €{(l.prizePoolCents / 100).toFixed(0)}
                 </span>
               )}
@@ -360,20 +360,20 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
             <div>
               <p className={cn("font-black text-sm", viewConfig.color)}>{viewConfig.label}</p>
               {season && (
-                <p className="text-[10px] text-white/35">Stagione {season.id}</p>
+                <p className="text-xs text-white/35">Stagione {season.id}</p>
               )}
             </div>
           </div>
           {viewConfig.prizePoolCents > 0 && (
             <div className="text-right">
-              <p className="text-[10px] text-white/35">Premi (1°/2°/3°)</p>
+              <p className="text-xs text-white/35">Premi (1°/2°/3°)</p>
               <p className={cn("text-xs font-black", viewConfig.color)}>
                 {viewConfig.prizes.map((c) => `€${(c / 100).toFixed(2)}`).join(" · ")}
               </p>
             </div>
           )}
           {viewConfig.prizePoolCents === 0 && (
-            <p className="text-[10px] text-white/25 italic">Nessun premio monetario</p>
+            <p className="text-xs text-white/25 italic">Nessun premio monetario</p>
           )}
         </div>
 
@@ -404,7 +404,7 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
                   transition={{ delay: i * 0.04 }}
                   className={cn(
                     "flex items-center gap-3 px-4 py-3",
-                    isMe && "bg-[#FFD700]/6"
+                    isMe && "bg-[var(--s-primary)]/6"
                   )}
                 >
                   <span className="w-6 text-center text-sm flex-shrink-0">
@@ -414,18 +414,18 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
                     {entry.photoURL ? (
                       <Image src={entry.photoURL} alt={entry.displayName} width={32} height={32} className="object-cover" />
                     ) : (
-                      <span className="text-[10px] font-black text-white/60">
+                      <span className="text-xs font-black text-white/60">
                         {entry.displayName.slice(0, 2).toUpperCase()}
                       </span>
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className={cn("text-sm font-bold truncate", isMe ? "text-[#FFD700]" : "text-white")}>
+                    <p className={cn("text-sm font-bold truncate", isMe ? "text-[var(--s-primary)]" : "text-white")}>
                       {entry.displayName}
-                      {isMe && <span className="ml-1 text-[10px] opacity-60 font-normal">(tu)</span>}
+                      {isMe && <span className="ml-1 text-xs opacity-60 font-normal">(tu)</span>}
                     </p>
                     {prizeAmount > 0 && (
-                      <p className="text-[10px] text-green-400 font-bold">
+                      <p className="text-xs text-green-400 font-bold">
                         €{(prizeAmount / 100).toFixed(2)} a fine stagione
                       </p>
                     )}
@@ -442,7 +442,7 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
 
       {/* Season countdown footer */}
       {season && timeLeft && (
-        <div className="flex items-center justify-center gap-2 text-[11px] text-white/30">
+        <div className="flex items-center justify-center gap-2 text-xs text-white/30">
           <Clock size={11} />
           <span>Fine stagione: {timeLeft} · Top 30% promossi, fondo 30% retrocessi</span>
         </div>
@@ -476,7 +476,7 @@ export function LeaderboardView() {
         <div className="min-h-screen bg-slate-950 text-white">
           <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-4 backdrop-blur-xl">
             <div className="flex items-center gap-2">
-              <Trophy className="text-[#FFD700]" size={22} />
+              <Trophy className="text-[var(--s-primary)]" size={22} />
               <h1 className="text-xl font-black">Classifica</h1>
             </div>
           </div>
@@ -493,13 +493,13 @@ export function LeaderboardView() {
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-4 backdrop-blur-xl">
         <div className="flex items-center gap-2 mb-3">
-          <Trophy className="text-[#FFD700]" size={22} />
+          <Trophy className="text-[var(--s-primary)]" size={22} />
           <h1 className="text-xl font-black">Classifica</h1>
         </div>
 
         {contest && (
-          <div className="rounded-2xl bg-gradient-to-r from-[#FFD700]/18 to-[#FFD700]/5 border border-[#FFD700]/22 p-3.5 mb-3">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-[#FFD700]/65 mb-0.5">Contest Attivo</p>
+          <div className="rounded-2xl bg-gradient-to-r from-[var(--s-primary)]/18 to-[var(--s-primary)]/5 border border-[var(--s-primary)]/22 p-3.5 mb-3">
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-primary)]/65 mb-0.5">Contest Attivo</p>
             <p className="font-black text-base text-white">{contest.title}</p>
             <div className="flex items-center justify-between mt-2">
               <div className="flex items-center gap-1.5 text-green-400 font-bold text-sm">
@@ -526,7 +526,7 @@ export function LeaderboardView() {
               onClick={() => setLbTab(id)}
               className={cn(
                 "relative flex-1 flex items-center justify-center gap-1.5 py-2.5 text-sm font-black transition-colors",
-                lbTab === id ? "text-[#FFD700]" : "text-white/30",
+                lbTab === id ? "text-[var(--s-primary)]" : "text-white/30",
               )}
             >
               <Icon size={14} />
@@ -534,7 +534,7 @@ export function LeaderboardView() {
               {lbTab === id && (
                 <motion.div
                   layoutId="lb-tab-indicator"
-                  className="absolute bottom-0 inset-x-3 h-0.5 rounded-full bg-[#FFD700]"
+                  className="absolute bottom-0 inset-x-3 h-0.5 rounded-full bg-[var(--s-primary)]"
                   transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 />
               )}
@@ -554,7 +554,7 @@ export function LeaderboardView() {
             transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
             className="px-4 pt-4 space-y-2"
           >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3 flex items-center gap-1.5">
+            <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3 flex items-center gap-1.5">
               <Heart size={11} className="text-rose-400" fill="currentColor" />
               Classifica voti foto · {contest?.title ?? "Contest attivo"}
             </p>
@@ -566,7 +566,7 @@ export function LeaderboardView() {
                 index={idx}
               />
             ))}
-            <p className="text-[10px] text-white/20 text-center pt-2 pb-4">
+            <p className="text-xs text-white/20 text-center pt-2 pb-4">
               1 Like = 1 punto · 1 Super Like = 3 punti · I voti ricevuti determinano il premio
             </p>
           </motion.div>
@@ -607,7 +607,7 @@ export function LeaderboardView() {
                 {rest.length > 0 && (
                   <div className="flex items-center gap-3 px-4 py-3">
                     <div className="flex-1 h-px bg-white/8" />
-                    <span className="text-[10px] font-bold text-white/25 uppercase tracking-widest">Tutti i partecipanti</span>
+                    <span className="text-xs font-bold text-white/25 uppercase tracking-widest">Tutti i partecipanti</span>
                     <div className="flex-1 h-px bg-white/8" />
                   </div>
                 )}
@@ -647,15 +647,15 @@ export function LeaderboardView() {
           transition={{ type: "spring", stiffness: 300, damping: 32, delay: 0.45 }}
           className="fixed bottom-16 inset-x-0 z-30 px-3 pb-2"
         >
-          <div className="flex items-center gap-3 rounded-2xl p-3.5 bg-slate-900/96 border border-[#FFD700]/28 backdrop-blur-xl shadow-[0_-6px_32px_rgba(0,0,0,0.6)]">
-            <Star size={15} className="text-[#FFD700] flex-shrink-0" />
+          <div className="flex items-center gap-3 rounded-2xl p-3.5 bg-slate-900/96 border border-[var(--s-primary)]/28 backdrop-blur-xl shadow-[0_-6px_32px_rgba(0,0,0,0.6)]">
+            <Star size={15} className="text-[var(--s-primary)] flex-shrink-0" />
             <div className="flex-1">
-              <p className="text-[10px] text-white/45">La tua posizione</p>
-              <p className="text-sm font-black text-[#FFD700]">#{myEntry.rank} · {myEntry.displayName}</p>
+              <p className="text-xs text-white/45">La tua posizione</p>
+              <p className="text-sm font-black text-[var(--s-primary)]">#{myEntry.rank} · {myEntry.displayName}</p>
             </div>
             <div className="text-right">
               <p className="text-base font-black">{myEntry.points.toLocaleString("it-IT")}</p>
-              <p className="text-[10px] text-white/35">punti</p>
+              <p className="text-xs text-white/35">punti</p>
             </div>
             {myEntry.prizeShare && (
               <div className="rounded-xl bg-green-500/12 border border-green-500/22 px-2.5 py-1.5 text-xs font-black text-green-400">

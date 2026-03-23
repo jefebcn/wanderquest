@@ -177,11 +177,11 @@ function CouponCard({
             backdropFilter: "blur(6px)",
           }}
         >
-          <Lock size={14} className="text-[#FFD700]/60" />
-          <span className="text-[10px] font-black text-[#FFD700]/70">Solo Pro</span>
+          <Lock size={14} className="text-[var(--s-primary)]/60" />
+          <span className="text-xs font-black text-[var(--s-primary)]/70">Solo Pro</span>
           <div className="flex items-center gap-1 mt-0.5">
-            <Crown size={9} className="text-[#FFD700]/50" />
-            <span className="text-[9px] text-white/30">Upgrade →</span>
+            <Crown size={9} className="text-[var(--s-primary)]/50" />
+            <span className="text-xs text-white/30">Upgrade →</span>
           </div>
         </div>
       )}
@@ -191,18 +191,18 @@ function CouponCard({
           <p className="text-xs font-black text-white leading-tight">{coupon.title}</p>
           <span
             className={cn(
-              "flex-shrink-0 rounded-lg px-2 py-0.5 text-[9px] font-black",
+              "flex-shrink-0 rounded-lg px-2 py-0.5 text-xs font-black",
               coupon.isProOnly
-                ? "bg-[#FFD700]/15 text-[#FFD700]"
+                ? "bg-[var(--s-primary)]/15 text-[var(--s-primary)]"
                 : "bg-green-500/15 text-green-400"
             )}
           >
             {coupon.discountText}
           </span>
         </div>
-        <p className="text-[10px] text-white/40 leading-snug mb-2">{coupon.description}</p>
+        <p className="text-xs text-white/40 leading-snug mb-2">{coupon.description}</p>
         {coupon.expiresAt && (
-          <p className="text-[9px] text-white/25 mb-2">
+          <p className="text-xs text-white/25 mb-2">
             Scade: {new Date(coupon.expiresAt).toLocaleDateString("it-IT", { day: "2-digit", month: "short", year: "numeric" })}
           </p>
         )}
@@ -211,7 +211,7 @@ function CouponCard({
           onClick={handleCopy}
           disabled={locked}
           className={cn(
-            "flex w-full items-center justify-center gap-1.5 rounded-xl py-1.5 text-[11px] font-black transition-colors",
+            "flex w-full items-center justify-center gap-1.5 rounded-xl py-1.5 text-xs font-black transition-colors",
             locked
               ? "bg-white/4 text-white/20 cursor-not-allowed"
               : copied
@@ -247,24 +247,24 @@ function PartnerCard({ partner, isPro }: { partner: MockPartner; isPro: boolean 
           <div className="flex items-center gap-1.5">
             <p className="text-sm font-black text-white truncate">{partner.name}</p>
             {partner.coupons.some((c) => c.isProOnly) && (
-              <Crown size={9} className="text-[#FFD700]/60 flex-shrink-0" />
+              <Crown size={9} className="text-[var(--s-primary)]/60 flex-shrink-0" />
             )}
           </div>
           <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-[10px] text-white/35">{partner.category}</span>
-            <span className="text-[9px] text-white/25">·</span>
-            <span className="text-[10px] text-white/35 flex items-center gap-0.5">
+            <span className="text-xs text-white/35">{partner.category}</span>
+            <span className="text-xs text-white/25">·</span>
+            <span className="text-xs text-white/35 flex items-center gap-0.5">
               <MapPin size={8} />{partner.city}
             </span>
-            <span className="text-[9px] text-white/25">·</span>
-            <span className="text-[10px] text-[#FFD700]/70 flex items-center gap-0.5 font-bold">
+            <span className="text-xs text-white/25">·</span>
+            <span className="text-xs text-[var(--s-primary)]/70 flex items-center gap-0.5 font-bold">
               <Star size={8} fill="currentColor" />{partner.rating}
             </span>
           </div>
         </div>
         <div className="text-right flex-shrink-0">
-          <p className="text-[10px] text-white/35">{partner.coupons.length} offert{partner.coupons.length === 1 ? "a" : "e"}</p>
-          <p className="text-[10px] text-white/25 mt-0.5">{expanded ? "▲" : "▼"}</p>
+          <p className="text-xs text-white/35">{partner.coupons.length} offert{partner.coupons.length === 1 ? "a" : "e"}</p>
+          <p className="text-xs text-white/25 mt-0.5">{expanded ? "▲" : "▼"}</p>
         </div>
       </button>
 
@@ -280,7 +280,7 @@ function PartnerCard({ partner, isPro }: { partner: MockPartner; isPro: boolean 
             className="overflow-hidden"
           >
             <div className="px-4 pb-4 space-y-2">
-              <p className="text-[10px] text-white/30 mb-1">{partner.description}</p>
+              <p className="text-xs text-white/30 mb-1">{partner.description}</p>
               {partner.coupons.map((coupon) => (
                 <CouponCard key={coupon.id} coupon={coupon} isPro={isPro} />
               ))}
@@ -307,14 +307,14 @@ export function LocalDeals() {
           <h2 className="text-sm font-black">Local Deals</h2>
         </div>
         {!isPro && (
-          <div className="flex items-center gap-1 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 px-2.5 py-1">
-            <Crown size={9} className="text-[#FFD700]" />
-            <span className="text-[9px] font-black text-[#FFD700]">{proOnlyCount} offerte Pro</span>
+          <div className="flex items-center gap-1 rounded-full bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/20 px-2.5 py-1">
+            <Crown size={9} className="text-[var(--s-primary)]" />
+            <span className="text-xs font-black text-[var(--s-primary)]">{proOnlyCount} offerte Pro</span>
           </div>
         )}
       </div>
 
-      <p className="text-[10px] text-white/30 -mt-1">
+      <p className="text-xs text-white/30 -mt-1">
         Offerte esclusive dai partner locali di Barcellona. Mostra il codice all&apos;ingresso.
       </p>
 

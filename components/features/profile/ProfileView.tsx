@@ -92,8 +92,8 @@ const BADGES: Badge[] = [
     icon: Crown,
     label: "Barcelona King",
     desc: "10 landmark a Barcellona",
-    color: "text-[#FFD700]",
-    bgColor: "bg-[#FFD700]/12 border-[#FFD700]/25",
+    color: "text-[var(--s-primary)]",
+    bgColor: "bg-[var(--s-primary)]/12 border-[var(--s-primary)]/25",
     locked: true,
   },
   {
@@ -194,13 +194,13 @@ function LockedProfile({ onSignIn }: { onSignIn: () => void }) {
         <motion.button
           whileTap={{ scale: 0.96 }}
           onClick={onSignIn}
-          className="flex items-center gap-2 rounded-2xl bg-[#FFD700] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
+          className="flex items-center gap-2 rounded-2xl bg-[var(--s-primary)] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
         >
           <Sparkles size={16} />
           Accedi ora
         </motion.button>
         <div className="mt-8 w-full">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/25 mb-4 text-center">
+          <p className="text-xs font-bold uppercase tracking-widest text-white/25 mb-4 text-center">
             Strumenti per il viaggiatore
           </p>
           <CurrencyConverter />
@@ -228,17 +228,17 @@ function WalletCard({ wallet }: { wallet: UserWallet }) {
       }}
       className="relative overflow-hidden rounded-3xl p-5 border border-white/10"
     >
-      <div className="pointer-events-none absolute -top-6 -right-6 h-28 w-28 rounded-full bg-[#FFD700]/12 blur-2xl animate-breathe" />
+      <div className="pointer-events-none absolute -top-6 -right-6 h-28 w-28 rounded-full bg-[var(--s-primary)]/12 blur-2xl animate-breathe" />
       <div className="flex items-start justify-between mb-3">
         <div>
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/50">Saldo</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-white/50">Saldo</p>
           <p className="text-3xl font-black text-white tabular-nums mt-0.5">
             {formatCents(wallet.balanceCents)}
           </p>
         </div>
         <Link
           href="/wallet"
-          className="flex items-center gap-1 rounded-xl bg-[#FFD700] px-3 py-2 text-xs font-black text-slate-900 hover:bg-yellow-300 transition-colors min-h-[36px]"
+          className="flex items-center gap-1 rounded-xl bg-[var(--s-primary)] px-3 py-2 text-xs font-black text-slate-900 hover:bg-yellow-300 transition-colors min-h-[36px]"
         >
           <ArrowDownToLine size={12} />
           Preleva
@@ -247,11 +247,11 @@ function WalletCard({ wallet }: { wallet: UserWallet }) {
       </div>
       <div className="grid grid-cols-2 gap-2 mb-3">
         <div className="rounded-xl bg-white/8 border border-white/8 px-3 py-2">
-          <p className="text-[9px] text-white/40 flex items-center gap-1"><TrendingUp size={9}/> Guadagnato</p>
+          <p className="text-xs text-white/40 flex items-center gap-1"><TrendingUp size={9}/> Guadagnato</p>
           <p className="text-xs font-black mt-0.5">{formatCents(wallet.totalEarnedCents)}</p>
         </div>
         <div className="rounded-xl bg-white/8 border border-white/8 px-3 py-2">
-          <p className="text-[9px] text-white/40 flex items-center gap-1"><Clock size={9}/> In attesa</p>
+          <p className="text-xs text-white/40 flex items-center gap-1"><Clock size={9}/> In attesa</p>
           <p className="text-xs font-black mt-0.5">
             {wallet.pendingCents > 0 ? formatCents(wallet.pendingCents) : "—"}
           </p>
@@ -259,7 +259,7 @@ function WalletCard({ wallet }: { wallet: UserWallet }) {
       </div>
       {wallet.balanceCents < 500 && (
         <div>
-          <div className="flex justify-between text-[9px] text-white/35 mb-1">
+          <div className="flex justify-between text-xs text-white/35 mb-1">
             <span>Verso prelievo minimo</span>
             <span>{formatCents(wallet.balanceCents)} / €5</span>
           </div>
@@ -268,7 +268,7 @@ function WalletCard({ wallet }: { wallet: UserWallet }) {
               initial={{ width: 0 }}
               animate={{ width: `${progressPct}%` }}
               transition={{ duration: 0.8, delay: 0.3 }}
-              className="h-full rounded-full bg-gradient-to-r from-blue-400 to-[#FFD700]"
+              className="h-full rounded-full bg-gradient-to-r from-blue-400 to-[var(--s-primary)]"
             />
           </div>
         </div>
@@ -316,7 +316,7 @@ function StreakCard({ currentStreak, longestStreak }: StreakCardProps) {
         </motion.div>
 
         <div className="flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">Streak Giornaliero</p>
+          <p className="text-xs font-bold uppercase tracking-widest text-white/35">Streak Giornaliero</p>
           <div className="flex items-baseline gap-1.5">
             <span className="text-2xl font-black text-orange-400 tabular-nums">{currentStreak}</span>
             <span className="text-xs text-white/40">
@@ -326,7 +326,7 @@ function StreakCard({ currentStreak, longestStreak }: StreakCardProps) {
         </div>
 
         <div className="text-right">
-          <p className="text-[10px] text-white/30 font-bold flex items-center gap-0.5 justify-end">
+          <p className="text-xs text-white/30 font-bold flex items-center gap-0.5 justify-end">
             <CalendarDays size={9} />
             Record
           </p>
@@ -335,7 +335,7 @@ function StreakCard({ currentStreak, longestStreak }: StreakCardProps) {
       </div>
 
       {/* Progress to next bonus */}
-      <div className="flex justify-between text-[9px] text-white/30 mb-1">
+      <div className="flex justify-between text-xs text-white/30 mb-1">
         <span className="font-bold">
           {currentStreak < 3
             ? `+50 pt al ${nextMilestone}° giorno`
@@ -366,7 +366,7 @@ function StreakCard({ currentStreak, longestStreak }: StreakCardProps) {
           />
         ))}
       </div>
-      <p className="text-[9px] text-white/20 mt-1 text-right">prossimo bonus: {nextMilestone}gg</p>
+      <p className="text-xs text-white/20 mt-1 text-right">prossimo bonus: {nextMilestone}gg</p>
     </motion.div>
   );
 }
@@ -377,9 +377,9 @@ function BadgeGrid() {
   return (
     <div className="rounded-2xl bg-white/4 border border-white/8 p-4">
       <div className="flex items-center gap-2 mb-4">
-        <Award size={16} className="text-[#FFD700]" />
+        <Award size={16} className="text-[var(--s-primary)]" />
         <h2 className="text-sm font-black">Traguardi</h2>
-        <span className="ml-auto text-[10px] text-white/30 font-bold">
+        <span className="ml-auto text-xs text-white/30 font-bold">
           {BADGES.filter((b) => !b.locked).length}/{BADGES.length}
         </span>
       </div>
@@ -403,7 +403,7 @@ function BadgeGrid() {
             <div className={cn("flex h-9 w-9 items-center justify-center rounded-xl bg-black/20", color)}>
               <Icon size={18} />
             </div>
-            <span className="text-[9px] font-black text-white leading-tight">{label}</span>
+            <span className="text-xs font-black text-white leading-tight">{label}</span>
           </motion.div>
         ))}
       </div>
@@ -442,7 +442,7 @@ function ScanTimeline() {
 
             {/* Timeline line */}
             <div className="relative flex flex-col items-center self-stretch mr-1">
-              <CheckCircle2 size={14} className="text-[#FFD700] flex-shrink-0 mt-1" />
+              <CheckCircle2 size={14} className="text-[var(--s-primary)] flex-shrink-0 mt-1" />
               {i < MOCK_HISTORY.length - 1 && (
                 <div className="absolute top-5 bottom-0 w-px bg-white/8" />
               )}
@@ -451,11 +451,11 @@ function ScanTimeline() {
             {/* Info */}
             <div className="flex-1 min-w-0">
               <p className="text-sm font-bold truncate text-white">{item.landmark}</p>
-              <p className="text-[11px] text-white/35">{item.city} · {fmtRelative(item.date)}</p>
+              <p className="text-xs text-white/35">{item.city} · {fmtRelative(item.date)}</p>
             </div>
 
             {/* Points */}
-            <span className="text-sm font-black text-[#FFD700] tabular-nums">+{item.points}pt</span>
+            <span className="text-sm font-black text-[var(--s-primary)] tabular-nums">+{item.points}pt</span>
           </motion.div>
         ))}
       </div>
@@ -503,37 +503,37 @@ function AdminContestSection() {
       initial={{ opacity: 0, y: 14 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ type: "spring", stiffness: 260, damping: 22 }}
-      className="rounded-2xl border border-[#FFD700]/20 bg-[#FFD700]/5 p-4 space-y-4"
+      className="rounded-2xl border border-[var(--s-primary)]/20 bg-[var(--s-primary)]/5 p-4 space-y-4"
     >
       {/* Header */}
       <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FFD700]/15 border border-[#FFD700]/25">
-          <Settings size={15} className="text-[#FFD700]" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--s-primary)]/15 border border-[var(--s-primary)]/25">
+          <Settings size={15} className="text-[var(--s-primary)]" />
         </div>
         <div>
-          <p className="text-sm font-black text-[#FFD700]">Pannello Admin</p>
-          <p className="text-[10px] text-white/35">Gestione contest fotografici</p>
+          <p className="text-sm font-black text-[var(--s-primary)]">Pannello Admin</p>
+          <p className="text-xs text-white/35">Gestione contest fotografici</p>
         </div>
       </div>
 
       {/* Current contest status */}
       <div className="rounded-xl bg-white/[0.04] border border-white/8 p-3">
-        <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-2">Contest attuale</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Contest attuale</p>
         {contestLoading ? (
           <Loader2 className="animate-spin text-white/40" size={16} />
         ) : isGalleryMode ? (
           <div className="flex items-center gap-2">
             <AlertTriangle size={13} className="text-amber-400 flex-shrink-0" />
-            <p className="text-[11px] text-amber-300">Nessun contest attivo — modalità gallery.</p>
+            <p className="text-xs text-amber-300">Nessun contest attivo — modalità gallery.</p>
           </div>
         ) : (
           <div className="space-y-0.5">
             <p className="font-bold text-xs text-white">{contest?.title}</p>
-            <p className="text-[10px] text-white/40">
+            <p className="text-xs text-white/40">
               Premio: {formatCents(contest?.prizePool ?? 0)} · Scade:{" "}
               {contest?.endDate ? new Date(contest.endDate).toLocaleDateString("it-IT") : "—"}
             </p>
-            <p className="text-[9px] text-emerald-400 font-semibold uppercase tracking-wide">✓ Attivo</p>
+            <p className="text-xs text-emerald-400 font-semibold uppercase tracking-wide">✓ Attivo</p>
           </div>
         )}
       </div>
@@ -541,36 +541,36 @@ function AdminContestSection() {
       {/* Form */}
       <div className="space-y-3">
         <div>
-          <label className="text-[10px] text-white/40 mb-1 block">Titolo (opzionale)</label>
+          <label className="text-xs text-white/40 mb-1 block">Titolo (opzionale)</label>
           <input
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder={`Contest ${new Date().toLocaleString("it-IT", { month: "long", year: "numeric" })}`}
-            className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-[#FFD700]/40"
+            className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-[var(--s-primary)]/40"
           />
         </div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-[10px] text-white/40 mb-1 block">Premio (€)</label>
+            <label className="text-xs text-white/40 mb-1 block">Premio (€)</label>
             <input
               type="number"
               value={prizePool}
               onChange={(e) => setPrizePool(e.target.value)}
               min="0"
               step="10"
-              className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white outline-none focus:border-[#FFD700]/40"
+              className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white outline-none focus:border-[var(--s-primary)]/40"
             />
           </div>
           <div>
-            <label className="text-[10px] text-white/40 mb-1 block">Durata (giorni)</label>
+            <label className="text-xs text-white/40 mb-1 block">Durata (giorni)</label>
             <input
               type="number"
               value={durationDays}
               onChange={(e) => setDurationDays(e.target.value)}
               min="1"
               max="365"
-              className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white outline-none focus:border-[#FFD700]/40"
+              className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white outline-none focus:border-[var(--s-primary)]/40"
             />
           </div>
         </div>
@@ -592,7 +592,7 @@ function AdminContestSection() {
       <button
         onClick={handleCreate}
         disabled={creating}
-        className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-3 text-sm font-black text-slate-900 shadow-[0_4px_16px_rgba(255,215,0,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[var(--s-primary)] py-3 text-sm font-black text-slate-900 shadow-[0_4px_16px_rgba(255,215,0,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {creating
           ? <Loader2 size={15} className="animate-spin" />
@@ -637,7 +637,7 @@ export function ProfileView() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full border-2 border-white/15 border-t-[#FFD700] animate-spin" />
+        <div className="h-8 w-8 rounded-full border-2 border-white/15 border-t-[var(--s-primary)] animate-spin" />
       </div>
     );
   }
@@ -697,7 +697,7 @@ export function ProfileView() {
           {/* Avatar */}
           <div className="relative flex-shrink-0">
             {user.photoURL ? (
-              <div className="h-16 w-16 overflow-hidden rounded-2xl ring-2 ring-[#FFD700]/50">
+              <div className="h-16 w-16 overflow-hidden rounded-2xl ring-2 ring-[var(--s-primary)]/50">
                 <Image
                   src={user.photoURL}
                   alt={user.displayName ?? "Avatar"}
@@ -711,7 +711,7 @@ export function ProfileView() {
                 <User size={28} className="text-white/60" />
               </div>
             )}
-            <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[#FFD700] border border-slate-950">
+            <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--s-primary)] border border-slate-950">
               <Star size={10} className="text-slate-900" fill="currentColor" />
             </div>
           </div>
@@ -724,9 +724,9 @@ export function ProfileView() {
             </div>
             <p className="text-xs text-white/40 truncate">{user.email}</p>
             {contest && (
-              <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[#FFD700]/12 border border-[#FFD700]/20 px-2 py-0.5">
-                <Trophy size={9} className="text-[#FFD700]" />
-                <span className="text-[10px] font-black text-[#FFD700]">
+              <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[var(--s-primary)]/12 border border-[var(--s-primary)]/20 px-2 py-0.5">
+                <Trophy size={9} className="text-[var(--s-primary)]" />
+                <span className="text-xs font-black text-[var(--s-primary)]">
                   {formatCents(contest.prizePool)} in palio
                 </span>
               </div>
@@ -744,7 +744,7 @@ export function ProfileView() {
           <WalletCard wallet={wallet} />
         ) : (
           <div className="rounded-2xl bg-white/4 border border-white/8 p-4 flex items-center gap-3">
-            <Wallet size={18} className="text-[#FFD700]/50" />
+            <Wallet size={18} className="text-[var(--s-primary)]/50" />
             <p className="text-sm text-white/40">Portafoglio non disponibile</p>
             <Link href="/wallet" className="ml-auto text-xs text-blue-400 underline">Apri</Link>
           </div>
@@ -765,7 +765,7 @@ export function ProfileView() {
         {/* Currency Converter */}
         <div>
           <div className="mb-3">
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">Strumenti viaggiatore</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-white/30">Strumenti viaggiatore</p>
           </div>
           <CurrencyConverter />
         </div>

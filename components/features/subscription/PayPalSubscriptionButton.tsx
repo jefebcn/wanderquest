@@ -165,7 +165,7 @@ export function PayPalSubscriptionButton({ onSuccess }: Props) {
       {/* Manual fallback trigger */}
       <button
         onClick={() => setShowManual(true)}
-        className="w-full text-center text-[11px] text-white/30 hover:text-white/55 transition-colors pt-1"
+        className="w-full text-center text-xs text-white/30 hover:text-white/55 transition-colors pt-1"
       >
         Già pagato tramite link? Inserisci l&apos;ID transazione
       </button>
@@ -218,7 +218,7 @@ export function PayPalSubscriptionButton({ onSuccess }: Props) {
               whileTap={{ scale: 0.95 }}
               onClick={handleManualSubmit}
               disabled={manualBusy || !txId.trim()}
-              className="w-full rounded-xl bg-[#FFD700] py-3 text-sm font-black text-slate-900 disabled:opacity-40 hover:bg-yellow-300 transition-colors"
+              className="w-full rounded-xl bg-[var(--s-primary)] py-3 text-sm font-black text-slate-900 disabled:opacity-40 hover:bg-yellow-300 transition-colors"
             >
               {manualBusy ? "Invio…" : "Invia per revisione"}
             </motion.button>

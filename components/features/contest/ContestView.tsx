@@ -43,7 +43,7 @@ import { cn } from "@/lib/utils";
 // ── Prize tiers ───────────────────────────────────────────────────────────
 
 const PRIZE_TIERS = [
-  { rank: 1, emoji: "🥇", label: "1° posto", amount: "€200", color: "border-[#FFD700]/40 bg-[#FFD700]/8", textColor: "text-[#FFD700]" },
+  { rank: 1, emoji: "🥇", label: "1° posto", amount: "€200", color: "border-[var(--s-primary)]/40 bg-[var(--s-primary)]/8", textColor: "text-[var(--s-primary)]" },
   { rank: 2, emoji: "🥈", label: "2° posto", amount: "€100", color: "border-white/15 bg-white/[0.04]",   textColor: "text-white/70" },
   { rank: 3, emoji: "🥉", label: "3° posto", amount: "€50",  color: "border-amber-700/30 bg-amber-900/10", textColor: "text-amber-400/80" },
 ] as const;
@@ -51,7 +51,7 @@ const PRIZE_TIERS = [
 function PrizeTierBanner() {
   return (
     <div className="mx-4 my-3">
-      <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-2">Premi mensili</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-2">Premi mensili</p>
       <div className="grid grid-cols-3 gap-2">
         {PRIZE_TIERS.map(({ rank, emoji, label, amount, color, textColor }) => (
           <motion.div
@@ -62,7 +62,7 @@ function PrizeTierBanner() {
             className={`rounded-xl border p-3 text-center ${color}`}
           >
             <p className="text-xl mb-1">{emoji}</p>
-            <p className="text-[9px] font-bold uppercase tracking-wide text-white/40">{label}</p>
+            <p className="text-xs font-bold uppercase tracking-wide text-white/40">{label}</p>
             <p className={`text-base font-black ${textColor}`}>{amount}</p>
           </motion.div>
         ))}
@@ -81,22 +81,22 @@ function VotingHint() {
       transition={{ delay: 0.2 }}
       className="mx-4 mb-3 rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3"
     >
-      <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-2.5">Come votare</p>
+      <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-2.5">Come votare</p>
       <div className="grid grid-cols-3 gap-0 text-center divide-x divide-white/8">
         <div className="px-2">
           <p className="text-base mb-1">←</p>
-          <p className="text-[10px] font-bold text-red-400/80">Salta</p>
-          <p className="text-[9px] text-white/30">Scorri sx</p>
+          <p className="text-xs font-bold text-red-400/80">Salta</p>
+          <p className="text-xs text-white/30">Scorri sx</p>
         </div>
         <div className="px-2">
           <p className="text-base mb-1">↑</p>
-          <p className="text-[10px] font-bold text-[#FFD700]">Super Like</p>
-          <p className="text-[9px] text-[#FFD700]/50">+3 pt</p>
+          <p className="text-xs font-bold text-[var(--s-primary)]">Super Like</p>
+          <p className="text-xs text-[var(--s-primary)]/50">+3 pt</p>
         </div>
         <div className="px-2">
           <p className="text-base mb-1">→</p>
-          <p className="text-[10px] font-bold text-green-400/80">Like</p>
-          <p className="text-[9px] text-white/30">Scorri dx</p>
+          <p className="text-xs font-bold text-green-400/80">Like</p>
+          <p className="text-xs text-white/30">Scorri dx</p>
         </div>
       </div>
     </motion.div>
@@ -353,7 +353,7 @@ function SwipeCard({
       />
       <motion.div
         style={{ opacity: useTransform(y, [-100, 0], [0.35, 0]) }}
-        className="absolute inset-0 bg-[#FFD700] pointer-events-none rounded-3xl"
+        className="absolute inset-0 bg-[var(--s-primary)] pointer-events-none rounded-3xl"
       />
 
       {/* Swipe indicators */}
@@ -373,7 +373,7 @@ function SwipeCard({
       />
       <SwipeIndicator
         label="SUPER"
-        color="border-[#FFD700] text-[#FFD700]"
+        color="border-[var(--s-primary)] text-[var(--s-primary)]"
         rotation=""
         style={{ top: "10%", left: "50%", transform: "translateX(-50%)" }}
         opacity={superOpacity}
@@ -381,7 +381,7 @@ function SwipeCard({
 
       {/* Points badge */}
       <div className="absolute top-4 right-4 rounded-full bg-black/40 backdrop-blur-sm border border-white/20 px-3 py-1">
-        <span className="text-xs font-black text-[#FFD700]">
+        <span className="text-xs font-black text-[var(--s-primary)]">
           {photo.likes + photo.superLikes * 3} pt
         </span>
       </div>
@@ -393,7 +393,7 @@ function SwipeCard({
           <div>
             <p className="text-sm font-black text-white leading-tight">{photo.displayName}</p>
             {photo.city && (
-              <p className="text-[11px] text-white/50 flex items-center gap-1">
+              <p className="text-xs text-white/50 flex items-center gap-1">
                 <MapPin size={9} />{photo.city}
               </p>
             )}
@@ -403,10 +403,10 @@ function SwipeCard({
 
         {/* Vote stats */}
         <div className="flex items-center gap-3 mt-2">
-          <span className="text-[10px] text-green-400/70 flex items-center gap-1">
+          <span className="text-xs text-green-400/70 flex items-center gap-1">
             <Heart size={9} fill="currentColor" />{photo.likes}
           </span>
-          <span className="text-[10px] text-[#FFD700]/70 flex items-center gap-1">
+          <span className="text-xs text-[var(--s-primary)]/70 flex items-center gap-1">
             <Star size={9} fill="currentColor" />{photo.superLikes}
           </span>
         </div>
@@ -451,12 +451,12 @@ function ActionButtons({
         disabled={disabled}
         className={cn(
           "flex h-16 w-16 items-center justify-center rounded-full border-2 shadow-xl transition-opacity",
-          "border-[#FFD700]/70 bg-[#FFD700]/12",
+          "border-[var(--s-primary)]/70 bg-[var(--s-primary)]/12",
           "shadow-[0_4px_24px_rgba(255,215,0,0.25)]",
           disabled && "opacity-30 cursor-not-allowed",
         )}
       >
-        <Star size={28} className="text-[#FFD700]" fill="currentColor" />
+        <Star size={28} className="text-[var(--s-primary)]" fill="currentColor" />
       </motion.button>
 
       {/* Like */}
@@ -490,7 +490,7 @@ function MyPhotosTab({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 size={28} className="animate-spin text-[#FFD700]/50" />
+        <Loader2 size={28} className="animate-spin text-[var(--s-primary)]/50" />
       </div>
     );
   }
@@ -501,9 +501,9 @@ function MyPhotosTab({
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={onUpload}
-        className="w-full mb-4 flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[#FFD700]/30 bg-[#FFD700]/5 py-5 text-sm font-black text-[#FFD700]/70 hover:bg-[#FFD700]/8 transition-colors"
+        className="w-full mb-4 flex items-center justify-center gap-3 rounded-2xl border-2 border-dashed border-[var(--s-primary)]/30 bg-[var(--s-primary)]/5 py-5 text-sm font-black text-[var(--s-primary)]/70 hover:bg-[var(--s-primary)]/8 transition-colors"
       >
-        <Camera size={20} className="text-[#FFD700]/50" />
+        <Camera size={20} className="text-[var(--s-primary)]/50" />
         Carica una nuova foto
       </motion.button>
 
@@ -532,15 +532,15 @@ function MyPhotosTab({
               />
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
               <div className="absolute bottom-0 left-0 right-0 p-3">
-                <p className="text-[11px] text-white/70 line-clamp-2 mb-1">{photo.caption}</p>
+                <p className="text-xs text-white/70 line-clamp-2 mb-1">{photo.caption}</p>
                 <div className="flex items-center gap-2">
-                  <span className="text-[10px] text-green-400 flex items-center gap-0.5">
+                  <span className="text-xs text-green-400 flex items-center gap-0.5">
                     <Heart size={8} fill="currentColor" />{photo.likes}
                   </span>
-                  <span className="text-[10px] text-[#FFD700] flex items-center gap-0.5">
+                  <span className="text-xs text-[var(--s-primary)] flex items-center gap-0.5">
                     <Star size={8} fill="currentColor" />{photo.superLikes}
                   </span>
-                  <span className="text-[9px] text-white/40 ml-auto font-black">
+                  <span className="text-xs text-white/40 ml-auto font-black">
                     {photo.likes + photo.superLikes * 3}pt
                   </span>
                 </div>
@@ -670,7 +670,7 @@ function UploadSheet({
 
               {/* Caption */}
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1.5 block">
+                <label className="text-xs font-bold uppercase tracking-widest text-white/40 mb-1.5 block">
                   Didascalia *
                 </label>
                 <textarea
@@ -681,12 +681,12 @@ function UploadSheet({
                   rows={3}
                   className="w-full rounded-xl bg-white/6 border border-white/10 px-4 py-3 text-sm text-white placeholder-white/20 focus:outline-none focus:border-blue-500/50 resize-none"
                 />
-                <p className="text-[10px] text-white/25 text-right mt-1">{caption.length}/140</p>
+                <p className="text-xs text-white/25 text-right mt-1">{caption.length}/140</p>
               </div>
 
               {/* City */}
               <div>
-                <label className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-1.5 block">
+                <label className="text-xs font-bold uppercase tracking-widest text-white/40 mb-1.5 block">
                   Città (opzionale)
                 </label>
                 <input
@@ -722,7 +722,7 @@ function UploadSheet({
                 className={cn(
                   "w-full flex items-center justify-center gap-2 rounded-2xl py-4 text-sm font-black transition-colors min-h-[52px]",
                   file && caption.trim() && !submitting && hasContest
-                    ? "bg-[#FFD700] text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.30)]"
+                    ? "bg-[var(--s-primary)] text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.30)]"
                     : "bg-white/10 text-white/30 cursor-not-allowed",
                 )}
               >
@@ -796,8 +796,8 @@ function VoteDeck({
         animate={{ opacity: 1, scale: 1 }}
         className="flex flex-col items-center justify-center gap-4 py-16 text-center px-8"
       >
-        <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[#FFD700]/10 border border-[#FFD700]/20 mb-2">
-          <CheckCircle2 size={36} className="text-[#FFD700]" />
+        <div className="flex h-20 w-20 items-center justify-center rounded-3xl bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/20 mb-2">
+          <CheckCircle2 size={36} className="text-[var(--s-primary)]" />
         </div>
         <h3 className="text-xl font-black text-white">Hai votato tutto!</h3>
         <p className="text-sm text-white/45 leading-relaxed max-w-[240px]">
@@ -843,7 +843,7 @@ function VoteDeck({
       </div>
 
       {/* Hint text */}
-      <p className="text-[10px] text-white/25 mt-3 mb-1">
+      <p className="text-xs text-white/25 mt-3 mb-1">
         ← Skip &nbsp;|&nbsp; ↑ Super Like &nbsp;|&nbsp; Like →
       </p>
 
@@ -863,7 +863,7 @@ function VoteDeck({
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          className="text-[11px] text-white/30 mt-1"
+          className="text-xs text-white/30 mt-1"
         >
           {votedCount} vot{votedCount === 1 ? "o" : "i"} questa sessione · {queue.length} foto rimanenti
         </motion.p>
@@ -890,9 +890,9 @@ function LockedContest({ prizePool, onSignIn }: { prizePool?: number; onSignIn: 
           <Lock size={34} className="text-purple-400" />
         </div>
         {prizePool !== undefined && (
-          <div className="flex items-center gap-1.5 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 px-3 py-1 mb-4">
-            <Sparkles size={11} className="text-[#FFD700]" />
-            <span className="text-[11px] font-black text-[#FFD700]">{formatCents(prizePool)} in palio</span>
+          <div className="flex items-center gap-1.5 rounded-full bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/20 px-3 py-1 mb-4">
+            <Sparkles size={11} className="text-[var(--s-primary)]" />
+            <span className="text-xs font-black text-[var(--s-primary)]">{formatCents(prizePool)} in palio</span>
           </div>
         )}
         <h2 className="text-2xl font-black text-white mb-2">Contest bloccato</h2>
@@ -902,7 +902,7 @@ function LockedContest({ prizePool, onSignIn }: { prizePool?: number; onSignIn: 
         <motion.button
           whileTap={{ scale: 0.96 }}
           onClick={onSignIn}
-          className="flex items-center gap-2 rounded-2xl bg-[#FFD700] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
+          className="flex items-center gap-2 rounded-2xl bg-[var(--s-primary)] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
         >
           <Heart size={16} />
           Accedi e vota
@@ -1024,7 +1024,7 @@ export function ContestView() {
   if (authLoading) {
     return (
       <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <Loader2 size={32} className="animate-spin text-[#FFD700]/50" />
+        <Loader2 size={32} className="animate-spin text-[var(--s-primary)]/50" />
       </div>
     );
   }
@@ -1036,14 +1036,14 @@ export function ContestView() {
         <div className="px-4 pt-14 pb-3 flex items-start justify-between gap-3">
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2 mb-1">
-              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[#FFD700]/15 border border-[#FFD700]/25">
-                <Trophy className="text-[#FFD700]" size={16} />
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-[var(--s-primary)]/15 border border-[var(--s-primary)]/25">
+                <Trophy className="text-[var(--s-primary)]" size={16} />
               </div>
               <div>
                 <h1 className="text-xl font-black leading-tight">
                   {contest?.title ?? "Photo Contest"}
                 </h1>
-                <p className="text-[10px] text-white/35 font-medium">
+                <p className="text-xs text-white/35 font-medium">
                   {contest?.prizePool && contest.prizePool > 0
                     ? "Carica foto — vota — vinci premi reali"
                     : "Carica foto — vota — condividi i tuoi viaggi"}
@@ -1052,11 +1052,11 @@ export function ContestView() {
             </div>
             {contest && contest.prizePool > 0 && (
               <div className="flex items-center gap-2 mt-2 flex-wrap">
-                <span className="flex items-center gap-1 rounded-full bg-[#FFD700]/12 border border-[#FFD700]/25 px-2.5 py-1 text-[10px] font-black text-[#FFD700]">
+                <span className="flex items-center gap-1 rounded-full bg-[var(--s-primary)]/12 border border-[var(--s-primary)]/25 px-2.5 py-1 text-xs font-black text-[var(--s-primary)]">
                   <Sparkles size={9} />{formatCents(contest.prizePool)} in palio
                 </span>
                 {timeLeft && timeLeft !== "Terminato" && contest.id !== "general" && (
-                  <span className="flex items-center gap-1 rounded-full bg-white/6 border border-white/10 px-2.5 py-1 text-[10px] text-white/45">
+                  <span className="flex items-center gap-1 rounded-full bg-white/6 border border-white/10 px-2.5 py-1 text-xs text-white/45">
                     ⏱ Scade in {timeLeft}
                   </span>
                 )}
@@ -1068,7 +1068,7 @@ export function ContestView() {
             <motion.button
               whileTap={{ scale: 0.9 }}
               onClick={() => setUploadOpen(true)}
-              className="flex flex-shrink-0 items-center gap-1.5 rounded-xl bg-[#FFD700] px-3 py-2 text-xs font-black text-slate-900 shadow-[0_3px_16px_rgba(255,215,0,0.30)] min-h-[36px]"
+              className="flex flex-shrink-0 items-center gap-1.5 rounded-xl bg-[var(--s-primary)] px-3 py-2 text-xs font-black text-slate-900 shadow-[0_3px_16px_rgba(255,215,0,0.30)] min-h-[36px]"
             >
               <Camera size={14} />
               Carica
@@ -1088,7 +1088,7 @@ export function ContestView() {
                 onClick={() => setTab(id)}
                 className={cn(
                   "relative flex-1 flex items-center justify-center gap-1.5 py-3 text-sm font-black transition-colors",
-                  tab === id ? "text-[#FFD700]" : "text-white/35",
+                  tab === id ? "text-[var(--s-primary)]" : "text-white/35",
                 )}
               >
                 <Icon size={14} />
@@ -1096,7 +1096,7 @@ export function ContestView() {
                 {tab === id && (
                   <motion.div
                     layoutId="contest-tab-indicator"
-                    className="absolute bottom-0 inset-x-4 h-0.5 rounded-full bg-[#FFD700]"
+                    className="absolute bottom-0 inset-x-4 h-0.5 rounded-full bg-[var(--s-primary)]"
                     transition={{ type: "spring", stiffness: 500, damping: 40 }}
                   />
                 )}
@@ -1170,9 +1170,9 @@ export function ContestView() {
                     animate={{ opacity: 1 }}
                     className="mx-4 mt-1 mb-1 flex items-center gap-2 rounded-xl bg-white/4 border border-white/8 px-4 py-2.5"
                   >
-                    <TrendingUp size={13} className="text-[#FFD700]" />
+                    <TrendingUp size={13} className="text-[var(--s-primary)]" />
                     <p className="text-xs text-white/50">
-                      <span className="text-[#FFD700] font-black">{totalVoted}</span> vot{totalVoted === 1 ? "o" : "i"} dati — continua a votare per salire in classifica!
+                      <span className="text-[var(--s-primary)] font-black">{totalVoted}</span> vot{totalVoted === 1 ? "o" : "i"} dati — continua a votare per salire in classifica!
                     </p>
                   </motion.div>
                 ) : (
@@ -1181,7 +1181,7 @@ export function ContestView() {
 
                 {(contestLoading || contestPhotosLoading) ? (
                   <div className="flex items-center justify-center py-20">
-                    <Loader2 size={28} className="animate-spin text-[#FFD700]/50" />
+                    <Loader2 size={28} className="animate-spin text-[var(--s-primary)]/50" />
                   </div>
                 ) : (
                   <VoteDeck

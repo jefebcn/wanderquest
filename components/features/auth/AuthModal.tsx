@@ -122,7 +122,7 @@ export function AuthModal({ open, onClose }: Props) {
             {/* Divider */}
             <div className="flex items-center gap-3 mb-4">
               <div className="flex-1 h-px bg-white/10" />
-              <span className="text-[11px] font-bold text-white/30 uppercase tracking-wider">oppure</span>
+              <span className="text-xs font-bold text-white/30 uppercase tracking-wider">oppure</span>
               <div className="flex-1 h-px bg-white/10" />
             </div>
 
@@ -153,7 +153,7 @@ export function AuthModal({ open, onClose }: Props) {
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full rounded-xl bg-white/7 border border-white/10 pl-10 pr-4 py-3.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFD700]/50 transition-colors"
+                className="w-full rounded-xl bg-white/7 border border-white/10 pl-10 pr-4 py-3.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[var(--s-primary)]/50 transition-colors"
               />
             </div>
 
@@ -167,7 +167,7 @@ export function AuthModal({ open, onClose }: Props) {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && handleEmail()}
-                className="w-full rounded-xl bg-white/7 border border-white/10 pl-10 pr-11 py-3.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[#FFD700]/50 transition-colors"
+                className="w-full rounded-xl bg-white/7 border border-white/10 pl-10 pr-11 py-3.5 text-sm text-white placeholder-white/30 focus:outline-none focus:border-[var(--s-primary)]/50 transition-colors"
               />
               <button
                 type="button"
@@ -195,7 +195,7 @@ export function AuthModal({ open, onClose }: Props) {
               whileTap={{ scale: 0.97 }}
               onClick={handleEmail}
               disabled={busy}
-              className="w-full rounded-2xl bg-[#FFD700] py-4 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.35)] hover:bg-yellow-300 transition-colors disabled:opacity-50 mb-5 min-h-[48px]"
+              className="w-full rounded-2xl bg-[var(--s-primary)] py-4 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.35)] hover:bg-yellow-300 transition-colors disabled:opacity-50 mb-5 min-h-[48px]"
             >
               {busy ? (
                 <Loader2 size={16} className="animate-spin mx-auto" />
