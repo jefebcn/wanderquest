@@ -93,31 +93,31 @@ const steps = [
 // ── Featured cities ─────────────────────────────────────────────────────────
 
 const CITIES = [
-  { name: "Barcellona", country: "ES", landmarks: 48, active: true,  img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80" },
-  { name: "Roma",       country: "IT", landmarks: 62, active: false, img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80" },
-  { name: "Parigi",     country: "FR", landmarks: 55, active: false, img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80" },
-  { name: "Madrid",     country: "ES", landmarks: 39, active: false, img: "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=400&q=80" },
-  { name: "Firenze",    country: "IT", landmarks: 33, active: false, img: "https://images.unsplash.com/photo-1543414164-09db18f38c05?w=400&q=80" },
-  { name: "Amsterdam",  country: "NL", landmarks: 41, active: false, img: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&q=80" },
-  { name: "Vienna",     country: "AT", landmarks: 37, active: false, img: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&q=80" },
-  { name: "Lisbona",    country: "PT", landmarks: 29, active: false, img: "https://images.unsplash.com/photo-1548707309-dcebeab9ea9b?w=400&q=80" },
-  { name: "Praga",      country: "CZ", landmarks: 44, active: false, img: "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&q=80" },
-  { name: "Budapest",   country: "HU", landmarks: 31, active: false, img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
-  { name: "Venezia",    country: "IT", landmarks: 52, active: false, img: "https://images.unsplash.com/photo-1534113414509-0eec2bfb493f?w=400&q=80" },
-  { name: "Milano",     country: "IT", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1552751753-0fc84ae5b6c8?w=400&q=80" },
-  { name: "Berlino",    country: "DE", landmarks: 46, active: false, img: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80" },
-  { name: "Siviglia",   country: "ES", landmarks: 22, active: false, img: "https://images.unsplash.com/photo-1593672715438-d88a70629abe?w=400&q=80" },
-  { name: "Atene",      country: "GR", landmarks: 35, active: false, img: "https://images.unsplash.com/photo-1555993539-1732b0258235?w=400&q=80" },
-  { name: "Londra",     country: "GB", landmarks: 58, active: false, img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=80" },
-  { name: "Dublino",    country: "IE", landmarks: 24, active: false, img: "https://images.unsplash.com/photo-1564959130747-897fb406b9af?w=400&q=80" },
-  { name: "Zurigo",     country: "CH", landmarks: 26, active: false, img: "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=400&q=80" },
-  { name: "Monaco",     country: "DE", landmarks: 34, active: false, img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&q=80" },
-  { name: "Copenaghen", country: "DK", landmarks: 27, active: false, img: "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&q=80" },
-  { name: "Stoccolma",  country: "SE", landmarks: 30, active: false, img: "https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&q=80" },
-  { name: "Cracovia",   country: "PL", landmarks: 32, active: false, img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80" },
-  { name: "Napoli",     country: "IT", landmarks: 25, active: false, img: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=400&q=80" },
-  { name: "Edimburgo",  country: "GB", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&q=80" },
-  { name: "Santorini",  country: "GR", landmarks: 18, active: false, img: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80" },
+  { name: "Barcellona", country: "ES", landmarks: 48, active: true,  lat: 41.3851, lng:  2.1734, img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80" },
+  { name: "Roma",       country: "IT", landmarks: 62, active: true,  lat: 41.9028, lng: 12.4964, img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80" },
+  { name: "Parigi",     country: "FR", landmarks: 55, active: true,  lat: 48.8566, lng:  2.3522, img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80" },
+  { name: "Madrid",     country: "ES", landmarks: 39, active: true,  lat: 40.4168, lng: -3.7038, img: "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=400&q=80" },
+  { name: "Firenze",    country: "IT", landmarks: 33, active: true,  lat: 43.7696, lng: 11.2558, img: "https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=400&q=80" },
+  { name: "Amsterdam",  country: "NL", landmarks: 41, active: true,  lat: 52.3676, lng:  4.9041, img: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&q=80" },
+  { name: "Vienna",     country: "AT", landmarks: 37, active: true,  lat: 48.2082, lng: 16.3738, img: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&q=80" },
+  { name: "Lisbona",    country: "PT", landmarks: 29, active: true,  lat: 38.7169, lng: -9.1399, img: "https://images.unsplash.com/photo-1548707309-dcebeab9ea9b?w=400&q=80" },
+  { name: "Praga",      country: "CZ", landmarks: 44, active: true,  lat: 50.0755, lng: 14.4378, img: "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&q=80" },
+  { name: "Budapest",   country: "HU", landmarks: 31, active: true,  lat: 47.4979, lng: 19.0402, img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+  { name: "Venezia",    country: "IT", landmarks: 52, active: true,  lat: 45.4408, lng: 12.3155, img: "https://images.unsplash.com/photo-1534113414509-0eec2bfb493f?w=400&q=80" },
+  { name: "Milano",     country: "IT", landmarks: 28, active: true,  lat: 45.4654, lng:  9.1859, img: "https://images.unsplash.com/photo-1552751753-0fc84ae5b6c8?w=400&q=80" },
+  { name: "Berlino",    country: "DE", landmarks: 46, active: true,  lat: 52.5200, lng: 13.4050, img: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80" },
+  { name: "Siviglia",   country: "ES", landmarks: 22, active: true,  lat: 37.3891, lng: -5.9845, img: "https://images.unsplash.com/photo-1593672715438-d88a70629abe?w=400&q=80" },
+  { name: "Atene",      country: "GR", landmarks: 35, active: true,  lat: 37.9838, lng: 23.7275, img: "https://images.unsplash.com/photo-1555993539-1732b0258235?w=400&q=80" },
+  { name: "Londra",     country: "GB", landmarks: 58, active: true,  lat: 51.5074, lng: -0.1278, img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=80" },
+  { name: "Dublino",    country: "IE", landmarks: 24, active: true,  lat: 53.3498, lng: -6.2603, img: "https://images.unsplash.com/photo-1564959130747-897fb406b9af?w=400&q=80" },
+  { name: "Zurigo",     country: "CH", landmarks: 26, active: true,  lat: 47.3769, lng:  8.5417, img: "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=400&q=80" },
+  { name: "Monaco",     country: "DE", landmarks: 34, active: true,  lat: 48.1351, lng: 11.5820, img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&q=80" },
+  { name: "Copenaghen", country: "DK", landmarks: 27, active: true,  lat: 55.6761, lng: 12.5683, img: "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&q=80" },
+  { name: "Stoccolma",  country: "SE", landmarks: 30, active: true,  lat: 59.3293, lng: 18.0686, img: "https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&q=80" },
+  { name: "Cracovia",   country: "PL", landmarks: 32, active: true,  lat: 50.0647, lng: 19.9450, img: "https://images.unsplash.com/photo-1519197924294-4ba991a11128?w=400&q=80" },
+  { name: "Napoli",     country: "IT", landmarks: 25, active: true,  lat: 40.8518, lng: 14.2681, img: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=400&q=80" },
+  { name: "Edimburgo",  country: "GB", landmarks: 28, active: true,  lat: 55.9533, lng: -3.1883, img: "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&q=80" },
+  { name: "Santorini",  country: "GR", landmarks: 18, active: true,  lat: 36.3932, lng: 25.4615, img: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80" },
 ];
 
 // ── City detail data ──────────────────────────────────────────────────────────
@@ -1078,6 +1078,8 @@ export default function HomePage() {
   const { contest }       = useContest();
   const [authOpen, setAuthOpen] = useState(false);
   const [selectedCity, setSelectedCity] = useState<typeof CITIES[number] | null>(null);
+  /** Tracks the destination shown in SafetyHub — updated when user selects a city */
+  const [safetyCity, setSafetyCity] = useState<{ name: string; lat: number; lng: number } | null>(null);
   /* iOS Safari "Add to Home Screen" hint — shown once per session */
   const [showInstallHint, setShowInstallHint] = useState(false);
 
@@ -1307,7 +1309,7 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.68 }}
           >
-            <SafetyHub />
+            <SafetyHub city={safetyCity} />
           </motion.div>
         </section>
 
@@ -1325,7 +1327,10 @@ export default function HomePage() {
 
           <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
             {CITIES.map((city, i) => (
-              <CityCard key={city.name} city={city} index={i} onSelect={() => setSelectedCity(city)} />
+              <CityCard key={city.name} city={city} index={i} onSelect={() => {
+                setSelectedCity(city);
+                setSafetyCity({ name: city.name, lat: city.lat, lng: city.lng });
+              }} />
             ))}
           </div>
         </section>
