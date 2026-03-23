@@ -50,6 +50,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 // ── Achievement badge config ──────────────────────────────────────────────
 
@@ -200,7 +201,7 @@ function LockedProfile({ onSignIn }: { onSignIn: () => void }) {
           onClick={onSignIn}
           className="flex items-center gap-2 rounded-2xl bg-[var(--s-primary)] px-6 py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.32)] hover:bg-yellow-300 transition-colors min-h-[48px]"
         >
-          <Sparkles size={16} />
+          <Sparkles size={16} strokeWidth={1.8} />
           Accedi ora
         </motion.button>
         <div className="mt-8 w-full">
@@ -381,7 +382,7 @@ function BadgeGrid() {
   return (
     <div className="rounded-2xl bg-white/4 border border-white/8 p-4">
       <div className="flex items-center gap-2 mb-4">
-        <Award size={16} className="text-[var(--s-primary)]" />
+        <Award size={16} strokeWidth={1.8} className="text-[var(--s-primary)]" />
         <h2 className="text-sm font-black">Traguardi</h2>
         <span className="ml-auto text-xs text-white/30 font-bold">
           {BADGES.filter((b) => !b.locked).length}/{BADGES.length}
@@ -467,7 +468,7 @@ function PassportGrid({ uid }: { uid: string }) {
   return (
     <div className="rounded-2xl bg-white/4 border border-white/8 p-4">
       <div className="flex items-center gap-2 mb-4">
-        <MapPin size={16} className="text-[var(--s-primary)]" />
+        <MapPin size={16} strokeWidth={1.8} className="text-[var(--s-primary)]" />
         <h2 className="text-sm font-black">Passaporto Digitale</h2>
         {stamps.length > 0 && (
           <span className="ml-auto text-xs font-bold text-[var(--s-primary)]/70">
@@ -483,13 +484,11 @@ function PassportGrid({ uid }: { uid: string }) {
           ))}
         </div>
       ) : stamps.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-8 text-white/25">
-          <MapPin size={32} className="mb-2 opacity-40" />
-          <p className="text-sm font-bold">Nessun timbro ancora</p>
-          <p className="text-xs mt-1 text-center leading-snug">
-            Scansiona il tuo primo monumento<br />per guadagnare il primo timbro
-          </p>
-        </div>
+        <EmptyState
+          icon={MapPin}
+          title="Il tuo passaporto ti aspetta — scannerizza il primo monumento"
+          subtitle="Ogni monumento visitato aggiunge un timbro al tuo passaporto digitale"
+        />
       ) : (
         <div className="grid grid-cols-4 gap-2">
           {stamps.map((stamp, i) => {
@@ -545,7 +544,7 @@ function ScanTimeline() {
   return (
     <div className="rounded-2xl bg-white/4 border border-white/8 p-4">
       <div className="flex items-center gap-2 mb-4">
-        <MapPin size={16} className="text-blue-400" />
+        <MapPin size={16} strokeWidth={1.8} className="text-blue-400" />
         <h2 className="text-sm font-black">Cronologia Scan</h2>
       </div>
       <div className="space-y-0">

@@ -1,11 +1,11 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
+import { Inter, Playfair_Display } from "next/font/google";
 import { BottomNav }        from "@/components/layout/BottomNav";
 import { PageTransition }   from "@/components/layout/PageTransition";
 import { PayPalProvider }   from "@/components/providers/PayPalProvider";
 import "./globals.css";
 
-const jakarta = Plus_Jakarta_Sans({
+const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
   display: "swap",
@@ -49,7 +49,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${jakarta.variable} ${playfair.variable}`}>
+    <html lang="it" className={`${inter.variable} ${playfair.variable}`}>
       <head>
         {/* iOS PWA standalone — belt-and-suspenders alongside Next.js appleWebApp metadata */}
         <meta name="apple-mobile-web-app-capable" content="yes" />

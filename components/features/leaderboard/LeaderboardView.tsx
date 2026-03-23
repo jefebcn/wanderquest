@@ -175,7 +175,13 @@ function PodiumPlace({
 
 // ── Row rank 4+ ───────────────────────────────────────────────────────────
 
-function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe: boolean; index: number }) {
+function LeaderboardRow({ entry, isMe, index, nextPoints, nextRank }: {
+  entry: LeaderboardEntry;
+  isMe: boolean;
+  index: number;
+  nextPoints?: number;
+  nextRank?: number;
+}) {
   const isTop10 = entry.rank <= 10;
   return (
     <motion.div
@@ -210,6 +216,17 @@ function LeaderboardRow({ entry, isMe, index }: { entry: LeaderboardEntry; isMe:
           </p>
         </div>
         <p className="text-xs text-white/35">{entry.visits} visite</p>
+        {isMe && nextPoints !== undefined && nextPoints > entry.points && (
+          <div className="mt-1">
+            <p className="text-[10px] text-white/30">+{(nextPoints - entry.points).toLocaleString("it-IT")} pt per #{nextRank}</p>
+            <div className="h-0.5 bg-white/8 rounded-full overflow-hidden mt-0.5">
+              <div
+                className="h-full bg-[var(--s-primary)] rounded-full"
+                style={{ width: `${Math.min((entry.points / nextPoints) * 100, 100)}%` }}
+              />
+            </div>
+          </div>
+        )}
       </div>
       <div className="text-right">
         <p className="text-sm font-black">{entry.points.toLocaleString("it-IT")}</p>
@@ -330,8 +347,8 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
 
       {/* League standings */}
       <div className={cn("rounded-2xl border overflow-hidden", viewConfig.bg, viewConfig.border)}>
-        {/* League header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-white/6">
+        {/* League header with metallic gradient */}
+        <div className={cn("flex items-center justify-between px-4 py-3 border-b border-white/6 animate-shimmer", `league-${activeLeague}`)}>
           <div className="flex items-center gap-2">
             <span className="text-xl">{viewConfig.emoji}</span>
             <div>
@@ -362,7 +379,7 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
         ) : standings.length === 0 ? (
           <div className="flex flex-col items-center py-8 text-center text-white/25">
             <span className="text-2xl mb-2">{viewConfig.emoji}</span>
-            <p className="text-sm font-bold">Nessun giocatore ancora</p>
+            <p className="text-sm font-bold">Ancora nessun esploratore — inizia tu!</p>
             <p className="text-xs mt-1">Scansiona monumenti per entrare!</p>
           </div>
         ) : (
@@ -602,14 +619,20 @@ export function LeaderboardView() {
                   </div>
                 )}
                 <div className="px-4 space-y-2">
-                  {rest.map((entry, idx) => (
-                    <LeaderboardRow
-                      key={entry.userId}
-                      entry={entry}
-                      isMe={entry.userId === user?.uid}
-                      index={idx}
-                    />
-                  ))}
+                  {rest.map((entry, idx) => {
+                    const entryIndex = entries.findIndex(e => e.userId === entry.userId);
+                    const above = entryIndex > 0 ? entries[entryIndex - 1] : undefined;
+                    return (
+                      <LeaderboardRow
+                        key={entry.userId}
+                        entry={entry}
+                        isMe={entry.userId === user?.uid}
+                        index={idx}
+                        nextPoints={above?.points}
+                        nextRank={above?.rank}
+                      />
+                    );
+                  })}
                 </div>
               </>
             )}
