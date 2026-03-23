@@ -97,5 +97,37 @@ service cloud.firestore {
       allow read: if isPro() || isAdmin();
       allow write: if isAdmin();
     }
+
+    // ── Meta (active contest pointer, app-wide config) ───────────────────────
+    match /meta/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // ── Contest photos ───────────────────────────────────────────────────────
+    match /contest_photos/{photoId} {
+      // Anyone signed-in can read; writes go through server actions (admin SDK)
+      allow read: if isSignedIn();
+      allow write: if false;
+    }
+
+    // ── Contest votes ────────────────────────────────────────────────────────
+    match /contest_votes/{voteId} {
+      allow read: if isSignedIn() && resource.data.voterId == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── Contest photo views ──────────────────────────────────────────────────
+    match /contest_photo_views/{docId} {
+      allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow write: if false;
+    }
+
+    // ── Contest leaderboard ──────────────────────────────────────────────────
+    match /contest_leaderboard/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
   }
 }

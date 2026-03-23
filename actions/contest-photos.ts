@@ -48,7 +48,7 @@ export async function getContestPhotos(
 
   const photos = photosSnap.docs
     .map((d) => ({ id: d.id, ...d.data() } as ContestPhoto))
-    .filter((p) => p.status === "approved" && p.userId !== uid && !seenIds.has(p.id))
+    .filter((p) => (p.status == null || p.status === "approved") && p.userId !== uid && !seenIds.has(p.id))
     .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt))
     .slice(0, 50);
 

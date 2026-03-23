@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
-import { doc, onSnapshot, collection, query, where, limit, getDocs } from "firebase/firestore";
+import { doc, onSnapshot, collection, query, where, limit, getDocs, Firestore } from "firebase/firestore";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import type { Contest } from "@/types";
 
@@ -30,64 +30,78 @@ export function useContest() {
     let innerUnsub: (() => void) | undefined;
     let outerUnsub: (() => void) | undefined;
 
+    const fallbackToGallery = () => {
+      setContest(GALLERY_CONTEST);
+      setLoading(false);
+    };
+
+    // Fallback: query contests collection directly by status
+    const loadFromContestsCollection = (db: Firestore) => {
+      const now = new Date().toISOString();
+      const q = query(
+        collection(db, "contests"),
+        where("status", "==", "active"),
+        where("endDate", ">=", now),
+        limit(1)
+      );
+      getDocs(q)
+        .then((qSnap) => {
+          if (!qSnap.empty) {
+            const d = qSnap.docs[0];
+            setContest({ ...(d.data() as Contest), id: d.id });
+          } else {
+            fallbackToGallery();
+          }
+          setLoading(false);
+        })
+        .catch(fallbackToGallery);
+    };
+
     try {
       const { db } = getFirebaseClient();
       // "active_contest" is a well-known document ID for the current contest
-      outerUnsub = onSnapshot(doc(db, "meta", "active_contest"), (snap) => {
-        // Clean up previous inner subscription
-        innerUnsub?.();
-        innerUnsub = undefined;
+      outerUnsub = onSnapshot(
+        doc(db, "meta", "active_contest"),
+        (snap) => {
+          // Clean up previous inner subscription
+          innerUnsub?.();
+          innerUnsub = undefined;
 
-        if (!snap.exists()) {
-          // Fallback: query contests collection directly by status + endDate
-          const now = new Date().toISOString();
-          const q = query(
-            collection(db, "contests"),
-            where("status", "==", "active"),
-            where("endDate", ">=", now),
-            limit(1)
-          );
-          getDocs(q)
-            .then((qSnap) => {
-              if (!qSnap.empty) {
-                const d = qSnap.docs[0];
-                setContest({ ...(d.data() as Contest), id: d.id });
+          if (!snap.exists()) {
+            loadFromContestsCollection(db);
+            return;
+          }
+
+          const data = snap.data();
+          const contestId: string = data?.contestId;
+          if (!contestId) { fallbackToGallery(); return; }
+
+          // Subscribe to the actual contest document
+          innerUnsub = onSnapshot(
+            doc(db, "contests", contestId),
+            (contestSnap) => {
+              if (contestSnap.exists()) {
+                const contestData = { ...(contestSnap.data() as Contest), id: contestSnap.id };
+                const now = new Date().toISOString();
+                if (contestData.status === "active" && contestData.endDate >= now) {
+                  setContest(contestData);
+                } else {
+                  setContest(GALLERY_CONTEST);
+                }
               } else {
                 setContest(GALLERY_CONTEST);
               }
               setLoading(false);
-            })
-            .catch(() => {
-              setContest(GALLERY_CONTEST);
-              setLoading(false);
-            });
-          return;
-        }
-
-        const data = snap.data();
-        const contestId: string = data?.contestId;
-        if (!contestId) { setContest(GALLERY_CONTEST); setLoading(false); return; }
-
-        // Subscribe to the actual contest document
-        innerUnsub = onSnapshot(doc(db, "contests", contestId), (contestSnap) => {
-          if (contestSnap.exists()) {
-            const contestData = { ...(contestSnap.data() as Contest), id: contestSnap.id };
-            // Only expose the contest if it is still active and not expired
-            const now = new Date().toISOString();
-            if (contestData.status === "active" && contestData.endDate >= now) {
-              setContest(contestData);
-            } else {
-              setContest(GALLERY_CONTEST);
-            }
-          } else {
-            setContest(GALLERY_CONTEST);
-          }
-          setLoading(false);
-        });
-      });
+            },
+            // Error handler for inner snapshot (contest document)
+            () => fallbackToGallery(),
+          );
+        },
+        // Error handler for outer snapshot (meta/active_contest) — e.g. permission denied
+        () => loadFromContestsCollection(db),
+      );
     } catch {
-      setContest(GALLERY_CONTEST);
-      setLoading(false);
+      fallbackToGallery();
     }
 
     return () => {

@@ -1179,7 +1179,7 @@ export function ContestView() {
                   <VotingHint />
                 )}
 
-                {contestPhotosLoading ? (
+                {(contestLoading || contestPhotosLoading) ? (
                   <div className="flex items-center justify-center py-20">
                     <Loader2 size={28} className="animate-spin text-[#FFD700]/50" />
                   </div>
