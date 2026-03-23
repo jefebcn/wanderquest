@@ -1148,6 +1148,17 @@ export default function HomePage() {
           </motion.section>
         )}
 
+        {/* ── SAFETY HUB ─────────────────────────────────────────── */}
+        <section className="px-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.62 }}
+          >
+            <SafetyHub />
+          </motion.div>
+        </section>
+
         {/* ── CITY EXPLORER ──────────────────────────────────────── */}
         <section>
           <motion.div
@@ -1224,28 +1235,6 @@ export default function HomePage() {
             transition={{ delay: 0.78 }}
           >
             <WeatherQuest />
-          </motion.div>
-        </section>
-
-        {/* ── SAFETY HUB ─────────────────────────────────────────── */}
-        <section className="px-4 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.84 }}
-            className="mb-5"
-          >
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">
-              Monitoraggio globale
-            </p>
-            <h2 className="text-2xl font-black">Safety Hub</h2>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.9 }}
-          >
-            <SafetyHub />
           </motion.div>
         </section>
 

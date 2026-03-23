@@ -3,14 +3,13 @@
 /**
  * SafetyHub — Real-time global safety & economic monitoring card.
  *
- * - Reads the user's current GPS position
- * - Calls `getDestinationSafetyAudit` (Server Action → Claude Haiku)
- * - Renders a "Liquid Glass" card with a dynamic glow:
- *     CRITICAL  → red glow   (wars / bombings)
- *     WARNING   → amber glow (economic crisis / unrest)
- *     STABLE    → teal glow  (all clear)
- * - Shows a fixed "Emergency" button (CRITICAL only) that opens a sheet
- *   with local police + Italian embassy contacts
+ * Mobile-first design:
+ *  - Minimum 44px touch targets throughout
+ *  - Clear, readable font sizes (min 12px body text)
+ *  - Compact default view: level badge + summary + tip
+ *  - Details (events + inflation) expandable on tap
+ *  - CRITICAL → red glow / WARNING → amber glow / STABLE → teal glow
+ *  - Emergency button + bottom sheet for CRITICAL alerts
  */
 
 import { useState, useEffect, useCallback } from "react";
@@ -18,8 +17,8 @@ import { motion, AnimatePresence }          from "framer-motion";
 import {
   Shield, ShieldAlert, ShieldCheck,
   AlertTriangle, PhoneCall, X, RefreshCw,
-  TrendingUp, Newspaper, ChevronDown, ChevronUp,
-  Siren,
+  TrendingUp, Newspaper, ChevronDown,
+  Siren, ExternalLink,
 } from "lucide-react";
 import { cn }                         from "@/lib/utils";
 import { getDestinationSafetyAudit }  from "@/actions/safety";
@@ -30,59 +29,62 @@ import type { SafetyAudit, SafetyLevel } from "@/types";
 // ── Level config ─────────────────────────────────────────────────────────────
 
 const LEVEL_CONFIG: Record<SafetyLevel, {
-  label:       string;
   labelIt:     string;
   icon:        React.ElementType;
-  glow:        string;   // box-shadow colour
-  border:      string;   // tailwind border class
-  gradient:    string;   // card bg gradient
-  badgeBg:     string;   // badge background
-  badgeText:   string;   // badge text colour
-  ringColor:   string;   // pulse ring
+  glow:        string;
+  glowStrong:  string;
+  border:      string;
+  bg:          string;
+  badgeBg:     string;
+  badgeText:   string;
+  ringColor:   string;
+  dotColor:    string;
 }> = {
   STABLE: {
-    label:      "STABLE",
     labelIt:    "Sicuro",
     icon:       ShieldCheck,
-    glow:       "rgba(20,184,166,0.35)",
-    border:     "border-teal-500/30",
-    gradient:   "from-teal-500/10 via-teal-600/5 to-transparent",
+    glow:       "0 4px 24px rgba(20,184,166,0.25)",
+    glowStrong: "0 0 20px rgba(20,184,166,0.4)",
+    border:     "border-teal-500/25",
+    bg:         "bg-teal-500/[0.06]",
     badgeBg:    "bg-teal-500/15",
     badgeText:  "text-teal-300",
     ringColor:  "bg-teal-400",
+    dotColor:   "bg-teal-400",
   },
   WARNING: {
-    label:      "WARNING",
     labelIt:    "Attenzione",
     icon:       ShieldAlert,
-    glow:       "rgba(245,158,11,0.40)",
-    border:     "border-amber-500/35",
-    gradient:   "from-amber-500/12 via-amber-600/5 to-transparent",
+    glow:       "0 4px 24px rgba(245,158,11,0.30)",
+    glowStrong: "0 0 20px rgba(245,158,11,0.5)",
+    border:     "border-amber-500/30",
+    bg:         "bg-amber-500/[0.06]",
     badgeBg:    "bg-amber-500/15",
     badgeText:  "text-amber-300",
     ringColor:  "bg-amber-400",
+    dotColor:   "bg-amber-400",
   },
   CRITICAL: {
-    label:      "CRITICAL",
     labelIt:    "Critico",
     icon:       Shield,
-    glow:       "rgba(239,68,68,0.45)",
-    border:     "border-red-500/40",
-    gradient:   "from-red-500/14 via-red-600/6 to-transparent",
+    glow:       "0 4px 24px rgba(239,68,68,0.35)",
+    glowStrong: "0 0 20px rgba(239,68,68,0.5)",
+    border:     "border-red-500/35",
+    bg:         "bg-red-500/[0.06]",
     badgeBg:    "bg-red-500/15",
     badgeText:  "text-red-300",
     ringColor:  "bg-red-400",
+    dotColor:   "bg-red-400",
   },
 };
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
-function PulsingDot({ level }: { level: SafetyLevel }) {
-  const { ringColor } = LEVEL_CONFIG[level];
+function PulsingDot({ color }: { color: string }) {
   return (
     <span className="relative flex h-2.5 w-2.5">
-      <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-60", ringColor)} />
-      <span className={cn("relative inline-flex rounded-full h-2.5 w-2.5", ringColor)} />
+      <span className={cn("animate-ping absolute inline-flex h-full w-full rounded-full opacity-50", color)} />
+      <span className={cn("relative inline-flex rounded-full h-2.5 w-2.5", color)} />
     </span>
   );
 }
@@ -104,64 +106,53 @@ function EmergencySheet({
       exit={{ opacity: 0 }}
     >
       {/* Backdrop */}
-      <motion.div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
-      />
+      <motion.div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
 
       {/* Sheet */}
       <motion.div
-        className="relative z-10 rounded-t-3xl bg-[#0d0d1a] border-t border-red-500/30 px-5 pt-5 pb-[max(2rem,env(safe-area-inset-bottom))]"
+        className="relative z-10 rounded-t-3xl bg-[#0d0d1a] border-t border-red-500/30 px-5 pt-4 pb-[max(2rem,env(safe-area-inset-bottom))]"
         initial={{ y: "100%" }}
         animate={{ y: 0 }}
         exit={{ y: "100%" }}
         transition={{ type: "spring", stiffness: 300, damping: 30 }}
       >
         {/* Handle */}
-        <div className="flex justify-center mb-4">
-          <div className="h-1 w-10 rounded-full bg-white/20" />
+        <div className="flex justify-center mb-5">
+          <div className="h-1.5 w-12 rounded-full bg-white/20" />
         </div>
 
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-red-500/15">
-              <Siren size={22} className="text-red-400" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/15">
+              <Siren size={24} className="text-red-400" />
             </div>
             <div>
-              <p className="font-black text-[15px] text-white">Contatti di Emergenza</p>
-              <p className="text-[11px] text-white/45 mt-0.5">{audit.countryName}</p>
+              <p className="font-black text-base text-white">Contatti di Emergenza</p>
+              <p className="text-xs text-white/45 mt-0.5">{audit.countryName}</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="flex h-8 w-8 items-center justify-center rounded-full bg-white/8 text-white/50 hover:text-white"
+            className="flex h-10 w-10 items-center justify-center rounded-full bg-white/8 text-white/50 active:bg-white/15"
             aria-label="Chiudi"
           >
-            <X size={15} />
+            <X size={18} />
           </button>
         </div>
 
-        {/* Critical alert banner */}
-        <div className="mb-4 rounded-2xl border border-red-500/25 bg-red-500/8 px-4 py-3">
-          <p className="text-[11px] font-bold text-red-300 uppercase tracking-wider mb-1">
-            Allerta CRITICA attiva
+        {/* Alert banner */}
+        <div className="mb-5 rounded-2xl border border-red-500/20 bg-red-500/8 px-4 py-4">
+          <p className="text-xs font-bold text-red-300 uppercase tracking-wider mb-1.5">
+            Allerta critica attiva
           </p>
-          <p className="text-[12px] text-white/70 leading-snug">{audit.summary}</p>
+          <p className="text-[13px] text-white/70 leading-relaxed">{audit.summary}</p>
         </div>
 
-        {/* Contact cards */}
+        {/* Contact rows — big tap targets */}
         <div className="space-y-3 mb-5">
-          <ContactRow
-            icon="🚔"
-            label="Polizia locale"
-            number={contacts.police}
-          />
-          <ContactRow
-            icon="🚑"
-            label="Emergenza sanitaria"
-            number={contacts.ambulance}
-          />
+          <ContactRow icon="🚔" label="Polizia locale"       number={contacts.police}    />
+          <ContactRow icon="🚑" label="Emergenza sanitaria"  number={contacts.ambulance} />
           <ContactRow
             icon="🏛️"
             label={contacts.embassy}
@@ -170,12 +161,12 @@ function EmergencySheet({
           />
         </div>
 
-        {/* Tip */}
-        <div className="rounded-xl bg-white/[0.04] border border-white/8 px-4 py-3">
-          <p className="text-[10px] font-bold text-white/40 uppercase tracking-widest mb-1">
+        {/* Safety tip */}
+        <div className="rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-4">
+          <p className="text-[11px] font-bold text-white/35 uppercase tracking-widest mb-1.5">
             Consiglio di sicurezza
           </p>
-          <p className="text-[12px] text-white/75 leading-snug">{audit.tip}</p>
+          <p className="text-[13px] text-white/70 leading-relaxed">{audit.tip}</p>
         </div>
       </motion.div>
     </motion.div>
@@ -196,18 +187,16 @@ function ContactRow({
   return (
     <a
       href={`tel:${number.replace(/\s/g, "")}`}
-      className="flex items-center gap-3 rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-3 active:scale-[0.98] transition-transform"
+      className="flex items-center gap-3 rounded-2xl bg-white/[0.04] border border-white/8 px-4 py-4 min-h-[56px] active:bg-white/[0.08] transition-colors"
     >
-      <span className="text-xl">{icon}</span>
+      <span className="text-2xl">{icon}</span>
       <div className="flex-1 min-w-0">
-        <p className="text-[12px] font-bold text-white truncate">{label}</p>
-        {sublabel && (
-          <p className="text-[10px] text-white/40">{sublabel}</p>
-        )}
+        <p className="text-[13px] font-bold text-white truncate">{label}</p>
+        {sublabel && <p className="text-[11px] text-white/40 mt-0.5">{sublabel}</p>}
       </div>
-      <div className="flex items-center gap-1.5">
-        <span className="text-[13px] font-black text-white/80">{number}</span>
-        <PhoneCall size={13} className="text-green-400 flex-shrink-0" />
+      <div className="flex items-center gap-2">
+        <span className="text-[14px] font-black text-white/80">{number}</span>
+        <PhoneCall size={16} className="text-green-400 flex-shrink-0" />
       </div>
     </a>
   );
@@ -219,7 +208,7 @@ export function SafetyHub() {
   const [audit,           setAudit]           = useState<SafetyAudit | null>(null);
   const [loading,         setLoading]         = useState(true);
   const [error,           setError]           = useState<string | null>(null);
-  const [showEvents,      setShowEvents]      = useState(false);
+  const [detailsOpen,     setDetailsOpen]     = useState(false);
   const [showEmergency,   setShowEmergency]   = useState(false);
   const [locationDenied,  setLocationDenied]  = useState(false);
   const { subscribe, storePosition }          = usePushNotifications();
@@ -227,14 +216,11 @@ export function SafetyHub() {
   const loadAudit = useCallback(async (lat: number, lng: number) => {
     setLoading(true);
     setError(null);
-    storePosition(lat, lng); // keep SW IndexedDB up to date for proximity checks
+    storePosition(lat, lng);
     try {
       const result = await getDestinationSafetyAudit(lat, lng);
       setAudit(result);
-      // Subscribe to push notifications for CRITICAL or WARNING areas
-      if (result.level !== "STABLE") {
-        subscribe();
-      }
+      if (result.level !== "STABLE") subscribe();
     } catch {
       setError("Impossibile caricare i dati di sicurezza.");
     } finally {
@@ -251,7 +237,6 @@ export function SafetyHub() {
     navigator.geolocation.getCurrentPosition(
       (pos) => loadAudit(pos.coords.latitude, pos.coords.longitude),
       () => {
-        // Location denied — use a default safe fallback (Rome, IT)
         setLocationDenied(true);
         loadAudit(41.9028, 12.4964);
       },
@@ -259,72 +244,76 @@ export function SafetyHub() {
     );
   }, [loadAudit]);
 
-  // Auto-open emergency sheet if level is CRITICAL on first load
+  // Auto-open emergency sheet for CRITICAL
   useEffect(() => {
     if (audit?.level === "CRITICAL") {
-      // Small delay so the card animation completes first
       const t = setTimeout(() => setShowEmergency(true), 1200);
       return () => clearTimeout(t);
     }
   }, [audit?.level]);
 
-  // ── Loading skeleton ──────────────────────────────────────────────────────
+  // ── Loading ────────────────────────────────────────────────────────────────
 
   if (loading) {
     return (
       <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5 animate-pulse">
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-10 w-10 rounded-xl bg-white/8" />
+          <div className="h-11 w-11 rounded-xl bg-white/8" />
           <div className="space-y-2 flex-1">
-            <div className="h-3 w-24 rounded-full bg-white/8" />
-            <div className="h-2 w-32 rounded-full bg-white/5" />
+            <div className="h-3.5 w-28 rounded-full bg-white/8" />
+            <div className="h-2.5 w-20 rounded-full bg-white/5" />
           </div>
-          <div className="h-6 w-16 rounded-full bg-white/8" />
+          <div className="h-7 w-20 rounded-full bg-white/8" />
         </div>
-        <div className="space-y-2">
-          <div className="h-2.5 rounded-full bg-white/5 w-full" />
-          <div className="h-2.5 rounded-full bg-white/5 w-5/6" />
-          <div className="h-2.5 rounded-full bg-white/5 w-4/6" />
-        </div>
+        <div className="h-3 rounded-full bg-white/5 w-full mb-2" />
+        <div className="h-3 rounded-full bg-white/5 w-4/5" />
       </div>
     );
   }
 
-  // ── Error state ───────────────────────────────────────────────────────────
+  // ── Error ──────────────────────────────────────────────────────────────────
 
   if (error && !audit) {
     return (
-      <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5 text-center">
-        <AlertTriangle size={22} className="text-amber-400 mx-auto mb-2" />
-        <p className="text-[12px] text-white/50">{error}</p>
+      <div className="rounded-2xl border border-white/8 bg-white/[0.03] px-5 py-6 text-center">
+        <AlertTriangle size={24} className="text-amber-400 mx-auto mb-3" />
+        <p className="text-[13px] text-white/50">{error}</p>
+        <button
+          onClick={() => {
+            if (navigator.geolocation) {
+              navigator.geolocation.getCurrentPosition(
+                (pos) => loadAudit(pos.coords.latitude, pos.coords.longitude),
+                () => loadAudit(41.9028, 12.4964)
+              );
+            }
+          }}
+          className="mt-3 inline-flex items-center gap-1.5 text-xs text-white/40 active:text-white/70 min-h-[44px] px-3"
+        >
+          <RefreshCw size={12} />
+          Riprova
+        </button>
       </div>
     );
   }
 
   if (!audit) return null;
 
-  const cfg = LEVEL_CONFIG[audit.level];
+  const cfg       = LEVEL_CONFIG[audit.level];
   const LevelIcon = cfg.icon;
-  const freshMinutes = Math.round((Date.now() - audit.cachedAt) / 60_000);
+  const freshMin  = Math.round((Date.now() - audit.cachedAt) / 60_000);
+  const hasDetails = audit.events.length > 0 || audit.inflation?.value != null;
 
   return (
     <>
-      {/* ── Safety Card ─────────────────────────────────────────────────── */}
-      <motion.div
-        initial={{ opacity: 0, y: 12 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ type: "spring", stiffness: 260, damping: 22 }}
+      {/* ── Card ────────────────────────────────────────────────────────── */}
+      <div
         className={cn(
-          "relative overflow-hidden rounded-2xl border bg-gradient-to-br backdrop-blur-xl p-5",
-          cfg.border,
-          cfg.gradient
+          "relative overflow-hidden rounded-2xl border backdrop-blur-xl",
+          cfg.border, cfg.bg
         )}
-        style={{
-          boxShadow: `0 8px 40px ${cfg.glow}, 0 2px 12px rgba(0,0,0,0.4)`,
-          background: `linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)`,
-        }}
+        style={{ boxShadow: cfg.glow }}
       >
-        {/* Liquid glass shimmer overlay */}
+        {/* Glass shimmer */}
         <div
           className="pointer-events-none absolute inset-0 rounded-2xl"
           style={{
@@ -333,130 +322,159 @@ export function SafetyHub() {
           }}
         />
 
-        {/* Header */}
-        <div className="relative flex items-start gap-3 mb-4">
+        {/* ── Top row: icon + title + badge ─────────────────────────────── */}
+        <div className="relative px-5 pt-5 pb-0 flex items-center gap-3">
           <div
-            className={cn(
-              "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl",
-              cfg.badgeBg
-            )}
-            style={{ boxShadow: `0 0 16px ${cfg.glow}` }}
+            className={cn("flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl", cfg.badgeBg)}
+            style={{ boxShadow: cfg.glowStrong }}
           >
-            <LevelIcon size={20} className={cfg.badgeText} />
+            <LevelIcon size={22} className={cfg.badgeText} />
           </div>
 
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
-              <p className="text-[13px] font-black text-white leading-tight">
-                Safety Hub
-              </p>
-              {locationDenied && (
-                <span className="text-[9px] text-white/30 font-medium">(posizione approx.)</span>
-              )}
-            </div>
-            <p className="text-[11px] text-white/45 mt-0.5 truncate">{audit.countryName}</p>
+            <p className="text-[14px] font-black text-white leading-tight">Safety Hub</p>
+            <p className="text-xs text-white/40 mt-0.5 truncate">
+              {audit.countryName}
+              {locationDenied && " (approx.)"}
+            </p>
           </div>
 
           {/* Level badge */}
-          <div className="flex items-center gap-1.5 flex-shrink-0">
-            <PulsingDot level={audit.level} />
-            <span
-              className={cn(
-                "text-[10px] font-black uppercase tracking-wider px-2.5 py-1 rounded-full",
-                cfg.badgeBg,
-                cfg.badgeText
-              )}
-            >
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <PulsingDot color={cfg.dotColor} />
+            <span className={cn(
+              "text-[11px] font-black uppercase tracking-wide px-3 py-1.5 rounded-full",
+              cfg.badgeBg, cfg.badgeText
+            )}>
               {cfg.labelIt}
             </span>
           </div>
         </div>
 
-        {/* Summary */}
-        <p className="relative text-[12px] text-white/70 leading-relaxed mb-4">
-          {audit.summary}
-        </p>
-
-        {/* Tip row */}
-        <div className="relative flex items-start gap-2.5 rounded-xl bg-white/[0.04] border border-white/8 px-3.5 py-2.5 mb-4">
-          <ShieldCheck size={13} className="text-white/35 flex-shrink-0 mt-0.5" />
-          <p className="text-[11px] text-white/55 leading-snug">{audit.tip}</p>
+        {/* ── Summary ───────────────────────────────────────────────────── */}
+        <div className="relative px-5 pt-4 pb-0">
+          <p className="text-[13px] text-white/65 leading-relaxed">
+            {audit.summary}
+          </p>
         </div>
 
-        {/* Economic indicator */}
-        {audit.inflation?.value != null && (
-          <div className="relative flex items-center gap-2 mb-4">
-            <TrendingUp size={12} className="text-white/30" />
-            <p className="text-[10px] text-white/40">
-              Inflazione {audit.inflation.year}:{" "}
-              <span
-                className={cn(
-                  "font-bold",
-                  audit.inflation.value > 30
-                    ? "text-red-400"
-                    : audit.inflation.value > 10
-                    ? "text-amber-400"
-                    : "text-teal-400"
-                )}
-              >
-                {audit.inflation.value.toFixed(1)}%
-              </span>
-            </p>
-          </div>
-        )}
+        {/* ── Tip ───────────────────────────────────────────────────────── */}
+        <div className="relative mx-5 mt-4 flex items-start gap-2.5 rounded-xl bg-white/[0.05] px-4 py-3">
+          <ShieldCheck size={14} className="text-white/30 flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-white/50 leading-snug">{audit.tip}</p>
+        </div>
 
-        {/* Recent events toggle */}
-        {audit.events.length > 0 && (
-          <div className="relative">
+        {/* ── CRITICAL: Emergenza button ────────────────────────────────── */}
+        {audit.level === "CRITICAL" && (
+          <div className="relative px-5 mt-4">
             <button
-              onClick={() => setShowEvents((v) => !v)}
-              className="flex w-full items-center justify-between rounded-xl bg-white/[0.03] border border-white/8 px-3.5 py-2.5 text-left"
-            >
-              <div className="flex items-center gap-2">
-                <Newspaper size={12} className="text-white/30" />
-                <span className="text-[10px] text-white/45 font-medium">
-                  {audit.events.length} evento{audit.events.length > 1 ? "i" : ""} monitorat{audit.events.length > 1 ? "i" : "o"}
-                </span>
-              </div>
-              {showEvents
-                ? <ChevronUp size={13} className="text-white/25" />
-                : <ChevronDown size={13} className="text-white/25" />}
-            </button>
-
-            <AnimatePresence>
-              {showEvents && (
-                <motion.ul
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.2 }}
-                  className="overflow-hidden mt-2 space-y-1.5"
-                >
-                  {audit.events.map((ev, i) => (
-                    <li key={i}>
-                      <a
-                        href={ev.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="block rounded-xl bg-white/[0.03] border border-white/6 px-3 py-2 hover:bg-white/[0.06] transition-colors"
-                      >
-                        <p className="text-[10px] text-white/60 leading-snug line-clamp-2">
-                          {ev.title}
-                        </p>
-                        <p className="text-[9px] text-white/25 mt-0.5">{ev.source}</p>
-                      </a>
-                    </li>
-                  ))}
-                </motion.ul>
+              onClick={() => setShowEmergency(true)}
+              className={cn(
+                "flex w-full items-center justify-center gap-2.5 rounded-2xl",
+                "bg-red-600 py-4 min-h-[52px]",
+                "text-[14px] font-black text-white",
+                "active:scale-[0.98] transition-transform"
               )}
-            </AnimatePresence>
+              style={{ boxShadow: "0 4px 20px rgba(239,68,68,0.45)" }}
+            >
+              <Siren size={18} />
+              Contatti di Emergenza
+            </button>
           </div>
         )}
 
-        {/* Footer: freshness + refresh */}
-        <div className="relative flex items-center justify-between mt-4 pt-3 border-t border-white/6">
-          <p className="text-[9px] text-white/25">
-            Aggiornato {freshMinutes <= 1 ? "adesso" : `${freshMinutes} min fa`}
+        {/* ── Details toggle ────────────────────────────────────────────── */}
+        {hasDetails && (
+          <div className="relative px-5 mt-4">
+            <button
+              onClick={() => setDetailsOpen((v) => !v)}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-white/[0.04] border border-white/8 py-3 min-h-[44px] active:bg-white/[0.08] transition-colors"
+            >
+              <span className="text-xs text-white/40 font-medium">
+                {detailsOpen ? "Nascondi dettagli" : "Mostra dettagli"}
+              </span>
+              <motion.div
+                animate={{ rotate: detailsOpen ? 180 : 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <ChevronDown size={14} className="text-white/30" />
+              </motion.div>
+            </button>
+          </div>
+        )}
+
+        {/* ── Expandable details ────────────────────────────────────────── */}
+        <AnimatePresence>
+          {detailsOpen && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.25 }}
+              className="overflow-hidden"
+            >
+              <div className="px-5 pt-4 space-y-4">
+                {/* Inflation */}
+                {audit.inflation?.value != null && (
+                  <div className="flex items-center gap-3 rounded-xl bg-white/[0.04] px-4 py-3">
+                    <TrendingUp size={16} className="text-white/30 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-white/40">
+                        Inflazione {audit.inflation.year}
+                      </p>
+                      <p className={cn(
+                        "text-sm font-black",
+                        audit.inflation.value > 30
+                          ? "text-red-400"
+                          : audit.inflation.value > 10
+                            ? "text-amber-400"
+                            : "text-teal-400"
+                      )}>
+                        {audit.inflation.value.toFixed(1)}%
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Events list */}
+                {audit.events.length > 0 && (
+                  <div>
+                    <div className="flex items-center gap-2 mb-2.5">
+                      <Newspaper size={13} className="text-white/30" />
+                      <p className="text-xs text-white/40 font-medium">
+                        {audit.events.length} evento{audit.events.length > 1 ? "i" : ""} nelle ultime 24h
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      {audit.events.map((ev, i) => (
+                        <a
+                          key={i}
+                          href={ev.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-start gap-3 rounded-xl bg-white/[0.03] border border-white/6 px-4 py-3 min-h-[48px] active:bg-white/[0.07] transition-colors"
+                        >
+                          <div className="flex-1 min-w-0">
+                            <p className="text-xs text-white/55 leading-snug line-clamp-2">
+                              {ev.title}
+                            </p>
+                            <p className="text-[10px] text-white/25 mt-1">{ev.source}</p>
+                          </div>
+                          <ExternalLink size={12} className="text-white/20 flex-shrink-0 mt-0.5" />
+                        </a>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ── Footer: freshness + refresh ────────────────────────────────── */}
+        <div className="relative flex items-center justify-between px-5 py-4 mt-2 border-t border-white/6">
+          <p className="text-[11px] text-white/25">
+            Aggiornato {freshMin <= 1 ? "adesso" : `${freshMin} min fa`}
           </p>
           <button
             onClick={() => {
@@ -467,48 +485,18 @@ export function SafetyHub() {
                 );
               }
             }}
-            className="flex items-center gap-1 text-[9px] text-white/30 hover:text-white/60 transition-colors"
+            className="flex items-center gap-1.5 text-[11px] text-white/35 active:text-white/60 min-h-[44px] px-2 -mr-2 transition-colors"
           >
-            <RefreshCw size={10} />
+            <RefreshCw size={12} />
             Aggiorna
           </button>
         </div>
-      </motion.div>
-
-      {/* ── Fixed Emergency Button (CRITICAL only) ──────────────────────── */}
-      <AnimatePresence>
-        {audit.level === "CRITICAL" && (
-          <motion.button
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ type: "spring", stiffness: 320, damping: 22 }}
-            onClick={() => setShowEmergency(true)}
-            className={cn(
-              // Fixed above bottom nav, respects safe-area
-              "fixed left-1/2 -translate-x-1/2 z-[100]",
-              "flex items-center gap-2 px-5 py-3 rounded-2xl",
-              "bg-red-600 shadow-[0_0_32px_rgba(239,68,68,0.6)] active:scale-95 transition-transform",
-              // Position: above bottom nav (≈ 80px) + safe area
-              "bottom-[calc(88px+env(safe-area-inset-bottom,0px))]"
-            )}
-            style={{
-              boxShadow: "0 0 0 1px rgba(239,68,68,0.5), 0 8px 32px rgba(239,68,68,0.55)",
-            }}
-          >
-            <Siren size={16} className="text-white" />
-            <span className="text-[13px] font-black text-white">Emergenza</span>
-          </motion.button>
-        )}
-      </AnimatePresence>
+      </div>
 
       {/* ── Emergency Sheet ──────────────────────────────────────────────── */}
       <AnimatePresence>
-        {showEmergency && (
-          <EmergencySheet
-            audit={audit}
-            onClose={() => setShowEmergency(false)}
-          />
+        {showEmergency && audit && (
+          <EmergencySheet audit={audit} onClose={() => setShowEmergency(false)} />
         )}
       </AnimatePresence>
     </>
