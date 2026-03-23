@@ -172,7 +172,13 @@ export async function validateCheckIn(
         .doc(uid);
       tx.set(
         entryRef,
-        { points: FieldValue.increment(totalPoints), visits: FieldValue.increment(1), userId: uid },
+        {
+          points:      FieldValue.increment(totalPoints),
+          visits:      FieldValue.increment(1),
+          userId: uid,
+          displayName: (userData.displayName as string | undefined) ?? "Esploratore",
+          ...(userData.photoURL ? { photoURL: userData.photoURL as string } : {}),
+        },
         { merge: true }
       );
     }

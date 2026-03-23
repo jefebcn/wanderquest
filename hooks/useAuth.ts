@@ -8,9 +8,11 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signOut,
+  updateProfile,
   type User,
 } from "firebase/auth";
-import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from "firebase/firestore";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { getFirebaseClient } from "@/lib/firebase/client";
 
 export function useAuth() {
@@ -66,5 +68,37 @@ export function useAuth() {
     await signOut(auth);
   };
 
-  return { user, loading, signInWithGoogle, signInWithEmail, registerWithEmail, logout };
+  const updateUserProfile = async (data: { displayName?: string; photoFile?: File }) => {
+    const { auth, db, storage } = getFirebaseClient();
+    const u = auth.currentUser;
+    if (!u) throw new Error("Utente non autenticato");
+
+    const authUpdates: { displayName?: string; photoURL?: string } = {};
+    const dbUpdates: Record<string, string> = {};
+
+    if (data.displayName !== undefined && data.displayName.trim()) {
+      authUpdates.displayName = data.displayName.trim();
+      dbUpdates.displayName   = data.displayName.trim();
+    }
+
+    if (data.photoFile) {
+      const storageRef = ref(storage, `avatars/${u.uid}`);
+      await uploadBytes(storageRef, data.photoFile);
+      const url = await getDownloadURL(storageRef);
+      authUpdates.photoURL = url;
+      dbUpdates.photoURL   = url;
+    }
+
+    if (Object.keys(authUpdates).length > 0) {
+      await updateProfile(u, authUpdates);
+    }
+    if (Object.keys(dbUpdates).length > 0) {
+      await updateDoc(doc(db, "users", u.uid), dbUpdates);
+    }
+
+    await u.reload();
+    setUser(auth.currentUser);
+  };
+
+  return { user, loading, signInWithGoogle, signInWithEmail, registerWithEmail, logout, updateUserProfile };
 }
