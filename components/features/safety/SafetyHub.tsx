@@ -205,7 +205,12 @@ function ContactRow({
 
 // ── Main component ───────────────────────────────────────────────────────────
 
-export function SafetyHub() {
+interface SafetyHubProps {
+  /** When provided, show safety conditions for this destination instead of user's location */
+  city?: { name: string; lat: number; lng: number } | null;
+}
+
+export function SafetyHub({ city }: SafetyHubProps = {}) {
   const [audit,           setAudit]           = useState<SafetyAudit | null>(null);
   const [loading,         setLoading]         = useState(true);
   const [error,           setError]           = useState<string | null>(null);
@@ -229,7 +234,14 @@ export function SafetyHub() {
     }
   }, [subscribe, storePosition]);
 
+  // When a destination city is passed, load its safety conditions directly
   useEffect(() => {
+    if (city) {
+      setLocationDenied(false);
+      loadAudit(city.lat, city.lng);
+      return;
+    }
+    // Fallback: user's current location
     if (!navigator.geolocation) {
       setLocationDenied(true);
       setLoading(false);
@@ -243,7 +255,7 @@ export function SafetyHub() {
       },
       { timeout: 8000 }
     );
-  }, [loadAudit]);
+  }, [city, loadAudit]);
 
   // Auto-open emergency sheet for CRITICAL
   useEffect(() => {
@@ -333,10 +345,11 @@ export function SafetyHub() {
           </div>
 
           <div className="flex-1 min-w-0">
-            <p className="text-[14px] font-black text-white leading-tight">Safety Hub</p>
+            <p className="text-[14px] font-black text-white leading-tight">
+              {city ? city.name : "Safety Hub"}
+            </p>
             <p className="text-xs text-white/40 mt-0.5 truncate">
-              {audit.countryName}
-              {locationDenied && " (approx.)"}
+              {city ? audit.countryName : (audit.countryName + (locationDenied ? " (approx.)" : ""))}
             </p>
           </div>
 

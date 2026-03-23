@@ -2,52 +2,25 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useLeaderboard } from "@/hooks/useLeaderboard";
-import { useContest }     from "@/hooks/useContest";
-import { useAuth }        from "@/hooks/useAuth";
+import { useLeaderboard }        from "@/hooks/useLeaderboard";
+import { usePhotoLeaderboard }   from "@/hooks/usePhotoLeaderboard";
+import type { PhotoRankEntry }   from "@/hooks/usePhotoLeaderboard";
+import { useContest }            from "@/hooks/useContest";
+import { useAuth }               from "@/hooks/useAuth";
 import { useSeason }      from "@/hooks/useSeason";
 import { AuthModal }      from "@/components/features/auth/AuthModal";
 import { LeaderboardSkeleton } from "@/components/ui/Skeleton";
 import { SeasonBanner, LeagueStripOverview } from "@/components/features/league/SeasonBanner";
 import { formatCents }    from "@/lib/utils";
 import { LEAGUE_CONFIGS, getLeagueConfig } from "@/lib/leagues";
-import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin, Shield, TrendingUp, TrendingDown } from "lucide-react";
+import { Crown, Trophy, Clock, Coins, Star, Lock, Sparkles, Heart, MapPin, Shield, TrendingUp, TrendingDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { ProBadge } from "@/components/features/subscription/ProBadge";
 import type { LeaderboardEntry, SeasonStandingEntry, LeagueId } from "@/types";
 
-// ── Mock photo leaderboard ────────────────────────────────────────────────
-
-const AVATAR_GRADIENTS = [
-  "from-purple-500 to-pink-500",
-  "from-blue-500 to-cyan-500",
-  "from-amber-500 to-orange-500",
-  "from-green-500 to-emerald-500",
-  "from-red-500 to-rose-500",
-  "from-indigo-500 to-blue-500",
-];
-
-interface PhotoRankEntry {
-  rank: number;
-  userId: string;
-  displayName: string;
-  initials: string;
-  avatarGradient: string;
-  votePoints: number;
-  photoCount: number;
-  topPhoto?: string;
-  city?: string;
-}
-
-const MOCK_PHOTO_RANKINGS: PhotoRankEntry[] = [
-  { rank: 1, userId: "u5", displayName: "Elena López",   initials: "EL", avatarGradient: AVATAR_GRADIENTS[4], votePoints: 611, photoCount: 3, topPhoto: "https://images.unsplash.com/photo-1543349689-9a4d426bee8e?w=120&q=70", city: "Parigi" },
-  { rank: 2, userId: "u3", displayName: "Lucia García",  initials: "LG", avatarGradient: AVATAR_GRADIENTS[2], votePoints: 546, photoCount: 2, topPhoto: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=120&q=70", city: "Barcellona" },
-  { rank: 3, userId: "u1", displayName: "Sofia Rossi",   initials: "SR", avatarGradient: AVATAR_GRADIENTS[0], votePoints: 369, photoCount: 4, topPhoto: "https://images.unsplash.com/photo-1583779457094-efcd1a8ca25a?w=120&q=70", city: "Barcellona" },
-  { rank: 4, userId: "u2", displayName: "Marco Bianchi", initials: "MB", avatarGradient: AVATAR_GRADIENTS[1], votePoints: 282, photoCount: 2, topPhoto: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=120&q=70", city: "Barcellona" },
-  { rank: 5, userId: "u4", displayName: "Luca Ferrari",  initials: "LF", avatarGradient: AVATAR_GRADIENTS[3], votePoints: 214, photoCount: 1, topPhoto: "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?w=120&q=70", city: "Roma" },
-  { rank: 6, userId: "u6", displayName: "Filippo Conte", initials: "FC", avatarGradient: AVATAR_GRADIENTS[5], votePoints: 140, photoCount: 2, topPhoto: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=120&q=70", city: "Roma" },
-];
+// ── Photo leaderboard type (imported from hook) ───────────────────────────
+// PhotoRankEntry is imported from @/hooks/usePhotoLeaderboard
 
 // ── Photo Leaderboard Row ─────────────────────────────────────────────────
 
@@ -458,6 +431,7 @@ type LbTab = "points" | "photos" | "leagues";
 export function LeaderboardView() {
   const { contest, loading: contestLoading, timeLeft } = useContest();
   const { entries, loading: listLoading } = useLeaderboard(contest?.id ?? null);
+  const { entries: photoEntries, loading: photoLoading } = usePhotoLeaderboard(contest?.id ?? null);
   const { user } = useAuth();
   const [authOpen, setAuthOpen] = useState(false);
   const [lbTab, setLbTab] = useState<LbTab>("photos");
@@ -558,14 +532,26 @@ export function LeaderboardView() {
               <Heart size={11} className="text-rose-400" fill="currentColor" />
               Classifica voti foto · {contest?.title ?? "Contest attivo"}
             </p>
-            {MOCK_PHOTO_RANKINGS.map((entry, idx) => (
-              <PhotoRankRow
-                key={entry.userId}
-                entry={entry}
-                isMe={entry.userId === user?.uid}
-                index={idx}
-              />
-            ))}
+            {photoLoading ? (
+              <div className="flex items-center justify-center py-12 text-white/30">
+                <Loader2 size={24} className="animate-spin" />
+              </div>
+            ) : photoEntries.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-16 text-white/30">
+                <Heart size={40} className="mb-3 opacity-30" />
+                <p className="text-sm">Nessuna foto votata ancora.</p>
+                <p className="text-xs mt-1">Carica la tua foto e raccogli voti!</p>
+              </div>
+            ) : (
+              photoEntries.map((entry, idx) => (
+                <PhotoRankRow
+                  key={entry.userId}
+                  entry={entry}
+                  isMe={entry.userId === user?.uid}
+                  index={idx}
+                />
+              ))
+            )}
             <p className="text-xs text-white/20 text-center pt-2 pb-4">
               1 Like = 1 punto · 1 Super Like = 3 punti · I voti ricevuti determinano il premio
             </p>
