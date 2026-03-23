@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useAuth } from "@/hooks/useAuth";
 import { useContest } from "@/hooks/useContest";
@@ -42,6 +42,10 @@ import {
   AlertTriangle,
   Loader2,
   Settings,
+  Camera,
+  Pencil,
+  X,
+  Check,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -607,7 +611,7 @@ function AdminContestSection() {
 // ── Main View ─────────────────────────────────────────────────────────────
 
 export function ProfileView() {
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, loading: authLoading, logout, updateUserProfile } = useAuth();
   const { contest }                  = useContest();
   const { currentStreak, longestStreak } = useStreak();
   const { isPro }                    = useSubscription();
@@ -615,6 +619,46 @@ export function ProfileView() {
   const [wallet, setWallet]       = useState<UserWallet | null>(null);
   const [walletLoading, setWalletLoading] = useState(true);
   const [isAdmin, setIsAdmin]     = useState(false);
+
+  // Profile edit state
+  const [editMode, setEditMode]       = useState(false);
+  const [editName, setEditName]       = useState("");
+  const [editFile, setEditFile]       = useState<File | null>(null);
+  const [editPreview, setEditPreview] = useState<string | null>(null);
+  const [saving, setSaving]           = useState(false);
+  const fileInputRef                  = useRef<HTMLInputElement>(null);
+
+  const startEdit = () => {
+    setEditName(user?.displayName ?? "");
+    setEditFile(null);
+    setEditPreview(null);
+    setEditMode(true);
+  };
+
+  const cancelEdit = () => {
+    setEditMode(false);
+    setEditPreview(null);
+    setEditFile(null);
+  };
+
+  const handleAvatarFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setEditFile(file);
+    setEditPreview(URL.createObjectURL(file));
+  };
+
+  const saveEdit = async () => {
+    setSaving(true);
+    try {
+      await updateUserProfile({ displayName: editName, photoFile: editFile ?? undefined });
+      setEditMode(false);
+      setEditPreview(null);
+      setEditFile(null);
+    } finally {
+      setSaving(false);
+    }
+  };
 
   useEffect(() => {
     if (!user) { setWalletLoading(false); return; }
@@ -696,40 +740,114 @@ export function ProfileView() {
         >
           {/* Avatar */}
           <div className="relative flex-shrink-0">
-            {user.photoURL ? (
-              <div className="h-16 w-16 overflow-hidden rounded-2xl ring-2 ring-[var(--s-primary)]/50">
-                <Image
-                  src={user.photoURL}
-                  alt={user.displayName ?? "Avatar"}
-                  width={64}
-                  height={64}
-                  className="object-cover"
-                />
-              </div>
+            {/* Hidden file input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarFile}
+            />
+            {editMode ? (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="relative h-16 w-16 rounded-2xl overflow-hidden ring-2 ring-[var(--s-primary)]/60 focus:outline-none"
+              >
+                {editPreview || user.photoURL ? (
+                  <Image
+                    src={editPreview ?? user.photoURL!}
+                    alt="Avatar"
+                    width={64}
+                    height={64}
+                    className="object-cover"
+                  />
+                ) : (
+                  <div className="h-full w-full bg-gradient-to-br from-blue-500/30 to-purple-500/30 flex items-center justify-center">
+                    <User size={28} className="text-white/60" />
+                  </div>
+                )}
+                <div className="absolute inset-0 flex items-center justify-center bg-black/50">
+                  <Camera size={20} className="text-white" />
+                </div>
+              </button>
             ) : (
-              <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500/30 to-purple-500/30 border border-white/10 flex items-center justify-center">
-                <User size={28} className="text-white/60" />
-              </div>
+              <>
+                {user.photoURL ? (
+                  <div className="h-16 w-16 overflow-hidden rounded-2xl ring-2 ring-[var(--s-primary)]/50">
+                    <Image
+                      src={user.photoURL}
+                      alt={user.displayName ?? "Avatar"}
+                      width={64}
+                      height={64}
+                      className="object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-blue-500/30 to-purple-500/30 border border-white/10 flex items-center justify-center">
+                    <User size={28} className="text-white/60" />
+                  </div>
+                )}
+                <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--s-primary)] border border-slate-950">
+                  <Star size={10} className="text-slate-900" fill="currentColor" />
+                </div>
+              </>
             )}
-            <div className="absolute -bottom-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-[var(--s-primary)] border border-slate-950">
-              <Star size={10} className="text-slate-900" fill="currentColor" />
-            </div>
           </div>
 
-          {/* Info */}
+          {/* Info / Edit form */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-0.5">
-              <p className="text-lg font-black truncate">{user.displayName ?? "Esploratore"}</p>
-              {isPro && <ProBadge size="sm" />}
-            </div>
-            <p className="text-xs text-white/40 truncate">{user.email}</p>
-            {contest && (
-              <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[var(--s-primary)]/12 border border-[var(--s-primary)]/20 px-2 py-0.5">
-                <Trophy size={9} className="text-[var(--s-primary)]" />
-                <span className="text-xs font-black text-[var(--s-primary)]">
-                  {formatCents(contest.prizePool)} in palio
-                </span>
+            {editMode ? (
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  placeholder="Il tuo nickname"
+                  maxLength={30}
+                  className="w-full rounded-xl bg-white/8 border border-white/15 px-3 py-2 text-sm font-bold text-white placeholder-white/30 focus:outline-none focus:border-[var(--s-primary)]/60"
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={saveEdit}
+                    disabled={saving || !editName.trim()}
+                    className="flex items-center gap-1.5 rounded-xl bg-[var(--s-primary)] px-3 py-1.5 text-xs font-black text-slate-900 disabled:opacity-50"
+                  >
+                    {saving ? <Loader2 size={12} className="animate-spin" /> : <Check size={12} />}
+                    Salva
+                  </button>
+                  <button
+                    onClick={cancelEdit}
+                    disabled={saving}
+                    className="flex items-center gap-1.5 rounded-xl bg-white/8 px-3 py-1.5 text-xs font-bold text-white/70"
+                  >
+                    <X size={12} />
+                    Annulla
+                  </button>
+                </div>
               </div>
+            ) : (
+              <>
+                <div className="flex items-center gap-2 mb-0.5">
+                  <p className="text-lg font-black truncate">{user.displayName ?? "Esploratore"}</p>
+                  {isPro && <ProBadge size="sm" />}
+                  <button
+                    onClick={startEdit}
+                    className="ml-auto flex h-6 w-6 items-center justify-center rounded-lg bg-white/6 hover:bg-white/12 transition-colors flex-shrink-0"
+                    title="Modifica profilo"
+                  >
+                    <Pencil size={11} className="text-white/50" />
+                  </button>
+                </div>
+                <p className="text-xs text-white/40 truncate">{user.email}</p>
+                {contest && (
+                  <div className="mt-1.5 inline-flex items-center gap-1 rounded-full bg-[var(--s-primary)]/12 border border-[var(--s-primary)]/20 px-2 py-0.5">
+                    <Trophy size={9} className="text-[var(--s-primary)]" />
+                    <span className="text-xs font-black text-[var(--s-primary)]">
+                      {formatCents(contest.prizePool)} in palio
+                    </span>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </motion.div>
