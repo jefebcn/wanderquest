@@ -93,30 +93,30 @@ const steps = [
 // ── Featured cities ─────────────────────────────────────────────────────────
 
 const CITIES = [
-  { name: "Barcellona", country: "ES", landmarks: 48, active: true,  img: "https://images.unsplash.com/photo-1583779457094-efcd1a8ca25a?w=400&q=80" },
+  { name: "Barcellona", country: "ES", landmarks: 48, active: true,  img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80" },
   { name: "Roma",       country: "IT", landmarks: 62, active: false, img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80" },
-  { name: "Parigi",     country: "FR", landmarks: 55, active: false, img: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80" },
-  { name: "Madrid",     country: "ES", landmarks: 39, active: false, img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80" },
-  { name: "Firenze",    country: "IT", landmarks: 33, active: false, img: "https://images.unsplash.com/photo-1541370976299-4d24ebbc9077?w=400&q=80" },
+  { name: "Parigi",     country: "FR", landmarks: 55, active: false, img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80" },
+  { name: "Madrid",     country: "ES", landmarks: 39, active: false, img: "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=400&q=80" },
+  { name: "Firenze",    country: "IT", landmarks: 33, active: false, img: "https://images.unsplash.com/photo-1543414164-09db18f38c05?w=400&q=80" },
   { name: "Amsterdam",  country: "NL", landmarks: 41, active: false, img: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&q=80" },
   { name: "Vienna",     country: "AT", landmarks: 37, active: false, img: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&q=80" },
-  { name: "Lisbona",    country: "PT", landmarks: 29, active: false, img: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=400&q=80" },
+  { name: "Lisbona",    country: "PT", landmarks: 29, active: false, img: "https://images.unsplash.com/photo-1548707309-dcebeab9ea9b?w=400&q=80" },
   { name: "Praga",      country: "CZ", landmarks: 44, active: false, img: "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&q=80" },
-  { name: "Budapest",   country: "HU", landmarks: 31, active: false, img: "https://images.unsplash.com/photo-1551867633-194f125bddfa?w=400&q=80" },
-  { name: "Venezia",    country: "IT", landmarks: 52, active: false, img: "https://images.unsplash.com/photo-1523906834658-6e0404912460?w=400&q=80" },
-  { name: "Milano",     country: "IT", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1520440229-6469a149ac59?w=400&q=80" },
+  { name: "Budapest",   country: "HU", landmarks: 31, active: false, img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
+  { name: "Venezia",    country: "IT", landmarks: 52, active: false, img: "https://images.unsplash.com/photo-1534113414509-0eec2bfb493f?w=400&q=80" },
+  { name: "Milano",     country: "IT", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1552751753-0fc84ae5b6c8?w=400&q=80" },
   { name: "Berlino",    country: "DE", landmarks: 46, active: false, img: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80" },
-  { name: "Siviglia",   country: "ES", landmarks: 22, active: false, img: "https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=400&q=80" },
+  { name: "Siviglia",   country: "ES", landmarks: 22, active: false, img: "https://images.unsplash.com/photo-1593672715438-d88a70629abe?w=400&q=80" },
   { name: "Atene",      country: "GR", landmarks: 35, active: false, img: "https://images.unsplash.com/photo-1555993539-1732b0258235?w=400&q=80" },
-  { name: "Londra",     country: "GB", landmarks: 58, active: false, img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&q=80" },
-  { name: "Dublino",    country: "IE", landmarks: 24, active: false, img: "https://images.unsplash.com/photo-1549918864-48ac978761a4?w=400&q=80" },
+  { name: "Londra",     country: "GB", landmarks: 58, active: false, img: "https://images.unsplash.com/photo-1486325212027-8081e485255e?w=400&q=80" },
+  { name: "Dublino",    country: "IE", landmarks: 24, active: false, img: "https://images.unsplash.com/photo-1564959130747-897fb406b9af?w=400&q=80" },
   { name: "Zurigo",     country: "CH", landmarks: 26, active: false, img: "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=400&q=80" },
-  { name: "Monaco",     country: "DE", landmarks: 34, active: false, img: "https://images.unsplash.com/photo-1595867818082-083862f3d630?w=400&q=80" },
+  { name: "Monaco",     country: "DE", landmarks: 34, active: false, img: "https://images.unsplash.com/photo-1467269204594-9661b134dd2b?w=400&q=80" },
   { name: "Copenaghen", country: "DK", landmarks: 27, active: false, img: "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&q=80" },
   { name: "Stoccolma",  country: "SE", landmarks: 30, active: false, img: "https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&q=80" },
-  { name: "Cracovia",   country: "PL", landmarks: 32, active: false, img: "https://images.unsplash.com/photo-1562571708-611e5ff7ae4b?w=400&q=80" },
-  { name: "Napoli",     country: "IT", landmarks: 25, active: false, img: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=400&q=80" },
-  { name: "Edimburgo",  country: "GB", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1506377585622-bedcbb5f6789?w=400&q=80" },
+  { name: "Cracovia",   country: "PL", landmarks: 32, active: false, img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80" },
+  { name: "Napoli",     country: "IT", landmarks: 25, active: false, img: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=400&q=80" },
+  { name: "Edimburgo",  country: "GB", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1559181567-c3190ca9959b?w=400&q=80" },
   { name: "Santorini",  country: "GR", landmarks: 18, active: false, img: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80" },
 ];
 
@@ -619,7 +619,10 @@ function CityExplorer() {
               </div>
 
               {/* Scrollable content */}
-              <div className="overflow-y-auto flex-1 px-5 pb-8 space-y-6">
+              <div
+                className="overflow-y-auto overscroll-contain flex-1 px-5 pb-8 space-y-6"
+                onPointerDown={(e) => e.stopPropagation()}
+              >
                 {/* Description */}
                 <p className="text-sm text-white/65 leading-relaxed">{result.description}</p>
 
