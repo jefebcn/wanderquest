@@ -226,10 +226,61 @@ body {
   animation: breathe 3.2s ease-in-out infinite;
 }
 
+/* Pulsing ring — Bento map tile marker */
+@keyframes pulse-ring {
+  0%   { transform: scale(0.85); opacity: 0.8; }
+  70%  { transform: scale(1.4);  opacity: 0;   }
+  100% { transform: scale(1.4);  opacity: 0;   }
+}
+.animate-pulse-ring {
+  animation: pulse-ring 1.8s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+}
+
+/* Critical safety ambient glow — whole-app red tint */
+@keyframes critical-glow {
+  0%, 100% { box-shadow: inset 0 0 120px rgba(239,68,68,0.07); }
+  50%       { box-shadow: inset 0 0 120px rgba(239,68,68,0.14); }
+}
+.critical-ambient {
+  animation: critical-glow 3s ease-in-out infinite;
+}
+
+/* Metallic shimmer for league tier badges */
+@keyframes metallic-shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+.animate-shimmer {
+  background-size: 200% auto;
+  animation: metallic-shimmer 2.8s linear infinite;
+}
+
+/* League metallic gradients */
+@layer utilities {
+  .league-bronze {
+    background: linear-gradient(135deg, #92400e 0%, #b45309 35%, #d97706 55%, #a16207 80%, #78350f 100%);
+  }
+  .league-silver {
+    background: linear-gradient(135deg, #475569 0%, #94a3b8 35%, #e2e8f0 55%, #94a3b8 80%, #475569 100%);
+  }
+  .league-gold {
+    background: linear-gradient(135deg, #b45309 0%, #d97706 25%, #fbbf24 45%, #fcd34d 55%, #f59e0b 75%, #b45309 100%);
+  }
+  .league-platinum {
+    background: linear-gradient(135deg, #0e7490 0%, #06b6d4 30%, #a5f3fc 55%, #06b6d4 75%, #0e7490 100%);
+  }
+  .league-diamond {
+    background: linear-gradient(135deg, #1d4ed8 0%, #3b82f6 30%, #93c5fd 52%, #bfdbfe 58%, #3b82f6 75%, #1d4ed8 100%);
+  }
+}
+
 /* Reduced motion support */
 @media (prefers-reduced-motion: reduce) {
   .animate-pulse-glow,
-  .animate-breathe {
+  .animate-breathe,
+  .animate-pulse-ring,
+  .critical-ambient,
+  .animate-shimmer {
     animation: none;
   }
 }

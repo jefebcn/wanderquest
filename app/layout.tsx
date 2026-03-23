@@ -1,7 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Playfair_Display } from "next/font/google";
-import { BottomNav }      from "@/components/layout/BottomNav";
-import { PayPalProvider } from "@/components/providers/PayPalProvider";
+import { BottomNav }        from "@/components/layout/BottomNav";
+import { PageTransition }   from "@/components/layout/PageTransition";
+import { PayPalProvider }   from "@/components/providers/PayPalProvider";
 import "./globals.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -57,7 +58,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body className="font-sans bg-slate-950 text-white antialiased">
         <PayPalProvider>
-          <main className="relative min-h-screen">{children}</main>
+          <main className="relative min-h-screen">
+            <PageTransition>{children}</PageTransition>
+          </main>
           <BottomNav />
         </PayPalProvider>
       </body>

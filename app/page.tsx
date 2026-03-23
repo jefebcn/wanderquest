@@ -10,6 +10,7 @@ import { WeatherQuest }      from "@/components/features/weather/WeatherQuest";
 import { SafetyHub }         from "@/components/features/safety/SafetyHub";
 import { GoPro }             from "@/components/features/subscription/GoPro";
 import { BottomSheet }       from "@/components/ui/BottomSheet";
+import { BentoHub } from "@/components/features/home/BentoHub";
 import { formatCents } from "@/lib/utils";
 import {
   Compass,
@@ -1259,6 +1260,9 @@ export default function HomePage() {
             )}
           </div>
         </section>
+
+        {/* ── BENTO HUB ────────────────────────────────────────────── */}
+        <BentoHub />
 
         {/* ── ANIMATED PRIZE COUNTER BANNER ──────────────────────── */}
         {contest && (

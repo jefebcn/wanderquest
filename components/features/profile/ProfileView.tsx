@@ -9,7 +9,7 @@ import { CurrencyConverter } from "@/components/features/currency/CurrencyConver
 import { getWallet } from "@/actions/wallet";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { formatCents } from "@/lib/utils";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, limit, getDocs } from "firebase/firestore";
 import { createOrRenewContest } from "@/actions/contest";
 import { useStreak }        from "@/hooks/useStreak";
 import { useSubscription }  from "@/hooks/useSubscription";
@@ -411,6 +411,130 @@ function BadgeGrid() {
           </motion.div>
         ))}
       </div>
+    </div>
+  );
+}
+
+// ── Digital Passport ──────────────────────────────────────────────────────
+
+const STAMP_GRADIENTS = [
+  "from-teal-500/60 to-cyan-600/60",
+  "from-amber-500/60 to-orange-600/60",
+  "from-purple-500/60 to-violet-600/60",
+  "from-green-500/60 to-emerald-600/60",
+  "from-rose-500/60 to-pink-600/60",
+  "from-blue-500/60 to-indigo-600/60",
+  "from-red-500/60 to-rose-600/60",
+  "from-yellow-500/60 to-amber-600/60",
+];
+
+interface StampVisit {
+  id: string;
+  landmarkName: string;
+  city?: string;
+  pointsEarned: number;
+  verifiedAt: string;
+}
+
+function PassportGrid({ uid }: { uid: string }) {
+  const [stamps, setStamps]   = useState<StampVisit[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!uid) return;
+    (async () => {
+      try {
+        const { db } = getFirebaseClient();
+        const snap = await getDocs(
+          query(collection(db, "visits"), where("userId", "==", uid), limit(20))
+        );
+        const visits: StampVisit[] = snap.docs.map((d) => ({
+          id:           d.id,
+          landmarkName: (d.data().landmarkName as string) ?? "Monumento",
+          city:         d.data().city as string | undefined,
+          pointsEarned: (d.data().pointsEarned as number) ?? 0,
+          verifiedAt:   (d.data().verifiedAt as string) ?? "",
+        }));
+        // Sort newest first client-side
+        visits.sort((a, b) => b.verifiedAt.localeCompare(a.verifiedAt));
+        setStamps(visits);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, [uid]);
+
+  return (
+    <div className="rounded-2xl bg-white/4 border border-white/8 p-4">
+      <div className="flex items-center gap-2 mb-4">
+        <MapPin size={16} className="text-[var(--s-primary)]" />
+        <h2 className="text-sm font-black">Passaporto Digitale</h2>
+        {stamps.length > 0 && (
+          <span className="ml-auto text-xs font-bold text-[var(--s-primary)]/70">
+            {stamps.length} timbri
+          </span>
+        )}
+      </div>
+
+      {loading ? (
+        <div className="grid grid-cols-4 gap-2">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-16 rounded-xl bg-white/4 animate-pulse" />
+          ))}
+        </div>
+      ) : stamps.length === 0 ? (
+        <div className="flex flex-col items-center justify-center py-8 text-white/25">
+          <MapPin size={32} className="mb-2 opacity-40" />
+          <p className="text-sm font-bold">Nessun timbro ancora</p>
+          <p className="text-xs mt-1 text-center leading-snug">
+            Scansiona il tuo primo monumento<br />per guadagnare il primo timbro
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-4 gap-2">
+          {stamps.map((stamp, i) => {
+            const gradIdx =
+              stamp.id.split("").reduce((a, c) => a + c.charCodeAt(0), 0) %
+              STAMP_GRADIENTS.length;
+            const initials = stamp.landmarkName
+              .split(" ")
+              .slice(0, 2)
+              .map((w) => w[0] ?? "")
+              .join("")
+              .toUpperCase();
+            const dateStr = stamp.verifiedAt
+              ? new Date(stamp.verifiedAt).toLocaleDateString("it-IT", { day: "2-digit", month: "short" })
+              : "—";
+
+            return (
+              <motion.div
+                key={stamp.id}
+                initial={{ opacity: 0, scale: 0.7 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: i * 0.04, type: "spring", stiffness: 400, damping: 22 }}
+                className="flex flex-col items-center gap-1"
+              >
+                {/* Stamp circle */}
+                <div
+                  className={cn(
+                    "h-14 w-14 rounded-full bg-gradient-to-br flex items-center justify-center border-2 border-white/15",
+                    `bg-gradient-to-br ${STAMP_GRADIENTS[gradIdx]}`,
+                  )}
+                  style={{
+                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.15), 0 2px 8px rgba(0,0,0,0.3)",
+                  }}
+                >
+                  <span className="text-xs font-black text-white drop-shadow">{initials}</span>
+                </div>
+                {/* Date */}
+                <span className="text-[9px] text-white/35 font-bold text-center leading-none">
+                  {dateStr}
+                </span>
+              </motion.div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
@@ -876,6 +1000,9 @@ export function ProfileView() {
 
         {/* Badge Grid */}
         <BadgeGrid />
+
+        {/* Digital Passport */}
+        <PassportGrid uid={user.uid} />
 
         {/* Scan Timeline */}
         <ScanTimeline />
