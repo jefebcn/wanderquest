@@ -775,11 +775,14 @@ function VoteDeck({
       onVoteSubmitted(newTotal);
 
       // Persist to Firestore (fire and forget)
-      if (user && contestId && photo.id.startsWith("m") === false) {
+      if (user && contestId && !photo.id.startsWith("m")) {
         startTransition(async () => {
           const { auth } = getFirebaseClient();
           const tok = await auth.currentUser?.getIdToken();
-          if (tok) submitVote(tok, photo.id, contestId, type).catch(() => {});
+          if (tok) {
+            submitVote(tok, photo.id, contestId, type).catch(() => {});
+            markPhotosAsSeen(tok, [photo.id], contestId).catch(() => {});
+          }
         });
       }
     },
@@ -925,7 +928,7 @@ export function ContestView() {
   const [myPhotos, setMyPhotos]        = useState<ContestPhoto[]>([]);
   const [myPhotosLoading, setMyPhotosLoading] = useState(false);
   const [totalVoted, setTotalVoted]    = useState(0);
-  const [contestPhotos, setContestPhotos] = useState<ContestPhoto[]>(MOCK_PHOTOS);
+  const [contestPhotos, setContestPhotos] = useState<ContestPhoto[]>([]);
   const [contestPhotosLoading, setContestPhotosLoading] = useState(false);
   const skipNextMyPhotosLoad = useRef(false);
 
@@ -939,15 +942,11 @@ export function ContestView() {
         const tok = await auth.currentUser?.getIdToken();
         if (tok) {
           const { photos } = await getContestPhotos(tok, contest.id);
-          if (photos.length > 0) {
-            setContestPhotos(photos);
-            // Mark all fetched photos as seen immediately so they are never
-            // shown again, even if the user leaves without voting on them.
-            markPhotosAsSeen(tok, photos.map((p) => p.id), contest.id).catch(() => {});
-          }
+          setContestPhotos(photos.length > 0 ? photos : []);
         }
       } catch {
-        // Fallback: keep MOCK_PHOTOS
+        // On error show mock photos so the UI is not empty for demo
+        setContestPhotos(MOCK_PHOTOS);
       } finally {
         setContestPhotosLoading(false);
       }

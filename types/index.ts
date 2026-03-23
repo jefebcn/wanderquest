@@ -149,6 +149,7 @@ export interface ContestPhoto {
   superLikes: number;
   skips: number;
   contestId: string;
+  status?: string;
   uploadedAt: string;
 }
 
