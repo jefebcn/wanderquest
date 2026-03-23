@@ -93,21 +93,31 @@ const steps = [
 // ── Featured cities ─────────────────────────────────────────────────────────
 
 const CITIES = [
-  { name: "Barcellona", country: "ES", landmarks: 48, active: true,  img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80" },
+  { name: "Barcellona", country: "ES", landmarks: 48, active: true,  img: "https://images.unsplash.com/photo-1583779457094-efcd1a8ca25a?w=400&q=80" },
   { name: "Roma",       country: "IT", landmarks: 62, active: false, img: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400&q=80" },
-  { name: "Parigi",     country: "FR", landmarks: 55, active: false, img: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?w=400&q=80" },
-  { name: "Madrid",     country: "ES", landmarks: 39, active: false, img: "https://images.unsplash.com/photo-1543429776-2782fc8e1acd?w=400&q=80" },
-  { name: "Firenze",    country: "IT", landmarks: 33, active: false, img: "https://images.unsplash.com/photo-1543414164-09db18f38c05?w=400&q=80" },
+  { name: "Parigi",     country: "FR", landmarks: 55, active: false, img: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=400&q=80" },
+  { name: "Madrid",     country: "ES", landmarks: 39, active: false, img: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=400&q=80" },
+  { name: "Firenze",    country: "IT", landmarks: 33, active: false, img: "https://images.unsplash.com/photo-1541370976299-4d24ebbc9077?w=400&q=80" },
   { name: "Amsterdam",  country: "NL", landmarks: 41, active: false, img: "https://images.unsplash.com/photo-1534351590666-13e3e96b5017?w=400&q=80" },
   { name: "Vienna",     country: "AT", landmarks: 37, active: false, img: "https://images.unsplash.com/photo-1516550893923-42d28e5677af?w=400&q=80" },
-  { name: "Lisbona",    country: "PT", landmarks: 29, active: false, img: "https://images.unsplash.com/photo-1548707309-dcebeab9ea9b?w=400&q=80" },
+  { name: "Lisbona",    country: "PT", landmarks: 29, active: false, img: "https://images.unsplash.com/photo-1585208798174-6cedd86e019a?w=400&q=80" },
   { name: "Praga",      country: "CZ", landmarks: 44, active: false, img: "https://images.unsplash.com/photo-1541849546-216549ae216d?w=400&q=80" },
-  { name: "Budapest",   country: "HU", landmarks: 31, active: false, img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&q=80" },
-  { name: "Venezia",    country: "IT", landmarks: 52, active: false, img: "https://images.unsplash.com/photo-1534113414509-0eec2bfb493f?w=400&q=80" },
-  { name: "Milano",     country: "IT", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1552751753-0fc84ae5b6c8?w=400&q=80" },
+  { name: "Budapest",   country: "HU", landmarks: 31, active: false, img: "https://images.unsplash.com/photo-1551867633-194f125bddfa?w=400&q=80" },
+  { name: "Venezia",    country: "IT", landmarks: 52, active: false, img: "https://images.unsplash.com/photo-1523906834658-6e0404912460?w=400&q=80" },
+  { name: "Milano",     country: "IT", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1520440229-6469a149ac59?w=400&q=80" },
   { name: "Berlino",    country: "DE", landmarks: 46, active: false, img: "https://images.unsplash.com/photo-1560969184-10fe8719e047?w=400&q=80" },
-  { name: "Siviglia",   country: "ES", landmarks: 22, active: false, img: "https://images.unsplash.com/photo-1593672715438-d88a70629abe?w=400&q=80" },
+  { name: "Siviglia",   country: "ES", landmarks: 22, active: false, img: "https://images.unsplash.com/photo-1515443961218-a51367888e4b?w=400&q=80" },
   { name: "Atene",      country: "GR", landmarks: 35, active: false, img: "https://images.unsplash.com/photo-1555993539-1732b0258235?w=400&q=80" },
+  { name: "Londra",     country: "GB", landmarks: 58, active: false, img: "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=400&q=80" },
+  { name: "Dublino",    country: "IE", landmarks: 24, active: false, img: "https://images.unsplash.com/photo-1549918864-48ac978761a4?w=400&q=80" },
+  { name: "Zurigo",     country: "CH", landmarks: 26, active: false, img: "https://images.unsplash.com/photo-1515488764276-beab7607c1e6?w=400&q=80" },
+  { name: "Monaco",     country: "DE", landmarks: 34, active: false, img: "https://images.unsplash.com/photo-1595867818082-083862f3d630?w=400&q=80" },
+  { name: "Copenaghen", country: "DK", landmarks: 27, active: false, img: "https://images.unsplash.com/photo-1513622470522-26c3c8a854bc?w=400&q=80" },
+  { name: "Stoccolma",  country: "SE", landmarks: 30, active: false, img: "https://images.unsplash.com/photo-1509356843151-3e7d96241e11?w=400&q=80" },
+  { name: "Cracovia",   country: "PL", landmarks: 32, active: false, img: "https://images.unsplash.com/photo-1562571708-611e5ff7ae4b?w=400&q=80" },
+  { name: "Napoli",     country: "IT", landmarks: 25, active: false, img: "https://images.unsplash.com/photo-1516483638261-f4dbaf036963?w=400&q=80" },
+  { name: "Edimburgo",  country: "GB", landmarks: 28, active: false, img: "https://images.unsplash.com/photo-1506377585622-bedcbb5f6789?w=400&q=80" },
+  { name: "Santorini",  country: "GR", landmarks: 18, active: false, img: "https://images.unsplash.com/photo-1570077188670-e3a8d69ac5ff?w=400&q=80" },
 ];
 
 // ── City detail data ──────────────────────────────────────────────────────────
@@ -297,6 +307,126 @@ const CITY_DETAILS: Record<string, {
     ],
     openDate: "Giugno 2026",
     bestFor: "Archeologia & Cultura Greca",
+    countryEmoji: "🇬🇷",
+  },
+  "Londra": {
+    description: "La capitale del Regno Unito, metropoli cosmopolita dove tradizione e innovazione convivono. Big Ben, Tower Bridge, musei gratuiti di livello mondiale.",
+    highlights: ["58 monumenti e attrazioni", "British Museum e National Gallery gratis", "Vita culturale infinita"],
+    topLandmarks: [
+      { name: "Big Ben & Parlamento", pts: 700, emoji: "🕰️" },
+      { name: "Tower of London",     pts: 650, emoji: "🏰" },
+      { name: "British Museum",      pts: 550, emoji: "🏛️" },
+    ],
+    openDate: "Luglio 2026",
+    bestFor: "Cultura & Tradizione",
+    countryEmoji: "🇬🇧",
+  },
+  "Dublino": {
+    description: "La capitale irlandese dal fascino genuino. Temple Bar, Trinity College, Guinness e pub storici dove la musica dal vivo non si ferma mai.",
+    highlights: ["24 luoghi da esplorare", "Trinity College e Book of Kells", "Pub con musica live ogni sera"],
+    topLandmarks: [
+      { name: "Trinity College",      pts: 550, emoji: "📚" },
+      { name: "Guinness Storehouse",  pts: 450, emoji: "🍺" },
+      { name: "Temple Bar",           pts: 350, emoji: "🎵" },
+    ],
+    openDate: "Agosto 2026",
+    bestFor: "Pub & Musica Live",
+    countryEmoji: "🇮🇪",
+  },
+  "Zurigo": {
+    description: "La città svizzera sulle rive del lago, dove l'efficienza incontra la bellezza alpina. Centro finanziario mondiale ma anche cultura, cioccolato e panorami mozzafiato.",
+    highlights: ["26 attrazioni imperdibili", "Lago e Alpi come sfondo", "Cioccolato e formaggi artigianali"],
+    topLandmarks: [
+      { name: "Grossmünster",       pts: 500, emoji: "⛪" },
+      { name: "Lago di Zurigo",     pts: 400, emoji: "🏞️" },
+      { name: "Bahnhofstrasse",     pts: 350, emoji: "🛍️" },
+    ],
+    openDate: "Settembre 2026",
+    bestFor: "Laghi & Panorami Alpini",
+    countryEmoji: "🇨🇭",
+  },
+  "Monaco": {
+    description: "Monaco di Baviera: birra, castelli e tradizione bavarese. Marienplatz, Englischer Garten e l'Oktoberfest più famoso del mondo.",
+    highlights: ["34 luoghi da visitare", "Englischer Garten più grande di Central Park", "Birrerie storiche leggendarie"],
+    topLandmarks: [
+      { name: "Marienplatz",          pts: 600, emoji: "🏟️" },
+      { name: "Englischer Garten",    pts: 400, emoji: "🌳" },
+      { name: "Nymphenburg Palace",   pts: 550, emoji: "🏰" },
+    ],
+    openDate: "Ottobre 2026",
+    bestFor: "Tradizione Bavarese & Birra",
+    countryEmoji: "🇩🇪",
+  },
+  "Copenaghen": {
+    description: "La capitale danese, modello di design scandinavo e qualità della vita. Tivoli, Sirenetta, Nyhavn colorato e cucina New Nordic stellata.",
+    highlights: ["27 destinazioni uniche", "Tivoli: parco divertimenti più antico", "Capitale del New Nordic Food"],
+    topLandmarks: [
+      { name: "Giardini di Tivoli",   pts: 550, emoji: "🎡" },
+      { name: "Nyhavn",               pts: 450, emoji: "🏘️" },
+      { name: "La Sirenetta",         pts: 350, emoji: "🧜" },
+    ],
+    openDate: "Novembre 2026",
+    bestFor: "Design & Gastronomia Nordica",
+    countryEmoji: "🇩🇰",
+  },
+  "Stoccolma": {
+    description: "La Venezia del Nord, costruita su 14 isole collegate da 57 ponti. Gamla Stan medievale, museo Vasa e panorami sull'arcipelago svedese.",
+    highlights: ["30 attrazioni sulle isole", "Gamla Stan medievale intatta", "Museo Vasa unico al mondo"],
+    topLandmarks: [
+      { name: "Gamla Stan",       pts: 550, emoji: "🏘️" },
+      { name: "Museo Vasa",       pts: 600, emoji: "🚢" },
+      { name: "Palazzo Reale",    pts: 450, emoji: "🏰" },
+    ],
+    openDate: "Dicembre 2026",
+    bestFor: "Isole & Storia Vichinga",
+    countryEmoji: "🇸🇪",
+  },
+  "Cracovia": {
+    description: "L'antica capitale polacca con un centro storico medievale perfettamente conservato. Piazza del Mercato, castello di Wawel e la storia toccante di Auschwitz.",
+    highlights: ["32 siti storici", "Piazza del Mercato più grande d'Europa", "Miniere di sale di Wieliczka"],
+    topLandmarks: [
+      { name: "Castello di Wawel",     pts: 650, emoji: "🏰" },
+      { name: "Piazza del Mercato",    pts: 500, emoji: "🏟️" },
+      { name: "Miniera di Wieliczka",  pts: 550, emoji: "⛏️" },
+    ],
+    openDate: "Gennaio 2027",
+    bestFor: "Storia Medievale & Cultura",
+    countryEmoji: "🇵🇱",
+  },
+  "Napoli": {
+    description: "La città più autentica d'Italia, caotica e affascinante. Vesuvio, Pompei, pizza originale e Spaccanapoli — energia pura e cuore grande.",
+    highlights: ["25 tesori partenopei", "Pizza napoletana patrimonio UNESCO", "Pompei ed Ercolano a due passi"],
+    topLandmarks: [
+      { name: "Centro Storico",        pts: 500, emoji: "🏘️" },
+      { name: "Pompei",               pts: 750, emoji: "🏛️" },
+      { name: "Castel dell'Ovo",      pts: 400, emoji: "🏰" },
+    ],
+    openDate: "Febbraio 2027",
+    bestFor: "Pizza & Archeologia",
+    countryEmoji: "🇮🇹",
+  },
+  "Edimburgo": {
+    description: "La capitale scozzese dal fascino gotico e misterioso. Castello arroccato sulla roccia vulcanica, Royal Mile e il festival più grande del mondo.",
+    highlights: ["28 luoghi iconici", "Castello medievale spettacolare", "Edinburgh Festival di fama mondiale"],
+    topLandmarks: [
+      { name: "Edinburgh Castle",  pts: 700, emoji: "🏰" },
+      { name: "Royal Mile",        pts: 450, emoji: "🛤️" },
+      { name: "Arthur's Seat",     pts: 400, emoji: "⛰️" },
+    ],
+    openDate: "Marzo 2027",
+    bestFor: "Castelli & Festival",
+    countryEmoji: "🇬🇧",
+  },
+  "Santorini": {
+    description: "L'isola greca da cartolina con le case bianche e blu a picco sulla caldera. Tramonti leggendari di Oia, spiagge vulcaniche e cucina mediterranea.",
+    highlights: ["18 meraviglie dell'isola", "Tramonto di Oia tra i più belli al mondo", "Spiagge di sabbia nera e rossa"],
+    topLandmarks: [
+      { name: "Oia",              pts: 600, emoji: "🌅" },
+      { name: "Fira",             pts: 450, emoji: "🏘️" },
+      { name: "Spiaggia Rossa",   pts: 400, emoji: "🏖️" },
+    ],
+    openDate: "Aprile 2027",
+    bestFor: "Tramonti & Isole Greche",
     countryEmoji: "🇬🇷",
   },
 };
@@ -1148,29 +1278,29 @@ export default function HomePage() {
           </motion.section>
         )}
 
-        {/* ── SAFETY HUB ─────────────────────────────────────────── */}
-        <section className="px-4 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.62 }}
-          >
-            <SafetyHub />
-          </motion.div>
-        </section>
-
         {/* ── CITY EXPLORER ──────────────────────────────────────── */}
         <section>
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.68 }}
+            transition={{ delay: 0.62 }}
             className="px-4 mb-4"
           >
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-1">Scopri il Mondo</p>
             <h2 className="text-2xl font-black">Cerca una città</h2>
           </motion.div>
           <CityExplorer />
+        </section>
+
+        {/* ── SAFETY HUB ─────────────────────────────────────────── */}
+        <section className="px-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.68 }}
+          >
+            <SafetyHub />
+          </motion.div>
         </section>
 
         {/* ── FEATURED CITIES — horizontal scroll ─────────────────── */}
