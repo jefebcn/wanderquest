@@ -207,3 +207,38 @@ export interface SeasonStandingEntry {
   rank: number;
   leagueId: LeagueId;
 }
+
+// ── Safety Hub ─────────────────────────────────────────────────────────────
+
+export type SafetyLevel = "STABLE" | "WARNING" | "CRITICAL";
+
+export interface GeopoliticalEvent {
+  title: string;
+  url: string;
+  publishedAt: string;
+  source: string;
+}
+
+export interface InflationData {
+  value: number | null; // annual CPI inflation %
+  year: string;
+  countryCode: string;
+}
+
+export interface SafetyAudit {
+  level: SafetyLevel;
+  summary: string;       // 1-3 sentences from Haiku
+  tip: string;           // single safety tip
+  countryCode: string;
+  countryName: string;
+  events: GeopoliticalEvent[];
+  inflation: InflationData | null;
+  cachedAt: number;      // unix ms — used client-side to show freshness
+}
+
+export interface EmergencyContacts {
+  police: string;
+  ambulance: string;
+  embassy: string;       // Italian Farnesina for IT users
+  embassyPhone?: string;
+}

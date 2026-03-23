@@ -7,6 +7,7 @@ import { useContest } from "@/hooks/useContest";
 import { AuthModal } from "@/components/features/auth/AuthModal";
 import { CurrencyConverter } from "@/components/features/currency/CurrencyConverter";
 import { WeatherQuest }      from "@/components/features/weather/WeatherQuest";
+import { SafetyHub }         from "@/components/features/safety/SafetyHub";
 import { GoPro }             from "@/components/features/subscription/GoPro";
 import { BottomSheet }       from "@/components/ui/BottomSheet";
 import { formatCents } from "@/lib/utils";
@@ -1146,6 +1147,17 @@ export default function HomePage() {
             </div>
           </motion.section>
         )}
+
+        {/* ── SAFETY HUB ─────────────────────────────────────────── */}
+        <section className="px-4 mb-8">
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.62 }}
+          >
+            <SafetyHub />
+          </motion.div>
+        </section>
 
         {/* ── CITY EXPLORER ──────────────────────────────────────── */}
         <section>
