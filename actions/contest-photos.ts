@@ -39,17 +39,17 @@ export async function getContestPhotos(
     ...viewedSnap.docs.map((d) => d.data().photoId as string),
   ]);
 
-  // Single-field equality + orderBy to avoid composite index requirement
+  // No orderBy to avoid composite index requirement — sort in memory instead
   const photosSnap = await db
     .collection("contest_photos")
     .where("contestId", "==", contestId)
-    .orderBy("uploadedAt", "desc")
     .limit(100)
     .get();
 
   const photos = photosSnap.docs
     .map((d) => ({ id: d.id, ...d.data() } as ContestPhoto))
     .filter((p) => p.status === "approved" && p.userId !== uid && !seenIds.has(p.id))
+    .sort((a, b) => b.uploadedAt.localeCompare(a.uploadedAt))
     .slice(0, 50);
 
   return { photos };
