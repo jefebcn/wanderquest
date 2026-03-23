@@ -1358,8 +1358,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 18, scale: 0.96 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ delay: 0.6 + i * 0.09, type: "spring", stiffness: 280, damping: 24 }}
-                className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br ${gradient} ${border} p-4`}
-                style={{ boxShadow: `0 8px 32px ${glow}` }}
+                className="relative overflow-hidden rounded-2xl p-4 glass-card glass-card-hover"
               >
                 <span className="absolute right-3 top-1 text-[3.2rem] font-black leading-none text-white/4 select-none pointer-events-none">
                   {step}

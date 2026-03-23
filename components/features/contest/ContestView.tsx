@@ -39,6 +39,7 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
+import { EmptyState } from "@/components/ui/EmptyState";
 
 // ── Prize tiers ───────────────────────────────────────────────────────────
 
@@ -478,6 +479,11 @@ function ActionButtons({
 
 // ── My Photos tab ─────────────────────────────────────────────────────────
 
+const VOTE_THRESHOLDS = [50, 100, 200, 500, 1000];
+function getNextThreshold(likes: number): number {
+  return VOTE_THRESHOLDS.find(t => t > likes) ?? likes * 2;
+}
+
 function MyPhotosTab({
   photos,
   loading,
@@ -515,38 +521,54 @@ function MyPhotosTab({
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-3">
-          {photos.map((photo, i) => (
-            <motion.div
-              key={photo.id}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: i * 0.06 }}
-              className="relative rounded-2xl overflow-hidden aspect-[3/4]"
-            >
-              <Image
-                src={photo.imageUrl}
-                alt={photo.caption}
-                fill
-                className="object-cover"
-                sizes="50vw"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-              <div className="absolute bottom-0 left-0 right-0 p-3">
-                <p className="text-xs text-white/70 line-clamp-2 mb-1">{photo.caption}</p>
-                <div className="flex items-center gap-2">
-                  <span className="text-xs text-green-400 flex items-center gap-0.5">
-                    <Heart size={8} fill="currentColor" />{photo.likes}
-                  </span>
-                  <span className="text-xs text-[var(--s-primary)] flex items-center gap-0.5">
-                    <Star size={8} fill="currentColor" />{photo.superLikes}
-                  </span>
-                  <span className="text-xs text-white/40 ml-auto font-black">
-                    {photo.likes + photo.superLikes * 3}pt
-                  </span>
+          {photos.map((photo, i) => {
+            const thresh = getNextThreshold(photo.likes);
+            const pct = Math.min((photo.likes / thresh) * 100, 100);
+            const remaining = thresh - photo.likes;
+            return (
+              <div key={photo.id} className="flex flex-col gap-1.5">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.06 }}
+                  className="relative rounded-2xl overflow-hidden aspect-[3/4]"
+                >
+                  <Image
+                    src={photo.imageUrl}
+                    alt={photo.caption}
+                    fill
+                    className="object-cover"
+                    sizes="50vw"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <p className="text-xs text-white/70 line-clamp-2 mb-1">{photo.caption}</p>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-green-400 flex items-center gap-0.5">
+                        <Heart size={8} fill="currentColor" />{photo.likes}
+                      </span>
+                      <span className="text-xs text-[var(--s-primary)] flex items-center gap-0.5">
+                        <Star size={8} fill="currentColor" />{photo.superLikes}
+                      </span>
+                      <span className="text-xs text-white/40 ml-auto font-black">
+                        {photo.likes + photo.superLikes * 3}pt
+                      </span>
+                    </div>
+                  </div>
+                </motion.div>
+                {/* Progress to next like threshold */}
+                <div className="px-0.5">
+                  <p className="text-[10px] text-white/30 mb-0.5">{remaining} like per salire</p>
+                  <div className="h-1 bg-white/8 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-[var(--s-primary)] rounded-full transition-all"
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -1183,6 +1205,14 @@ export function ContestView() {
                   <div className="flex items-center justify-center py-20">
                     <Loader2 size={28} className="animate-spin text-[var(--s-primary)]/50" />
                   </div>
+                ) : user && !myPhotosLoading && myPhotos.length === 0 ? (
+                  <EmptyState
+                    icon={Camera}
+                    title="Pubblica prima di votare"
+                    subtitle="Carica una foto per sbloccare la classifica voti"
+                    cta={{ label: "Carica Foto →", onClick: () => setTab("mine") }}
+                    className="mx-4"
+                  />
                 ) : (
                   <VoteDeck
                     photos={contestPhotos}

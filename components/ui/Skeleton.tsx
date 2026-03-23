@@ -1,11 +1,18 @@
 import { cn } from "@/lib/utils";
 
-interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
+interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
+  /** Apply glass shimmer animation instead of plain pulse */
+  shimmer?: boolean;
+}
 
-export function Skeleton({ className, ...props }: SkeletonProps) {
+export function Skeleton({ className, shimmer = false, ...props }: SkeletonProps) {
   return (
     <div
-      className={cn("animate-pulse rounded-xl bg-[var(--s-bg-card)]", className)}
+      className={cn(
+        "rounded-xl bg-[var(--s-bg-card)]",
+        shimmer ? "animate-glass-shimmer" : "animate-pulse",
+        className,
+      )}
       {...props}
     />
   );
@@ -53,6 +60,17 @@ export function WalletSkeleton() {
           <Skeleton key={i} className="h-14 w-full rounded-xl" />
         ))}
       </div>
+    </div>
+  );
+}
+
+/** 2-column grid of 4 photo cards — for contest photo loading state */
+export function PhotoGridSkeleton() {
+  return (
+    <div className="grid grid-cols-2 gap-3 px-4">
+      {Array.from({ length: 4 }).map((_, i) => (
+        <Skeleton key={i} shimmer className="aspect-[3/4] w-full rounded-2xl" />
+      ))}
     </div>
   );
 }
