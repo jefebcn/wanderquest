@@ -67,7 +67,7 @@ export function AuthModal({ open, onClose }: Props) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={handleClose}
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-[80] bg-black/70 backdrop-blur-sm"
           />
 
           {/* Sheet */}
@@ -77,7 +77,8 @@ export function AuthModal({ open, onClose }: Props) {
             animate={{ y: 0 }}
             exit={{ y: "100%" }}
             transition={{ type: "spring", stiffness: 380, damping: 38 }}
-            className="fixed bottom-0 inset-x-0 z-50 rounded-t-3xl bg-slate-900 border-t border-white/10 px-5 pt-5 pb-safe"
+            className="fixed bottom-0 inset-x-0 z-[90] rounded-t-3xl bg-slate-900 border-t border-white/10 px-5 pt-5"
+            style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 4.5rem)" }}
           >
             {/* Handle */}
             <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-white/20" />
