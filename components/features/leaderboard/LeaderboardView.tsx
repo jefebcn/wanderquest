@@ -50,11 +50,15 @@ function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boo
       {/* Avatar */}
       <div
         className={cn(
-          "flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full text-xs font-black text-white",
-          `bg-gradient-to-br ${entry.avatarGradient}`,
+          "relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full overflow-hidden text-xs font-black text-white",
+          !entry.photoURL && `bg-gradient-to-br ${entry.avatarGradient}`,
         )}
       >
-        {entry.initials}
+        {entry.photoURL ? (
+          <Image src={entry.photoURL} alt={entry.displayName} fill className="object-cover" sizes="40px" />
+        ) : (
+          entry.initials
+        )}
       </div>
 
       {/* Info */}
