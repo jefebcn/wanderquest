@@ -5,7 +5,7 @@ interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {}
 export function Skeleton({ className, ...props }: SkeletonProps) {
   return (
     <div
-      className={cn("animate-pulse rounded-xl bg-white/6", className)}
+      className={cn("animate-pulse rounded-xl bg-[var(--s-bg-card)]", className)}
       {...props}
     />
   );
@@ -15,7 +15,7 @@ export function LeaderboardSkeleton() {
   return (
     <div className="space-y-3 px-4 pt-2">
       {Array.from({ length: 8 }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 rounded-2xl bg-white/4 p-3">
+        <div key={i} className="flex items-center gap-3 rounded-2xl bg-[var(--s-bg-card)] p-3">
           <Skeleton className="h-8 w-8 rounded-full" />
           <Skeleton className="h-10 w-10 rounded-full" />
           <div className="flex-1 space-y-2">
@@ -31,7 +31,7 @@ export function LeaderboardSkeleton() {
 
 export function LandmarkCardSkeleton() {
   return (
-    <div className="rounded-2xl bg-white/4 p-4 space-y-3">
+    <div className="rounded-2xl bg-[var(--s-bg-card)] p-4 space-y-3">
       <Skeleton className="h-40 w-full rounded-xl" />
       <Skeleton className="h-4 w-3/4" />
       <Skeleton className="h-3 w-1/2" />

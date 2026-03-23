@@ -121,7 +121,7 @@ function getSuggestion(weather: WeatherData | null): Suggestion {
       body: `${temp}°C con cielo limpido: la luce naturale esalta i monumenti architettonici come nessun altro momento.`,
       category: "monument",
       emoji: "☀️",
-      accentColor: "text-[#FFD700]",
+      accentColor: "text-[var(--s-primary)]",
       gradient: "from-yellow-600/20 to-yellow-900/0",
     };
   }
@@ -150,7 +150,7 @@ function getSuggestion(weather: WeatherData | null): Suggestion {
 function WeatherIcon({ condition, size = 20 }: { condition: WeatherCondition; size?: number }) {
   const cls = "flex-shrink-0";
   switch (condition) {
-    case "clear":  return <Sun       size={size} className={cn(cls, "text-[#FFD700]")} />;
+    case "clear":  return <Sun       size={size} className={cn(cls, "text-[var(--s-primary)]")} />;
     case "clouds": return <Cloud     size={size} className={cn(cls, "text-slate-300")} />;
     case "rain":   return <CloudRain size={size} className={cn(cls, "text-blue-400")} />;
     case "snow":   return <CloudSnow size={size} className={cn(cls, "text-cyan-300")} />;
@@ -238,10 +238,10 @@ export function WeatherQuest({ userLat, userLng }: Props) {
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white/8 border border-white/10">
-              <Sparkles size={14} className="text-[#FFD700]" />
+              <Sparkles size={14} className="text-[var(--s-primary)]" />
             </div>
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">AI Suggerimento</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-white/35">AI Suggerimento</p>
               <p className="text-xs font-black text-white/70">Perfetto per adesso</p>
             </div>
           </div>
@@ -251,13 +251,13 @@ export function WeatherQuest({ userLat, userLng }: Props) {
             <div className="flex items-center gap-1.5 rounded-xl bg-white/8 border border-white/10 px-2.5 py-1.5">
               <WeatherIcon condition={weather.condition} size={13} />
               <span className="text-xs font-black tabular-nums">{weather.temp}°C</span>
-              <span className="text-[10px] text-white/40">{weather.cityName}</span>
+              <span className="text-xs text-white/40">{weather.cityName}</span>
             </div>
           ) : (
             !locGranted && (
               <button
                 onClick={(e) => { e.stopPropagation(); requestLocation(); }}
-                className="flex items-center gap-1 rounded-xl bg-white/8 border border-white/10 px-2.5 py-1.5 text-[10px] font-bold text-white/50 hover:text-white/80 transition-colors"
+                className="flex items-center gap-1 rounded-xl bg-white/8 border border-white/10 px-2.5 py-1.5 text-xs font-bold text-white/50 hover:text-white/80 transition-colors"
               >
                 <MapPin size={10} />
                 Usa posizione
@@ -289,7 +289,7 @@ export function WeatherQuest({ userLat, userLng }: Props) {
 
         {/* CTA */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5 text-[10px] text-white/30">
+          <div className="flex items-center gap-1.5 text-xs text-white/30">
             {weather && (
               <>
                 <Thermometer size={10} />
@@ -304,7 +304,7 @@ export function WeatherQuest({ userLat, userLng }: Props) {
             className={cn(
               "flex items-center gap-1 rounded-xl px-3 py-1.5",
               "text-xs font-black",
-              "bg-[#FFD700]/15 border border-[#FFD700]/30 text-[#FFD700]"
+              "bg-[var(--s-primary)]/15 border border-[var(--s-primary)]/30 text-[var(--s-primary)]"
             )}
           >
             Esplora ora

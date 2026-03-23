@@ -1,20 +1,159 @@
 @import "tailwindcss";
 
-/* ── Design tokens ──────────────────────────────────────────────── */
+/* ══════════════════════════════════════════════════════════════════════
+   DESIGN TOKENS — Three-layer architecture: Primitive → Semantic → Component
+   ══════════════════════════════════════════════════════════════════════ */
+
+/* ── Layer 1: Primitive tokens (raw values) ──────────────────────────── */
 :root {
-  --gold: #FFD700;
-  --blue: #3b82f6;
-  --ink:  #020617;
+  /* Base palette */
+  --p-slate-950:  #020617;
+  --p-slate-900:  #0f172a;
+  --p-slate-800:  #1e293b;
+  --p-slate-700:  #334155;
+  --p-slate-600:  #475569;
+  --p-slate-400:  #94a3b8;
+  --p-slate-300:  #cbd5e1;
+  --p-slate-200:  #e2e8f0;
+  --p-slate-50:   #f8fafc;
+  --p-white:      #ffffff;
+
+  /* Primary: Warm gold — brand identity */
+  --p-gold-50:    #FFF9E5;
+  --p-gold-100:   #FFF0B3;
+  --p-gold-200:   #FFE066;
+  --p-gold-300:   #FFD700;
+  --p-gold-400:   #F5C200;
+  --p-gold-500:   #D4A500;
+  --p-gold-600:   #B38B00;
+  --p-gold-700:   #8C6D00;
+
+  /* Accent: Teal-cyan — adventure, exploration */
+  --p-teal-50:    #ECFDF5;
+  --p-teal-100:   #CCFBF1;
+  --p-teal-200:   #99F6E4;
+  --p-teal-300:   #5EEAD4;
+  --p-teal-400:   #2DD4BF;
+  --p-teal-500:   #14B8A6;
+  --p-teal-600:   #0D9488;
+  --p-teal-700:   #0F766E;
+
+  /* Energy: Warm coral — urgency, gamification */
+  --p-coral-400:  #FB923C;
+  --p-coral-500:  #F97316;
+
+  /* Status */
+  --p-green-400:  #4ADE80;
+  --p-green-500:  #22C55E;
+  --p-red-400:    #F87171;
+  --p-red-500:    #EF4444;
+  --p-blue-400:   #60A5FA;
+  --p-blue-500:   #3B82F6;
+  --p-purple-400: #A78BFA;
+  --p-purple-500: #8B5CF6;
+
+  /* Typography */
+  --p-font-sans:    "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --p-font-display: "Playfair Display", ui-serif, Georgia, serif;
+
+  /* Animation durations */
+  --p-duration-fast:   150ms;
+  --p-duration-normal: 250ms;
+  --p-duration-slow:   350ms;
+  --p-ease-out:        cubic-bezier(0.16, 1, 0.3, 1);
+  --p-ease-in:         cubic-bezier(0.55, 0, 1, 0.45);
+  --p-ease-in-out:     cubic-bezier(0.45, 0, 0.55, 1);
+
+  /* Radii */
+  --p-radius-sm:   0.5rem;
+  --p-radius-md:   0.75rem;
+  --p-radius-lg:   1rem;
+  --p-radius-xl:   1.25rem;
+  --p-radius-2xl:  1.5rem;
+  --p-radius-full: 9999px;
 }
 
+/* ── Layer 2: Semantic tokens (purpose-driven aliases) ───────────────── */
+:root {
+  /* Surfaces */
+  --s-bg-base:        var(--p-slate-950);
+  --s-bg-elevated:    var(--p-slate-900);
+  --s-bg-card:        rgba(255, 255, 255, 0.05);
+  --s-bg-card-hover:  rgba(255, 255, 255, 0.08);
+  --s-bg-overlay:     rgba(0, 0, 0, 0.50);
+  --s-bg-glass:       rgba(255, 255, 255, 0.08);
+
+  /* Borders */
+  --s-border-subtle:   rgba(255, 255, 255, 0.08);
+  --s-border-default:  rgba(255, 255, 255, 0.12);
+  --s-border-emphasis: rgba(255, 255, 255, 0.20);
+
+  /* Text */
+  --s-text-primary:   var(--p-white);
+  --s-text-secondary: var(--p-slate-300);
+  --s-text-tertiary:  var(--p-slate-400);
+  --s-text-muted:     var(--p-slate-600);
+
+  /* Brand */
+  --s-primary:        var(--p-gold-300);
+  --s-primary-soft:   rgba(255, 215, 0, 0.12);
+  --s-primary-on:     var(--p-slate-950);
+
+  --s-accent:         var(--p-teal-400);
+  --s-accent-soft:    rgba(45, 212, 191, 0.12);
+  --s-accent-on:      var(--p-slate-950);
+
+  --s-energy:         var(--p-coral-500);
+  --s-energy-soft:    rgba(249, 115, 22, 0.12);
+
+  /* Status */
+  --s-success:        var(--p-green-400);
+  --s-success-soft:   rgba(74, 222, 128, 0.12);
+  --s-error:          var(--p-red-400);
+  --s-error-soft:     rgba(248, 113, 113, 0.12);
+  --s-warning:        var(--p-gold-300);
+  --s-info:           var(--p-blue-400);
+}
+
+/* ── Layer 3: Component tokens ───────────────────────────────────────── */
+:root {
+  /* BottomNav */
+  --c-nav-bg:       rgba(2, 6, 23, 0.80);
+  --c-nav-border:   var(--s-border-subtle);
+  --c-nav-active:   var(--s-primary);
+  --c-nav-inactive: var(--p-slate-600);
+
+  /* Card */
+  --c-card-bg:      var(--s-bg-card);
+  --c-card-border:  var(--s-border-default);
+  --c-card-radius:  var(--p-radius-2xl);
+
+  /* Button (primary) */
+  --c-btn-primary-bg:     var(--s-primary);
+  --c-btn-primary-text:   var(--s-primary-on);
+  --c-btn-primary-shadow: 0 6px 32px rgba(255, 215, 0, 0.30);
+
+  /* BottomSheet */
+  --c-sheet-bg:     rgba(15, 23, 42, 0.85);
+  --c-sheet-border: var(--s-border-emphasis);
+  --c-sheet-radius: var(--p-radius-2xl);
+
+  /* Legacy aliases — keep for backward compat during migration */
+  --gold:  var(--s-primary);
+  --blue:  var(--p-blue-500);
+  --ink:   var(--p-slate-950);
+}
+
+/* ── Tailwind theme bridge ────────────────────────────────────────────── */
 @theme inline {
-  --font-sans:  "DM Sans", ui-sans-serif, system-ui, sans-serif;
-  --font-serif: "DM Serif Display", ui-serif, Georgia, serif;
-  --color-gold: #FFD700;
-  --color-blue: #3b82f6;
+  --font-sans:    var(--p-font-sans);
+  --font-display: var(--p-font-display);
+  --color-gold:   var(--s-primary);
+  --color-accent: var(--s-accent);
+  --color-blue:   var(--p-blue-500);
 }
 
-/* ── Base resets ────────────────────────────────────────────────── */
+/* ── Base resets ─────────────────────────────────────────────────────── */
 *,
 *::before,
 *::after {
@@ -27,8 +166,8 @@ html {
 }
 
 body {
-  background-color: #020617; /* slate-950 */
-  color: #ffffff;
+  background-color: var(--s-bg-base);
+  color: var(--s-text-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /*
@@ -36,15 +175,13 @@ body {
    * Sticky headers use .pt-header which includes safe-area-inset-top
    * so the header background extends behind the iOS status bar while
    * the title text is correctly placed below it (immersive PWA look).
-   * padding-top on body would double-count the inset for sticky headers
-   * (sticky top:0 is viewport-relative, not document-relative).
    */
   padding-left: env(safe-area-inset-left, 0px);
   padding-right: env(safe-area-inset-right, 0px);
   overscroll-behavior-y: contain;
 }
 
-/* ── Safe-area utilities ────────────────────────────────────────── */
+/* ── Safe-area utilities ─────────────────────────────────────────────── */
 @layer utilities {
   .pb-safe {
     padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -60,10 +197,6 @@ body {
   /*
    * Sticky-header top padding for standalone PWA / notch phones.
    *
-   * In PWA standalone with black-translucent status bar the header's
-   * sticky top:0 is behind the status bar. This utility ensures the
-   * header title text always starts below the status bar:
-   *
    *   browser / no notch  → max(3.5rem, ~0px+0.5rem) = 3.5rem  (same look)
    *   iPhone notch  44px  → max(3.5rem, 44+8px=52px) = 3.5rem  (fits inside)
    *   Dynamic Island 59px → max(3.5rem, 59+8px=67px) = 67px    (extended)
@@ -73,7 +206,7 @@ body {
   }
 }
 
-/* ── Keyframes ──────────────────────────────────────────────────── */
+/* ── Keyframes ───────────────────────────────────────────────────────── */
 
 /* Pulsing gold glow — "I'M HERE – SCAN NOW" button */
 @keyframes pulse-glow {
@@ -93,21 +226,30 @@ body {
   animation: breathe 3.2s ease-in-out infinite;
 }
 
-/* ── Scrollbar ──────────────────────────────────────────────────── */
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-glow,
+  .animate-breathe {
+    animation: none;
+  }
+}
+
+/* ── Scrollbar ───────────────────────────────────────────────────────── */
 ::-webkit-scrollbar       { width: 3px; height: 3px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.10); border-radius: 9999px; }
 
-/* ── Interactions ───────────────────────────────────────────────── */
+/* ── Interactions ────────────────────────────────────────────────────── */
 button, a {
   -webkit-tap-highlight-color: transparent;
 }
-button:focus-visible, a:focus-visible {
-  outline: 2px solid var(--gold);
+button:focus-visible, a:focus-visible, [tabindex]:focus-visible {
+  outline: 2px solid var(--s-primary);
   outline-offset: 2px;
+  border-radius: var(--p-radius-sm);
 }
 
-/* ── Number input: no spinners ──────────────────────────────────── */
+/* ── Number input: no spinners ───────────────────────────────────────── */
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {
   -webkit-appearance: none;

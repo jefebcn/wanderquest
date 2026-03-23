@@ -85,8 +85,8 @@ export function AdminContestPanel() {
   return (
     <div className="min-h-screen bg-slate-950 text-white px-4 pt-14 pb-12 max-w-lg mx-auto">
       <div className="flex items-center gap-3 mb-8">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[#FFD700]/15 border border-[#FFD700]/25">
-          <Trophy className="text-[#FFD700]" size={20} />
+        <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[var(--s-primary)]/15 border border-[var(--s-primary)]/25">
+          <Trophy className="text-[var(--s-primary)]" size={20} />
         </div>
         <div>
           <h1 className="text-xl font-black">Admin Contest</h1>
@@ -96,7 +96,7 @@ export function AdminContestPanel() {
 
       {/* Current contest status */}
       <section className="rounded-2xl bg-white/[0.04] border border-white/8 p-4 mb-6">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30 mb-3">Contest attuale</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3">Contest attuale</p>
         {contestLoading ? (
           <Loader2 className="animate-spin text-white/40" size={18} />
         ) : isGalleryMode ? (
@@ -113,14 +113,14 @@ export function AdminContestPanel() {
             <p className="text-xs text-white/40">
               Premio: {formatCents(contest?.prizePool ?? 0)} · Scade: {contest?.endDate ? new Date(contest.endDate).toLocaleDateString("it-IT") : "—"}
             </p>
-            <p className="text-[10px] text-emerald-400 font-semibold uppercase tracking-wide">✓ Attivo</p>
+            <p className="text-xs text-emerald-400 font-semibold uppercase tracking-wide">✓ Attivo</p>
           </div>
         )}
       </section>
 
       {/* Create / renew contest */}
       <section className="rounded-2xl bg-white/[0.04] border border-white/8 p-4 space-y-4">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/30">
+        <p className="text-xs font-bold uppercase tracking-widest text-white/30">
           {isGalleryMode ? "Crea contest" : "Rinnova contest"}
         </p>
 
@@ -132,7 +132,7 @@ export function AdminContestPanel() {
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               placeholder={`Contest ${new Date().toLocaleString("it-IT", { month: "long", year: "numeric" })}`}
-              className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-[#FFD700]/40"
+              className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white placeholder:text-white/25 outline-none focus:border-[var(--s-primary)]/40"
             />
           </div>
 
@@ -145,7 +145,7 @@ export function AdminContestPanel() {
                 onChange={(e) => setPrizePool(e.target.value)}
                 min="0"
                 step="10"
-                className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white outline-none focus:border-[#FFD700]/40"
+                className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white outline-none focus:border-[var(--s-primary)]/40"
               />
             </div>
             <div>
@@ -156,7 +156,7 @@ export function AdminContestPanel() {
                 onChange={(e) => setDurationDays(e.target.value)}
                 min="1"
                 max="365"
-                className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white outline-none focus:border-[#FFD700]/40"
+                className="w-full rounded-xl bg-white/[0.06] border border-white/10 px-3 py-2.5 text-sm text-white outline-none focus:border-[var(--s-primary)]/40"
               />
             </div>
           </div>
@@ -178,7 +178,7 @@ export function AdminContestPanel() {
         <button
           onClick={handleCreate}
           disabled={creating}
-          className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[#FFD700] py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 rounded-2xl bg-[var(--s-primary)] py-3.5 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.25)] disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {creating
             ? <Loader2 size={16} className="animate-spin" />
@@ -188,7 +188,7 @@ export function AdminContestPanel() {
         </button>
       </section>
 
-      <p className="text-[10px] text-white/20 text-center mt-6">
+      <p className="text-xs text-white/20 text-center mt-6">
         Il contest viene attivato immediatamente e durerà {durationDays} giorni dall&apos;ora di creazione.
       </p>
     </div>

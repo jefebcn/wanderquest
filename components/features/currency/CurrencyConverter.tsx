@@ -74,7 +74,7 @@ export function CurrencyConverter() {
           <div>
             <h3 className="text-sm font-black text-white">Convertitore Valute</h3>
             {updatedAt && (
-              <p className="text-[10px] text-white/30">
+              <p className="text-xs text-white/30">
                 Aggiornato {updatedAt.toLocaleTimeString("it-IT", { hour: "2-digit", minute: "2-digit" })}
               </p>
             )}
@@ -92,9 +92,9 @@ export function CurrencyConverter() {
 
       {/* EUR Input */}
       <div className="px-4 py-3 border-b border-white/6">
-        <p className="text-[10px] font-bold uppercase tracking-widest text-white/35 mb-2">Importo in EUR</p>
+        <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-2">Importo in EUR</p>
         <div className="relative">
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-black text-[#FFD700]">€</span>
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-lg font-black text-[var(--s-primary)]">€</span>
           <input
             type="number"
             min="0"
@@ -134,7 +134,7 @@ export function CurrencyConverter() {
                 >
                   <div className="flex items-center gap-1.5 mb-1">
                     <span className="text-base leading-none">{flag}</span>
-                    <span className={cn("text-[11px] font-black", isSelected ? "text-blue-300" : "text-white/50")}>
+                    <span className={cn("text-xs font-black", isSelected ? "text-blue-300" : "text-white/50")}>
                       {code}
                     </span>
                   </div>
@@ -155,7 +155,7 @@ export function CurrencyConverter() {
                     </AnimatePresence>
                   )}
                   {rate && !loading && (
-                    <p className="text-[9px] text-white/25 mt-0.5 flex items-center gap-0.5">
+                    <p className="text-xs text-white/25 mt-0.5 flex items-center gap-0.5">
                       <TrendingUp size={8} />1€ = {rate.toFixed(code === "JPY" ? 0 : 4)} {code}
                     </p>
                   )}
@@ -165,7 +165,7 @@ export function CurrencyConverter() {
           </div>
         )}
 
-        <p className="text-[9px] text-white/20 text-center mt-3">
+        <p className="text-xs text-white/20 text-center mt-3">
           Tassi indicativi · Fonte: Frankfurter (BCE) · Non per uso finanziario
         </p>
       </div>

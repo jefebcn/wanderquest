@@ -38,8 +38,8 @@ function LockedOverlay() {
       animate={{ opacity: 1 }}
       className="flex flex-col items-center justify-center gap-4 py-10 text-center px-6"
     >
-      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#FFD700]/10 border border-[#FFD700]/20">
-        <Lock size={24} className="text-[#FFD700]" />
+      <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/20">
+        <Lock size={24} className="text-[var(--s-primary)]" />
       </div>
       <div>
         <p className="font-black text-base text-white mb-1">Concierge AI — Pro</p>
@@ -47,9 +47,9 @@ function LockedOverlay() {
           Passa a WanderQuest Pro per sbloccare il tuo assistente di viaggio AI personale.
         </p>
       </div>
-      <div className="flex items-center gap-1.5 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 px-3 py-1.5">
-        <Crown size={11} className="text-[#FFD700]" />
-        <span className="text-[11px] font-black text-[#FFD700]">WanderQuest Pro — €4,99/mese</span>
+      <div className="flex items-center gap-1.5 rounded-full bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/20 px-3 py-1.5">
+        <Crown size={11} className="text-[var(--s-primary)]" />
+        <span className="text-xs font-black text-[var(--s-primary)]">WanderQuest Pro — €4,99/mese</span>
       </div>
     </motion.div>
   );
@@ -211,7 +211,7 @@ export function TravelConcierge({ ctx }: { ctx?: ChatContext }) {
                 </div>
                 <div>
                   <p className="text-sm font-black">AI Concierge</p>
-                  <p className="text-[10px] text-white/35">
+                  <p className="text-xs text-white/35">
                     {ctx?.lat ? "Posizione attiva" : "Suggerimenti personalizzati"}
                   </p>
                 </div>

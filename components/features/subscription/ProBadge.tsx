@@ -18,8 +18,8 @@ interface Props {
 export function ProBadge({ size = "sm", className, animate = true }: Props) {
   const sizeClasses: Record<NonNullable<Props["size"]>, string> = {
     xs: "px-1.5 py-[2px] text-[7px] gap-[2px]",
-    sm: "px-2   py-[3px] text-[9px]  gap-[3px]",
-    md: "px-2.5 py-1     text-[11px] gap-1",
+    sm: "px-2   py-[3px] text-xs  gap-[3px]",
+    md: "px-2.5 py-1     text-xs gap-1",
   };
   const iconSize: Record<NonNullable<Props["size"]>, number> = { xs: 6, sm: 8, md: 10 };
 
@@ -30,7 +30,7 @@ export function ProBadge({ size = "sm", className, animate = true }: Props) {
       transition={{ type: "spring", stiffness: 400, damping: 22 }}
       className={cn(
         "inline-flex items-center rounded-full font-black tracking-wider leading-none",
-        "bg-gradient-to-r from-[#FFD700] to-amber-500 text-slate-900",
+        "bg-gradient-to-r from-[var(--s-primary)] to-amber-500 text-slate-900",
         "shadow-[0_0_10px_rgba(255,215,0,0.55),0_0_24px_rgba(255,215,0,0.2)]",
         sizeClasses[size],
         className

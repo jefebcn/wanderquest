@@ -69,7 +69,7 @@ function LandmarkSheet({
             />
             <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent" />
             {/* Points badge */}
-            <div className="absolute top-3 right-3 rounded-2xl bg-[#FFD700]/20 border border-[#FFD700]/40 backdrop-blur-sm px-2.5 py-1 text-xs font-black text-[#FFD700]">
+            <div className="absolute top-3 right-3 rounded-2xl bg-[var(--s-primary)]/20 border border-[var(--s-primary)]/40 backdrop-blur-sm px-2.5 py-1 text-xs font-black text-[var(--s-primary)]">
               +{landmark.points} pt
             </div>
           </div>
@@ -94,7 +94,7 @@ function LandmarkSheet({
         {/* Proximity ring */}
         {!withinRadius && (
           <div>
-            <div className="flex justify-between text-[11px] text-white/40 mb-1.5">
+            <div className="flex justify-between text-xs text-white/40 mb-1.5">
               <span>Distanza dal raggio</span>
               <span>{formatDistance(distanceMetres - landmark.radius)} rimanenti</span>
             </div>
@@ -103,7 +103,7 @@ function LandmarkSheet({
                 initial={{ width: 0 }}
                 animate={{ width: `${pct}%` }}
                 transition={{ duration: 0.6 }}
-                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-[#FFD700]"
+                className="h-full rounded-full bg-gradient-to-r from-blue-500 to-[var(--s-primary)]"
               />
             </div>
           </div>
@@ -145,7 +145,7 @@ function LandmarkSheet({
             "transition-colors duration-200",
             withinRadius && !scanning
               ? [
-                  "bg-[#FFD700] text-slate-950",
+                  "bg-[var(--s-primary)] text-slate-950",
                   "shadow-[0_4px_20px_rgba(255,215,0,0.45)]",
                   "before:absolute before:inset-0 before:rounded-2xl before:animate-pulse-glow",
                 ]
@@ -195,7 +195,7 @@ function LandmarkCard({
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 to-transparent" />
           <div className="absolute bottom-2 left-3 right-3 flex items-end justify-between">
             <span className="text-xs font-bold text-white/70">{landmark.city}</span>
-            <span className="rounded-full bg-[#FFD700]/18 border border-[#FFD700]/30 px-2 py-0.5 text-xs font-black text-[#FFD700]">
+            <span className="rounded-full bg-[var(--s-primary)]/18 border border-[var(--s-primary)]/30 px-2 py-0.5 text-xs font-black text-[var(--s-primary)]">
               +{landmark.points} pt
             </span>
           </div>
@@ -261,7 +261,7 @@ export function ScannerView() {
         <AlertCircle size={48} className="text-red-400" />
         <h2 className="text-xl font-black">GPS non disponibile</h2>
         <p className="text-sm text-white/50">{errorMsg}</p>
-        <motion.button whileTap={{ scale: 0.95 }} onClick={start} className="rounded-2xl bg-[#FFD700] px-6 py-3 font-black text-slate-950 shadow-[0_4px_18px_rgba(255,215,0,0.4)]">
+        <motion.button whileTap={{ scale: 0.95 }} onClick={start} className="rounded-2xl bg-[var(--s-primary)] px-6 py-3 font-black text-slate-950 shadow-[0_4px_18px_rgba(255,215,0,0.4)]">
           Riprova
         </motion.button>
       </div>
@@ -272,7 +272,7 @@ export function ScannerView() {
   if (locLoading || !position) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 text-white">
-        <Loader2 size={40} className="animate-spin text-[#FFD700]" />
+        <Loader2 size={40} className="animate-spin text-[var(--s-primary)]" />
         <p className="text-sm font-bold text-white/50">Rilevamento posizione…</p>
       </div>
     );
@@ -283,7 +283,7 @@ export function ScannerView() {
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-4 backdrop-blur-xl">
         <div className="flex items-center gap-2">
-          <ScanLine className="text-[#FFD700]" size={22} />
+          <ScanLine className="text-[var(--s-primary)]" size={22} />
           <h1 className="text-xl font-black">Scansiona</h1>
         </div>
         <div className="flex items-center gap-1.5 mt-1 text-xs text-white/35">
@@ -321,7 +321,7 @@ export function ScannerView() {
 
       {/* Landmark list */}
       <div className="px-4 pt-4 space-y-3">
-        <p className="text-[11px] font-bold uppercase tracking-widest text-white/35">
+        <p className="text-xs font-bold uppercase tracking-widest text-white/35">
           Monumenti Vicini ({nearby.length})
         </p>
 

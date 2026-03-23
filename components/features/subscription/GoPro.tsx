@@ -27,7 +27,7 @@ const BENEFITS = [
     icon: Zap,
     title: "+25% Boost Punti",
     desc:  "Su ogni scan — salga in classifica più velocemente.",
-    color: "text-[#FFD700]",
+    color: "text-[var(--s-primary)]",
     glow:  "rgba(255,215,0,0.15)",
   },
   {
@@ -76,12 +76,12 @@ function ProStatusPanel({ onCancel }: { onCancel: () => void }) {
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="rounded-2xl border border-[#FFD700]/25 bg-[#FFD700]/6 p-4 space-y-3"
+      className="rounded-2xl border border-[var(--s-primary)]/25 bg-[var(--s-primary)]/6 p-4 space-y-3"
       style={{ boxShadow: "0 4px 24px rgba(255,215,0,0.08)" }}
     >
       <div className="flex items-center gap-2">
-        <Crown size={16} className="text-[#FFD700]" />
-        <p className="font-black text-sm text-[#FFD700]">WanderQuest Pro Attivo</p>
+        <Crown size={16} className="text-[var(--s-primary)]" />
+        <p className="font-black text-sm text-[var(--s-primary)]">WanderQuest Pro Attivo</p>
       </div>
       <div className="flex items-center gap-2 text-xs text-white/45">
         <CalendarDays size={12} />
@@ -90,7 +90,7 @@ function ProStatusPanel({ onCancel }: { onCancel: () => void }) {
       <div className="flex flex-wrap gap-1">
         {BENEFITS.map((b) => (
           <span key={b.title}
-            className={cn("inline-flex items-center gap-1 rounded-full bg-black/25 px-2 py-0.5 text-[9px] font-bold", b.color)}
+            className={cn("inline-flex items-center gap-1 rounded-full bg-black/25 px-2 py-0.5 text-xs font-bold", b.color)}
           >
             <b.icon size={8} />
             {b.title}
@@ -101,14 +101,14 @@ function ProStatusPanel({ onCancel }: { onCancel: () => void }) {
       {!confirming ? (
         <button
           onClick={() => setConfirming(true)}
-          className="text-[11px] text-white/25 hover:text-white/45 transition-colors"
+          className="text-xs text-white/25 hover:text-white/45 transition-colors"
         >
           Cancella abbonamento
         </button>
       ) : (
         <div className="rounded-xl bg-red-500/8 border border-red-500/20 p-3 space-y-2">
           <p className="text-xs text-red-400 font-bold">Sicuro di cancellare?</p>
-          <p className="text-[10px] text-white/35">Perderai il boost punti e gli Elite Quests.</p>
+          <p className="text-xs text-white/35">Perderai il boost punti e gli Elite Quests.</p>
           <div className="flex gap-2">
             <button
               onClick={() => setConfirming(false)}
@@ -172,14 +172,14 @@ export function GoPro({ variant = "full" }: Props) {
       <motion.button
         whileTap={{ scale: 0.97 }}
         onClick={() => setOpen(true)}
-        className="w-full flex items-center justify-between rounded-2xl border border-[#FFD700]/22 bg-[#FFD700]/6 px-4 py-3"
+        className="w-full flex items-center justify-between rounded-2xl border border-[var(--s-primary)]/22 bg-[var(--s-primary)]/6 px-4 py-3"
         style={{ boxShadow: "0 4px 20px rgba(255,215,0,0.08)" }}
       >
         <div className="flex items-center gap-2">
-          <Crown size={15} className="text-[#FFD700]" />
-          <span className="text-sm font-black text-[#FFD700]">Passa a Pro</span>
+          <Crown size={15} className="text-[var(--s-primary)]" />
+          <span className="text-sm font-black text-[var(--s-primary)]">Passa a Pro</span>
         </div>
-        <span className="text-[11px] text-white/40 font-bold">€4,99/mese →</span>
+        <span className="text-xs text-white/40 font-bold">€4,99/mese →</span>
       </motion.button>
     );
   }
@@ -214,7 +214,7 @@ export function GoPro({ variant = "full" }: Props) {
         }}
       />
       {/* Gold glow orb */}
-      <div className="pointer-events-none absolute -top-12 -right-12 h-48 w-48 rounded-full bg-[#FFD700]/15 blur-3xl" />
+      <div className="pointer-events-none absolute -top-12 -right-12 h-48 w-48 rounded-full bg-[var(--s-primary)]/15 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-8 -left-8 h-32 w-32 rounded-full bg-purple-500/10 blur-2xl" />
 
       <div className="relative z-0 p-5">
@@ -230,21 +230,21 @@ export function GoPro({ variant = "full" }: Props) {
           <div
             className="flex h-12 w-12 items-center justify-center rounded-2xl"
             style={{
-              background: "linear-gradient(135deg,#FFD700,#f59e0b)",
+              background: "linear-gradient(135deg,var(--s-primary),#f59e0b)",
               boxShadow: "0 4px 16px rgba(255,215,0,0.45)",
             }}
           >
             <Crown size={22} className="text-slate-900" />
           </div>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
+            <p className="text-xs font-bold uppercase tracking-widest text-white/35">
               Abbonamento Premium
             </p>
             <h2 className="text-xl font-black text-white">WanderQuest Pro</h2>
           </div>
           <div className="ml-auto text-right">
-            <p className="text-2xl font-black text-[#FFD700]">€4,99</p>
-            <p className="text-[10px] text-white/40">/mese</p>
+            <p className="text-2xl font-black text-[var(--s-primary)]">€4,99</p>
+            <p className="text-xs text-white/40">/mese</p>
           </div>
         </div>
 
@@ -267,7 +267,7 @@ export function GoPro({ variant = "full" }: Props) {
               </div>
               <div>
                 <p className={cn("text-xs font-black", color)}>{title}</p>
-                <p className="text-[10px] text-white/40 leading-snug mt-0.5">{desc}</p>
+                <p className="text-xs text-white/40 leading-snug mt-0.5">{desc}</p>
               </div>
               <CheckCircle2 size={13} className="text-white/20 flex-shrink-0 mt-0.5 ml-auto" />
             </motion.div>
@@ -285,7 +285,7 @@ export function GoPro({ variant = "full" }: Props) {
               {/* Divider */}
               <div className="flex items-center gap-3">
                 <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
-                <span className="text-[10px] text-white/25 font-bold uppercase tracking-widest">oppure</span>
+                <span className="text-xs text-white/25 font-bold uppercase tracking-widest">oppure</span>
                 <div className="flex-1 h-px" style={{ background: "rgba(255,255,255,0.08)" }} />
               </div>
               <PayPalSubscriptionButton onSuccess={() => setOpen(false)} />
@@ -295,8 +295,8 @@ export function GoPro({ variant = "full" }: Props) {
 
         {/* Social proof */}
         <div className="flex items-center gap-2 mt-4 justify-center">
-          <Sparkles size={11} className="text-[#FFD700]/50" />
-          <p className="text-[10px] text-white/25">
+          <Sparkles size={11} className="text-[var(--s-primary)]/50" />
+          <p className="text-xs text-white/25">
             Cancella in qualsiasi momento · Nessun impegno a lungo termine
           </p>
         </div>

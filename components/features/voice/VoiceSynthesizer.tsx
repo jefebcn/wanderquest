@@ -90,7 +90,7 @@ export function VoiceSynthesizer({ text, audioUrl, landmarkName, className }: Vo
         "flex items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-bold",
         "transition-all active:scale-95",
         isPlaying
-          ? "bg-[#FFD700]/18 border border-[#FFD700]/35 text-[#FFD700]"
+          ? "bg-[var(--s-primary)]/18 border border-[var(--s-primary)]/35 text-[var(--s-primary)]"
           : "bg-white/8 border border-white/8 text-white/60 hover:text-white hover:bg-white/12",
         className
       )}

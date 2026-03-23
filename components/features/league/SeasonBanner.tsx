@@ -37,19 +37,19 @@ export function SeasonBanner({ uid }: Props) {
         <div className="flex items-center gap-2.5">
           <span className="text-2xl">{leagueConfig.emoji}</span>
           <div>
-            <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">La tua lega</p>
+            <p className="text-xs font-bold uppercase tracking-widest text-white/35">La tua lega</p>
             <p className={cn("text-base font-black", leagueConfig.color)}>{leagueConfig.label}</p>
           </div>
         </div>
         <div className="text-right">
-          <p className="text-[10px] text-white/35">Punti stagione</p>
+          <p className="text-xs text-white/35">Punti stagione</p>
           <p className="text-xl font-black tabular-nums">{seasonPoints.toLocaleString("it-IT")}</p>
         </div>
       </div>
 
       {/* Season info row */}
       {season && (
-        <div className="flex items-center gap-1.5 text-[11px] text-white/40 font-bold">
+        <div className="flex items-center gap-1.5 text-xs text-white/40 font-bold">
           <Clock size={11} />
           <span>Stagione {season.id}</span>
           <span className="text-white/20">·</span>
@@ -60,7 +60,7 @@ export function SeasonBanner({ uid }: Props) {
       {/* Prize info */}
       {leagueConfig.prizePoolCents > 0 && (
         <div className="rounded-xl bg-black/20 px-3 py-2 flex items-center justify-between">
-          <p className="text-[11px] text-white/45">Premio Top 3 di questa lega</p>
+          <p className="text-xs text-white/45">Premio Top 3 di questa lega</p>
           <p className={cn("text-xs font-black", leagueConfig.color)}>
             {[leagueConfig.prizes[0], leagueConfig.prizes[1], leagueConfig.prizes[2]]
               .map((c) => `€${(c / 100).toFixed(2)}`)
@@ -70,7 +70,7 @@ export function SeasonBanner({ uid }: Props) {
       )}
 
       {/* Promotion / relegation zones */}
-      <div className="flex gap-2 text-[10px]">
+      <div className="flex gap-2 text-xs">
         {nextLeague && (
           <div className="flex items-center gap-1 rounded-full bg-green-500/10 border border-green-500/20 px-2 py-1 text-green-400 font-bold">
             <TrendingUp size={9} />
@@ -78,7 +78,7 @@ export function SeasonBanner({ uid }: Props) {
           </div>
         )}
         {!nextLeague && (
-          <div className="flex items-center gap-1 rounded-full bg-[#FFD700]/10 border border-[#FFD700]/20 px-2 py-1 text-[#FFD700] font-bold">
+          <div className="flex items-center gap-1 rounded-full bg-[var(--s-primary)]/10 border border-[var(--s-primary)]/20 px-2 py-1 text-[var(--s-primary)] font-bold">
             <span>👑</span>
             Lega massima!
           </div>
@@ -111,9 +111,9 @@ export function LeagueTierRow({
   const config = getLeagueConfig(leagueId as Parameters<typeof getLeagueConfig>[0]);
   return (
     <div className={cn(
-      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-black border",
+      "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-black border",
       config.bg, config.border, config.color,
-      isCurrentUser && "ring-1 ring-[#FFD700]/40"
+      isCurrentUser && "ring-1 ring-[var(--s-primary)]/40"
     )}>
       <span>{config.emoji}</span>
       {config.label}
@@ -132,7 +132,7 @@ export function LeagueStripOverview({ currentLeagueId }: { currentLeagueId: stri
         return (
           <div key={l.id} className="flex items-center gap-1 flex-shrink-0">
             <div className={cn(
-              "flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold border transition-all",
+              "flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-bold border transition-all",
               isCurrent
                 ? cn(l.bg, l.border, l.color, "scale-105")
                 : isPast
@@ -143,7 +143,7 @@ export function LeagueStripOverview({ currentLeagueId }: { currentLeagueId: stri
               {l.label}
             </div>
             {i < LEAGUE_CONFIGS.length - 1 && (
-              <span className="text-white/15 text-[10px]">›</span>
+              <span className="text-white/15 text-xs">›</span>
             )}
           </div>
         );
