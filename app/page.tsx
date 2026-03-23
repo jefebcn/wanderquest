@@ -49,11 +49,11 @@ const steps = [
     icon: Compass,
     title: "Esplora",
     desc: "Scopri monumenti storici nei dintorni con la mappa interattiva.",
-    gradient: "from-blue-500/20 via-blue-600/8 to-transparent",
-    border: "border-blue-500/25",
-    iconBg: "bg-blue-500/15",
-    iconColor: "text-blue-400",
-    glow: "rgba(59,130,246,0.18)",
+    gradient: "from-teal-500/20 via-teal-600/8 to-transparent",
+    border: "border-teal-500/25",
+    iconBg: "bg-teal-500/15",
+    iconColor: "text-teal-400",
+    glow: "rgba(20,184,166,0.18)",
   },
   {
     step: "02",
@@ -532,12 +532,12 @@ function CityExplorer() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.82 }}
-        className="mx-4 mb-8 rounded-2xl border border-blue-500/20 bg-gradient-to-br from-blue-500/8 to-indigo-500/5 p-5"
-        style={{ boxShadow: "0 8px 32px rgba(59,130,246,0.10)" }}
+        className="mx-4 mb-8 rounded-2xl border border-[var(--s-accent)]/25 bg-gradient-to-br from-[var(--s-accent)]/8 to-transparent p-5"
+        style={{ boxShadow: "0 8px 32px rgba(45,212,191,0.08)" }}
       >
         <div className="flex items-center gap-2 mb-3">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/15">
-            <Search size={16} className="text-blue-400" />
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-[var(--s-accent-soft)]">
+            <Search size={16} className="text-[var(--s-accent)]" />
           </div>
           <div>
             <p className="text-sm font-black text-white">Esplora una città</p>
@@ -553,14 +553,14 @@ function CityExplorer() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder='Es. "Malaga", "Tokyo", "Napoli"…'
-              className="w-full rounded-xl bg-white/6 border border-white/10 pl-9 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-blue-500/50 min-h-[44px]"
+              className="w-full rounded-xl bg-[var(--s-bg-card)] border border-[var(--s-border-subtle)] pl-9 pr-4 py-3 text-sm text-white placeholder-white/25 focus:outline-none focus:border-[var(--s-accent)]/50 min-h-[44px]"
             />
           </div>
           <motion.button
             whileTap={{ scale: 0.95 }}
             type="submit"
             disabled={loading || query.trim().length < 2}
-            className="flex items-center gap-1.5 rounded-xl bg-blue-600 px-4 py-3 text-[13px] font-black text-white disabled:opacity-40 min-h-[44px] min-w-[80px] justify-center"
+            className="flex items-center gap-1.5 rounded-xl bg-[var(--s-accent)] px-4 py-3 text-[13px] font-black text-slate-900 disabled:opacity-40 min-h-[44px] min-w-[80px] justify-center"
           >
             {loading ? <Loader2 size={15} className="animate-spin" /> : "Cerca"}
           </motion.button>
@@ -571,7 +571,7 @@ function CityExplorer() {
         )}
 
         <p className="mt-3 text-xs text-white/25">
-          Powered by <span className="text-blue-400/70">Claude AI</span> — cerca qualsiasi città del mondo
+          Powered by <span className="text-[var(--s-accent)]/70">Claude AI</span> — cerca qualsiasi città del mondo
         </p>
       </motion.div>
 
@@ -772,8 +772,8 @@ const TESTIMONIALS = [
 const GPS_RULES = [
   {
     icon: MapPin,
-    color: "text-blue-400",
-    bg: "bg-blue-500/12 border-blue-500/20",
+    color: "text-[var(--s-accent)]",
+    bg: "bg-[var(--s-accent-soft)] border-[var(--s-accent)]/20",
     title: "Raggio di verifica: 50 m",
     desc: "Devi trovarti fisicamente entro 50 metri dal monumento per registrare il check-in.",
   },
@@ -953,7 +953,7 @@ function CityDetailModal({
 
             {/* Highlights */}
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-2">Highlights</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-2">Highlights</p>
               <div className="space-y-2">
                 {details.highlights.map((h) => (
                   <div key={h} className="flex items-center gap-2">
@@ -966,7 +966,7 @@ function CityDetailModal({
 
             {/* Top Landmarks */}
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-2">Top Monumenti</p>
+              <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-2">Top Monumenti</p>
               <div className="grid grid-cols-3 gap-2">
                 {details.topLandmarks.map((lm) => (
                   <div key={lm.name} className="rounded-xl bg-white/[0.05] border border-white/8 p-3 text-center">
@@ -1113,9 +1113,9 @@ export default function HomePage() {
             animate={{ opacity: 1, y: 0 }}
             className="fixed top-[env(safe-area-inset-top,0px)] left-0 right-0 z-50 mx-3 mt-2"
           >
-            <div className="flex items-center gap-3 rounded-2xl border border-[var(--s-primary)]/30 bg-slate-900/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
-              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--s-primary)]/15">
-                <Download size={16} className="text-[var(--s-primary)]" />
+            <div className="flex items-center gap-3 rounded-2xl border border-[var(--s-accent)]/30 bg-slate-900/95 px-4 py-3 shadow-2xl backdrop-blur-xl">
+              <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--s-accent-soft)]">
+                <Download size={16} className="text-[var(--s-accent)]" />
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-[12px] font-black text-white">Installa WanderQuest</p>
@@ -1165,9 +1165,10 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15 }}
-              className="inline-flex items-center gap-1.5 rounded-full bg-white/8 border border-white/15 px-3 py-1 mb-4 backdrop-blur-sm"
+              className="inline-flex items-center gap-1.5 rounded-full bg-[var(--s-accent-soft)] border border-[var(--s-accent)]/40 px-3 py-1 mb-4 backdrop-blur-sm"
             >
-              <span className="text-xs font-bold uppercase tracking-widest text-white/60">
+              <Navigation2 size={10} className="text-[var(--s-accent)]" />
+              <span className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)]">
                 Viaggia come un locale
               </span>
             </motion.div>
@@ -1263,20 +1264,24 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.65 }}
-            className="mx-4 mb-8 rounded-2xl border border-[var(--s-primary)]/22 bg-gradient-to-r from-[var(--s-primary)]/12 to-[var(--s-primary)]/4 p-5 flex items-center gap-4"
+            className="mx-4 mb-8 rounded-2xl border border-[var(--s-primary)]/25 bg-gradient-to-r from-[var(--s-primary)]/10 via-[var(--s-accent)]/5 to-transparent p-5 flex items-center gap-4"
+            style={{ boxShadow: "0 4px 32px rgba(255,215,0,0.08), inset 0 1px 0 rgba(255,255,255,0.06)" }}
           >
-            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--s-primary)]/15">
+            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-xl bg-[var(--s-primary)]/15 border border-[var(--s-primary)]/20">
               <Star size={22} className="text-[var(--s-primary)]" fill="currentColor" />
             </div>
-            <div className="flex-1">
-              <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-primary)]/60">
-                Montepremi attuale — {contest.title}
+            <div className="flex-1 min-w-0">
+              <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)]">
+                Montepremi attuale
               </p>
               <AnimatedPrize targetCents={contest.prizePool} />
             </div>
-            <div className="text-right shrink-0">
-              <p className="text-xs text-white/35">Contest</p>
-              <p className="text-xs font-bold text-white/65">attivo ora</p>
+            <div className="text-right shrink-0 flex flex-col items-end gap-1">
+              <span className="inline-flex items-center gap-1 rounded-full bg-[var(--s-energy-soft)] border border-[var(--s-energy)]/30 px-2 py-0.5">
+                <span className="h-1.5 w-1.5 rounded-full bg-[var(--s-energy)] animate-pulse" />
+                <span className="text-xs font-black text-[var(--s-energy)]">LIVE</span>
+              </span>
+              <p className="text-xs text-white/40">{contest.title}</p>
             </div>
           </motion.section>
         )}
@@ -1289,8 +1294,8 @@ export default function HomePage() {
             transition={{ delay: 0.62 }}
             className="px-4 mb-4"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-1">Scopri il Mondo</p>
-            <h2 className="text-2xl font-black">Cerca una città</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Scopri il Mondo</p>
+            <h2 className="font-display text-2xl font-black">Cerca una città</h2>
           </motion.div>
           <CityExplorer />
         </section>
@@ -1314,8 +1319,8 @@ export default function HomePage() {
             transition={{ delay: 0.7 }}
             className="px-4 mb-4"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-1">Destinazioni</p>
-            <h2 className="text-2xl font-black">Esplora l&apos;Europa</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Destinazioni</p>
+            <h2 className="font-display text-2xl font-black">Esplora l&apos;Europa</h2>
           </motion.div>
 
           <div className="flex gap-3 overflow-x-auto px-4 pb-2 snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
@@ -1333,8 +1338,8 @@ export default function HomePage() {
             transition={{ delay: 0.6 }}
             className="mb-5"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-1">Come funziona</p>
-            <h2 className="text-2xl font-black">4 passi per vincere</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Come funziona</p>
+            <h2 className="font-display text-2xl font-black">4 passi per vincere</h2>
           </motion.div>
 
           <div className="grid grid-cols-2 gap-3">
@@ -1377,16 +1382,17 @@ export default function HomePage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.85 }}
-            className="rounded-2xl bg-white/[0.04] border border-white/10 p-5 grid grid-cols-3 divide-x divide-white/8 backdrop-blur-sm"
+            className="rounded-2xl bg-[var(--s-bg-elevated)] border border-[var(--s-border-default)] p-5 grid grid-cols-3 divide-x divide-[var(--s-border-subtle)] backdrop-blur-sm overflow-hidden"
+            style={{ boxShadow: "0 0 0 1px rgba(45,212,191,0.12), 0 8px 32px rgba(0,0,0,0.3)" }}
           >
             {[
-              { value: "500+", label: "Monumenti" },
-              { value: "€10k+", label: "Distribuiti" },
-              { value: "12+", label: "Città" },
-            ].map(({ value, label }) => (
+              { value: "500+", label: "Monumenti", accent: false },
+              { value: "€10k+", label: "Distribuiti", accent: true },
+              { value: "12+", label: "Città", accent: false },
+            ].map(({ value, label, accent }) => (
               <div key={label} className="text-center px-2">
-                <p className="text-xl font-black text-[var(--s-primary)]">{value}</p>
-                <p className="text-xs text-white/40 mt-0.5">{label}</p>
+                <p className={`text-xl font-black ${accent ? "text-[var(--s-primary)]" : "text-white"}`}>{value}</p>
+                <p className="text-xs text-[var(--s-text-tertiary)] mt-0.5">{label}</p>
               </div>
             ))}
           </motion.div>
@@ -1400,8 +1406,8 @@ export default function HomePage() {
             transition={{ delay: 0.9 }}
             className="mb-4"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-1">Community</p>
-            <h2 className="text-2xl font-black">Chi ha già vinto</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Community</p>
+            <h2 className="font-display text-2xl font-black">Chi ha già vinto</h2>
           </motion.div>
 
           <div className="space-y-3">
@@ -1411,7 +1417,8 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.92 + i * 0.08 }}
-                className="relative rounded-2xl border border-white/10 bg-white/[0.03] p-4 backdrop-blur-sm overflow-hidden"
+                className="relative rounded-2xl border border-[var(--s-border-subtle)] bg-[var(--s-bg-card)] p-4 backdrop-blur-sm overflow-hidden"
+                style={{ borderLeft: "2px solid rgba(45,212,191,0.25)" }}
               >
                 {/* Subtle quote mark */}
                 <Quote size={40} className="absolute -right-1 -top-1 text-white/4 rotate-180" />
@@ -1451,8 +1458,8 @@ export default function HomePage() {
             transition={{ delay: 0.95 }}
             className="mb-4"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-1">Piano Premium</p>
-            <h2 className="text-2xl font-black">WanderQuest Pro</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Piano Premium</p>
+            <h2 className="font-display text-2xl font-black">WanderQuest Pro</h2>
           </motion.div>
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -1471,8 +1478,8 @@ export default function HomePage() {
             transition={{ delay: 1.0 }}
             className="mb-4"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-1">Regole del gioco</p>
-            <h2 className="text-2xl font-black">Come funziona la verifica GPS</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Regole del gioco</p>
+            <h2 className="font-display text-2xl font-black">Come funziona la verifica GPS</h2>
           </motion.div>
 
           <div className="space-y-3">
@@ -1504,12 +1511,12 @@ export default function HomePage() {
             transition={{ delay: 1.05 }}
             className="mb-4"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-1">Pagamenti</p>
-            <h2 className="text-2xl font-black">Calendario premi mensile</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Pagamenti</p>
+            <h2 className="font-display text-2xl font-black">Calendario premi mensile</h2>
           </motion.div>
 
           <div className="relative pl-4">
-            <div className="absolute left-[1.35rem] top-2 bottom-2 w-px bg-gradient-to-b from-[var(--s-primary)]/40 via-[var(--s-primary)]/20 to-transparent" />
+            <div className="absolute left-[1.35rem] top-2 bottom-2 w-px bg-gradient-to-b from-[var(--s-accent)]/50 via-[var(--s-accent)]/20 to-transparent" />
             <div className="space-y-4">
               {PAYOUT_STEPS.map(({ label, desc }, i) => (
                 <motion.div
@@ -1519,8 +1526,8 @@ export default function HomePage() {
                   transition={{ delay: 1.05 + i * 0.08 }}
                   className="flex items-start gap-4"
                 >
-                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[var(--s-primary)]/15 border border-[var(--s-primary)]/30 z-10">
-                    <CheckCircle2 size={13} className="text-[var(--s-primary)]" />
+                  <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-[var(--s-accent-soft)] border border-[var(--s-accent)]/30 z-10">
+                    <CheckCircle2 size={13} className="text-[var(--s-accent)]" />
                   </div>
                   <div className="pb-1">
                     <p className="text-sm font-black text-white">{label}</p>
@@ -1540,8 +1547,8 @@ export default function HomePage() {
             transition={{ delay: 1.1 }}
             className="mb-4"
           >
-            <p className="text-xs font-bold uppercase tracking-widest text-white/35 mb-1">Strumenti per il viaggiatore</p>
-            <h2 className="text-2xl font-black">Convertitore valute live</h2>
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Strumenti per il viaggiatore</p>
+            <h2 className="font-display text-2xl font-black">Convertitore valute live</h2>
           </motion.div>
           <motion.div
             initial={{ opacity: 0 }}
@@ -1558,16 +1565,16 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.2 }}
-            className="relative overflow-hidden rounded-3xl border border-[var(--s-primary)]/22 p-6"
+            className="relative overflow-hidden rounded-3xl border border-[var(--s-primary)]/25 p-6"
             style={{
-              background: "linear-gradient(135deg,#1a1200 0%,#0d1a30 100%)",
-              boxShadow: "0 12px 48px rgba(255,215,0,0.10)",
+              background: "linear-gradient(135deg,#140f00 0%,#051520 60%,#020617 100%)",
+              boxShadow: "0 12px 48px rgba(255,215,0,0.12), 0 2px 0 rgba(45,212,191,0.15) inset",
             }}
           >
-            <div className="pointer-events-none absolute -right-10 -top-10 h-40 w-40 rounded-full bg-[var(--s-primary)]/10 blur-3xl" />
-            <div className="pointer-events-none absolute -left-8 bottom-0 h-28 w-28 rounded-full bg-blue-500/8 blur-2xl" />
-            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-primary)]/50 mb-2">Pronto?</p>
-            <h3 className="text-[1.6rem] font-black mb-2 leading-tight">
+            <div className="pointer-events-none absolute -right-10 -top-10 h-44 w-44 rounded-full bg-[var(--s-primary)]/12 blur-3xl" />
+            <div className="pointer-events-none absolute -left-8 bottom-0 h-32 w-32 rounded-full bg-[var(--s-accent)]/10 blur-2xl" />
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-2">Pronto?</p>
+            <h3 className="font-display text-[1.6rem] font-black mb-2 leading-tight">
               La prossima avventura<br />è a un passo.
             </h3>
             <p className="text-sm text-white/48 mb-5 leading-relaxed">
