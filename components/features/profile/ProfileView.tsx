@@ -15,6 +15,7 @@ import { useStreak }        from "@/hooks/useStreak";
 import { useSubscription }  from "@/hooks/useSubscription";
 import { ProBadge }         from "@/components/features/subscription/ProBadge";
 import { GoPro }            from "@/components/features/subscription/GoPro";
+import { Skeleton }         from "@/components/ui/Skeleton";
 import type { UserWallet }  from "@/types";
 import type { LucideIcon } from "lucide-react";
 import {
@@ -480,7 +481,7 @@ function PassportGrid({ uid }: { uid: string }) {
       {loading ? (
         <div className="grid grid-cols-4 gap-2">
           {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-16 rounded-xl bg-white/4 animate-pulse" />
+            <Skeleton key={i} className="h-16 rounded-xl" />
           ))}
         </div>
       ) : stamps.length === 0 ? (
@@ -980,7 +981,7 @@ export function ProfileView() {
 
         {/* Wallet Card */}
         {walletLoading ? (
-          <div className="rounded-3xl bg-white/4 border border-white/8 h-32 animate-pulse" />
+          <Skeleton className="h-32 rounded-3xl border border-white/8" />
         ) : wallet ? (
           <WalletCard wallet={wallet} />
         ) : (

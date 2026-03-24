@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRightLeft, RefreshCw, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Skeleton } from "@/components/ui/Skeleton";
 
 interface Rates {
   [currency: string]: number;
@@ -139,7 +140,7 @@ export function CurrencyConverter() {
                     </span>
                   </div>
                   {loading ? (
-                    <div className="h-4 w-16 rounded bg-white/8 animate-pulse" />
+                    <Skeleton className="h-4 w-16 rounded-lg" />
                   ) : (
                     <AnimatePresence mode="wait">
                       <motion.p

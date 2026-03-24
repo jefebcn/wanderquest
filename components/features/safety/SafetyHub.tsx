@@ -22,6 +22,7 @@ import {
   Siren, ExternalLink,
 } from "lucide-react";
 import { cn }                         from "@/lib/utils";
+import { Skeleton }                   from "@/components/ui/Skeleton";
 import { getDestinationSafetyAudit }  from "@/actions/safety";
 import { getEmergencyContacts }       from "@/lib/safety";
 import { usePushNotifications }       from "@/hooks/usePushNotifications";
@@ -269,17 +270,17 @@ export function SafetyHub({ city }: SafetyHubProps = {}) {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5 animate-pulse">
+      <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-5">
         <div className="flex items-center gap-3 mb-4">
-          <div className="h-11 w-11 rounded-xl bg-white/8" />
-          <div className="space-y-2 flex-1">
-            <div className="h-3.5 w-28 rounded-full bg-white/8" />
-            <div className="h-2.5 w-20 rounded-full bg-white/5" />
+          <Skeleton className="h-11 w-11 rounded-xl" />
+          <div className="flex flex-1 flex-col gap-2">
+            <Skeleton className="h-3.5 w-28 rounded-full" />
+            <Skeleton className="h-2.5 w-20 rounded-full" />
           </div>
-          <div className="h-7 w-20 rounded-full bg-white/8" />
+          <Skeleton className="h-7 w-20 rounded-full" />
         </div>
-        <div className="h-3 rounded-full bg-white/5 w-full mb-2" />
-        <div className="h-3 rounded-full bg-white/5 w-4/5" />
+        <Skeleton className="h-3 w-full rounded-full mb-2" />
+        <Skeleton className="h-3 w-4/5 rounded-full" />
       </div>
     );
   }
