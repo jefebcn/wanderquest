@@ -1,10 +1,12 @@
 {
   "name": "WanderQuest",
   "short_name": "WanderQuest",
+  "id": "/",
   "description": "Esplora monumenti, guadagna punti, vinci premi reali.",
-  "start_url": "/",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
   "orientation": "portrait-primary",
   "prefer_related_applications": false,
   "background_color": "#020617",

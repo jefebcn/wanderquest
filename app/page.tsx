@@ -91,6 +91,44 @@ const steps = [
   },
 ] as const;
 
+// ── Hero landmark detail data ────────────────────────────────────────────────
+
+interface HeroLandmark {
+  name: string;
+  city: string;
+  pts: number;
+  desc: string;
+  distance: string;
+  imageUrl: string;
+}
+
+const HERO_LANDMARKS: HeroLandmark[] = [
+  {
+    name: "Sagrada Família",
+    city: "Barcellona",
+    pts: 750,
+    distance: "0.4 km",
+    desc: "Capolavoro di Gaudí in costruzione dal 1882. Uno dei monumenti più visitati d'Europa e simbolo indiscusso di Barcellona.",
+    imageUrl: "https://images.unsplash.com/photo-1583779457094-efcd1a8ca25a?w=600&q=80",
+  },
+  {
+    name: "Park Güell",
+    city: "Barcellona",
+    pts: 500,
+    distance: "1.8 km",
+    desc: "Parco pubblico con strutture architettoniche di Gaudí. Panorama mozzafiato sulla città e ceramiche multicolori iconiche.",
+    imageUrl: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=600&q=80",
+  },
+  {
+    name: "Casa Batlló",
+    city: "Barcellona",
+    pts: 620,
+    distance: "0.9 km",
+    desc: "Edificio modernista di Gaudí sul Passeig de Gràcia, noto per la facciata ispirata al mare e ai draghi della leggenda catalana.",
+    imageUrl: "https://images.unsplash.com/photo-1558642452-9d2a7deb7f62?w=600&q=80",
+  },
+];
+
 // ── Featured cities ─────────────────────────────────────────────────────────
 
 const CITIES = [
@@ -1023,25 +1061,27 @@ function CityDetailModal({
 
 // ── Floating landmark pill ───────────────────────────────────────────────────
 
-function FloatingPill({ name, pts, delay, style }: {
-  name: string; pts: number; delay: number; style: React.CSSProperties;
+function FloatingPill({ name, pts, delay, style, onClick }: {
+  name: string; pts: number; delay: number; style: React.CSSProperties; onClick?: () => void;
 }) {
   return (
-    <motion.div
+    <motion.button
       initial={{ opacity: 0, scale: 0.7 }}
       animate={{ opacity: 1, scale: 1, y: [0, -7, 0] }}
+      whileTap={{ scale: 0.93 }}
       transition={{
         opacity: { delay, duration: 0.4 },
         scale:   { delay, duration: 0.4 },
         y:       { delay: delay + 0.5, duration: 3.8, repeat: Infinity, ease: "easeInOut" },
       }}
-      className="absolute flex items-center gap-1.5 rounded-full bg-slate-900/80 border border-white/15 px-3 py-1.5 backdrop-blur-md shadow-lg pointer-events-none"
+      onClick={onClick}
+      className="absolute flex items-center gap-1.5 rounded-full bg-slate-900/80 border border-white/15 px-3 py-1.5 backdrop-blur-md shadow-lg cursor-pointer"
       style={style}
     >
       <MapPin size={10} className="text-[var(--s-primary)]" />
       <span className="text-xs font-bold text-white">{name}</span>
       <span className="text-xs font-black text-[var(--s-primary)]">+{pts}pt</span>
-    </motion.div>
+    </motion.button>
   );
 }
 
@@ -1081,6 +1121,8 @@ export default function HomePage() {
   const [selectedCity, setSelectedCity] = useState<typeof CITIES[number] | null>(null);
   /** Tracks the destination shown in SafetyHub — updated when user selects a city */
   const [safetyCity, setSafetyCity] = useState<{ name: string; lat: number; lng: number } | null>(null);
+  /** Landmark detail bottom sheet */
+  const [activeLandmark, setActiveLandmark] = useState<HeroLandmark | null>(null);
   /* iOS Safari "Add to Home Screen" hint — shown once per session */
   const [showInstallHint, setShowInstallHint] = useState(false);
 
@@ -1157,9 +1199,9 @@ export default function HomePage() {
           </div>
 
           {/* Floating landmark pills — clear of status bar */}
-          <FloatingPill name="Sagrada Família" pts={750} delay={0.9} style={{ left: "7%",  top: "22%" }} />
-          <FloatingPill name="Park Güell"      pts={500} delay={1.3} style={{ left: "50%", top: "16%" }} />
-          <FloatingPill name="Casa Batlló"     pts={620} delay={1.7} style={{ left: "12%", top: "42%" }} />
+          <FloatingPill name="Sagrada Família" pts={750} delay={0.9} style={{ left: "7%",  top: "22%" }} onClick={() => setActiveLandmark(HERO_LANDMARKS[0])} />
+          <FloatingPill name="Park Güell"      pts={500} delay={1.3} style={{ left: "50%", top: "16%" }} onClick={() => setActiveLandmark(HERO_LANDMARKS[1])} />
+          <FloatingPill name="Casa Batlló"     pts={620} delay={1.7} style={{ left: "12%", top: "42%" }} onClick={() => setActiveLandmark(HERO_LANDMARKS[2])} />
 
           {/* Copy */}
           <div className="relative z-10 px-5 pb-10">
@@ -1458,6 +1500,27 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* ── TRAVELER'S UTILITY — Currency Hub ──────────────────── */}
+        <section className="px-4 mb-10">
+          <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.92 }}
+            className="mb-4"
+          >
+            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Strumenti del Viaggiatore</p>
+            <h2 className="font-display text-2xl font-black">Cambio Valuta</h2>
+          </motion.div>
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.96 }}
+            className="glass-card overflow-hidden"
+          >
+            <CurrencyConverter />
+          </motion.div>
+        </section>
+
         {/* ── PREMIUM PLAN ───────────────────────────────────────── */}
         <section className="px-4 mb-10">
           <motion.div
@@ -1696,6 +1759,60 @@ export default function HomePage() {
         onAuthOpen={() => setAuthOpen(true)}
       />
       <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />
+
+      {/* ── Landmark Detail Bottom Sheet ─────────────────────── */}
+      <BottomSheet
+        open={!!activeLandmark}
+        onClose={() => setActiveLandmark(null)}
+        title={activeLandmark?.name}
+        snapTo="auto"
+      >
+        {activeLandmark && (
+          <div className="px-5 pb-6">
+            {/* Hero image */}
+            <div className="relative w-full h-52 rounded-2xl overflow-hidden mb-5">
+              <Image
+                src={activeLandmark.imageUrl}
+                alt={activeLandmark.name}
+                fill
+                className="object-cover"
+                sizes="100vw"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <div className="absolute bottom-3 left-3 flex items-center gap-1.5">
+                <MapPin size={12} className="text-[var(--s-primary)]" />
+                <span className="text-sm font-bold text-white">{activeLandmark.city}</span>
+                <span className="text-xs text-white/50 ml-1">· {activeLandmark.distance}</span>
+              </div>
+            </div>
+
+            {/* Points badge */}
+            <div className="flex items-center gap-3 mb-4">
+              <div className="flex items-center gap-2 rounded-full bg-[var(--s-primary)]/12 border border-[var(--s-primary)]/30 px-4 py-2">
+                <Sparkles size={14} className="text-[var(--s-primary)]" />
+                <span className="text-sm font-black text-[var(--s-primary)]">+{activeLandmark.pts} punti</span>
+              </div>
+              <div className="flex items-center gap-1.5 text-xs text-white/40">
+                <MapPin size={11} strokeWidth={1.8} />
+                <span>{activeLandmark.distance} da te</span>
+              </div>
+            </div>
+
+            {/* Description */}
+            <p className="text-body-md text-white/65 leading-relaxed mb-6">{activeLandmark.desc}</p>
+
+            {/* CTA */}
+            <Link
+              href="/scan"
+              onClick={() => setActiveLandmark(null)}
+              className="flex items-center justify-center gap-2 w-full rounded-2xl bg-[var(--s-primary)] py-4 text-sm font-black text-slate-900 shadow-[0_4px_20px_rgba(255,215,0,0.3)]"
+            >
+              <ScanLine size={16} />
+              Vai al monumento e scansiona
+            </Link>
+          </div>
+        )}
+      </BottomSheet>
     </>
   );
 }

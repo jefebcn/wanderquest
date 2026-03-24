@@ -54,7 +54,7 @@
 
   /* Typography */
   --p-font-sans:    "Inter", ui-sans-serif, system-ui, sans-serif;
-  --p-font-display: "Playfair Display", ui-serif, Georgia, serif;
+  --p-font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
 
   /* Animation durations */
   --p-duration-fast:   150ms;
@@ -340,6 +340,37 @@ body {
   .glass-card-hover {
     animation: none;
     transition: none;
+  }
+}
+
+/* ── Typography scale (2026 system) ─────────────────────────────────── */
+@layer utilities {
+  /* Hero — full-bleed section titles */
+  .text-hero {
+    font-size: clamp(2.6rem, 8vw, 3.2rem);
+    font-weight: 900;
+    line-height: 1.04;
+    letter-spacing: -0.02em;
+  }
+  /* Title — section headings */
+  .text-title-lg {
+    font-size: 1.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  /* Body — comfortable reading */
+  .text-body-md {
+    font-size: 0.9375rem;
+    font-weight: 400;
+    line-height: 1.65;
+  }
+  /* Mono data — numbers, codes, stats */
+  .text-mono-data {
+    font-family: ui-monospace, "SF Mono", "Fira Code", monospace;
+    font-size: 0.8125rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
   }
 }
 

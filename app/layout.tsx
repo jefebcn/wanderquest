@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Inter, Space_Grotesk } from "next/font/google";
 import { BottomNav }        from "@/components/layout/BottomNav";
 import { PageTransition }   from "@/components/layout/PageTransition";
 import { PayPalProvider }   from "@/components/providers/PayPalProvider";
@@ -11,9 +11,10 @@ const inter = Inter({
   display: "swap",
 });
 
-const playfair = Playfair_Display({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-display",
+  weight: ["400", "500", "600", "700"],
   display: "swap",
 });
 
@@ -49,7 +50,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="it" className={`${inter.variable} ${playfair.variable}`}>
+    <html lang="it" className={`${inter.variable} ${spaceGrotesk.variable}`}>
       <head>
         {/* iOS PWA standalone — belt-and-suspenders alongside Next.js appleWebApp metadata */}
         <meta name="apple-mobile-web-app-capable" content="yes" />
