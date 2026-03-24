@@ -1466,6 +1466,7 @@ export default function HomePage() {
                 key={name}
                 initial={{ opacity: 0, y: 12 }}
                 animate={{ opacity: 1, y: 0 }}
+                whileTap={{ scale: 0.98 }}
                 transition={{ delay: 0.92 + i * 0.08 }}
                 className="relative rounded-2xl border border-[var(--s-border-subtle)] bg-[var(--s-bg-card)] p-4 backdrop-blur-sm overflow-hidden"
                 style={{ borderLeft: "2px solid rgba(45,212,191,0.25)" }}

@@ -111,7 +111,7 @@ function LandmarkPin({ name, imageUrl, pts, top, left, right, borderColor }: Lan
     >
       {/* Circular image thumbnail */}
       <div
-        className="relative h-9 w-9 rounded-full overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
+        className="relative size-9 rounded-full overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
         style={{ border: `2.5px solid ${borderColor}`, boxShadow: `0 0 0 1px rgba(255,255,255,0.1), 0 4px 16px rgba(0,0,0,0.5)` }}
       >
         <Image src={imageUrl} alt={name} fill className="object-cover" sizes="36px" unoptimized />
@@ -189,7 +189,7 @@ function MapTile() {
           <div className="relative flex items-center justify-center">
             <div className="absolute h-16 w-16 rounded-full border border-[var(--s-accent)]/25 animate-ping" style={{ animationDuration: "2.2s" }} />
             <div className="absolute h-10 w-10 rounded-full border border-[var(--s-accent)]/45 animate-ping" style={{ animationDuration: "2.2s", animationDelay: "0.5s" }} />
-            <div className="h-5 w-5 rounded-full bg-[var(--s-accent)] border-2 border-white/90 shadow-[0_0_16px_var(--s-accent),0_0_32px_rgba(45,212,191,0.4)]" />
+            <div className="size-5 rounded-full bg-[var(--s-accent)] border-2 border-white/90 shadow-[0_0_16px_var(--s-accent),0_0_32px_rgba(45,212,191,0.4)]" />
           </div>
         </div>
 
@@ -199,7 +199,7 @@ function MapTile() {
           <div className="flex items-center justify-between">
             <p className="text-[15px] font-black text-white leading-tight">Esplora i Dintorni</p>
             <div className="flex items-center gap-1.5 rounded-full bg-[var(--s-accent)] px-3 py-1.5">
-              <Navigation size={11} strokeWidth={2} className="text-slate-900" />
+              <Navigation size={11} strokeWidth={2} className="text-slate-900" aria-hidden="true" />
               <span className="text-xs font-black text-slate-900">Inizia</span>
             </div>
           </div>
@@ -264,7 +264,7 @@ function SafetyTile({ level = "STABLE" }: { level?: SafetyLevel }) {
       style={{ boxShadow: cfg.glow }}
     >
       <div className="flex items-center gap-1.5">
-        <Shield size={12} strokeWidth={1.8} className="text-white/35" />
+        <Shield size={12} strokeWidth={1.8} className="text-white/35" aria-hidden="true" />
         <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">Sicurezza</span>
       </div>
 
@@ -307,7 +307,7 @@ function LivePodiumTile({ contestId }: { contestId: string | null }) {
       <div className="relative h-full rounded-2xl bg-[var(--s-primary)]/6 border border-[var(--s-primary)]/20 p-3 flex flex-col justify-between overflow-hidden glass-card-hover">
         {/* Header */}
         <div className="flex items-center gap-1.5 mb-2">
-          <Trophy size={12} strokeWidth={1.8} className="text-[var(--s-primary)]/60" />
+          <Trophy size={12} strokeWidth={1.8} className="text-[var(--s-primary)]/60" aria-hidden="true" />
           <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">Classifica Live</span>
           <span className="ml-auto h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
         </div>
@@ -333,7 +333,7 @@ function LivePodiumTile({ contestId }: { contestId: string | null }) {
                   <span className="text-[13px] flex-shrink-0 leading-none">{MEDAL[i]}</span>
 
                   {/* Avatar */}
-                  <div className="relative h-5 w-5 flex-shrink-0 rounded-full overflow-hidden bg-slate-700 flex items-center justify-center">
+                  <div className="relative size-5 flex-shrink-0 rounded-full overflow-hidden bg-slate-700 flex items-center justify-center">
                     {entry.photoURL ? (
                       <Image src={entry.photoURL} alt={entry.displayName} fill className="object-cover" sizes="20px" />
                     ) : (
@@ -370,7 +370,7 @@ function LivePodiumTile({ contestId }: { contestId: string | null }) {
         {ptsDiff !== null && ptsDiff > 0 && (
           <div className="mt-2 pt-2 border-t border-white/6">
             <div className="flex items-center gap-1 mb-1">
-              <TrendingUp size={9} strokeWidth={1.8} className="text-[var(--s-primary)]/60" />
+              <TrendingUp size={9} strokeWidth={1.8} className="text-[var(--s-primary)]/60" aria-hidden="true" />
               <span className="text-[10px] text-white/35">
                 <span className="text-[var(--s-primary)]/80 font-black">{ptsDiff.toLocaleString("it-IT")} pt</span> per Top 10
               </span>
@@ -389,6 +389,7 @@ function LivePodiumTile({ contestId }: { contestId: string | null }) {
           size={52}
           className="absolute -bottom-2 -right-2 text-[var(--s-primary)]/5"
           strokeWidth={1}
+          aria-hidden="true"
         />
       </div>
     </Link>
@@ -482,7 +483,7 @@ function CommunityFeedTile({ contestId }: { contestId: string | null }) {
           <span className="text-2xl flex-shrink-0">{tip.icon}</span>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 mb-1.5">
-              <Sparkles size={11} strokeWidth={1.8} className="text-[var(--s-accent)]" />
+              <Sparkles size={11} strokeWidth={1.8} className="text-[var(--s-accent)]" aria-hidden="true" />
               <span className="text-[10px] font-bold uppercase tracking-widest text-[var(--s-accent)]/70">Smart Tip · Oggi</span>
             </div>
             <p className="text-body-md text-[13px] text-white/70 leading-relaxed">{tip.tip}</p>
@@ -495,7 +496,7 @@ function CommunityFeedTile({ contestId }: { contestId: string | null }) {
   return (
     <div className="col-span-2 rounded-2xl bg-white/[0.04] border border-white/8 p-3.5">
       <div className="flex items-center gap-1.5 mb-3">
-        <Heart size={12} strokeWidth={1.8} className="text-[var(--s-energy)]" fill="currentColor" />
+        <Heart size={12} strokeWidth={1.8} className="text-[var(--s-energy)]" fill="currentColor" aria-hidden="true" />
         <span className="text-[10px] font-bold uppercase tracking-widest text-white/35">Live dal contest</span>
         <Link href="/scan" className="ml-auto text-[10px] font-bold text-[var(--s-accent)]">
           Vedi tutte →
@@ -532,7 +533,7 @@ function CommunityFeedTile({ contestId }: { contestId: string | null }) {
                 {/* User avatar top-left */}
                 <div
                   className={cn(
-                    "absolute top-1.5 left-1.5 h-6 w-6 rounded-full flex items-center justify-center text-[8px] font-black text-white border border-white/20 bg-gradient-to-br",
+                    "absolute top-1.5 left-1.5 size-6 rounded-full flex items-center justify-center text-[8px] font-black text-white border border-white/20 bg-gradient-to-br",
                     photo.avatarGradient ?? "from-slate-500 to-slate-700"
                   )}
                 >
@@ -551,7 +552,7 @@ function CommunityFeedTile({ contestId }: { contestId: string | null }) {
                 <div className="absolute bottom-0 left-0 right-0 p-2">
                   {photo.city && (
                     <div className="flex items-center gap-0.5 mb-0.5">
-                      <MapPin size={7} className="text-white/50" />
+                      <MapPin size={7} className="text-white/50" aria-hidden="true" />
                       <span className="text-[9px] text-white/60 font-bold truncate">{photo.city}</span>
                     </div>
                   )}

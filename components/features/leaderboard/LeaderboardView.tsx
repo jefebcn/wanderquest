@@ -68,7 +68,7 @@ function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boo
           {isMe && <span className="ml-1.5 text-xs font-normal opacity-60">(tu)</span>}
         </p>
         <div className="flex items-center gap-2 text-xs text-white/35">
-          {entry.city && <span className="flex items-center gap-0.5"><MapPin size={8}/>{entry.city}</span>}
+          {entry.city && <span className="flex items-center gap-0.5"><MapPin size={8} aria-hidden="true" />{entry.city}</span>}
           <span>{entry.photoCount} foto</span>
         </div>
       </div>
@@ -85,7 +85,7 @@ function PhotoRankRow({ entry, isMe, index }: { entry: PhotoRankEntry; isMe: boo
         <p className="text-sm font-black tabular-nums">{entry.votePoints.toLocaleString("it-IT")}</p>
         {isTop3 ? (
           <p className="text-xs font-black text-[var(--s-primary)]/70 flex items-center gap-0.5">
-            <Heart size={8} fill="currentColor"/>voti
+            <Heart size={8} fill="currentColor" aria-hidden="true" />voti
           </p>
         ) : (
           <p className="text-xs text-white/30">voti</p>
@@ -312,7 +312,7 @@ function SeasonLeaguesPanel({ myUserId }: { myUserId?: string }) {
   const viewConfig     = getLeagueConfig(activeLeague);
 
   return (
-    <div className="px-4 pt-4 pb-6 space-y-4">
+    <div className="flex flex-col px-4 pt-4 pb-6 gap-4">
       {/* User's current season card */}
       {myUserId && (
         <SeasonBanner uid={myUserId} />
@@ -547,7 +547,7 @@ export function LeaderboardView() {
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: 20 }}
             transition={{ duration: 0.22, ease: [0.4, 0, 0.2, 1] }}
-            className="px-4 pt-4 space-y-2"
+            className="flex flex-col px-4 pt-4 gap-2"
           >
             <p className="text-xs font-bold uppercase tracking-widest text-white/30 mb-3 flex items-center gap-1.5">
               <Heart size={11} className="text-rose-400" fill="currentColor" />
@@ -618,7 +618,7 @@ export function LeaderboardView() {
                     <div className="flex-1 h-px bg-white/8" />
                   </div>
                 )}
-                <div className="px-4 space-y-2">
+                <div className="flex flex-col px-4 gap-2">
                   {rest.map((entry, idx) => {
                     const entryIndex = entries.findIndex(e => e.userId === entry.userId);
                     const above = entryIndex > 0 ? entries[entryIndex - 1] : undefined;

@@ -1,5 +1,6 @@
 "use client";
 
+import { motion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -31,12 +32,13 @@ export function EmptyState({ icon: Icon, title, subtitle, cta, className }: Empt
         <p className="text-xs text-white/35 leading-relaxed max-w-[220px]">{subtitle}</p>
       )}
       {cta && (
-        <button
+        <motion.button
+          whileTap={{ scale: 0.96 }}
           onClick={cta.onClick}
           className="mt-4 rounded-xl bg-[var(--s-primary)] px-4 py-2 text-xs font-black text-slate-900 min-h-[36px]"
         >
           {cta.label}
-        </button>
+        </motion.button>
       )}
     </div>
   );
