@@ -183,7 +183,9 @@ function MapTile() {
   useEffect(() => { loadNearbyCount(); }, [loadNearbyCount]);
 
   const subtitleLabel = nearbyCount !== null
-    ? `Mappa Live · ${nearbyCount} Monumento${nearbyCount !== 1 ? "i" : ""} Vicin${nearbyCount !== 1 ? "i" : "o"}`
+    ? nearbyCount === 1
+      ? "Mappa Live · 1 Monumento Vicino"
+      : `Mappa Live · ${nearbyCount} Monumenti Vicini`
     : "Mappa Live · Esplora i Dintorni";
 
   return (
@@ -212,8 +214,9 @@ function MapTile() {
           <path d="M 0 155 Q 65 142 130 132 Q 210 120 320 148" fill="none" stroke="rgba(45,212,191,0.35)" strokeWidth="0.8" />
         </svg>
 
-        {/* Landmark image pins */}
-        {MAP_LANDMARKS.map((lm) => (
+        {/* Landmark image pins — shown only when GPS data is unavailable (decorative preview).
+            Hidden once we have real nearby data so we don't mislead with fake locations. */}
+        {nearbyCount === null && MAP_LANDMARKS.map((lm) => (
           <LandmarkPin key={lm.name} {...lm} />
         ))}
 
