@@ -1,19 +1,23 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef, type ChangeEvent } from "react";
+import dynamic from "next/dynamic";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserLocation }  from "@/hooks/useUserLocation";
 import { useScanner }       from "@/hooks/useScanner";
 import { useContest }       from "@/hooks/useContest";
 import { getNearbyLandmarks } from "@/actions/landmarks";
+import { saveLandmarkPhoto } from "@/actions/landmark-photos";
+import { getFirebaseClient } from "@/lib/firebase/client";
 import { formatDistance }   from "@/lib/utils";
 import { VoiceSynthesizer } from "@/components/features/voice/VoiceSynthesizer";
 import { BottomSheet }      from "@/components/ui/BottomSheet";
 import { LandmarkCardSkeleton } from "@/components/ui/Skeleton";
-import type { Landmark }    from "@/types";
+import type { GeoPoint, Landmark } from "@/types";
+import type { SaveLandmarkPhotoResult } from "@/actions/landmark-photos";
 import {
   ScanLine, MapPin, CheckCircle, AlertCircle, Loader2,
-  ChevronRight, Radar,
+  ChevronRight, Radar, Map, List, Camera,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,6 +26,19 @@ import { PartnerWidget }    from "@/components/features/partners/PartnerWidget";
 import { TravelConcierge }  from "@/components/features/ai/TravelConcierge";
 
 type LandmarkWithDist = Landmark & { distanceMetres: number };
+
+// Dynamically import Leaflet map to avoid SSR issues
+const LiveMapView = dynamic(
+  () => import("@/components/features/map/LiveMapView").then((m) => ({ default: m.LiveMapView })),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex h-full items-center justify-center bg-slate-950">
+        <Loader2 size={32} className="animate-spin text-[var(--s-primary)]" />
+      </div>
+    ),
+  }
+);
 
 // ── Pulsing beacon for "you are here" ────────────────────────────────────
 
@@ -43,6 +60,9 @@ function LandmarkSheet({
   onClose,
   scanning,
   onCheckIn,
+  userPosition,
+  contestId,
+  onPhotoResult,
 }: {
   landmark: LandmarkWithDist;
   distanceMetres: number;
@@ -50,9 +70,61 @@ function LandmarkSheet({
   onClose: () => void;
   scanning: boolean;
   onCheckIn: () => void;
+  userPosition: GeoPoint;
+  contestId?: string;
+  onPhotoResult: (r: SaveLandmarkPhotoResult) => void;
 }) {
   const withinRadius = distanceMetres <= landmark.radius;
   const pct          = Math.min(100, (landmark.radius / Math.max(distanceMetres, 1)) * 100);
+
+  const [photoUploading, setPhotoUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handlePhotoSelect = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setPhotoUploading(true);
+      try {
+        const { storage, auth } = getFirebaseClient();
+        const { ref: storageRef, uploadBytes, getDownloadURL } = await import("firebase/storage");
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `landmark_photos/${landmark.id}/${auth.currentUser!.uid}/${Date.now()}_${safeName}`;
+        const fileRef2 = storageRef(storage, path);
+        await uploadBytes(fileRef2, file);
+        const imageUrl = await getDownloadURL(fileRef2);
+
+        const tok = await auth.currentUser?.getIdToken();
+        if (!tok) throw new Error("Token mancante");
+
+        // Send live GPS position captured at this exact moment
+        const result = await saveLandmarkPhoto(tok, {
+          landmarkId: landmark.id,
+          userLat: userPosition.lat,
+          userLng: userPosition.lng,
+          imageUrl,
+          storageRef: path,
+          caption: "",
+          contestId,
+        });
+
+        onPhotoResult(result);
+
+        // If server rejected (wrong location), server already deleted the file.
+        // Delete client-side reference too as a safety net.
+        if (!result.success) {
+          const { deleteObject } = await import("firebase/storage");
+          await deleteObject(fileRef2).catch(() => {});
+        }
+      } catch {
+        onPhotoResult({ success: false, pointsEarned: 0, message: "Errore durante il caricamento." });
+      } finally {
+        setPhotoUploading(false);
+        if (fileRef.current) fileRef.current.value = "";
+      }
+    },
+    [landmark, userPosition, contestId, onPhotoResult]
+  );
 
   return (
     <BottomSheet open={open} onClose={onClose} snapTo="auto">
@@ -67,9 +139,8 @@ function LandmarkSheet({
               className="object-cover"
               sizes="100vw"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/30 to-transparent" />
-            {/* Points badge */}
-            <div className="absolute top-3 right-3 rounded-2xl bg-[var(--s-primary)]/20 border border-[var(--s-primary)]/40 backdrop-blur-sm px-2.5 py-1 text-xs font-black text-[var(--s-primary)]">
+            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 to-transparent" />
+            <div className="absolute bottom-3 right-3 rounded-full bg-[var(--s-primary)]/90 px-3 py-1 text-xs font-black text-slate-950">
               +{landmark.points} pt
             </div>
           </div>
@@ -79,9 +150,11 @@ function LandmarkSheet({
         <div>
           <h2 className="text-xl font-black text-white leading-tight">{landmark.name}</h2>
           <div className="flex items-center gap-3 mt-1.5 text-xs text-white/45">
-            <span className="flex items-center gap-1"><MapPin size={11} />{landmark.city ?? "Italia"}</span>
             <span className="flex items-center gap-1">
-              <Radar size={11} />
+              <MapPin size={11} aria-hidden="true" />{landmark.city ?? "Italia"}
+            </span>
+            <span className="flex items-center gap-1">
+              <Radar size={11} aria-hidden="true" />
               {withinRadius ? (
                 <span className="text-green-400 font-bold">Sei qui!</span>
               ) : (
@@ -116,7 +189,6 @@ function LandmarkSheet({
 
         {/* Actions */}
         <div className="flex gap-3">
-          {/* TTS */}
           {(landmark.audioUrl || landmark.description) && (
             <VoiceSynthesizer
               text={landmark.description ?? ""}
@@ -125,17 +197,15 @@ function LandmarkSheet({
               className="flex-shrink-0"
             />
           )}
-
-          {/* Detail link */}
           <Link
             href={`/landmarks/${landmark.id}`}
             className="flex items-center gap-1 rounded-xl bg-white/10 backdrop-blur-md border border-white/15 px-3 py-2.5 text-xs font-bold text-white/70 hover:text-white"
           >
-            Dettagli <ChevronRight size={12} />
+            Dettagli <ChevronRight size={12} aria-hidden="true" />
           </Link>
         </div>
 
-        {/* Main CTA */}
+        {/* Check-in CTA */}
         <motion.button
           whileTap={withinRadius && !scanning ? { scale: 0.95 } : {}}
           onClick={onCheckIn}
@@ -156,14 +226,50 @@ function LandmarkSheet({
             {scanning ? (
               <><Loader2 size={15} className="animate-spin" /> Verifica in corso…</>
             ) : withinRadius ? (
-              <><CheckCircle size={15} /> SONO QUI — SCAN NOW</>
+              <><CheckCircle size={15} aria-hidden="true" /> SONO QUI — CHECK IN</>
             ) : (
               <>Avvicinati ({formatDistance(distanceMetres - landmark.radius)})</>
             )}
           </span>
         </motion.button>
 
-        {/* ── Affiliate partner offers ───────────────────────────── */}
+        {/* Photo upload CTA — only when within radius */}
+        {withinRadius && (
+          <>
+            <div className="h-px bg-white/8 -mx-5" />
+            <p className="text-xs text-white/40 text-center">
+              Carica una foto qui per guadagnare punti istantaneamente
+            </p>
+            <motion.button
+              whileTap={!photoUploading ? { scale: 0.97 } : {}}
+              onClick={() => fileRef.current?.click()}
+              disabled={photoUploading}
+              className={cn(
+                "w-full rounded-2xl border py-3.5 text-sm font-black flex items-center justify-center gap-2",
+                "transition-colors duration-200",
+                photoUploading
+                  ? "border-white/10 bg-white/5 text-white/30 cursor-not-allowed"
+                  : "border-[var(--s-primary)]/35 bg-[var(--s-primary)]/10 text-[var(--s-primary)] hover:bg-[var(--s-primary)]/15"
+              )}
+            >
+              {photoUploading ? (
+                <><Loader2 size={14} className="animate-spin" /> Verifica GPS…</>
+              ) : (
+                <><Camera size={14} aria-hidden="true" /> Carica Foto · +{landmark.points} pt</>
+              )}
+            </motion.button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={handlePhotoSelect}
+            />
+          </>
+        )}
+
+        {/* Affiliate partner offers */}
         <div className="h-px bg-white/8 -mx-5" />
         <PartnerWidget landmarkName={landmark.name} city={landmark.city ?? "Barcelona"} />
       </div>
@@ -201,12 +307,11 @@ function LandmarkCard({
           </div>
         </div>
       )}
-
       <div className="p-3">
         <div className="flex items-start justify-between gap-2 mb-1">
           <h3 className="font-black text-sm leading-tight">{landmark.name}</h3>
           <div className="flex items-center gap-1 text-xs text-white/45 flex-shrink-0">
-            {withinRadius ? <PulseBeacon /> : <MapPin size={11} />}
+            {withinRadius ? <PulseBeacon /> : <MapPin size={11} aria-hidden="true" />}
             <span className={withinRadius ? "text-green-400 font-bold" : ""}>
               {withinRadius ? "Sei qui" : formatDistance(landmark.distanceMetres)}
             </span>
@@ -225,10 +330,12 @@ export function ScannerView() {
   const { position, isLoading: locLoading, hasError: locError, errorMsg, start } = useUserLocation();
   const { state: scanState, result, checkIn, reset } = useScanner(contest?.id);
 
-  const [nearby, setNearby]     = useState<LandmarkWithDist[]>([]);
-  const [selected, setSelected] = useState<LandmarkWithDist | null>(null);
-  const [sheetOpen, setSheetOpen] = useState(false);
-  const [fetching, setFetching] = useState(false);
+  const [nearby, setNearby]         = useState<LandmarkWithDist[]>([]);
+  const [selected, setSelected]     = useState<LandmarkWithDist | null>(null);
+  const [sheetOpen, setSheetOpen]   = useState(false);
+  const [fetching, setFetching]     = useState(false);
+  const [view, setView]             = useState<"map" | "list">("map");
+  const [photoResult, setPhotoResult] = useState<SaveLandmarkPhotoResult | null>(null);
 
   const fetchNearby = useCallback(async () => {
     if (!position) return;
@@ -247,6 +354,7 @@ export function ScannerView() {
     setSelected(lm);
     setSheetOpen(true);
     reset();
+    setPhotoResult(null);
   };
 
   const handleCheckIn = async () => {
@@ -254,7 +362,12 @@ export function ScannerView() {
     await checkIn(selected, position.lat, position.lng);
   };
 
-  // ── GPS error state ───────────────────────────────────────────────────
+  const handlePhotoResult = useCallback((r: SaveLandmarkPhotoResult) => {
+    setPhotoResult(r);
+    if (r.success) fetchNearby();
+  }, [fetchNearby]);
+
+  // ── GPS error ─────────────────────────────────────────────────────────
   if (locError) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-slate-950 px-6 text-center text-white">
@@ -279,66 +392,112 @@ export function ScannerView() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 pb-24 text-white">
+    <div className="min-h-screen bg-slate-950 text-white">
       {/* Header */}
-      <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-4 backdrop-blur-xl">
+      <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-3 backdrop-blur-xl">
         <div className="flex items-center gap-2">
-          <ScanLine className="text-[var(--s-primary)]" size={22} />
-          <h1 className="text-xl font-black">Scansiona</h1>
+          <ScanLine className="text-[var(--s-primary)]" size={22} aria-hidden="true" />
+          <h1 className="text-xl font-black">Esplora</h1>
         </div>
-        <div className="flex items-center gap-1.5 mt-1 text-xs text-white/35">
+        <div className="flex items-center gap-1.5 mt-0.5 text-xs text-white/35">
           <PulseBeacon />
           <span>{position.lat.toFixed(5)}, {position.lng.toFixed(5)}</span>
         </div>
+
+        {/* Map / List toggle */}
+        <div className="flex rounded-xl bg-white/8 p-0.5 mt-3">
+          <button
+            onClick={() => setView("map")}
+            className={cn(
+              "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-colors duration-150",
+              view === "map" ? "bg-white/15 text-white" : "text-white/40"
+            )}
+          >
+            <Map size={12} aria-hidden="true" /> Mappa
+          </button>
+          <button
+            onClick={() => setView("list")}
+            className={cn(
+              "flex flex-1 items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-bold transition-colors duration-150",
+              view === "list" ? "bg-white/15 text-white" : "text-white/40"
+            )}
+          >
+            <List size={12} aria-hidden="true" /> Lista ({nearby.length})
+          </button>
+        </div>
       </div>
 
-      {/* Check-in result banner */}
+      {/* Check-in / photo result banner */}
       <AnimatePresence>
-        {result && (
+        {(result || photoResult) && (
           <motion.div
             initial={{ opacity: 0, y: -12 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             className={cn(
               "mx-4 mt-4 rounded-2xl p-4 flex items-start gap-3",
-              result.success
+              (result?.success || photoResult?.success)
                 ? "bg-green-500/12 border border-green-500/25"
                 : "bg-red-500/8 border border-red-500/18"
             )}
           >
-            {result.success
-              ? <CheckCircle className="text-green-400 mt-0.5 flex-shrink-0" size={18} />
-              : <AlertCircle className="text-red-400 mt-0.5 flex-shrink-0" size={18} />
+            {(result?.success || photoResult?.success)
+              ? <CheckCircle className="text-green-400 mt-0.5 flex-shrink-0" size={18} aria-hidden="true" />
+              : <AlertCircle className="text-red-400 mt-0.5 flex-shrink-0" size={18} aria-hidden="true" />
             }
             <div className="flex-1">
-              <p className="font-bold text-sm">{result.message}</p>
-              <p className="text-xs text-white/40 mt-0.5">Distanza: {formatDistance(result.distanceMetres)}</p>
+              <p className="font-bold text-sm">{photoResult?.message ?? result?.message}</p>
+              {result && (
+                <p className="text-xs text-white/40 mt-0.5">Distanza: {formatDistance(result.distanceMetres)}</p>
+              )}
             </div>
-            <button onClick={reset} className="text-white/25 hover:text-white/50 text-xs leading-none">✕</button>
+            <button
+              onClick={() => { reset(); setPhotoResult(null); }}
+              className="text-white/25 hover:text-white/50 text-xs leading-none"
+            >
+              ✕
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Landmark list */}
-      <div className="px-4 pt-4 space-y-3">
-        <p className="text-xs font-bold uppercase tracking-widest text-white/35">
-          Monumenti Vicini ({nearby.length})
-        </p>
+      {/* Map view */}
+      {view === "map" && (
+        <div className="relative" style={{ height: "calc(100vh - 148px)" }}>
+          <LiveMapView
+            position={position}
+            landmarks={nearby}
+            onLandmarkSelect={openSheet}
+          />
+          {nearby.length > 0 && (
+            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-[400] rounded-full bg-slate-900/90 border border-white/15 backdrop-blur-md px-4 py-2 text-xs font-bold text-white/70 pointer-events-none">
+              {nearby.length} monumento{nearby.length !== 1 ? "i" : ""} vicin{nearby.length !== 1 ? "i" : "o"}
+            </div>
+          )}
+        </div>
+      )}
 
-        {fetching && !nearby.length ? (
-          Array.from({ length: 3 }).map((_, i) => <LandmarkCardSkeleton key={i} />)
-        ) : nearby.length === 0 ? (
-          <div className="flex flex-col items-center py-16 text-center text-white/25">
-            <MapPin size={40} className="mb-3 opacity-40" />
-            <p className="text-sm">Nessun monumento nelle vicinanze.</p>
-            <p className="text-xs mt-1 text-white/20">Esplora la tua città!</p>
-          </div>
-        ) : (
-          nearby.map((lm) => (
-            <LandmarkCard key={lm.id} landmark={lm} onOpen={() => openSheet(lm)} />
-          ))
-        )}
-      </div>
+      {/* List view */}
+      {view === "list" && (
+        <div className="px-4 pt-4 pb-24 flex flex-col gap-3">
+          <p className="text-xs font-bold uppercase tracking-widest text-white/35">
+            Monumenti Vicini ({nearby.length})
+          </p>
+          {fetching && !nearby.length ? (
+            Array.from({ length: 3 }).map((_, i) => <LandmarkCardSkeleton key={i} />)
+          ) : nearby.length === 0 ? (
+            <div className="flex flex-col items-center py-16 text-center text-white/25">
+              <MapPin size={40} className="mb-3 opacity-40" aria-hidden="true" />
+              <p className="text-sm">Nessun monumento nelle vicinanze.</p>
+              <p className="text-xs mt-1 text-white/20">Esplora la tua città!</p>
+            </div>
+          ) : (
+            nearby.map((lm) => (
+              <LandmarkCard key={lm.id} landmark={lm} onOpen={() => openSheet(lm)} />
+            ))
+          )}
+        </div>
+      )}
 
       {/* Landmark detail bottom sheet */}
       {selected && (
@@ -346,9 +505,12 @@ export function ScannerView() {
           landmark={selected}
           distanceMetres={selected.distanceMetres}
           open={sheetOpen}
-          onClose={() => { setSheetOpen(false); reset(); }}
+          onClose={() => { setSheetOpen(false); reset(); setPhotoResult(null); }}
           scanning={scanState === "checking"}
           onCheckIn={handleCheckIn}
+          userPosition={position}
+          contestId={contest?.id}
+          onPhotoResult={handlePhotoResult}
         />
       )}
 

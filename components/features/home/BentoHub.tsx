@@ -15,7 +15,7 @@
  *  └───────────────────────────────────────┘
  */
 
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
@@ -41,12 +41,13 @@ import {
   getDoc,
   doc,
 } from "firebase/firestore";
-import { getFirebaseClient }  from "@/lib/firebase/client";
-import { useAuth }            from "@/hooks/useAuth";
-import { useContest }         from "@/hooks/useContest";
-import { useLeaderboard }     from "@/hooks/useLeaderboard";
-import { cn }                 from "@/lib/utils";
-import type { SafetyLevel }   from "@/types";
+import { getFirebaseClient }   from "@/lib/firebase/client";
+import { useAuth }             from "@/hooks/useAuth";
+import { useContest }          from "@/hooks/useContest";
+import { useLeaderboard }      from "@/hooks/useLeaderboard";
+import { getNearbyLandmarks }  from "@/actions/landmarks";
+import { cn }                  from "@/lib/utils";
+import type { SafetyLevel }    from "@/types";
 
 // ── KPI Strip ────────────────────────────────────────────────────────────────
 
@@ -153,8 +154,40 @@ const MAP_LANDMARKS = [
 ] as const;
 
 function MapTile() {
+  const [nearbyCount, setNearbyCount] = useState<number | null>(null);
+
+  // Non-intrusively check if geolocation permission was already granted.
+  // If so, silently fetch nearby landmark count to show a live number.
+  const loadNearbyCount = useCallback(async () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) return;
+    try {
+      const perm = await navigator.permissions.query({ name: "geolocation" });
+      if (perm.state !== "granted") return;
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          try {
+            const { landmarks } = await getNearbyLandmarks(
+              pos.coords.latitude,
+              pos.coords.longitude,
+              5000
+            );
+            setNearbyCount(landmarks.length);
+          } catch { /* non-fatal */ }
+        },
+        () => { /* error or permission revoked — keep static label */ },
+        { maximumAge: 30_000, timeout: 8_000, enableHighAccuracy: false }
+      );
+    } catch { /* permissions API not supported in this browser */ }
+  }, []);
+
+  useEffect(() => { loadNearbyCount(); }, [loadNearbyCount]);
+
+  const subtitleLabel = nearbyCount !== null
+    ? `Mappa Live · ${nearbyCount} Monumento${nearbyCount !== 1 ? "i" : ""} Vicin${nearbyCount !== 1 ? "i" : "o"}`
+    : "Mappa Live · Esplora i Dintorni";
+
   return (
-    <Link href="/scan" className="block col-span-2" aria-label="Apri mappa e scanner">
+    <Link href="/explore" className="block col-span-2" aria-label="Apri mappa esplorativa">
       <div
         className="relative h-52 rounded-2xl overflow-hidden border border-white/8 cursor-pointer glass-card-hover"
         style={{
@@ -184,7 +217,7 @@ function MapTile() {
           <LandmarkPin key={lm.name} {...lm} />
         ))}
 
-        {/* Pulsing GPS marker — user position */}
+        {/* Pulsing GPS marker — user position (centered as visual anchor) */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%]">
           <div className="relative flex items-center justify-center">
             <div className="absolute h-16 w-16 rounded-full border border-[var(--s-accent)]/25 animate-ping" style={{ animationDuration: "2.2s" }} />
@@ -195,7 +228,9 @@ function MapTile() {
 
         {/* Bottom CTA */}
         <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/85 to-transparent">
-          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Mappa Live · 3 Monumenti Vicini</p>
+          <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">
+            {subtitleLabel}
+          </p>
           <div className="flex items-center justify-between">
             <p className="text-[15px] font-black text-white leading-tight">Esplora i Dintorni</p>
             <div className="flex items-center gap-1.5 rounded-full bg-[var(--s-accent)] px-3 py-1.5">
