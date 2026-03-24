@@ -151,6 +151,25 @@ export interface ContestPhoto {
   contestId: string;
   status?: string;
   uploadedAt: string;
+  /** Set when the photo was uploaded at a specific landmark */
+  landmarkId?: string;
+  /** True when server-side GPS proximity was verified at upload time */
+  gpsVerified?: boolean;
+}
+
+export interface LandmarkPhoto {
+  id: string;
+  userId: string;
+  landmarkId: string;
+  landmarkName: string;
+  imageUrl: string;
+  storageRef: string;
+  gpsVerified: boolean;
+  lat: number;
+  lng: number;
+  distanceMetres: number;
+  pointsEarned: number;
+  uploadedAt: string;
 }
 
 export type VoteType = "like" | "superlike" | "skip";
