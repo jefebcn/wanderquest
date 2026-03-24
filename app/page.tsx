@@ -38,6 +38,7 @@ import {
   Moon,
   Landmark,
   ChefHat,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -1125,6 +1126,7 @@ export default function HomePage() {
   const [activeLandmark, setActiveLandmark] = useState<HeroLandmark | null>(null);
   /* iOS Safari "Add to Home Screen" hint — shown once per session */
   const [showInstallHint, setShowInstallHint] = useState(false);
+  const [legalOpen, setLegalOpen] = useState(false);
 
   useEffect(() => {
     const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -1611,26 +1613,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ── CURRENCY CONVERTER ────────────────────────────────── */}
-        <section className="px-4 mb-10">
-          <motion.div
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 1.1 }}
-            className="mb-4"
-          >
-            <p className="text-xs font-bold uppercase tracking-widest text-[var(--s-accent)] mb-1">Strumenti per il viaggiatore</p>
-            <h2 className="font-display text-2xl font-black">Convertitore valute live</h2>
-          </motion.div>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 1.15 }}
-          >
-            <CurrencyConverter />
-          </motion.div>
-        </section>
-
         {/* ── FINAL CTA ──────────────────────────────────────────── */}
         <section className="px-4 mb-10">
           <motion.div
@@ -1674,81 +1656,92 @@ export default function HomePage() {
 
         {/* ── LEGAL FOOTER ───────────────────────────────────────── */}
         <footer className="px-4 pb-4">
-          <div className="rounded-2xl bg-white/[0.025] border border-white/6 p-4 space-y-3 backdrop-blur-sm">
-            <div className="flex items-center gap-2 mb-1">
-              <Info size={13} className="text-white/30 flex-shrink-0" />
-              <p className="text-xs font-bold uppercase tracking-widest text-white/30">
-                Note legali — Diritto spagnolo
-              </p>
+          <button
+            onClick={() => setLegalOpen((v) => !v)}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-2xl bg-white/[0.025] border border-white/6 text-white/25 text-xs hover:bg-white/[0.04] transition-colors"
+          >
+            <div className="flex items-center gap-2">
+              <Info size={12} aria-hidden="true" />
+              <span className="font-bold uppercase tracking-widest">Note legali &amp; compliance</span>
             </div>
+            <ChevronDown
+              size={14}
+              className="transition-transform duration-200"
+              style={{ transform: legalOpen ? "rotate(180deg)" : "rotate(0deg)" }}
+              aria-hidden="true"
+            />
+          </button>
 
-            <div className="flex items-start gap-2">
-              <AlertTriangle size={12} className="text-amber-400/60 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-white/35 leading-relaxed">
-                <span className="text-white/55 font-bold">Premi e tassazione:</span> In conformità alla normativa
-                fiscale spagnola (Ley IRPF), i premi in denaro di importo superiore a <strong className="text-white/55">€300</strong> sono
-                soggetti a ritenuta alla fonte del 19% e devono essere dichiarati nella dichiarazione
-                dei redditi annuale. WanderQuest emette certificazione fiscale per premi ≥ €300.
-              </p>
-            </div>
+          {legalOpen && (
+            <div className="mt-1 rounded-2xl bg-white/[0.025] border border-white/6 p-4 flex flex-col gap-3 backdrop-blur-sm">
+              <div className="flex items-start gap-2">
+                <AlertTriangle size={12} className="text-amber-400/60 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-xs text-white/35 leading-relaxed">
+                  <span className="text-white/55 font-bold">Premi e tassazione:</span> In conformità alla normativa
+                  fiscale spagnola (Ley IRPF), i premi in denaro di importo superiore a <strong className="text-white/55">€300</strong> sono
+                  soggetti a ritenuta alla fonte del 19% e devono essere dichiarati nella dichiarazione
+                  dei redditi annuale. WanderQuest emette certificazione fiscale per premi ≥ €300.
+                </p>
+              </div>
 
-            <div className="flex items-start gap-2">
-              <Euro size={12} className="text-green-400/60 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-white/35 leading-relaxed">
-                <span className="text-white/55 font-bold">Prelievo minimo:</span> Il prelievo minimo è di <strong className="text-white/55">€5,00</strong>.
-                I pagamenti vengono elaborati tramite Stripe Connect o PayPal entro 7 giorni lavorativi
-                dalla richiesta, nei limiti della normativa sui servizi di pagamento (PSD2).
-              </p>
-            </div>
+              <div className="flex items-start gap-2">
+                <Euro size={12} className="text-green-400/60 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-xs text-white/35 leading-relaxed">
+                  <span className="text-white/55 font-bold">Prelievo minimo:</span> Il prelievo minimo è di <strong className="text-white/55">€5,00</strong>.
+                  I pagamenti vengono elaborati tramite Stripe Connect o PayPal entro 7 giorni lavorativi
+                  dalla richiesta, nei limiti della normativa sui servizi di pagamento (PSD2).
+                </p>
+              </div>
 
-            <div className="flex items-start gap-2">
-              <Shield size={12} className="text-blue-400/60 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-white/35 leading-relaxed">
-                <span className="text-white/55 font-bold">Concorso a premi:</span> WanderQuest opera ai sensi
-                della normativa spagnola sui concorsi a premi (Real Decreto 1463/1997). La
-                partecipazione è gratuita. Il montepremi è finanziato dai ricavi della piattaforma,
-                non dai partecipanti. Vietata la partecipazione ai minori di 18 anni.
-              </p>
-            </div>
+              <div className="flex items-start gap-2">
+                <Shield size={12} className="text-blue-400/60 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-xs text-white/35 leading-relaxed">
+                  <span className="text-white/55 font-bold">Concorso a premi:</span> WanderQuest opera ai sensi
+                  della normativa spagnola sui concorsi a premi (Real Decreto 1463/1997). La
+                  partecipazione è gratuita. Il montepremi è finanziato dai ricavi della piattaforma,
+                  non dai partecipanti. Vietata la partecipazione ai minori di 18 anni.
+                </p>
+              </div>
 
-            <div className="flex items-start gap-2">
-              <Download size={12} className="text-purple-400/60 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-white/35 leading-relaxed">
-                <span className="text-white/55 font-bold">Basi del concorso:</span> Le basi complete del
-                concorso sono depositate ante notario e disponibili su richiesta a{" "}
-                <span className="text-white/55">legal@wanderquest.app</span>, in conformità all&apos;art.&nbsp;8
-                del Real Decreto 1463/1997 e alla Ley 13/2011 di regolamentazione del gioco.
-              </p>
-            </div>
+              <div className="flex items-start gap-2">
+                <Download size={12} className="text-purple-400/60 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-xs text-white/35 leading-relaxed">
+                  <span className="text-white/55 font-bold">Basi del concorso:</span> Le basi complete del
+                  concorso sono depositate ante notario e disponibili su richiesta a{" "}
+                  <span className="text-white/55">legal@wanderquest.app</span>, in conformità all&apos;art.&nbsp;8
+                  del Real Decreto 1463/1997 e alla Ley 13/2011 di regolamentazione del gioco.
+                </p>
+              </div>
 
-            <div className="flex items-start gap-2">
-              <Sparkles size={12} className="text-orange-400/60 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-white/35 leading-relaxed">
-                <span className="text-white/55 font-bold">Link affiliati:</span> Alcune offerte di esperienze
-                e hotel presenti nell&apos;app sono link di affiliazione verso GetYourGuide e Booking.com.
-                WanderQuest può ricevere una commissione a fronte di prenotazioni effettuate tramite tali
-                link, senza costi aggiuntivi per l&apos;utente. Conforme alla Direttiva UE 2019/2161 (Omnibus).
-              </p>
-            </div>
+              <div className="flex items-start gap-2">
+                <Sparkles size={12} className="text-orange-400/60 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-xs text-white/35 leading-relaxed">
+                  <span className="text-white/55 font-bold">Link affiliati:</span> Alcune offerte di esperienze
+                  e hotel presenti nell&apos;app sono link di affiliazione verso GetYourGuide e Booking.com.
+                  WanderQuest può ricevere una commissione a fronte di prenotazioni effettuate tramite tali
+                  link, senza costi aggiuntivi per l&apos;utente. Conforme alla Direttiva UE 2019/2161 (Omnibus).
+                </p>
+              </div>
 
-            <div className="flex items-start gap-2">
-              <Star size={12} className="text-white/20 flex-shrink-0 mt-0.5" />
-              <p className="text-xs text-white/35 leading-relaxed">
-                <span className="text-white/55 font-bold">RGPD / Datos personales:</span> I dati di
-                geolocalizzazione sono trattati esclusivamente per validare le visite ai monumenti e non
-                vengono ceduti a terzi. Responsabile del trattamento: WanderQuest S.L., CIF ficticio,
-                Barcelona. Diritti di accesso, rettifica, cancellazione e opposizione:
-                <span className="text-white/55"> privacy@wanderquest.app</span>. Conforme al RGPD (UE) 2016/679.
-              </p>
-            </div>
+              <div className="flex items-start gap-2">
+                <Star size={12} className="text-white/20 flex-shrink-0 mt-0.5" aria-hidden="true" />
+                <p className="text-xs text-white/35 leading-relaxed">
+                  <span className="text-white/55 font-bold">RGPD / Datos personales:</span> I dati di
+                  geolocalizzazione sono trattati esclusivamente per validare le visite ai monumenti e non
+                  vengono ceduti a terzi. Responsabile del trattamento: WanderQuest S.L., CIF ficticio,
+                  Barcelona. Diritti di accesso, rettifica, cancellazione e opposizione:
+                  <span className="text-white/55"> privacy@wanderquest.app</span>. Conforme al RGPD (UE) 2016/679.
+                </p>
+              </div>
 
-            <div className="pt-2 border-t border-white/6 flex items-center justify-between">
-              <p className="text-xs text-white/20">
-                © {new Date().getFullYear()} WanderQuest S.L. · Barcelona, España
-              </p>
-              <p className="text-xs text-white/20">v1.0</p>
+              <div className="pt-2 border-t border-white/6 flex items-center justify-between">
+                <p className="text-xs text-white/20">
+                  © {new Date().getFullYear()} WanderQuest S.L. · Barcelona, España
+                </p>
+                <p className="text-xs text-white/20">v1.0</p>
+              </div>
             </div>
-          </div>
+          )}
         </footer>
 
       </div>

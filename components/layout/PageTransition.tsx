@@ -11,13 +11,13 @@ export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
-    <AnimatePresence mode="wait" initial={false}>
+    <AnimatePresence mode="sync" initial={false}>
       <motion.div
         key={pathname}
-        initial={{ opacity: 0, x: 18 }}
+        initial={{ opacity: 0, x: 8 }}
         animate={{ opacity: 1, x: 0 }}
-        exit={{ opacity: 0, x: -18 }}
-        transition={{ type: "spring", stiffness: 440, damping: 36, mass: 0.9 }}
+        exit={{ opacity: 0, x: -8 }}
+        transition={{ type: "spring", stiffness: 500, damping: 40, mass: 0.8 }}
         style={{ minHeight: "100%" }}
       >
         {children}

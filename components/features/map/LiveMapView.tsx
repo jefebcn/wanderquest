@@ -27,11 +27,43 @@ function fixLeafletIcons() {
 }
 
 // ── Sub-component: keeps map centered on user as GPS updates ──────────────
+// Only recenters when user hasn't interacted with the map in the last 8s,
+// and only when position has moved more than ~3 metres.
 function RecenterMap({ position }: { position: GeoPoint }) {
   const map = useMap();
+  const userInteracted = useRef(false);
+  const resetTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const prevPos = useRef(position);
+
   useEffect(() => {
-    map.setView([position.lat, position.lng], map.getZoom(), { animate: true });
+    const onInteract = () => {
+      userInteracted.current = true;
+      clearTimeout(resetTimer.current);
+      resetTimer.current = setTimeout(() => {
+        userInteracted.current = false;
+      }, 8000);
+    };
+    map.on("dragstart", onInteract);
+    map.on("zoomstart", onInteract);
+    return () => {
+      map.off("dragstart", onInteract);
+      map.off("zoomstart", onInteract);
+      clearTimeout(resetTimer.current);
+    };
+  }, [map]);
+
+  useEffect(() => {
+    if (userInteracted.current) return;
+    const dist = Math.hypot(
+      position.lat - prevPos.current.lat,
+      position.lng - prevPos.current.lng
+    );
+    if (dist > 0.00003) { // ~3 metres in degrees
+      map.panTo([position.lat, position.lng], { animate: true });
+      prevPos.current = position;
+    }
   }, [position.lat, position.lng, map]);
+
   return null;
 }
 
