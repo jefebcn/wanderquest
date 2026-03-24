@@ -92,66 +92,7 @@ function KpiStrip({ uid }: { uid: string }) {
   );
 }
 
-// ── Landmark Pin (image thumbnail on the pseudo-map) ─────────────────────────
-
-interface LandmarkPinProps {
-  name: string;
-  imageUrl: string;
-  pts: number;
-  top: string;
-  left?: string;
-  right?: string;
-  borderColor: string;
-}
-
-function LandmarkPin({ name, imageUrl, pts, top, left, right, borderColor }: LandmarkPinProps) {
-  return (
-    <div
-      className="absolute flex flex-col items-center gap-0.5 pointer-events-none"
-      style={{ top, left, right }}
-    >
-      {/* Circular image thumbnail */}
-      <div
-        className="relative size-9 rounded-full overflow-hidden shadow-[0_4px_16px_rgba(0,0,0,0.5)]"
-        style={{ border: `2.5px solid ${borderColor}`, boxShadow: `0 0 0 1px rgba(255,255,255,0.1), 0 4px 16px rgba(0,0,0,0.5)` }}
-      >
-        <Image src={imageUrl} alt={name} fill className="object-cover" sizes="36px" unoptimized />
-      </div>
-      {/* Name + points pill */}
-      <div className="rounded-full bg-black/75 border border-white/10 backdrop-blur-md px-2 py-[2px]">
-        <span className="text-[9px] font-black text-white leading-tight whitespace-nowrap">
-          {name} · <span style={{ color: borderColor }}>{pts}pt</span>
-        </span>
-      </div>
-    </div>
-  );
-}
-
 // ── Map Tile ──────────────────────────────────────────────────────────────────
-
-const MAP_LANDMARKS = [
-  {
-    name: "Colosseo",
-    imageUrl: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=80&q=80",
-    pts: 750,
-    top: "18%", left: "8%",
-    borderColor: "var(--s-accent)",
-  },
-  {
-    name: "Pantheon",
-    imageUrl: "https://images.unsplash.com/photo-1529154036614-a60975f5c760?w=80&q=80",
-    pts: 600,
-    top: "42%", right: "10%",
-    borderColor: "var(--s-primary)",
-  },
-  {
-    name: "Sagrada Família",
-    imageUrl: "https://images.unsplash.com/photo-1583779457094-efcd1a8ca25a?w=80&q=80",
-    pts: 820,
-    top: "60%", left: "32%",
-    borderColor: "#a78bfa",
-  },
-] as const;
 
 function MapTile() {
   const [nearbyCount, setNearbyCount] = useState<number | null>(null);
@@ -191,34 +132,20 @@ function MapTile() {
   return (
     <Link href="/explore" className="block col-span-2" aria-label="Apri mappa esplorativa">
       <div
-        className="relative h-52 rounded-2xl overflow-hidden border border-white/8 cursor-pointer glass-card-hover"
-        style={{
-          background:
-            "radial-gradient(ellipse at 40% 60%, rgba(45,212,191,0.14) 0%, rgba(15,23,42,0.98) 70%)",
-        }}
+        className="relative h-52 rounded-2xl overflow-hidden border border-white/8 cursor-pointer glass-card-hover bg-[#0c1524]"
       >
-        {/* Grid pattern */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.12]" xmlns="http://www.w3.org/2000/svg">
+        {/* Dot-matrix background pattern */}
+        <svg className="absolute inset-0 w-full h-full opacity-[0.18]" xmlns="http://www.w3.org/2000/svg">
           <defs>
-            <pattern id="bento-grid" width="28" height="28" patternUnits="userSpaceOnUse">
-              <path d="M 28 0 L 0 0 0 28" fill="none" stroke="rgba(45,212,191,0.8)" strokeWidth="0.5" />
+            <pattern id="bento-dots" width="20" height="20" patternUnits="userSpaceOnUse">
+              <circle cx="1" cy="1" r="0.8" fill="rgba(45,212,191,0.7)" />
             </pattern>
           </defs>
-          <rect width="100%" height="100%" fill="url(#bento-grid)" />
+          <rect width="100%" height="100%" fill="url(#bento-dots)" />
         </svg>
 
-        {/* Route lines */}
-        <svg className="absolute inset-0 w-full h-full opacity-[0.18]" viewBox="0 0 320 208" preserveAspectRatio="xMidYMid slice">
-          <path d="M 0 90 Q 90 60 160 110 Q 230 155 320 95"  fill="none" stroke="rgba(45,212,191,0.9)" strokeWidth="1.5" />
-          <path d="M 85 0 Q 110 60 130 110 Q 148 155 155 208" fill="none" stroke="rgba(45,212,191,0.5)" strokeWidth="1" />
-          <path d="M 0 155 Q 65 142 130 132 Q 210 120 320 148" fill="none" stroke="rgba(45,212,191,0.35)" strokeWidth="0.8" />
-        </svg>
-
-        {/* Landmark image pins — shown only when GPS data is unavailable (decorative preview).
-            Hidden once we have real nearby data so we don't mislead with fake locations. */}
-        {nearbyCount === null && MAP_LANDMARKS.map((lm) => (
-          <LandmarkPin key={lm.name} {...lm} />
-        ))}
+        {/* Subtle radial glow around center */}
+        <div className="absolute inset-0" style={{ background: "radial-gradient(ellipse at 50% 52%, rgba(45,212,191,0.1) 0%, transparent 65%)" }} />
 
         {/* Pulsing GPS marker — user position (centered as visual anchor) */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%]">
