@@ -227,3 +227,144 @@ export async function saveLandmarkPhoto(
     message: `+${pointsEarned} punti! Foto verificata 📸${bonusMsg}`,
   };
 }
+
+// ── Daily Location Photo (no monument required) ───────────────────────────────
+
+const DAILY_PHOTO_POINTS = 50;
+
+export interface SaveDailyPhotoPayload {
+  userLat: number;
+  userLng: number;
+  imageUrl: string;
+  storageRef: string;
+  contestId?: string;
+}
+
+/**
+ * Saves a "foto del luogo" uploaded without a specific landmark.
+ * Earns DAILY_PHOTO_POINTS (50 pt) once per calendar day per user.
+ * Photo also enters the contest voting feed.
+ */
+export async function saveDailyPhoto(
+  idToken: string,
+  payload: SaveDailyPhotoPayload
+): Promise<SaveLandmarkPhotoResult> {
+  const db = adminDb();
+
+  let uid: string;
+  let displayName: string;
+  try {
+    const decoded = await adminAuth().verifyIdToken(idToken);
+    uid = decoded.uid;
+    const userSnap = await db.collection("users").doc(uid).get();
+    displayName = (userSnap.data()?.displayName as string) ?? "Esploratore";
+  } catch {
+    await deleteStorageFile(payload.storageRef);
+    return { success: false, pointsEarned: 0, message: "Non autenticato." };
+  }
+
+  // 1x per calendar day check
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const recentSnap = await db
+    .collection("daily_photos")
+    .where("userId", "==", uid)
+    .where("day", "==", todayStr)
+    .limit(1)
+    .get();
+
+  if (!recentSnap.empty) {
+    await deleteStorageFile(payload.storageRef);
+    return {
+      success: false,
+      pointsEarned: 0,
+      message: "Hai già caricato la foto del luogo oggi. Torna domani!",
+    };
+  }
+
+  const userRef = db.collection("users").doc(uid);
+  const dailyPhotoRef = db.collection("daily_photos").doc();
+  const contestPhotoRef = db.collection("contest_photos").doc();
+  const now = new Date().toISOString();
+
+  await db.runTransaction(async (tx) => {
+    const userSnap2 = await tx.get(userRef);
+    const userData = userSnap2.data() ?? {};
+    const multiplier = (userData.pointsMultiplier as number) ?? 1.0;
+    const totalPoints = Math.round(DAILY_PHOTO_POINTS * multiplier);
+    const activeSeasonId = getCurrentSeasonId();
+    const existingSeasonId = (userData.currentSeasonId as string | undefined) ?? null;
+    const isNewSeason = existingSeasonId !== activeSeasonId;
+
+    // Save daily_photos record
+    tx.set(dailyPhotoRef, {
+      userId: uid,
+      day: todayStr,
+      imageUrl: payload.imageUrl,
+      storageRef: payload.storageRef,
+      lat: payload.userLat,
+      lng: payload.userLng,
+      pointsEarned: totalPoints,
+      uploadedAt: now,
+    });
+
+    // Enter contest voting feed
+    tx.set(contestPhotoRef, {
+      userId: uid,
+      displayName,
+      initials: displayName.slice(0, 2).toUpperCase(),
+      avatarGradient: "from-violet-500 to-indigo-600",
+      imageUrl: payload.imageUrl,
+      caption: "📍 Foto del luogo",
+      city: null,
+      likes: 0,
+      superLikes: 0,
+      skips: 0,
+      contestId: payload.contestId ?? null,
+      gpsVerified: true,
+      status: "approved",
+      uploadedAt: now,
+    });
+
+    // Award points
+    tx.set(
+      userRef,
+      {
+        totalPoints: FieldValue.increment(totalPoints),
+        currentSeasonId: activeSeasonId,
+        seasonPoints: isNewSeason
+          ? totalPoints
+          : FieldValue.increment(totalPoints),
+        _seasonMeta: {
+          startAt: getSeasonStartDate(activeSeasonId),
+          endAt: getSeasonEndDate(activeSeasonId),
+        },
+        leagueId: (userData.leagueId as string | undefined) ?? "bronze",
+      },
+      { merge: true }
+    );
+
+    // Update contest leaderboard
+    if (payload.contestId) {
+      const entryRef = db
+        .collection("leaderboard")
+        .doc(payload.contestId)
+        .collection("entries")
+        .doc(uid);
+      tx.set(
+        entryRef,
+        {
+          points: FieldValue.increment(totalPoints),
+          userId: uid,
+          displayName,
+        },
+        { merge: true }
+      );
+    }
+  });
+
+  return {
+    success: true,
+    pointsEarned: DAILY_PHOTO_POINTS,
+    message: `+${DAILY_PHOTO_POINTS} punti! Foto del luogo salvata 🌍`,
+  };
+}

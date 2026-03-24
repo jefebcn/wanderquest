@@ -2,12 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef, type ChangeEvent } from "react";
 import dynamic from "next/dynamic";
+import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUserLocation }  from "@/hooks/useUserLocation";
 import { useScanner }       from "@/hooks/useScanner";
 import { useContest }       from "@/hooks/useContest";
 import { getNearbyLandmarks } from "@/actions/landmarks";
-import { saveLandmarkPhoto } from "@/actions/landmark-photos";
+import { saveLandmarkPhoto, saveDailyPhoto } from "@/actions/landmark-photos";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { formatDistance }   from "@/lib/utils";
 import { VoiceSynthesizer } from "@/components/features/voice/VoiceSynthesizer";
@@ -17,7 +18,8 @@ import type { GeoPoint, Landmark } from "@/types";
 import type { SaveLandmarkPhotoResult } from "@/actions/landmark-photos";
 import {
   ScanLine, MapPin, CheckCircle, AlertCircle, Loader2,
-  ChevronRight, Radar, Map, List, Camera,
+  ChevronRight, Radar, Map, List, Camera, ArrowLeft,
+  ImagePlus, Vote,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -323,9 +325,136 @@ function LandmarkCard({
   );
 }
 
+// ── Daily Activities (shown when no nearby monuments) ─────────────────────
+
+function DailyActivities({
+  userPosition,
+  contestId,
+  onResult,
+}: {
+  userPosition: GeoPoint;
+  contestId?: string;
+  onResult: (r: SaveLandmarkPhotoResult) => void;
+}) {
+  const [uploading, setUploading] = useState(false);
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleFileSelect = useCallback(
+    async (e: ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+      setUploading(true);
+      try {
+        const { storage, auth } = getFirebaseClient();
+        const { ref: storageRef, uploadBytes, getDownloadURL } = await import("firebase/storage");
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const path = `daily_photos/${auth.currentUser!.uid}/${Date.now()}_${safeName}`;
+        const fileRef2 = storageRef(storage, path);
+        await uploadBytes(fileRef2, file);
+        const imageUrl = await getDownloadURL(fileRef2);
+        const tok = await auth.currentUser?.getIdToken();
+        if (!tok) throw new Error("Token mancante");
+        const result = await saveDailyPhoto(tok, {
+          userLat: userPosition.lat,
+          userLng: userPosition.lng,
+          imageUrl,
+          storageRef: path,
+          contestId,
+        });
+        onResult(result);
+        if (!result.success) {
+          const { deleteObject } = await import("firebase/storage");
+          await deleteObject(fileRef2).catch(() => {});
+        }
+      } catch {
+        onResult({ success: false, pointsEarned: 0, message: "Errore durante il caricamento." });
+      } finally {
+        setUploading(false);
+        if (fileRef.current) fileRef.current.value = "";
+      }
+    },
+    [userPosition, contestId, onResult]
+  );
+
+  return (
+    <div className="flex flex-col gap-3">
+      <p className="text-[10px] font-bold uppercase tracking-widest text-white/35">
+        Sfide Disponibili
+      </p>
+
+      {/* Daily location photo */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="rounded-2xl bg-white/4 border border-white/8 p-4"
+      >
+        <div className="flex items-start gap-3 mb-3">
+          <div className="size-10 rounded-xl bg-[var(--s-accent)]/15 border border-[var(--s-accent)]/25 flex items-center justify-center flex-shrink-0">
+            <ImagePlus size={18} className="text-[var(--s-accent)]" aria-hidden="true" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-black text-sm text-white">Foto del Luogo</p>
+            <p className="text-xs text-white/45 mt-0.5">Scatta una foto dei tuoi dintorni e guadagna punti</p>
+          </div>
+          <span className="rounded-full bg-[var(--s-accent)]/15 border border-[var(--s-accent)]/25 px-2.5 py-1 text-xs font-black text-[var(--s-accent)] flex-shrink-0">
+            +50 pt
+          </span>
+        </div>
+        <p className="text-[10px] text-white/25 mb-3">1 volta al giorno · entra nel contest per i voti</p>
+        <motion.button
+          whileTap={!uploading ? { scale: 0.97 } : {}}
+          onClick={() => fileRef.current?.click()}
+          disabled={uploading}
+          className={cn(
+            "w-full rounded-xl py-2.5 text-sm font-black flex items-center justify-center gap-2 transition-colors duration-150",
+            uploading
+              ? "bg-white/5 text-white/30 cursor-not-allowed"
+              : "bg-[var(--s-accent)]/15 border border-[var(--s-accent)]/30 text-[var(--s-accent)] hover:bg-[var(--s-accent)]/22"
+          )}
+        >
+          {uploading
+            ? <><Loader2 size={14} className="animate-spin" /> Caricamento…</>
+            : <><Camera size={14} aria-hidden="true" /> Scatta Foto</>
+          }
+        </motion.button>
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          capture="environment"
+          className="hidden"
+          onChange={handleFileSelect}
+        />
+      </motion.div>
+
+      {/* Vote on contest photos */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.08 }}
+      >
+        <Link
+          href="/scan"
+          className="flex items-center gap-3 rounded-2xl bg-white/4 border border-white/8 p-4 hover:bg-white/6 transition-colors duration-150"
+        >
+          <div className="size-10 rounded-xl bg-[var(--s-primary)]/15 border border-[var(--s-primary)]/25 flex items-center justify-center flex-shrink-0">
+            <Vote size={18} className="text-[var(--s-primary)]" aria-hidden="true" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-black text-sm text-white">Vota le Foto</p>
+            <p className="text-xs text-white/45 mt-0.5">Guadagna 1–3 pt per ogni voto sulle foto degli altri esploratori</p>
+          </div>
+          <ChevronRight size={16} className="text-white/30 flex-shrink-0" aria-hidden="true" />
+        </Link>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Main View ─────────────────────────────────────────────────────────────
 
 export function ScannerView() {
+  const router = useRouter();
   const { contest } = useContest();
   const { position, isLoading: locLoading, hasError: locError, errorMsg, start } = useUserLocation();
   const { state: scanState, result, checkIn, reset } = useScanner(contest?.id);
@@ -396,6 +525,13 @@ export function ScannerView() {
       {/* Header */}
       <div className="sticky top-0 z-10 border-b border-white/8 bg-slate-950/95 px-4 pt-header pb-3 backdrop-blur-xl">
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => router.back()}
+            className="mr-1 -ml-1 rounded-xl p-1.5 text-white/50 hover:text-white hover:bg-white/8 transition-colors duration-150"
+            aria-label="Torna indietro"
+          >
+            <ArrowLeft size={20} />
+          </button>
           <ScanLine className="text-[var(--s-primary)]" size={22} aria-hidden="true" />
           <h1 className="text-xl font-black">Esplora</h1>
         </div>
@@ -474,6 +610,17 @@ export function ScannerView() {
               {nearby.length} monumento{nearby.length !== 1 ? "i" : ""} vicin{nearby.length !== 1 ? "i" : "o"}
             </div>
           )}
+
+          {/* Floating activities panel when no landmarks nearby */}
+          {!fetching && nearby.length === 0 && (
+            <div className="absolute bottom-0 left-0 right-0 z-[400] px-4 pb-6 pt-12 bg-gradient-to-t from-slate-950 via-slate-950/95 to-transparent">
+              <DailyActivities
+                userPosition={position}
+                contestId={contest?.id}
+                onResult={handlePhotoResult}
+              />
+            </div>
+          )}
         </div>
       )}
 
@@ -486,11 +633,11 @@ export function ScannerView() {
           {fetching && !nearby.length ? (
             Array.from({ length: 3 }).map((_, i) => <LandmarkCardSkeleton key={i} />)
           ) : nearby.length === 0 ? (
-            <div className="flex flex-col items-center py-16 text-center text-white/25">
-              <MapPin size={40} className="mb-3 opacity-40" aria-hidden="true" />
-              <p className="text-sm">Nessun monumento nelle vicinanze.</p>
-              <p className="text-xs mt-1 text-white/20">Esplora la tua città!</p>
-            </div>
+            <DailyActivities
+              userPosition={position}
+              contestId={contest?.id}
+              onResult={handlePhotoResult}
+            />
           ) : (
             nearby.map((lm) => (
               <LandmarkCard key={lm.id} landmark={lm} onOpen={() => openSheet(lm)} />
