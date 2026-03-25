@@ -262,3 +262,55 @@ export interface EmergencyContacts {
   embassy: string;       // Italian Farnesina for IT users
   embassyPhone?: string;
 }
+
+// ── Smart Pack Agent ────────────────────────────────────────────────────────
+
+export type PackingCategory = "Clothes" | "Electronics" | "Documents" | "Toiletries";
+
+export interface PackingItem {
+  id: string;
+  name: string;
+  category: PackingCategory;
+  emoji: string;
+  essential: boolean;
+  checked: boolean;
+  /** English search query for Amazon affiliate link */
+  affiliateQuery: string;
+}
+
+export interface PackingListData {
+  id: string;
+  userId: string;
+  destination: string;
+  country: string;
+  /** ISO-2 country code (e.g. "ES", "GB") */
+  countryCode: string;
+  /** Human-readable weather summary */
+  weatherSummary: string;
+  /** Current month name (e.g. "March") */
+  month: string;
+  items: PackingItem[];
+  /** Safety level for the destination */
+  safetyLevel: SafetyLevel | null;
+  /** One-line travel advisory from Haiku */
+  safetyAdvisory: string | null;
+  /** Currency code if different from EUR (e.g. "GBP", "USD") — null if EUR zone */
+  currencyCode: string | null;
+  /** Note about the currency (e.g. "London uses British Pound (GBP)") */
+  currencyNote: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface GeneratePackingListResult {
+  destination: string;
+  country: string;
+  countryCode: string;
+  weatherSummary: string;
+  month: string;
+  items: Omit<PackingItem, "checked">[];
+  safetyLevel: SafetyLevel | null;
+  safetyAdvisory: string | null;
+  currencyCode: string | null;
+  currencyNote: string | null;
+}

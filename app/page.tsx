@@ -11,6 +11,7 @@ import { SafetyHub }         from "@/components/features/safety/SafetyHub";
 import { GoPro }             from "@/components/features/subscription/GoPro";
 import { BottomSheet }       from "@/components/ui/BottomSheet";
 import { BentoHub } from "@/components/features/home/BentoHub";
+import { PackingList } from "@/components/features/packing/PackingList";
 import { formatCents } from "@/lib/utils";
 import {
   Compass,
@@ -1308,6 +1309,20 @@ export default function HomePage() {
         {/* ── BENTO HUB ────────────────────────────────────────────── */}
         <BentoHub />
 
+        {/* ── SMART PACK AGENT ─────────────────────────────────────── */}
+        <PackingList
+          onCurrencyDetected={(_code) => {
+            // Currency auto-pin: scroll to CurrencyConverter widget
+            const el = document.getElementById("currency-converter");
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+          }}
+          onSafetyDetected={(_level, _advisory) => {
+            // Safety detected: scroll to SafetyHub widget
+            const el = document.getElementById("safety-hub");
+            if (el) el.scrollIntoView({ behavior: "smooth", block: "center" });
+          }}
+        />
+
         {/* ── ANIMATED PRIZE COUNTER BANNER ──────────────────────── */}
         {contest && (
           <motion.section
@@ -1351,7 +1366,7 @@ export default function HomePage() {
         </section>
 
         {/* ── SAFETY HUB ─────────────────────────────────────────── */}
-        <section className="px-4 mb-8">
+        <section id="safety-hub" className="px-4 mb-8">
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1504,7 +1519,7 @@ export default function HomePage() {
         </section>
 
         {/* ── TRAVELER'S UTILITY — Currency Hub ──────────────────── */}
-        <section className="px-4 mb-10">
+        <section id="currency-converter" className="px-4 mb-10">
           <motion.div
             initial={{ opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
