@@ -2,17 +2,6 @@
 
 /**
  * PackingList — Smart Pack Agent UI (2026 Liquid Glass style).
- *
- * Features:
- *  - Destination search input → calls generatePackingList server action
- *  - Category sections: Clothes, Electronics, Documents, Toiletries
- *  - Animated item checkboxes with strike-through on completion
- *  - "Compra su Amazon" affiliate link per item
- *  - Travel Advisory card if safety level is WARNING or CRITICAL
- *  - Currency auto-pin banner when destination uses non-EUR currency
- *  - "Posta il mio Gear" → publishes to social feed (contest_photos collection)
- *  - Persists checked state to Firestore packing_lists collection
- *  - Safe-area-aware modal respects iPhone notch / bottom nav
  */
 
 import {
@@ -46,11 +35,11 @@ import {
   getDoc,
   collection,
   addDoc,
-  serverTimestamp,
 } from "firebase/firestore";
 import { getFirebaseClient } from "@/lib/firebase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { generatePackingList } from "@/actions/packing";
+import { searchDestinations, type Destination } from "@/lib/destinations";
 import { cn } from "@/lib/utils";
 import type {
   PackingCategory,
@@ -101,7 +90,13 @@ const CATEGORY_META: Record<
 
 const SAFETY_META: Record<
   SafetyLevel,
-  { icon: typeof ShieldCheck; color: string; bg: string; border: string; label: string }
+  {
+    icon: typeof ShieldCheck;
+    color: string;
+    bg: string;
+    border: string;
+    label: string;
+  }
 > = {
   STABLE: {
     icon: ShieldCheck,
@@ -142,6 +137,167 @@ function buildAffiliateUrl(query: string): string {
     ref: "nb_sb_noss",
   });
   return `${AMAZON_BASE}?${params.toString()}`;
+}
+
+// ── Autocomplete dropdown ─────────────────────────────────────────────────────
+
+function DestinationAutocomplete({
+  value,
+  onChange,
+  onSelect,
+  onSubmit,
+  loading,
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  onSelect: (dest: Destination) => void;
+  onSubmit: () => void;
+  loading: boolean;
+}) {
+  const [suggestions, setSuggestions] = useState<Destination[]>([]);
+  const [open, setOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
+
+  // Update suggestions on value change
+  useEffect(() => {
+    if (value.length >= 1) {
+      const results = searchDestinations(value, 8);
+      setSuggestions(results);
+      setOpen(results.length > 0 && focused);
+    } else {
+      setSuggestions([]);
+      setOpen(false);
+    }
+  }, [value, focused]);
+
+  // Close on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
+
+  const handleSelect = (dest: Destination) => {
+    onChange(dest.city);
+    setOpen(false);
+    onSelect(dest);
+  };
+
+  return (
+    <div ref={wrapperRef} className="relative flex-1">
+      <MapPin
+        size={14}
+        className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none z-10"
+      />
+      <input
+        type="text"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            setOpen(false);
+            onSubmit();
+          }
+          if (e.key === "Escape") setOpen(false);
+        }}
+        onFocus={() => {
+          setFocused(true);
+          if (suggestions.length > 0) setOpen(true);
+        }}
+        onBlur={() => {
+          // Delay so click on suggestion fires first
+          setTimeout(() => setFocused(false), 150);
+        }}
+        placeholder="Destinazione (es. Malaga, Tokyo, Dubai…)"
+        autoComplete="off"
+        className={cn(
+          "w-full rounded-xl bg-white/6 border border-white/10 pl-8 pr-3 py-2.5",
+          "text-[13px] text-white placeholder:text-white/25",
+          "focus:outline-none focus:border-[var(--s-accent)]/50 focus:bg-white/8 transition-all"
+        )}
+      />
+
+      {/* Dropdown */}
+      <AnimatePresence>
+        {open && suggestions.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: -4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -4, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 right-0 mt-1.5 z-50 rounded-xl overflow-hidden"
+            style={{
+              background: "rgba(10, 18, 32, 0.95)",
+              backdropFilter: "blur(24px) saturate(1.4)",
+              WebkitBackdropFilter: "blur(24px) saturate(1.4)",
+              border: "1px solid rgba(255,255,255,0.10)",
+              boxShadow:
+                "0 8px 32px rgba(0,0,0,0.4), 0 2px 8px rgba(0,0,0,0.2)",
+            }}
+          >
+            {/* Group by continent */}
+            {Array.from(
+              new Set(suggestions.map((d) => d.continent))
+            ).map((continent) => (
+              <div key={continent}>
+                <p className="px-3 pt-2 pb-1 text-[9px] font-black uppercase tracking-widest text-white/25">
+                  {continent}
+                </p>
+                {suggestions
+                  .filter((d) => d.continent === continent)
+                  .map((dest) => (
+                    <button
+                      key={`${dest.city}-${dest.country}`}
+                      onMouseDown={(e) => {
+                        e.preventDefault();
+                        handleSelect(dest);
+                      }}
+                      className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-white/6 transition-colors text-left group"
+                    >
+                      <span className="text-base flex-shrink-0 leading-none">
+                        {dest.flag}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-[13px] font-bold text-white truncate leading-none mb-0.5">
+                          {dest.city}
+                        </p>
+                        <p className="text-[10px] text-white/40 truncate">
+                          {dest.country}
+                        </p>
+                      </div>
+                      <MapPin
+                        size={10}
+                        className="text-[var(--s-accent)]/0 group-hover:text-[var(--s-accent)]/60 transition-colors flex-shrink-0"
+                      />
+                    </button>
+                  ))}
+              </div>
+            ))}
+
+            {/* Free-type hint */}
+            <div className="px-3 py-2 border-t border-white/6">
+              <button
+                onMouseDown={(e) => {
+                  e.preventDefault();
+                  setOpen(false);
+                  onSubmit();
+                }}
+                className="w-full flex items-center gap-2 text-[11px] text-white/35 hover:text-white/60 transition-colors"
+              >
+                <Search size={10} />
+                Cerca &quot;{value}&quot; — qualsiasi destinazione nel mondo
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 // ── Liquid Glass Checkbox ─────────────────────────────────────────────────────
@@ -271,7 +427,6 @@ function CategorySection({
 
   return (
     <div className={cn("rounded-2xl border overflow-hidden", meta.bg, meta.border)}>
-      {/* Category header */}
       <button
         onClick={() => setExpanded((v) => !v)}
         className="w-full flex items-center gap-2.5 p-3.5 text-left"
@@ -290,11 +445,13 @@ function CategorySection({
         )}
       </button>
 
-      {/* Progress bar */}
       <div className="px-3.5 pb-1">
         <div className="h-0.5 rounded-full bg-white/6 overflow-hidden">
           <motion.div
-            className={cn("h-full rounded-full", meta.color.replace("text-", "bg-"))}
+            className={cn(
+              "h-full rounded-full",
+              meta.color.replace("text-", "bg-")
+            )}
             initial={{ width: 0 }}
             animate={{ width: `${pct}%` }}
             transition={{ duration: 0.4, ease: "easeOut" }}
@@ -302,7 +459,6 @@ function CategorySection({
         </div>
       </div>
 
-      {/* Items */}
       <AnimatePresence>
         {expanded && (
           <motion.div
@@ -345,9 +501,17 @@ function TravelAdvisoryCard({
         meta.border
       )}
     >
-      <Icon size={18} className={cn("flex-shrink-0 mt-0.5", meta.color)} />
+      <Icon
+        size={18}
+        className={cn("flex-shrink-0 mt-0.5", meta.color)}
+      />
       <div className="flex-1 min-w-0">
-        <p className={cn("text-xs font-black mb-1 uppercase tracking-wide", meta.color)}>
+        <p
+          className={cn(
+            "text-xs font-black mb-1 uppercase tracking-wide",
+            meta.color
+          )}
+        >
           Avviso di Viaggio · {meta.label}
         </p>
         <p className="text-[12px] text-white/65 leading-relaxed">{advisory}</p>
@@ -371,7 +535,10 @@ function CurrencyBanner({
       animate={{ opacity: 1, y: 0 }}
       className="rounded-2xl border border-[var(--s-primary)]/25 bg-[var(--s-primary)]/8 p-3.5 flex items-center gap-3"
     >
-      <ArrowRightLeft size={16} className="text-[var(--s-primary)] flex-shrink-0" />
+      <ArrowRightLeft
+        size={16}
+        className="text-[var(--s-primary)] flex-shrink-0"
+      />
       <div className="flex-1 min-w-0">
         <p className="text-[10px] font-black text-[var(--s-primary)] uppercase tracking-wide mb-0.5">
           Valuta Auto-Pin · {currencyCode}
@@ -459,13 +626,14 @@ function PostGearButton({
 // ── Main PackingList Component ────────────────────────────────────────────────
 
 interface PackingListProps {
-  /** Called when a non-EUR currency is detected, so parent can auto-pin it */
   onCurrencyDetected?: (code: string) => void;
-  /** Called when safety level is not STABLE */
   onSafetyDetected?: (level: SafetyLevel, advisory: string) => void;
 }
 
-export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingListProps) {
+export function PackingList({
+  onCurrencyDetected,
+  onSafetyDetected,
+}: PackingListProps) {
   const { user } = useAuth();
   const [destination, setDestination] = useState("");
   const [isPending, startTransition] = useTransition();
@@ -473,7 +641,6 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
   const [result, setResult] = useState<GeneratePackingListResult | null>(null);
   const [items, setItems] = useState<PackingItem[]>([]);
   const [gearPosted, setGearPosted] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   // ── Load saved list from Firestore ─────────────────────────────────────────
   useEffect(() => {
@@ -499,7 +666,9 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
           setItems(data.items);
           setDestination(data.destination);
         }
-      } catch { /* non-fatal */ }
+      } catch {
+        /* non-fatal */
+      }
     })();
   }, [user]);
 
@@ -525,13 +694,17 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
         };
-        await setDoc(doc(db, "packing_lists", user.uid), listData, { merge: true });
-      } catch { /* non-fatal */ }
+        await setDoc(doc(db, "packing_lists", user.uid), listData, {
+          merge: true,
+        });
+      } catch {
+        /* non-fatal */
+      }
     },
     [user]
   );
 
-  // ── Toggle item checked ─────────────────────────────────────────────────────
+  // ── Toggle item ─────────────────────────────────────────────────────────────
   const handleToggle = useCallback(
     (id: string) => {
       setItems((prev) => {
@@ -545,32 +718,48 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
     [result, persistItems]
   );
 
-  // ── Generate packing list ───────────────────────────────────────────────────
-  const handleGenerate = () => {
+  // ── Generate list ───────────────────────────────────────────────────────────
+  const handleGenerate = useCallback(() => {
     const city = destination.trim();
     if (!city) return;
     setError(null);
     setGearPosted(false);
 
     startTransition(async () => {
-      try {
-        const data = await generatePackingList(city);
-        const withChecked: PackingItem[] = data.items.map((item) => ({
-          ...item,
-          checked: false,
-        }));
-        setResult(data);
-        setItems(withChecked);
-        if (data.currencyCode) onCurrencyDetected?.(data.currencyCode);
-        if (data.safetyLevel && data.safetyLevel !== "STABLE" && data.safetyAdvisory) {
-          onSafetyDetected?.(data.safetyLevel, data.safetyAdvisory);
-        }
-        if (user) persistItems(withChecked, data);
-      } catch (e) {
-        setError(e instanceof Error ? e.message : "Errore durante la generazione.");
+      const response = await generatePackingList(city);
+
+      if (!response.ok) {
+        setError(response.error);
+        return;
       }
+
+      const data = response.data;
+      const withChecked: PackingItem[] = data.items.map((item) => ({
+        ...item,
+        checked: false,
+      }));
+
+      setResult(data);
+      setItems(withChecked);
+
+      if (data.currencyCode) onCurrencyDetected?.(data.currencyCode);
+      if (
+        data.safetyLevel &&
+        data.safetyLevel !== "STABLE" &&
+        data.safetyAdvisory
+      ) {
+        onSafetyDetected?.(data.safetyLevel, data.safetyAdvisory);
+      }
+
+      if (user) persistItems(withChecked, data);
     });
-  };
+  }, [
+    destination,
+    user,
+    persistItems,
+    onCurrencyDetected,
+    onSafetyDetected,
+  ]);
 
   // ── Grouped items ───────────────────────────────────────────────────────────
   const grouped = CATEGORIES.reduce<Record<PackingCategory, PackingItem[]>>(
@@ -583,12 +772,16 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
 
   const totalItems = items.length;
   const checkedItems = items.filter((i) => i.checked).length;
-  const overallPct = totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
+  const overallPct =
+    totalItems > 0 ? Math.round((checkedItems / totalItems) * 100) : 0;
 
   return (
     <section
       className="px-4 mb-8"
-      style={{ paddingBottom: "calc(env(safe-area-inset-bottom, 0px) + 2rem)" }}
+      style={{
+        paddingBottom:
+          "calc(env(safe-area-inset-bottom, 0px) + 2rem)",
+      }}
     >
       {/* Section header */}
       <motion.div
@@ -618,25 +811,16 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
         }}
       >
         <div className="flex gap-2">
-          <div className="relative flex-1">
-            <MapPin
-              size={14}
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-white/30 pointer-events-none"
-            />
-            <input
-              ref={inputRef}
-              type="text"
-              value={destination}
-              onChange={(e) => setDestination(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && handleGenerate()}
-              placeholder="Destinazione (es. Malaga, Londra...)"
-              className={cn(
-                "w-full rounded-xl bg-white/6 border border-white/10 pl-8 pr-3 py-2.5",
-                "text-[13px] text-white placeholder:text-white/25",
-                "focus:outline-none focus:border-[var(--s-accent)]/50 focus:bg-white/8 transition-all"
-              )}
-            />
-          </div>
+          <DestinationAutocomplete
+            value={destination}
+            onChange={setDestination}
+            onSelect={() => {
+              /* city already set via onChange */
+            }}
+            onSubmit={handleGenerate}
+            loading={isPending}
+          />
+
           <button
             onClick={handleGenerate}
             disabled={isPending || !destination.trim()}
@@ -655,7 +839,7 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
           </button>
         </div>
 
-        {/* Generating state */}
+        {/* Loading indicator */}
         <AnimatePresence>
           {isPending && (
             <motion.div
@@ -664,20 +848,27 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
               exit={{ opacity: 0, height: 0 }}
               className="mt-3 flex items-center gap-2"
             >
-              <Sparkles size={12} className="text-[var(--s-accent)] animate-pulse" />
+              <Sparkles
+                size={12}
+                className="text-[var(--s-accent)] animate-pulse"
+              />
               <p className="text-[11px] text-white/50">
-                Haiku sta analizzando meteo e destinazione…
+                Haiku analizza meteo e destinazione…
               </p>
             </motion.div>
           )}
         </AnimatePresence>
 
-        {/* Error */}
-        {error && (
-          <p className="mt-2 text-[11px] text-red-400 flex items-center gap-1.5">
-            <X size={11} />
-            {error}
-          </p>
+        {/* Error state */}
+        {error && !isPending && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="mt-2 flex items-start gap-1.5"
+          >
+            <X size={12} className="text-red-400 flex-shrink-0 mt-0.5" />
+            <p className="text-[11px] text-red-400 leading-snug">{error}</p>
+          </motion.div>
         )}
       </motion.div>
 
@@ -710,9 +901,10 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
                   <h3 className="font-display text-lg font-black text-white leading-tight">
                     {result.destination}
                   </h3>
-                  <p className="text-[11px] text-white/45 mt-0.5">{result.weatherSummary}</p>
+                  <p className="text-[11px] text-white/45 mt-0.5">
+                    {result.weatherSummary}
+                  </p>
                 </div>
-                {/* Overall progress */}
                 <div className="flex flex-col items-end gap-1 flex-shrink-0">
                   <span className="text-[22px] font-black text-[var(--s-accent)] font-mono leading-none">
                     {overallPct}%
@@ -721,7 +913,6 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
                 </div>
               </div>
 
-              {/* Master progress bar */}
               <div className="h-1.5 rounded-full bg-white/6 overflow-hidden">
                 <motion.div
                   className="h-full rounded-full bg-gradient-to-r from-[var(--s-accent)] to-[var(--s-primary)]"
@@ -735,7 +926,7 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
               </p>
             </div>
 
-            {/* Travel Advisory (WARNING/CRITICAL only) */}
+            {/* Travel Advisory */}
             {result.safetyLevel &&
               result.safetyLevel !== "STABLE" &&
               result.safetyAdvisory && (
@@ -765,11 +956,13 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
               ) : null
             )}
 
-            {/* Social sharing footer */}
+            {/* Social footer */}
             {user && (
               <div className="flex items-center justify-between pt-2">
                 <p className="text-[11px] text-white/30">
-                  {user.displayName ? `Lista di ${user.displayName}` : "La tua lista personale"}
+                  {user.displayName
+                    ? `Lista di ${user.displayName}`
+                    : "La tua lista personale"}
                 </p>
                 <PostGearButton
                   destination={result.destination}
@@ -807,13 +1000,16 @@ export function PackingList({ onCurrencyDetected, onSafetyDetected }: PackingLis
           </div>
           <div>
             <p className="text-sm font-bold text-white/60 mb-1">Dove vai?</p>
-            <p className="text-[12px] text-white/35 max-w-[220px] leading-relaxed">
-              Inserisci la tua destinazione e Haiku genererà una lista intelligente basata su meteo e contesto.
+            <p className="text-[12px] text-white/35 max-w-[240px] leading-relaxed">
+              Inserisci la tua destinazione e Haiku genererà una lista
+              intelligente basata su meteo e contesto locale.
             </p>
           </div>
           <div className="flex items-center gap-1.5 text-[10px] text-white/20">
             <ExternalLink size={9} />
-            <span>Includi link Amazon · Salvataggio offline · Condivisione social</span>
+            <span>
+              400+ destinazioni · Link Amazon · Salvataggio offline
+            </span>
           </div>
         </motion.div>
       )}

@@ -8,10 +8,23 @@
  *  2. Build a contextual prompt with city, country, weather, and current month.
  *  3. Ask Claude Haiku to return a structured JSON packing list.
  *  4. Cache results in-process for 24 hours to minimise API costs.
+ *
+ * Returns { ok: true, data } or { ok: false, error } — never throws,
+ * so Next.js Server Action errors are surfaced safely to the client.
  */
 
 import Anthropic from "@anthropic-ai/sdk";
-import type { GeneratePackingListResult, SafetyLevel } from "@/types";
+import type {
+  GeneratePackingListResult,
+  PackingCategory,
+  SafetyLevel,
+} from "@/types";
+
+// ── Response envelope ─────────────────────────────────────────────────────────
+
+export type PackingListResponse =
+  | { ok: true; data: GeneratePackingListResult }
+  | { ok: false; error: string };
 
 // ── In-memory cache (24 hours) ───────────────────────────────────────────────
 
@@ -28,7 +41,6 @@ function isFresh(entry: CacheEntry | undefined): entry is CacheEntry {
   return !!entry && Date.now() - entry.timestamp < CACHE_TTL_MS;
 }
 
-// Cache key: lowercased city + month (weather can vary but we accept daily staleness)
 function cacheKey(city: string, month: string): string {
   return `${city.toLowerCase().trim()}::${month.toLowerCase()}`;
 }
@@ -71,7 +83,7 @@ async function fetchWeather(city: string): Promise<OWMWeather | null> {
   }
 }
 
-// ── Country-currency mapping (non-EUR destinations common for Italian travelers) ─
+// ── Country-currency mapping ──────────────────────────────────────────────────
 
 const CURRENCY_MAP: Record<string, { code: string; name: string }> = {
   GB: { code: "GBP", name: "Sterlina britannica (GBP)" },
@@ -89,6 +101,43 @@ const CURRENCY_MAP: Record<string, { code: string; name: string }> = {
   AE: { code: "AED", name: "Dirham degli EAU (AED)" },
   MA: { code: "MAD", name: "Dirham marocchino (MAD)" },
   EG: { code: "EGP", name: "Sterlina egiziana (EGP)" },
+  ID: { code: "IDR", name: "Rupia indonesiana (IDR)" },
+  SG: { code: "SGD", name: "Dollaro di Singapore (SGD)" },
+  HK: { code: "HKD", name: "Dollaro di Hong Kong (HKD)" },
+  KR: { code: "KRW", name: "Won sudcoreano (KRW)" },
+  NO: { code: "NOK", name: "Corona norvegese (NOK)" },
+  SE: { code: "SEK", name: "Corona svedese (SEK)" },
+  DK: { code: "DKK", name: "Corona danese (DKK)" },
+  PL: { code: "PLN", name: "Zloty polacco (PLN)" },
+  CZ: { code: "CZK", name: "Corona ceca (CZK)" },
+  HU: { code: "HUF", name: "Fiorino ungherese (HUF)" },
+  RO: { code: "RON", name: "Leu romeno (RON)" },
+  ZA: { code: "ZAR", name: "Rand sudafricano (ZAR)" },
+  NZ: { code: "NZD", name: "Dollaro neozelandese (NZD)" },
+  MY: { code: "MYR", name: "Ringgit malese (MYR)" },
+  PH: { code: "PHP", name: "Peso filippino (PHP)" },
+  VN: { code: "VND", name: "Dong vietnamita (VND)" },
+  NG: { code: "NGN", name: "Naira nigeriano (NGN)" },
+  AR: { code: "ARS", name: "Peso argentino (ARS)" },
+  CL: { code: "CLP", name: "Peso cileno (CLP)" },
+  CO: { code: "COP", name: "Peso colombiano (COP)" },
+  PE: { code: "PEN", name: "Sol peruviano (PEN)" },
+  IL: { code: "ILS", name: "Shekel israeliano (ILS)" },
+  SA: { code: "SAR", name: "Riyal saudita (SAR)" },
+  QA: { code: "QAR", name: "Riyal del Qatar (QAR)" },
+  KW: { code: "KWD", name: "Dinaro kuwaitiano (KWD)" },
+  BH: { code: "BHD", name: "Dinaro del Bahrein (BHD)" },
+  JO: { code: "JOD", name: "Dinaro giordano (JOD)" },
+  PK: { code: "PKR", name: "Rupia pakistana (PKR)" },
+  BD: { code: "BDT", name: "Taka del Bangladesh (BDT)" },
+  LK: { code: "LKR", name: "Rupia dello Sri Lanka (LKR)" },
+  UA: { code: "UAH", name: "Grivnia ucraina (UAH)" },
+  RU: { code: "RUB", name: "Rublo russo (RUB)" },
+  IS: { code: "ISK", name: "Corona islandese (ISK)" },
+  KE: { code: "KES", name: "Scellino keniota (KES)" },
+  TZ: { code: "TZS", name: "Scellino tanzaniano (TZS)" },
+  GH: { code: "GHS", name: "Cedi ghanese (GHS)" },
+  ET: { code: "ETB", name: "Birr etiope (ETB)" },
 };
 
 // ── Haiku prompt ──────────────────────────────────────────────────────────────
@@ -104,158 +153,196 @@ function buildPrompt(
   return `You are an expert travel packing assistant. Generate a personalized packing list for a traveler.
 
 TRIP DETAILS:
-- Destination: ${city}, ${country} (${countryCode})
+- Destination: ${city}, ${country} (country code: ${countryCode})
 - Month: ${month}
 - Current weather: ${weatherDesc}, ${tempC}°C
 
 INSTRUCTIONS:
 1. Generate 5-8 items per category (Clothes, Electronics, Documents, Toiletries)
-2. Be destination-specific: e.g., "Adattatore Type C" for Spain/Europe, "Spina UK" for UK, UV protection for sunny destinations
-3. Account for weather: warm clothes if cold, sunscreen if hot, umbrella if rainy season
-4. Mark essential=true only for items that cannot be forgotten (passport, phone charger, etc.)
-5. Detect any notable safety concern for ${city} — set safetyLevel to CRITICAL/WARNING/STABLE
-6. If ${countryCode} is NOT in the EUR zone, provide the currency code and a brief note in Italian
+2. Be destination-specific: e.g., "Adattatore Tipo C" for Spain/Italy/Europe, "Spina adattatrice UK" for UK, high SPF sunscreen for tropical/sunny destinations
+3. Account for weather: warm layers if cold, light clothing if hot, umbrella if rainy season
+4. Mark essential=true only for items that absolutely cannot be forgotten (passport, phone charger, etc.)
+5. Set safetyLevel: CRITICAL for active conflict zones, WARNING for unstable regions, STABLE for normal tourist destinations
+6. If the country code is NOT in the EUR zone (not ES/IT/FR/DE/PT/GR/NL/BE/AT/FI/IE/LU/MT/SI/SK/EE/LV/LT/CY), provide the currency code
 
-Respond ONLY with valid JSON (no markdown, no code fences):
+Respond ONLY with a valid JSON object — no markdown, no explanation, no code fences:
 {
   "destination": "${city}",
   "country": "${country}",
   "countryCode": "${countryCode}",
   "weatherSummary": "Brief weather context in Italian (1 sentence)",
-  "safetyLevel": "STABLE" or "WARNING" or "CRITICAL",
-  "safetyAdvisory": "One safety/travel tip for ${city} in Italian, or null if fully safe",
-  "currencyCode": "ISO currency code if not EUR, else null",
-  "currencyNote": "Italian note about local currency (e.g. 'Londra usa la Sterlina (GBP)'), or null if EUR",
+  "safetyLevel": "STABLE",
+  "safetyAdvisory": null,
+  "currencyCode": null,
+  "currencyNote": null,
   "items": [
     {
       "id": "unique-kebab-id",
       "name": "Item name in Italian",
       "category": "Clothes",
-      "emoji": "relevant emoji",
+      "emoji": "👕",
       "essential": false,
-      "affiliateQuery": "English Amazon search query for this item"
+      "affiliateQuery": "English Amazon search query"
     }
   ]
 }
 
 Rules:
 - All "name" fields in Italian
-- "affiliateQuery" in English for Amazon search (e.g., "travel adapter type c europe", "sunscreen spf50")
+- "affiliateQuery" in English for Amazon search (e.g., "travel adapter type c europe", "sunscreen spf50 travel size")
 - category must be exactly one of: Clothes, Electronics, Documents, Toiletries
-- safetyLevel must be STABLE for normal tourist destinations
-- Return at least 20 items total across all 4 categories`;
+- Return at least 20 items total, spread across all 4 categories
+- safetyAdvisory: one-sentence safety tip in Italian, or null if fully safe`;
 }
+
+// ── Validation helpers ────────────────────────────────────────────────────────
+
+const VALID_CATEGORIES: PackingCategory[] = [
+  "Clothes",
+  "Electronics",
+  "Documents",
+  "Toiletries",
+];
+
+const VALID_LEVELS: SafetyLevel[] = ["STABLE", "WARNING", "CRITICAL"];
 
 // ── Server Action ─────────────────────────────────────────────────────────────
 
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
-
 export async function generatePackingList(
   destination: string
-): Promise<GeneratePackingListResult> {
-  const city = destination.trim();
-  if (!city || city.length < 2) {
-    throw new Error("Inserisci una destinazione valida.");
-  }
-
-  const month = new Date().toLocaleString("en-US", { month: "long" });
-  const key = cacheKey(city, month);
-
-  // 1. Check cache
-  const cached = packingCache.get(key);
-  if (isFresh(cached)) {
-    return cached.data;
-  }
-
-  // 2. Fetch weather (non-blocking — fallback to generic if unavailable)
-  const weather = await fetchWeather(city);
-  const weatherDesc = weather?.description ?? "condizioni tipiche stagionali";
-  const tempC = weather?.tempC ?? 20;
-  const resolvedCountry = weather?.country ?? "";
-
-  // 3. Resolve currency from country code
-  const currencyInfo = resolvedCountry ? CURRENCY_MAP[resolvedCountry] ?? null : null;
-
-  // 4. Call Haiku
-  if (!process.env.ANTHROPIC_API_KEY) {
-    throw new Error("Servizio AI non configurato.");
-  }
-
-  const message = await client.messages.create({
-    model: "claude-haiku-4-5-20251001",
-    max_tokens: 2048,
-    messages: [
-      {
-        role: "user",
-        content: buildPrompt(
-          weather?.cityName ?? city,
-          resolvedCountry || "Destinazione",
-          resolvedCountry || "XX",
-          weatherDesc,
-          tempC,
-          month
-        ),
-      },
-    ],
-  });
-
-  const raw = message.content[0]?.type === "text" ? message.content[0].text.trim() : "";
-  const jsonStr = raw.replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/i, "");
-
-  let parsed: {
-    destination?: string;
-    country?: string;
-    countryCode?: string;
-    weatherSummary?: string;
-    safetyLevel?: string;
-    safetyAdvisory?: string | null;
-    currencyCode?: string | null;
-    currencyNote?: string | null;
-    items?: Array<{
-      id?: string;
-      name?: string;
-      category?: string;
-      emoji?: string;
-      essential?: boolean;
-      affiliateQuery?: string;
-    }>;
-  };
-
+): Promise<PackingListResponse> {
   try {
-    parsed = JSON.parse(jsonStr);
-  } catch {
-    throw new Error("Risposta AI non valida. Riprova.");
+    const city = destination.trim();
+    if (!city || city.length < 2) {
+      return { ok: false, error: "Inserisci una destinazione valida (almeno 2 caratteri)." };
+    }
+
+    const apiKey = process.env.ANTHROPIC_API_KEY;
+    if (!apiKey) {
+      return { ok: false, error: "Servizio AI non configurato. Contatta il supporto." };
+    }
+
+    const month = new Date().toLocaleString("en-US", { month: "long" });
+    const key = cacheKey(city, month);
+
+    // 1. Check cache
+    const cached = packingCache.get(key);
+    if (isFresh(cached)) {
+      return { ok: true, data: cached.data };
+    }
+
+    // 2. Fetch weather (non-blocking — graceful fallback)
+    const weather = await fetchWeather(city);
+    const weatherDesc = weather?.description ?? "condizioni tipiche stagionali";
+    const tempC = weather?.tempC ?? 20;
+    const resolvedCountry = weather?.country ?? "";
+
+    // 3. Resolve currency from OWM country code
+    const currencyInfo = resolvedCountry ? (CURRENCY_MAP[resolvedCountry] ?? null) : null;
+
+    // 4. Call Haiku (lazy client init inside the function)
+    const client = new Anthropic({ apiKey });
+
+    const message = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 2048,
+      messages: [
+        {
+          role: "user",
+          content: buildPrompt(
+            weather?.cityName ?? city,
+            resolvedCountry || "Destinazione",
+            resolvedCountry || "XX",
+            weatherDesc,
+            tempC,
+            month
+          ),
+        },
+      ],
+    });
+
+    const raw =
+      message.content[0]?.type === "text"
+        ? message.content[0].text.trim()
+        : "";
+
+    // Strip markdown code fences if Haiku wraps them
+    const jsonStr = raw
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/i, "")
+      .trim();
+
+    // 5. Parse response
+    let parsed: {
+      destination?: string;
+      country?: string;
+      countryCode?: string;
+      weatherSummary?: string;
+      safetyLevel?: string;
+      safetyAdvisory?: string | null;
+      currencyCode?: string | null;
+      currencyNote?: string | null;
+      items?: Array<{
+        id?: string;
+        name?: string;
+        category?: string;
+        emoji?: string;
+        essential?: boolean;
+        affiliateQuery?: string;
+      }>;
+    };
+
+    try {
+      parsed = JSON.parse(jsonStr);
+    } catch {
+      return { ok: false, error: "Risposta AI non valida. Riprova tra qualche secondo." };
+    }
+
+    const safetyLevel: SafetyLevel = VALID_LEVELS.includes(
+      parsed.safetyLevel as SafetyLevel
+    )
+      ? (parsed.safetyLevel as SafetyLevel)
+      : "STABLE";
+
+    const result: GeneratePackingListResult = {
+      destination: parsed.destination ?? city,
+      country: parsed.country ?? resolvedCountry,
+      countryCode: parsed.countryCode ?? resolvedCountry,
+      weatherSummary:
+        parsed.weatherSummary ??
+        `Meteo attuale: ${weatherDesc}, ${tempC}°C`,
+      month,
+      items: (parsed.items ?? []).map((item, i) => ({
+        id: item.id ?? `item-${i}`,
+        name: item.name ?? "Articolo",
+        category: VALID_CATEGORIES.includes(item.category as PackingCategory)
+          ? (item.category as PackingCategory)
+          : "Clothes",
+        emoji: item.emoji ?? "🎒",
+        essential: item.essential ?? false,
+        affiliateQuery: item.affiliateQuery ?? item.name ?? "",
+      })),
+      safetyLevel,
+      safetyAdvisory: parsed.safetyAdvisory ?? null,
+      currencyCode:
+        parsed.currencyCode ?? currencyInfo?.code ?? null,
+      currencyNote:
+        parsed.currencyNote ??
+        (currencyInfo
+          ? `La destinazione usa la ${currencyInfo.name}`
+          : null),
+    };
+
+    // 6. Cache result
+    packingCache.set(key, { data: result, timestamp: Date.now() });
+
+    return { ok: true, data: result };
+  } catch (err) {
+    console.error("[SmartPackAgent] Unexpected error:", err);
+    return {
+      ok: false,
+      error:
+        "Errore durante la generazione della lista. Controlla la tua connessione e riprova.",
+    };
   }
-
-  const validLevels: SafetyLevel[] = ["STABLE", "WARNING", "CRITICAL"];
-  const safetyLevel = validLevels.includes(parsed.safetyLevel as SafetyLevel)
-    ? (parsed.safetyLevel as SafetyLevel)
-    : "STABLE";
-
-  const result: GeneratePackingListResult = {
-    destination: parsed.destination ?? city,
-    country: parsed.country ?? resolvedCountry,
-    countryCode: parsed.countryCode ?? resolvedCountry,
-    weatherSummary: parsed.weatherSummary ?? `Meteo attuale: ${weatherDesc}, ${tempC}°C`,
-    month,
-    items: (parsed.items ?? []).map((item, i) => ({
-      id: item.id ?? `item-${i}`,
-      name: item.name ?? "Articolo",
-      category: (["Clothes", "Electronics", "Documents", "Toiletries"].includes(item.category ?? "")
-        ? item.category
-        : "Clothes") as import("@/types").PackingCategory,
-      emoji: item.emoji ?? "🎒",
-      essential: item.essential ?? false,
-      affiliateQuery: item.affiliateQuery ?? item.name ?? "",
-    })),
-    safetyLevel,
-    safetyAdvisory: parsed.safetyAdvisory ?? null,
-    currencyCode: parsed.currencyCode ?? currencyInfo?.code ?? null,
-    currencyNote: parsed.currencyNote ?? (currencyInfo ? `La destinazione usa la ${currencyInfo.name}` : null),
-  };
-
-  // 5. Store in cache
-  packingCache.set(key, { data: result, timestamp: Date.now() });
-
-  return result;
 }
