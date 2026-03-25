@@ -31,6 +31,7 @@ import {
   TrendingUp,
   Heart,
   Crown,
+  Luggage,
 } from "lucide-react";
 import {
   collection,
@@ -40,6 +41,7 @@ import {
   getDocs,
   getDoc,
   doc,
+  onSnapshot,
 } from "firebase/firestore";
 import { getFirebaseClient }   from "@/lib/firebase/client";
 import { useAuth }             from "@/hooks/useAuth";
@@ -540,6 +542,68 @@ function CommunityFeedTile({ contestId }: { contestId: string | null }) {
   );
 }
 
+// ── Packing Tile ──────────────────────────────────────────────────────────────
+
+interface PackingTileData {
+  destination: string;
+  checkedCount: number;
+  totalCount: number;
+}
+
+function PackingTile({ uid }: { uid: string }) {
+  const [data, setData] = useState<PackingTileData | null>(null);
+
+  useEffect(() => {
+    const { db } = getFirebaseClient();
+    const unsubscribe = onSnapshot(
+      doc(db, "packing_lists", uid),
+      (snap) => {
+        if (!snap.exists()) { setData(null); return; }
+        const d = snap.data() as {
+          destination?: string;
+          items?: Array<{ checked?: boolean }>;
+        };
+        const items = d.items ?? [];
+        setData({
+          destination: d.destination ?? "—",
+          checkedCount: items.filter((i) => i.checked).length,
+          totalCount: items.length,
+        });
+      },
+      () => setData(null)
+    );
+    return () => unsubscribe();
+  }, [uid]);
+
+  if (!data || data.totalCount === 0) return null;
+
+  const pct = Math.round((data.checkedCount / data.totalCount) * 100);
+
+  return (
+    <div className="col-span-2 rounded-2xl bg-white/[0.04] border border-white/8 p-3.5 flex items-center gap-3">
+      <div className="size-9 flex-shrink-0 rounded-xl bg-[var(--s-accent)]/10 border border-[var(--s-accent)]/20 flex items-center justify-center">
+        <Luggage size={18} className="text-[var(--s-accent)]" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center justify-between mb-1">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-widest text-[var(--s-accent)]/70">Prossimo Viaggio</p>
+            <p className="text-[13px] font-black text-white leading-tight truncate">{data.destination}</p>
+          </div>
+          <span className="text-[18px] font-black text-[var(--s-accent)] font-mono flex-shrink-0 ml-2">{pct}%</span>
+        </div>
+        <div className="h-1 rounded-full bg-white/6 overflow-hidden">
+          <div
+            className="h-full rounded-full bg-gradient-to-r from-[var(--s-accent)] to-[var(--s-primary)] transition-all duration-500"
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+        <p className="text-[9px] text-white/30 mt-0.5">{data.checkedCount}/{data.totalCount} articoli pronti</p>
+      </div>
+    </div>
+  );
+}
+
 // ── BentoHub ──────────────────────────────────────────────────────────────────
 
 interface BentoHubProps {
@@ -586,6 +650,9 @@ export function BentoHub({ safetyLevel = "STABLE" }: BentoHubProps) {
 
         {/* Row 3 — Community social feed (full width) */}
         <CommunityFeedTile contestId={contest?.id ?? null} />
+
+        {/* Row 4 — Packing progress tile (only when user has an active list) */}
+        {user && <PackingTile uid={user.uid} />}
       </motion.div>
     </section>
   );

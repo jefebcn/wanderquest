@@ -129,5 +129,20 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // ── Packing Lists (Smart Pack Agent) ─────────────────────────────────────
+    // One document per user, keyed by uid. Owner full CRUD; others cannot read.
+    match /packing_lists/{userId} {
+      allow read, write: if isOwner(userId);
+    }
+
+    // ── Gear Posts (Social Feed from Smart Pack Agent) ────────────────────────
+    // Any signed-in user can create; owner can delete; signed-in can read.
+    match /gear_posts/{postId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+      allow delete: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow update: if false;
+    }
+
   }
 }
